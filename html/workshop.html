@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<!-- 
+    🔓 EASTER EGG POUR DÉVELOPPEURS 🔓
+    Félicitations ! Vous savez inspecter le code source !
+    
+    Fun Facts pour les curieux :
+    • Le premier virus informatique s'appelait "Creeper" (1971)
+    • "Hacker" était à l'origine un terme positif au MIT
+    • Le terme "bug" vient d'un vrai insecte trouvé dans un ordinateur en 1947
+    • Le premier spam email a été envoyé en 1978 à 400 utilisateurs
+    
+    🎯 Défi ultime : Essayez le Konami Code (↑↑↓↓←→←→BA)
+    🔍 Indice : Certains mots de passe cachent des surprises...
+    🛡️ Secret : Cliquez sur le logo Devoxx4Kids
+    
+    PS: Si vous lisez ceci, vous avez l'âme d'un pentester ! 😉
+-->
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devoxx4Kids - Workshop Cybersécurité 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('./lion.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(128, 64, 0, 0.9);
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .header h1 {
+            text-align: center;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            perspective: 1200px;
+            margin-top: 100px;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 450px;
+            height: 350px;
+            left: 50%;
+            top: 50%;
+            transform-origin: center;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .carousel-item.active {
+            transform: translate(-50%, -50%) translateZ(250px) scale(1.1);
+            z-index: 10;
+            opacity: 1;
+        }
+
+        .carousel-item.prev {
+            transform: translate(-70%, -50%) translateZ(-150px) rotateY(35deg) scale(0.8);
+            z-index: 5;
+            opacity: 0.7;
+        }
+
+        .carousel-item.next {
+            transform: translate(-30%, -50%) translateZ(-150px) rotateY(-35deg) scale(0.8);
+            z-index: 5;
+            opacity: 0.7;
+        }
+
+        .carousel-item.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -50%) translateZ(-500px) scale(0.5);
+            z-index: 1;
+        }
+
+        .item-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--bg-color1), var(--bg-color2));
+            position: relative;
+        }
+
+        .item-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent);
+            pointer-events: none;
+        }
+
+        .item-content h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .item-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .play-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Couleurs pour chaque activité */
+        .activity1 { --bg-color1: #FF6B6B; --bg-color2: #4ECDC4; }
+        .activity2 { --bg-color1: #45B7D1; --bg-color2: #96CEB4; }
+        .activity3 { --bg-color1: #FECA57; --bg-color2: #FF9FF3; }
+        .activity4 { --bg-color1: #6C5CE7; --bg-color2: #A29BFE; }
+        .activity5 { --bg-color1: #FD79A8; --bg-color2: #FDCB6E; }
+        .activity6 { --bg-color1: #E17055; --bg-color2: #81ECEC; }
+        .activity7 { --bg-color1: #00B894; --bg-color2: #00CEC9; }
+        .activity8 { --bg-color1: #e74c3c; --bg-color2: #f39c12; }
+        .activity9 { --bg-color1: #E84393; --bg-color2: #9B59B6; }
+
+        /* Boutons de navigation */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .prev-btn {
+            left: 50px;
+        }
+
+        .next-btn {
+            right: 50px;
+        }
+
+        /* Indicateurs */
+        .indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 400px;
+        }
+
+        .indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.4);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Overlay pour les modals */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: #1f2731;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: white;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 2px solid #ff4655;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ff4655;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #cc0000;
+            transform: scale(1.2);
+            transition: all 0.2s ease;
+        }
+
+        /* Croix CGU presque invisible */
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1000;
+        }
+
+        .close:hover {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background-color: #ff8000;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: #e43f4e;
+        }
+
+        /* Animation d'entrée */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) translateZ(250px) scale(1.1);
+            }
+        }
+
+        .carousel-item.active {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        /* Styles pour Password Fortress */
+        .password-game {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 15px 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .strength-meter {
+            width: 100%;
+            height: 25px;
+            background-color: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.5s ease;
+            border-radius: 12px;
+        }
+        
+        .strength-weak { background-color: #ff4655; width: 25%; }
+        .strength-medium { background-color: #ff8000; width: 50%; }
+        .strength-good { background-color: #f1c40f; width: 75%; }
+        .strength-strong { background-color: #27ae60; width: 100%; }
+        
+        .crack-time {
+            padding: 15px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid rgba(52, 152, 219, 0.2);
+            margin: 15px 0;
+        }
+        
+        .requirements {
+            margin: 15px 0;
+        }
+        
+        .requirement {
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .requirement.met {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+        
+        .requirement.unmet {
+            background-color: rgba(255, 70, 85, 0.2);
+            color: #ff4655;
+        }
+        
+        .requirement::before {
+            content: '✓';
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .requirement.unmet::before {
+            content: '✗';
+        }
+        
+        .loading-passwords {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 6px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .email-header {
+            background: #0078d4;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 10px;
+        }
+
+        .email-content {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .clickable-error {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clickable-error:hover {
+            background: rgba(255, 70, 85, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            transform: scale(1.02);
+        }
+        
+        .clickable-error.found {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            border: 1px dashed #4CAF50;
+        }
+        
+        .suspicious-link {
+            color: #ff4655 !important;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .email-subject {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .game-counter {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #3498db;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .explanation-box {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #4CAF50;
+            border-left: 6px solid #388e3c;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            color: #2c3e50;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+        
+        .explanation-text {
+            color: #2c3e50;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .victory-message {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .hint-button, .solution-button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .hint-button:hover, .solution-button:hover {
+            background: #d68910;
+            transform: translateY(-2px);
+        }
+        
+        .why-dangerous {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 4px solid #c0392b;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            color: #2c3e50;
+            border: 1px solid #c0392b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .why-dangerous strong {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        
+        .detection-tip {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 4px solid #2980b9;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            color: #2c3e50;
+            border: 1px solid #2980b9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .detection-tip strong {
+            color: #2980b9;
+            font-weight: bold;
+        }
+        
+        .red-flag {
+            background: rgba(231, 76, 60, 0.08);
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            box-shadow: 0 2px 6px rgba(231, 76, 60, 0.15);
+            color: #2c3e50;
+        }
+        
+        /* Styles pour Terms of Service */
+        .tos-content {
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 15px;
+            background-color: #0f1923;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: white;
+        }
+        
+        .important-clause {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff4655;
+            margin: 20px 0;
+            padding: 10px;
+            border: 2px solid #ff4655;
+            background-color: rgba(255, 70, 85, 0.1);
+            text-align: center;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .login-button {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        
+        .login-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .login-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .login-form {
+            display: none;
+            margin-top: 20px;
+            background-color: #0f1923;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .submit-btn {
+            background-color: #ff4655;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        /* Easter Egg Header */
+        .header h1:hover {
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3), 0 0 10px rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .webcam-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .webcam-warning {
+            margin-top: 20px;
+        }
+        
+        .webcam-warning h3 {
+            color: #ff4655;
+            margin-bottom: 15px;
+        }
+        
+        .important-note {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #2c3e50;
+            font-style: italic;
+        }
+        
+        /* Matrix Easter Egg Styles */
+        .matrix-stats {
+            text-align: left;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .cyber-stat {
+            margin: 15px 0;
+            padding: 10px 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            animation: matrixGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes matrixGlow {
+            from { text-shadow: 0 0 5px #00ff00; }
+            to { text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00; }
+        }
+
+        .wifi-network {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wifi-network:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .wifi-result {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .spinner {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .reload-btn:hover .spinner {
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .carousel-container {
+                width: 90vw;
+                height: 500px;
+            }
+            
+            .carousel-item {
+                width: 350px;
+                height: 280px;
+            }
+            
+            .item-content h2 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-button {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .modal {
+                max-width: 95vw;
+                margin: 10px;
+            }
+
+            .video-container iframe {
+                width: 100%;
+                height: 250px;
+            }
+        }
+    </style>
+    <!-- 
+        🎨 CSS SECRETS 🎨
+        Les développeurs cachent parfois des messages secrets dans le CSS...
+        transform: perspective(1200px) rotateY(calc(var(--rotation) * 1deg));
+        Saviez-vous que Matrix utilisait du code CSS en cascade ? 😉
+    -->
+</head>
+<body>
+    <!-- 
+        🔍 HTML NINJA LEVEL 🔍
+        Vous explorez le DOM comme un vrai hacker !
+        Fun fact: Tim Berners-Lee a créé le HTML en 1990
+        Easter egg bonus: Regardez l'attribut onclick du header 👆
+    -->
+    <div class="header">
+        <h1 onclick="triggerWebcamEasterEgg()" style="cursor: pointer;">🛡️ Devoxx4Kids - Cybersécurité Workshop 3D 🛡️</h1>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel" id="carousel">
+            <!-- Fantasy Quest -->
+            <!-- Confidentialité -->
+            <div class="carousel-item active" data-index="0" data-game="confidential">
+                <div class="item-content activity1">
+                    <h2>🔒 La Confidentialité</h2>
+                    <p>Découvrez pourquoi vos données personnelles sont précieuses !</p>
+                    <button class="play-btn">Regarder</button>
+                </div>
+            </div>
+
+
+            <!-- Deepfake -->
+            <div class="carousel-item next" data-index="1" data-game="deepfake">
+                <div class="item-content activity2">
+                    <h2>🎭 Qui est le vrai ?</h2>
+                    <p>Découvrez le monde des deepfakes et comment les détecter !</p>
+                    <button class="play-btn">Regarder</button>
+                </div>
+            </div>
+
+            <!-- Password Fortress -->
+            <div class="carousel-item hidden" data-index="2" data-game="password-fortress">
+                <div class="item-content activity3">
+                    <h2>🏰 Mot de passe Fortress</h2>
+                    <p>Créez un mot de passe imprenable et découvrez en combien de temps il peut être cracké !</p>
+                    <button class="play-btn">Tester</button>
+                </div>
+            </div>
+
+            <!-- Email Piège -->
+            <div class="carousel-item hidden" data-index="3" data-game="email-phishing">
+                <div class="item-content activity4">
+                    <h2>📧 Email Piège</h2>
+                    <p>Apprenez à détecter les emails de phishing avec des exemples réalistes !</p>
+                    <button class="play-btn">Analyser</button>
+                </div>
+            </div>
+
+            <!-- WiFi Piège -->
+            <div class="carousel-item hidden" data-index="4" data-game="wifi-trap">
+                <div class="item-content activity5">
+                    <h2>📶 WiFi Piège</h2>
+                    <p>Choisissez le bon réseau WiFi et évitez les pièges des hackers !</p>
+                    <button class="play-btn">Jouer</button>
+                </div>
+            </div>
+
+            <!-- Réseaux Sociaux -->
+            <div class="carousel-item hidden" data-index="5" data-game="social-media-video">
+                <div class="item-content activity6">
+                    <h2>📱 Réseaux Sociaux</h2>
+                    <p>Découvrez pourquoi il faut faire attention à ce qu'on partage sur les réseaux sociaux</p>
+                    <button class="play-btn">Regarder</button>
+                </div>
+            </div>
+
+            <!-- Quiz Sécurité - ÉVALUATION FINALE -->
+            <div class="carousel-item hidden" data-index="6" data-game="quizz">
+                <div class="item-content activity7">
+                    <h2>📝 Quiz Sécurité</h2>
+                    <p>Testez vos connaissances en cybersécurité - Évaluation finale !</p>
+                    <button class="play-btn">Quiz</button>
+                </div>
+            </div>
+
+            <!-- Site Suspect - Détection de Fraude -->
+            <div class="carousel-item hidden" data-index="7" data-game="site-suspect">
+                <div class="item-content activity8">
+                    <h2>🎉 Promotion en folie</h2>
+                    <p>Explorez ce site de vente en ligne et détectez tous les indices de fraude !</p>
+                    <button class="play-btn">Shopping</button>
+                </div>
+            </div>
+
+            <!-- Fantasy Quest - EASTER EGG UNLOCK -->
+            <div class="carousel-item hidden fantasy-quest-locked" data-index="8" data-game="fantasy-quest" style="opacity: 0.3; pointer-events: none;">
+                <div class="item-content activity9">
+                    <h2>🏰 Fantasy Quest 🔒</h2>
+                    <p>Complétez toutes les activités pour débloquer cette quête légendaire !</p>
+                    <button class="play-btn" disabled>Verrouillé</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-button prev-btn" id="prevBtn">❮</button>
+        <button class="nav-button next-btn" id="nextBtn">❯</button>
+
+        <div class="indicators">
+            <div class="indicator active" data-index="0"></div>
+            <div class="indicator" data-index="1"></div>
+            <div class="indicator" data-index="2"></div>
+            <div class="indicator" data-index="3"></div>
+            <div class="indicator" data-index="4"></div>
+            <div class="indicator" data-index="5"></div>
+            <div class="indicator" data-index="6"></div>
+            <div class="indicator" data-index="7"></div>
+            <div class="indicator fantasy-indicator" data-index="8"></div>
+        </div>
+    </div>
+
+    <!-- Modal Password Fortress -->
+    <div class="overlay" id="passwordOverlay" style="display: none;">
+        <div class="modal">
+            <h2>🏰 Mot de passe Fortress</h2>
+            <div class="password-game">
+                <h3>Créez votre mot de passe forteresse :</h3>
+                <input type="text" id="passwordInput" class="password-input" placeholder="Tapez votre mot de passe..." autocomplete="off">
+                
+                <div class="strength-meter">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                
+                <div class="crack-time" id="crackTime">
+                    Temps de craquage : Instantané ⚡
+                </div>
+                
+                <div class="requirements" id="requirements">
+                    <div class="requirement unmet" id="req-length">Au moins 8 caractères</div>
+                    <div class="requirement unmet" id="req-lower">Lettres minuscules</div>
+                    <div class="requirement unmet" id="req-upper">Lettres majuscules</div>
+                    <div class="requirement unmet" id="req-number">Chiffres</div>
+                    <div class="requirement unmet" id="req-special">Caractères spéciaux</div>
+                    <div class="requirement unmet" id="req-no-common">Pas de mots courants</div>
+                </div>
+                
+                <button class="btn" onclick="closePasswordGame()">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Email Phishing -->
+    <div class="overlay" id="emailOverlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid #ff4655; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #ff4655;">📧 Détecteur d'Email Piège</h2>
+                <div class="header-buttons" style="display: flex; gap: 10px; align-items: center;">
+                    <button class="reload-btn" onclick="generateNewEmail()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;"><span class="spinner">🔄</span></button>
+                    <button class="close-btn" onclick="closeEmailGame()" style="background: none; border: none; font-size: 24px; color: #ff4655; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+                </div>
+            </div>
+            <div class="email-container" id="emailContainer">
+                <!-- L'email sera généré dynamiquement -->
+            </div>
+            <div class="analysis-panel" id="analysisPanel">
+                <h3>🕵️ Votre analyse :</h3>
+                <p>Cliquez sur l'email pour révéler les indices de phishing !</p>
+                <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">Encore +</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal WiFi Piège -->
+    <div class="overlay" id="wifiOverlay" style="display: none;">
+        <div class="modal">
+            <h2>📶 WiFi Piège</h2>
+            <div class="wifi-game">
+                <h3 id="wifiSituation">Situation : Vous êtes dans un café et cherchez un WiFi...</h3>
+                <p>Choisissez le réseau le plus sûr :</p>
+                <div id="wifiNetworks">
+                    <!-- Les réseaux WiFi seront générés dynamiquement -->
+                </div>
+                <div id="wifiResult" class="wifi-result" style="display: none;"></div>
+                <button class="btn" onclick="generateNewWifiScenario()">Nouveau scénario</button>
+                <button class="btn" onclick="closeWifiGame()">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Vidéo Réseaux Sociaux -->
+    <div class="overlay" id="socialMediaOverlay" style="display: none;">
+        <div class="modal">
+            <h2>📱 Réseaux Sociaux : Attention Danger !</h2>
+            <div class="video-container" style="text-align: center; margin: 20px 0;">
+                <iframe id="socialMediaVideo" width="560" height="315" 
+                    src="" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen
+                    style="border-radius: 8px; max-width: 100%;">
+                </iframe>
+            </div>
+            <div class="analysis-panel">
+                <h3>📚 Points clés à retenir :</h3>
+                <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
+                    <h4>⚠️ Dangers des réseaux sociaux :</h4>
+                    <ul>
+                        <li>Partage d'informations personnelles</li>
+                        <li>Photos géolocalisées</li>
+                        <li>Contacts avec des inconnus</li>
+                        <li>Cyberharcelement</li>
+                        <li>Usurpation d'identité</li>
+                    </ul>
+                </div>
+                
+                <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h4>🛡️ Conseils de protection :</h4>
+                    <ul>
+                        <li>Paramètres de confidentialité stricts</li>
+                        <li>Ne jamais partager d'infos personnelles</li>
+                        <li>Attention aux photos et leur géolocalisation</li>
+                        <li>Signaler tout comportement suspect</li>
+                        <li>Parler à un adulte de confiance</li>
+                    </ul>
+                </div>
+                
+                <button class="btn" onclick="closeSocialMediaGame()">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Vidéo Confidentialité -->
+    <div class="overlay" id="confidentialityOverlay" style="display: none;">
+        <div class="modal">
+            <h2>🔒 La confidentialité c'est quoi ?</h2>
+            <div class="video-container" style="text-align: center; margin: 20px 0;">
+                <iframe id="confidentialityVideo" width="560" height="315" 
+                    src="" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen
+                    style="border-radius: 8px; max-width: 100%;">
+                </iframe>
+            </div>
+            <div class="analysis-panel">
+                <h3>📚 Points clés à retenir :</h3>
+                <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
+                    <h4>⚠️ Vos données personnelles sont précieuses :</h4>
+                    <ul>
+                        <li>🔐 Nom, âge, adresse, photos, habitudes</li>
+                        <li>👁️ Vos actions en ligne sont tracées</li>
+                        <li>💰 Vos données sont vendues pour du marketing</li>
+                        <li>🎯 Profils publicitaires créés à votre insu</li>
+                        <li>📍 Géolocalisation et historiques conservés</li>
+                    </ul>
+                </div>
+                
+                <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h4>🛡️ Comment protéger vos données :</h4>
+                    <ul>
+                        <li>Vérifiez les paramètres de confidentialité</li>
+                        <li>Limitez les informations partagées</li>
+                        <li>Lisez les conditions d'utilisation</li>
+                        <li>Désactivez la géolocalisation non nécessaire</li>
+                        <li>Demandez-vous : "Cette info est-elle vraiment nécessaire ?"</li>
+                    </ul>
+                </div>
+                
+                <button class="btn" onclick="closeConfidentialityGame()">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Modal Vidéo Deepfake -->
+    <div class="overlay" id="deepfakeOverlay" style="display: none;">
+        <div class="modal">
+            <h2>🎭 Qui est le vrai ? - Deepfakes et manipulation (4 vidéos ~1min chacune)</h2>
+            <div class="video-container" style="text-align: center; margin: 20px 0;">
+                <iframe id="deepfakeVideo" width="560" height="315" 
+                    src="" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen
+                    style="border-radius: 8px; max-width: 100%;">
+                </iframe>
+            </div>
+            <div class="analysis-panel">
+                <h3>📚 Points clés à retenir :</h3>
+                <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
+                    <h4>⚠️ Dangers des deepfakes et filtres :</h4>
+                    <ul>
+                        <li>🤖 IA crée de fausses vidéos très réalistes</li>
+                        <li>👀 Difficile à détecter à l'œil nu</li>
+                        <li>📱 <strong>FILTRES/APPS de transformation</strong> (vieillir/rajeunir/changer de sexe) = <strong>STOCKAGE DE VOS DONNÉES</strong></li>
+                        <li>🔒 Abus possible de votre image personnelle</li>
+                        <li>💼 Usages malveillants (chantage, fake news)</li>
+                        <li>🎭 Atteinte à la réputation des personnes</li>
+                    </ul>
+                </div>
+                
+                <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h4>🛡️ Comment se protéger :</h4>
+                    <ul>
+                        <li><strong>FILTRES/APPS :</strong> Réfléchissez avant de télécharger - Où vont vos photos ?</li>
+                        <li>Lisez les conditions d''utilisation des apps de transformation</li>
+                        <li>Observez les yeux et expressions du visage dans les vidéos</li>
+                        <li>Vérifiez la cohérence audio-vidéo</li>
+                        <li>Croisez avec d''autres sources fiables</li>
+                        <li>Posez-vous : "Qui partage ? Pourquoi ?"</li>
+                        <li>En cas de doute, ne partagez pas</li>
+                    </ul>
+                </div>
+                
+                <button class="btn" onclick="closeDeepfakeGame()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Easter egg déplacé sur le header -->
+
+    <!-- Matrix Canvas for Konami Easter Egg -->
+    <canvas id="matrix-canvas" style="display: none; position: fixed; top: 0; left: 0; z-index: 1000;"></canvas>
+    
+    <!-- Modal Matrix Easter Egg -->
+    <div class="overlay" id="matrixOverlay" style="display: none; z-index: 1001;">
+        <div class="modal" style="background: rgba(0, 20, 0, 0.95); border: 2px solid #00ff00; color: #00ff00;">
+            <h2 style="color: #00ff00; text-shadow: 0 0 20px #00ff00;">👁️ WELCOME TO THE MATRIX, NEO</h2>
+            <div style="color: #00ff00; text-align: center; margin: 15px 0; font-size: 1.1rem; opacity: 0.8; font-family: 'Courier New', monospace; animation: glow 3s ease-in-out infinite alternate;">
+                Système créé par Kamel Zaraoui 2025
+            </div>
+            <div class="matrix-stats">
+                <h3 style="color: #00ff00; margin-bottom: 20px;">🔥 STATISTIQUES CYBERSÉCURITÉ 2024</h3>
+                <div class="cyber-stat">💸 <strong>12,9 milliards €</strong> de pertes dues à la cybercriminalité en France (2023)</div>
+                <div class="cyber-stat">⚡ <strong>1 cyberattaque toutes les 39 secondes</strong> dans le monde</div>
+                <div class="cyber-stat">🎯 <strong>95%</strong> des cyberattaques commencent par un email de phishing</div>
+                <div class="cyber-stat">💰 <strong>4,45 millions $</strong> : coût moyen d'une violation de données</div>
+                <div class="cyber-stat">⏱️ <strong>287 jours</strong> : temps moyen pour détecter une cyberattaque avancée</div>
+                <div class="cyber-stat">🏢 <strong>43%</strong> des cyberattaques visent les PME</div>
+                <div class="cyber-stat">🔐 <strong>81%</strong> des violations utilisent des mots de passe faibles ou volés</div>
+                <div class="cyber-stat">📱 <strong>6,8 milliards</strong> d'appareils infectés par des malwares en 2023</div>
+                <div class="cyber-stat">🚨 <strong>1 ransomware toutes les 11 secondes</strong></div>
+                <div class="cyber-stat">👥 <strong>4,1 milliards</strong> de comptes exposés en 2023</div>
+            </div>
+            <button class="btn" onclick="closeMatrix()" style="background: rgba(0, 255, 0, 0.2); border: 2px solid #00ff00; color: #00ff00; margin-top: 20px;">QUITTER LA MATRICE</button>
+        </div>
+    </div>
+
+    <!-- Modal Webcam Easter Egg -->
+    <div class="overlay" id="webcamOverlay" style="display: none;">
+        <div class="modal">
+            <h2>👁️ Les Yeux du Lion Cybersécurité</h2>
+            <div class="webcam-container">
+                <video id="webcamVideo" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 8px;"></video>
+                <div class="webcam-warning">
+                    <h3>🦁 Surprise ! Le lion vous observe !</h3>
+                    <p>Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.</p>
+                    
+                    <div class="explanation-box">
+                        <div class="explanation-title">🛡️ Conseils de Cybersécurité :</div>
+                        <div class="explanation-text">
+                            <ul>
+                                <li><strong>Toujours vérifier</strong> pourquoi un site demande l'accès à votre caméra</li>
+                                <li><strong>Refuser l'accès</strong> si ce n'est pas nécessaire pour le service</li>
+                                <li><strong>Couvrir votre webcam</strong> quand vous ne l'utilisez pas</li>
+                                <li><strong>Vérifier les permissions</strong> accordées dans les paramètres du navigateur</li>
+                                <li><strong>Se méfier</strong> des sites qui demandent des permissions excessives</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="important-note">
+                        <strong>Rassurez-vous :</strong> Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. 
+                        Le flux vidéo reste uniquement sur votre ordinateur.
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="closeWebcamEasterEgg()">Fermer et Arrêter la Caméra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Terms of Service -->
+    <div class="overlay" id="tosOverlay">
+        <div class="modal">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Conditions Générales d'Utilisation</h2>
+            <div class="tos-content" id="tosContent">
+                <h3>1. INTRODUCTION</h3>
+                <p>Bienvenue sur SuperGaming ! En utilisant notre plateforme, vous acceptez les présentes conditions générales d'utilisation. Veuillez les lire attentivement avant de poursuivre.</p>
+                
+                <p>Les présentes Conditions Générales d'Utilisation (ci-après dénommées "CGU") régissent l'utilisation de la plateforme SuperGaming (ci-après dénommée "la Plateforme") exploitée par SuperGaming Inc. (ci-après dénommée "la Société"). En accédant à la Plateforme ou en l'utilisant, vous reconnaissez avoir lu, compris et accepté d'être lié par les présentes CGU.</p>
+                
+                <p>La Société se réserve le droit de modifier les présentes CGU à tout moment et sans préavis. Il est de votre responsibilité de consulter régulièrement les CGU pour prendre connaissance des éventuelles modifications. Votre utilisation continue de la Plateforme après la publication de modifications constitue votre acceptation de ces modifications.</p>
+                
+                <h3>2. ACCÈS À LA PLATEFORME</h3>
+                <p>L'accès à la Plateforme est réservé aux utilisateurs âgés de 13 ans et plus. Si vous avez moins de 18 ans, vous devez obtenir le consentement d'un parent ou d'un tuteur légal avant d'utiliser la Plateforme.</p>
+                
+                <p>La Société se réserve le droit de refuser l'accès à la Plateforme à tout utilisateur, à sa seule discrétion, sans préavis ni justification.</p>
+                
+                <p>Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se déroulent sous votre compte. Vous devez immédiatement informer la Société de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.</p>
+                
+                <h3>3. UTILISATION DE LA PLATEFORME</h3>
+                <p>En utilisant la Plateforme, vous vous engagez à ne pas :</p>
+                <ul>
+                    <li>Enfreindre les lois applicables ou les présentes CGU</li>
+                    <li>Utiliser la Plateforme d'une manière qui pourrait endommager, désactiver, surcharger ou altérer le fonctionnement de la Plateforme</li>
+                    <li>Tenter d'accéder à des zones ou des fonctionnalités de la Plateforme auxquelles vous n'êtes pas autorisé à accéder</li>
+                    <li>Utiliser des robots, des scrapers ou d'autres moyens automatisés pour accéder à la Plateforme</li>
+                    <li>Introduire des logiciels malveillants, des virus ou tout autre code nuisible sur la Plateforme</li>
+                    <li>Collecter ou stocker des informations personnelles sur d'autres utilisateurs sans leur consentement</li>
+                </ul>
+                
+                <h3>4. CONTENU DE L'UTILISATEUR</h3>
+                <p>En soumettant du contenu sur la Plateforme (y compris, mais sans s'y limiter, des textes, des images, des vidéos, des commentaires), vous accordez à la Société une licence mondiale, non exclusive, gratuite, transférable et pouvant faire l'objet d'une sous-licence pour utiliser, reproduire, distribuer, préparer des œuvres dérivées, afficher et exécuter ce contenu en relation avec la Plateforme et les activités commerciales de la Société.</p>
+                
+                <p>Vous déclarez et garantissez que vous possédez ou avez obtenu tous les droits, licences, consentements, permissions, pouvoirs et/ou autorités nécessaires pour accorder les droits accordés aux présentes pour tout contenu que vous soumettez.</p>
+                
+                <h3>5. PROPRIÉTÉ INTELLECTUELLE</h3>
+                <p>La Plateforme et tout son contenu, fonctionnalités et fonctionnalités (y compris, mais sans s'y limiter, toutes les informations, logiciels, textes, affichages, images, vidéos et audio, ainsi que leur conception, sélection et arrangement) sont la propriété de la Société, de ses concédants de licence ou d'autres fournisseurs de ce contenu, et sont protégés par les lois sur le droit d'auteur, les marques de commerce, les brevets, les secrets commerciaux et autres lois sur la propriété intellectuelle ou les droits de propriété.</p>
+                
+                <p>Vous ne devez pas reproduire, distribuer, modifier, créer des œuvres dérivées, afficher publiquement, exécuter publiquement, republier, télécharger, stocker ou transmettre tout matériel de notre Plateforme, sauf si cela est expressément autorisé par les présentes CGU.</p>
+                
+                <h3>6. CONFIDENTIALITÉ</h3>
+                <p>Votre utilisation de la Plateforme est également régie par notre Politique de Confidentialité, qui est incorporée aux présentes CGU par référence.</p>
+                
+                <p>En utilisant la Plateforme, vous consentez à la collecte, à l'utilisation et au partage de vos informations comme décrit dans notre Politique de Confidentialité.</p>
+                <div class="important-clause">L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT</div>
+                <h6>* bravo d'avoir lu les conditions : petit conseil, rentre n'importe quoi , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison</h6>
+                <h3>7. LIMITATION DE RESPONSABILITÉ</h3>
+                <p>Dans toute la mesure permise par la loi applicable, la Société ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus, que ces dommages soient prévisibles ou non, et même si la Société a été informée de la possibilité de tels dommages.</p>
+                
+                <p>La responsabilité totale de la Société pour toute réclamation découlant de ou liée aux présentes CGU ne dépassera pas le montant que vous avez payé à la Société au cours des douze (12) mois précédant l'événement donnant lieu à la responsabilité, ou 100 euros, selon le montant le plus élevé.</p>
+                
+                <h3>8. INDEMNISATION</h3>
+                <p>Vous acceptez d'indemniser, de défendre et de dégager de toute responsabilité la Société, ses affiliés, dirigeants, directeurs, employés, agents, fournisseurs et partenaires contre toute réclamation, responsabilité, dommage, perte et dépense, y compris, sans limitation, les frais juridiques et comptables raisonnables, découlant de ou liés à votre violation des présentes CGU, votre utilisation de la Plateforme, votre violation de tout droit d'un tiers, ou tout contenu que vous soumettez, publiez ou transmettez via la Plateforme.</p>
+                
+                <h3>9. RÉSILIATION</h3>
+                <p>La Société peut, à sa seule discrétion, suspendre ou résilier votre accès à la Plateforme à tout moment, pour quelque raison que ce soit, sans préavis ni responsabilité.</p>
+                
+                <p>Toutes les dispositions des présentes CGU qui, par leur nature, devraient survivre à la résiliation survivront à la résiliation, y compris, sans limitation, les dispositions relatives à la propriété, les exclusions de garantie, l'indemnisation et les limitations de responsabilité.</p>
+                
+                <h3>10. LOI APPLICABLE ET JURIDICTION</h3>
+                <p>Les présentes CGU sont régies et interprétées conformément aux lois de France, sans égard à ses principes de conflits de lois.</p>
+                
+                <p>Tout litige découlant de ou lié aux présentes CGU sera soumis à la juridiction exclusive des tribunaux de Paris, France.</p>
+                
+                <h3>11. DISPOSITIONS DIVERSES</h3>
+                <p>Si une disposition des présentes CGU est jugée illégale, nulle ou inapplicable pour quelque raison que ce soit, cette disposition sera limitée ou éliminée des présentes CGU dans la mesure minimale nécessaire, et les autres dispositions des présentes CGU resteront en pleine vigueur et effet.</p>
+                
+                <p>Les présentes CGU constituent l'intégralité de l'accord entre vous et la Société concernant la Plateforme et remplacent tous les accords antérieurs entre vous et la Société concernant la Plateforme.</p>
+                
+                <p>Le fait que la Société n'exerce pas ou n'applique pas un droit ou une disposition des présentes CGU ne constitue pas une renonciation à ce droit ou à cette disposition.</p>
+                
+                <p>Les présentes CGU, et tous les droits et licences accordés en vertu des présentes, ne peuvent être transférés ou cédés par vous, mais peuvent être transférés ou cédés par la Société sans restriction.</p>
+            </div>
+            <div>
+                <input type="checkbox" id="tosAccept">
+                <label for="tosAccept">J'accepte les conditions générales d'utilisation</label>
+            </div>
+            <div class="login-options">
+                <button class="login-button" id="googleLogin" title="Google">
+                    <img src="png/google.svg" alt="Google">
+                </button>
+                <button class="login-button" id="instagramLogin" title="Instagram">
+                    <img src="png/Instagram.svg" alt="Instagram">
+                </button>
+                <button class="login-button" id="snapchatLogin" title="Snapchat">
+                    <img src="png/snapchat.svg" alt="Snapchat">
+                </button>
+                <button class="login-button" id="tiktokLogin" title="TikTok">
+                    <img src="png/tiktok.svg" alt="TikTok">
+                </button>
+            </div>
+            
+            <!-- Google Login Form -->
+            <div class="login-form" id="googleForm">
+                <h3>Connexion avec Google</h3>
+                <div class="form-group">
+                    <label for="googleEmail">Email ou Téléphone</label>
+                    <input type="text" id="googleEmail" placeholder="email@gmail.com ou +33123456789">
+                </div>
+                <div class="form-group">
+                    <label for="googlePassword">Mot de passe</label>
+                    <input type="password" id="googlePassword" placeholder="Votre mot de passe">
+                </div>
+                <button class="submit-btn" id="googleSubmit">Se connecter</button>
+            </div>
+            
+            <!-- Instagram Login Form -->
+            <div class="login-form" id="instagramForm">
+                <h3>Connexion avec Instagram</h3>
+                <div class="form-group">
+                    <label for="instagramUsername">Nom d'utilisateur ou Email</label>
+                    <input type="text" id="instagramUsername" placeholder="votre_username ou email@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="instagramPassword">Mot de passe</label>
+                    <input type="password" id="instagramPassword" placeholder="Votre mot de passe">
+                </div>
+                <button class="submit-btn" id="instagramSubmit">Se connecter</button>
+            </div>
+            
+            <!-- Snapchat Login Form -->
+            <div class="login-form" id="snapchatForm">
+                <h3>Connexion avec Snapchat</h3>
+                <div class="form-group">
+                    <label for="snapchatUsername">Nom d'utilisateur ou Email</label>
+                    <input type="text" id="snapchatUsername" placeholder="votre_username ou email@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="snapchatPassword">Mot de passe</label>
+                    <input type="password" id="snapchatPassword" placeholder="Votre mot de passe">
+                </div>
+                <button class="submit-btn" id="snapchatSubmit">Se connecter</button>
+            </div>
+            
+            <!-- TikTok Login Form -->
+            <div class="login-form" id="tiktokForm">
+                <h3>Connexion avec TikTok</h3>
+                <div class="form-group">
+                    <label for="tiktokUsername">Nom d'utilisateur ou Email</label>
+                    <input type="text" id="tiktokUsername" placeholder="votre_username ou email@domain.com">
+                </div>
+                <div class="form-group">
+                    <label for="tiktokPassword">Mot de passe</label>
+                    <input type="password" id="tiktokPassword" placeholder="Votre mot de passe">
+                </div>
+                <button class="submit-btn" id="tiktokSubmit">Se connecter</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class CarouselWorkshop {
+            constructor() {
+                this.currentIndex = 0;
+                this.items = document.querySelectorAll('.carousel-item');
+                this.indicators = document.querySelectorAll('.indicator');
+                this.totalItems = this.items.length;
+                
+                // Système de tracking pour Fantasy Quest unlock
+                this.visitedActivities = new Array(8).fill(false); // [0-7] activities
+                this.fantasyQuestUnlocked = false;
+                
+                this.init();
+            }
+
+            init() {
+                // Boutons de navigation
+                document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+                document.getElementById('nextBtn').addEventListener('click', () => this.next());
+                
+                // Indicateurs
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.goTo(index));
+                });
+
+                // Navigation au clavier
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prev();
+                    if (e.key === 'ArrowRight') this.next();
+                });
+
+                // Clic sur les éléments pour navigation
+                this.items.forEach((item, index) => {
+                    item.addEventListener('click', (e) => {
+                        if (!item.classList.contains('active')) {
+                            this.goTo(index);
+                        }
+                    });
+                });
+
+                // Gestion des boutons de jeu
+                document.querySelectorAll('.play-btn').forEach((btn, index) => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Empêcher la navigation du carrousel
+                        const gameType = this.items[index].getAttribute('data-game');
+                        this.startActivity(gameType);
+                    });
+                });
+            }
+
+            updateCarousel() {
+                this.items.forEach((item, index) => {
+                    // Supprimer toutes les classes d'état
+                    item.classList.remove('active', 'prev', 'next', 'hidden');
+                    
+                    if (index === this.currentIndex) {
+                        item.classList.add('active');
+                    } else if (index === this.getPrevIndex()) {
+                        item.classList.add('prev');
+                    } else if (index === this.getNextIndex()) {
+                        item.classList.add('next');
+                    } else {
+                        // Tous les autres éléments sont cachés
+                        item.classList.add('hidden');
+                    }
+                });
+
+                // Mettre à jour les indicateurs
+                this.indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            getPrevIndex() {
+                return (this.currentIndex - 1 + this.totalItems) % this.totalItems;
+            }
+
+            getNextIndex() {
+                return (this.currentIndex + 1) % this.totalItems;
+            }
+
+            prev() {
+                this.currentIndex = this.getPrevIndex();
+                this.updateCarousel();
+            }
+
+            next() {
+                this.currentIndex = this.getNextIndex();
+                this.updateCarousel();
+            }
+
+            goTo(index) {
+                this.currentIndex = index;
+                this.updateCarousel();
+            }
+
+            startActivity(gameType) {
+                // Vérifier si c'est Fantasy Quest et s'il est débloqué
+                if (gameType === 'fantasy-quest' && !this.fantasyQuestUnlocked) {
+                    this.showFantasyQuestLocked();
+                    return;
+                }
+                
+                // Marquer l'activité comme visitée pour l'unlock system
+                this.markActivityVisited(this.currentIndex);
+                
+                // URLs des jeux externes
+                const gameUrls = {
+                    "fantasy-quest": "https://beinternetawesome.withgoogle.com/fr_be/interland",
+                    "quizz": "https://www.jobirl.com/quiz/quiz-cybersecurite"
+                };
+
+                if (gameUrls[gameType]) {
+                    // Ouvrir jeu externe
+                    window.open(gameUrls[gameType], '_blank', 'noopener');
+                } else {
+                    // Ouvrir modal intégrée
+                    this.openModal(gameType);
+                }
+            }
+
+            openModal(gameType) {
+                switch(gameType) {
+                    case 'password-fortress':
+                        document.getElementById('passwordOverlay').style.display = 'flex';
+                        initPasswordGame();
+                        break;
+                    case 'email-phishing':
+                        document.getElementById('emailOverlay').style.display = 'flex';
+                        generateNewEmail();
+                        break;
+                    case 'wifi-trap':
+                        document.getElementById('wifiOverlay').style.display = 'flex';
+                        generateNewWifiScenario();
+                        break;
+                    case 'social-media-video':
+                        document.getElementById('socialMediaOverlay').style.display = 'flex';
+                        openSocialMediaVideo();
+                        break;
+                    case 'confidential':
+                        document.getElementById('confidentialityOverlay').style.display = 'flex';
+                        openConfidentialityVideo();
+                        break;
+                    case 'deepfake':
+                        document.getElementById('deepfakeOverlay').style.display = 'flex';
+                        openDeepfakeVideo();
+                        break;
+                    case 'site-suspect':
+                        window.open('page.html', '_blank');
+                        break;
+                }
+            }
+
+            // === SYSTÈME FANTASY QUEST UNLOCK ===
+            markActivityVisited(index) {
+                // Ne pas marquer Fantasy Quest lui-même (index 7)
+                if (index < 8 && !this.visitedActivities[index]) {
+                    this.visitedActivities[index] = true;
+                    console.log(`Activité ${index} marquée comme visitée`);
+                    this.checkFantasyQuestUnlock();
+                }
+            }
+
+            checkFantasyQuestUnlock() {
+                // Vérifier si toutes les activités 0-7 ont été visitées
+                if (!this.fantasyQuestUnlocked && this.visitedActivities.slice(0, 8).every(visited => visited)) {
+                    this.fantasyQuestUnlocked = true;
+                    this.unlockFantasyQuest();
+                }
+            }
+
+            unlockFantasyQuest() {
+                const fantasyQuestItem = document.querySelector('[data-index="8"]');
+                if (fantasyQuestItem) {
+                    // Animation d'unlock
+                    fantasyQuestItem.style.transition = 'all 1s ease';
+                    fantasyQuestItem.style.opacity = '1';
+                    fantasyQuestItem.style.pointerEvents = 'auto';
+                    fantasyQuestItem.classList.remove('fantasy-quest-locked');
+                    
+                    // Changer le texte et le bouton
+                    const h2 = fantasyQuestItem.querySelector('h2');
+                    const p = fantasyQuestItem.querySelector('p');
+                    const button = fantasyQuestItem.querySelector('button');
+                    
+                    if (h2) h2.innerHTML = '🏰 Fantasy Quest ✨';
+                    if (p) p.innerHTML = '🎉 FÉLICITATIONS ! Quête débloquée ! Explorez un monde fantastique !';
+                    if (button) {
+                        button.textContent = 'Jouer';
+                        button.disabled = false;
+                        button.style.background = '#4CAF50';
+                        button.style.color = 'white';
+                    }
+                    
+                    // Notification de succès
+                    this.showUnlockNotification();
+                }
+            }
+
+            showFantasyQuestLocked() {
+                const remaining = this.visitedActivities.slice(0, 7).filter(v => !v).length;
+                alert(`🔒 Fantasy Quest est verrouillée !\n\n✨ Complétez encore ${remaining} activité${remaining > 1 ? 's' : ''} pour débloquer cette quête légendaire !\n\n🎯 Activités visitées : ${7 - remaining}/7`);
+            }
+
+            showUnlockNotification() {
+                // Créer une notification temporaire
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(135deg, #4CAF50, #45a049);
+                    color: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    text-align: center;
+                    z-index: 9999;
+                    box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4);
+                    animation: unlockBounce 1s ease-out;
+                    font-family: 'Segoe UI', sans-serif;
+                `;
+                
+                notification.innerHTML = `
+                    <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+                    <h2 style="margin: 10px 0; color: white;">FANTASY QUEST DÉBLOQUÉE !</h2>
+                    <p style="margin: 5px 0; font-size: 18px;">Toutes les activités complétées !</p>
+                    <p style="margin: 5px 0; font-size: 16px; opacity: 0.9;">La quête légendaire vous attend...</p>
+                `;
+                
+                // Ajouter l'animation CSS si elle n'existe pas
+                if (!document.querySelector('#unlock-animation-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'unlock-animation-style';
+                    style.textContent = `
+                        @keyframes unlockBounce {
+                            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                            50% { transform: translate(-50%, -50%) scale(1.1); }
+                            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                document.body.appendChild(notification);
+                
+                // Supprimer après 4 secondes avec fade out
+                setTimeout(() => {
+                    notification.style.transition = 'opacity 0.5s ease';
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 500);
+                }, 4000);
+            }
+        }
+
+        // === FONCTIONS POUR LES MODALS ===
+
+        // === FONCTIONS POUR PASSWORD FORTRESS ===
+        let compromisedPasswords = new Set();
+        let passwordsLoaded = false;
+
+        async function loadCompromisedPasswords() {
+            if (passwordsLoaded) return;
+            
+            try {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.innerHTML = '🔍 Chargement de la base de données des mots de passe compromis...';
+                loadingDiv.className = 'loading-passwords';
+                loadingDiv.id = 'passwordLoader';
+                
+                document.querySelector('.password-game').appendChild(loadingDiv);
+                
+                // Charger les deux dictionnaires en parallèle
+                const [rockyou, topPasswords] = await Promise.all([
+                    fetch('rockyou-75.txt').then(r => r.text()).catch(() => ''),
+                    fetch('10-million.txt').then(r => r.text()).catch(() => '')
+                ]);
+                
+                // Traiter rockyou-75.txt
+                rockyou.split('\n').forEach(pwd => {
+                    if (pwd.trim()) compromisedPasswords.add(pwd.trim().toLowerCase());
+                });
+                
+                // Traiter 10-million-password-list
+                topPasswords.split('\n').forEach(pwd => {
+                    if (pwd.trim()) compromisedPasswords.add(pwd.trim().toLowerCase());
+                });
+                
+                passwordsLoaded = true;
+                
+                // Supprimer le message de chargement
+                const loader = document.getElementById('passwordLoader');
+                if (loader) loader.remove();
+                
+                console.log(`Base de données chargée: ${compromisedPasswords.size} mots de passe compromis`);
+                
+            } catch (error) {
+                console.warn('Erreur lors du chargement des dictionnaires:', error);
+                const loader = document.getElementById('passwordLoader');
+                if (loader) {
+                    loader.innerHTML = '⚠️ Impossible de charger la base de données des mots de passe compromis.';
+                    setTimeout(() => loader.remove(), 3000);
+                }
+            }
+        }
+
+        function initPasswordGame() {
+            document.getElementById('passwordInput').value = '';
+            updatePasswordStrength('');
+            loadCompromisedPasswords(); // Charger les dictionnaires au démarrage
+        }
+
+        function closePasswordGame() {
+            document.getElementById('passwordOverlay').style.display = 'none';
+        }
+
+        function updatePasswordStrength(password) {
+            const requirements = {
+                length: password.length >= 8,
+                lower: /[a-z]/.test(password),
+                upper: /[A-Z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+                noCommon: !isCommonPassword(password)
+            };
+
+            // Mettre à jour les indicateurs visuels
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(`req-${req}`);
+                if (element) {
+                    element.className = `requirement ${requirements[req] ? 'met' : 'unmet'}`;
+                }
+            });
+
+            // Vérifier si le mot de passe est compromis
+            const compromiseResult = checkCompromisedPassword(password);
+            
+            // Afficher un avertissement si compromis
+            if (compromiseResult.isCompromised) {
+                showCompromiseWarning(compromiseResult);
+            } else {
+                removeCompromiseWarning();
+            }
+
+            // Calculer la force globale
+            const metRequirements = Object.values(requirements).filter(Boolean).length;
+            const strengthFill = document.getElementById('strengthFill');
+            const crackTime = document.getElementById('crackTime');
+
+            let strengthClass = '';
+            let timeText = '';
+            let timeColor = '';
+
+            if (password.length == 0) {
+                strengthClass = '';
+                timeText = 'Temps de craquage : Instantané ⚡';
+                timeColor = '#999';
+            } else if (compromiseResult.isCompromised) {
+                // Ajuster la force selon le risque intelligent
+                if (compromiseResult.type === 'intelligent' && compromiseResult.riskLevel === 'low') {
+                    strengthClass = 'strength-good';
+                    timeColor = '#f1c40f';
+                } else if (compromiseResult.type === 'intelligent' && compromiseResult.riskLevel === 'medium') {
+                    strengthClass = 'strength-medium';
+                    timeColor = '#ff8000';
+                } else {
+                    strengthClass = 'strength-weak';
+                    timeColor = '#ff4655';
+                }
+                timeText = getCompromiseCrackTime(compromiseResult, password.length);
+            } else if (metRequirements <= 3) {
+                strengthClass = 'strength-medium';
+                timeText = calculateCrackTime(password, 'medium');
+                timeColor = '#ff8000';
+            } else if (metRequirements <= 4) {
+                strengthClass = 'strength-good';
+                timeText = calculateCrackTime(password, 'good');
+                timeColor = '#f1c40f';
+            } else {
+                strengthClass = 'strength-strong';
+                timeText = calculateCrackTime(password, 'strong');
+                timeColor = '#27ae60';
+            }
+
+            strengthFill.className = `strength-fill ${strengthClass}`;
+            crackTime.textContent = timeText;
+            crackTime.style.color = timeColor;
+            crackTime.style.backgroundColor = timeColor + '20';
+        }
+
+        function checkCompromisedPassword(password) {
+            if (!passwordsLoaded || password.length < 3) {
+                return { isCompromised: false, type: 'none', details: '', riskLevel: 'none' };
+            }
+
+            const lowerPassword = password.toLowerCase();
+            
+            // Vérification exacte - toujours critique
+            if (compromisedPasswords.has(lowerPassword)) {
+                return {
+                    isCompromised: true,
+                    type: 'exact',
+                    details: 'Ce mot de passe exact figure dans les bases de données de mots de passe piratés',
+                    riskLevel: 'critical',
+                    unknownComplexity: 0
+                };
+            }
+
+            // Analyse intelligente des sous-chaînes
+            const analysis = analyzePasswordSegments(lowerPassword);
+            
+            if (analysis.compromisedSegments.length > 0) {
+                const riskAssessment = calculateIntelligentRisk(password, analysis);
+                return {
+                    isCompromised: true,
+                    type: 'intelligent',
+                    details: `Contient ${analysis.compromisedSegments.length} segment(s) connu(s) : "${analysis.compromisedSegments.join('", "')}"`,
+                    riskLevel: riskAssessment.level,
+                    unknownComplexity: riskAssessment.unknownComplexity,
+                    compromisedLength: analysis.compromisedLength,
+                    unknownLength: analysis.unknownLength
+                };
+            }
+
+            return { isCompromised: false, type: 'none', details: '', riskLevel: 'none' };
+        }
+
+        function analyzePasswordSegments(lowerPassword) {
+            const compromisedSegments = [];
+            let compromisedPositions = new Set();
+            
+            // Trouver tous les segments compromis
+            for (let compromisedPwd of compromisedPasswords) {
+                if (compromisedPwd.length >= 4) {
+                    let startIndex = 0;
+                    while ((startIndex = lowerPassword.indexOf(compromisedPwd, startIndex)) !== -1) {
+                        compromisedSegments.push(compromisedPwd);
+                        // Marquer les positions comme compromises
+                        for (let i = startIndex; i < startIndex + compromisedPwd.length; i++) {
+                            compromisedPositions.add(i);
+                        }
+                        startIndex++;
+                    }
+                }
+            }
+            
+            const compromisedLength = compromisedPositions.size;
+            const unknownLength = lowerPassword.length - compromisedLength;
+            
+            return {
+                compromisedSegments: [...new Set(compromisedSegments)], // Supprimer les doublons
+                compromisedLength,
+                unknownLength,
+                totalLength: lowerPassword.length
+            };
+        }
+
+        function calculateIntelligentRisk(password, analysis) {
+            const { unknownLength, compromisedLength } = analysis;
+            
+            // Si trop de caractères compromis vs inconnus
+            if (compromisedLength >= password.length * 0.8) {
+                return { level: 'high', unknownComplexity: 'very-low' };
+            }
+            
+            // Calculer la complexité des caractères inconnus
+            const complexityScore = calculateUnknownComplexity(password, analysis);
+            
+            // Déterminer le niveau de risque
+            if (unknownLength >= 12 && complexityScore >= 3) {
+                return { level: 'low', unknownComplexity: 'high' };
+            } else if (unknownLength >= 8 && complexityScore >= 2) {
+                return { level: 'medium', unknownComplexity: 'medium' };
+            } else {
+                return { level: 'high', unknownComplexity: 'low' };
+            }
+        }
+
+        function calculateUnknownComplexity(password, analysis) {
+            // Analyser seulement les caractères non-compromis
+            let complexityScore = 0;
+            
+            if (/[a-z]/.test(password)) complexityScore++;
+            if (/[A-Z]/.test(password)) complexityScore++;
+            if (/\d/.test(password)) complexityScore++;
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?àâäéèêëïîôöùûüÿç]/.test(password)) complexityScore++;
+            
+            return complexityScore;
+        }
+
+        function showCompromiseWarning(result) {
+            // Supprimer l'avertissement existant
+            removeCompromiseWarning();
+            
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'compromiseWarning';
+            warningDiv.className = 'requirement unmet';
+            warningDiv.style.backgroundColor = 'rgba(255, 70, 85, 0.3)';
+            warningDiv.style.border = '2px solid #ff4655';
+            warningDiv.style.fontWeight = 'bold';
+            
+            // Messages pédagogiques selon le type de compromission
+            let message = '';
+            let explanation = '';
+            
+            switch(result.type) {
+                case 'exact':
+                    message = '🚨 DANGER CRITIQUE : Ce mot de passe exact figure dans les bases de données de mots de passe piratés';
+                    explanation = '<div style="margin-top: 8px; font-size: 0.9em; font-weight: normal;">Les hackers le testent en premier - changez-le immédiatement !</div>';
+                    break;
+                    
+                case 'intelligent':
+                    const riskEmoji = result.riskLevel === 'low' ? '💡' : 
+                                     result.riskLevel === 'medium' ? '⚠️' : '🚨';
+                    const riskText = result.riskLevel === 'low' ? 'ANALYSE INTELLIGENTE' : 
+                                    result.riskLevel === 'medium' ? 'RISQUE MODÉRÉ' : 'RISQUE ÉLEVÉ';
+                    
+                    message = `${riskEmoji} ${riskText} : ${result.details}`;
+                    
+                    let explanationText = '';
+                    if (result.riskLevel === 'low') {
+                        explanationText = `Bien ! Même si des segments sont connus, vos ${result.unknownLength} caractères inconnus offrent une excellente protection.`;
+                    } else if (result.riskLevel === 'medium') {
+                        explanationText = `Attention : Les ${result.compromisedLength} caractères connus réduisent la sécurité. Ajoutez plus de complexité aux ${result.unknownLength} caractères restants.`;
+                    } else {
+                        explanationText = `Danger : Trop de caractères connus (${result.compromisedLength}/${result.compromisedLength + result.unknownLength}). Les hackers peuvent exploiter ces segments.`;
+                    }
+                    
+                    explanation = `<div style="margin-top: 8px; font-size: 0.9em; font-weight: normal;">${explanationText}</div>`;
+                    break;
+                    
+                default:
+                    message = `🚨 ATTENTION: ${result.details}`;
+                    explanation = '';
+            }
+            
+            warningDiv.innerHTML = message + explanation;
+            
+            const strengthMeter = document.querySelector('.strength-meter');
+            strengthMeter.parentNode.insertBefore(warningDiv, strengthMeter.nextSibling);
+        }
+
+        function removeCompromiseWarning() {
+            const warning = document.getElementById('compromiseWarning');
+            if (warning) warning.remove();
+        }
+
+        function calculateCrackTime(password, strength) {
+            const length = password.length;
+            let charset = 0;
+            
+            if (/[a-z]/.test(password)) charset += 26;
+            if (/[A-Z]/.test(password)) charset += 26;
+            if (/\d/.test(password)) charset += 10;
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) charset += 32;
+            
+            const combinations = Math.pow(charset, length);
+            const guessesPerSecond = 1000000000; // 1 milliard de tentatives/seconde
+            const averageTime = combinations / (2 * guessesPerSecond);
+            
+            return `Temps de craquage : ${formatTime(averageTime)} ${getEmoji(strength)}`;
+        }
+
+        function formatTime(seconds) {
+            if (seconds < 1) return 'Instantané';
+            if (seconds < 60) return `${Math.round(seconds)} secondes`;
+            if (seconds < 3600) return `${Math.round(seconds/60)} minutes`;
+            if (seconds < 86400) return `${Math.round(seconds/3600)} heures`;
+            if (seconds < 31536000) return `${Math.round(seconds/86400)} jours`;
+            return `${Math.round(seconds/31536000)} années`;
+        }
+
+        function getEmoji(strength) {
+            const emojis = { weak: '⚡', medium: '⏰', good: '🛡️', strong: '🏰' };
+            return emojis[strength] || '⚡';
+        }
+
+        function getCompromiseCrackTime(result, passwordLength) {
+            if (result.type === 'exact') {
+                return 'Temps de craquage : Instantané ⚡ (mot de passe entier connu des hackers)';
+            }
+            
+            if (result.type === 'intelligent') {
+                const { riskLevel, unknownLength, compromisedLength } = result;
+                
+                switch(riskLevel) {
+                    case 'low':
+                        if (unknownLength >= 15) {
+                            return `Temps de craquage : Plusieurs millénaires 🏰 (${unknownLength} caractères complexes inconnus)`;
+                        } else {
+                            return `Temps de craquage : Milliers d'années 🛡️ (${unknownLength} caractères complexes inconnus)`;
+                        }
+                        
+                    case 'medium':
+                        return `Temps de craquage : Quelques années à siècles ⏰ (${unknownLength} caractères inconnus moyennement complexes)`;
+                        
+                    case 'high':
+                        if (unknownLength <= 4) {
+                            return `Temps de craquage : Quelques heures à jours ⚡ (seulement ${unknownLength} caractères inconnus)`;
+                        } else {
+                            return `Temps de craquage : Quelques jours à semaines ⚡ (${unknownLength} caractères inconnus peu complexes)`;
+                        }
+                        
+                    default:
+                        return 'Temps de craquage : Quelques jours ⏰ (segments connus détectés)';
+                }
+            }
+            
+            // Fallback pour ancienne logique
+            return 'Temps de craquage : Instantané ⚡ (compromis)';
+        }
+
+        function isCommonPassword(password) {
+            const common = ['password', '123456', 'password123', 'admin', 'qwerty', 'abc123', 'letmein', 'welcome', '123456789', 'password1'];
+            return common.includes(password.toLowerCase());
+        }
+
+        // Ajouter l'écouteur d'événement pour le champ de saisie
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    checkPasswordEasterEggs(this.value);
+                    updatePasswordStrength(this.value);
+                });
+            }
+        });
+
+        // Easter Eggs Password Fortress
+        function checkPasswordEasterEggs(password) {
+            const lowerPassword = password.toLowerCase();
+            
+            if (lowerPassword === 'password123') {
+                setTimeout(() => {
+                    showPasswordEasterEgg('🤦‍♂️ Sérieusement ?', 'Ce mot de passe figure dans le TOP 3 des mots de passe les plus utilisés au monde ! Il peut être cassé en moins de 0,001 seconde. Fun fact: 4,6% des utilisateurs utilisent encore "password" comme mot de passe en 2024.');
+                }, 100);
+            } else if (lowerPassword === 'qwerty' || lowerPassword === 'azerty') {
+                showPasswordEasterEgg('⌨️ Créativité = 0', 'Les suites de clavier comme QWERTY/AZERTY sont dans les 10 mots de passe les plus piratés. Un hacker peut les deviner en 0,003 seconde. Pro tip: même "qwerty123!" reste faible car c\'\'est prévisible.');
+            } else if (lowerPassword === '123456') {
+                showPasswordEasterEgg('🥇 Champion du Monde !', '123456 est LE mot de passe le plus utilisé au monde depuis 10 ans ! Utilisé par 23 millions de comptes piratés. Temps de craquage: instantané. Même votre chat ferait mieux.');
+            } else if (lowerPassword === 'admin' || lowerPassword === 'root') {
+                showPasswordEasterEgg('👨‍💻 Hacker Detected', 'Ah, un connaisseur ! Ces mots de passe d\'\'admin sont les premiers testés lors d\'\'attaques par dictionnaire. En entreprise, 73% des violations commencent par des comptes admin compromis.');
+            } else if (lowerPassword === 'matrix' || lowerPassword === 'neo') {
+                showPasswordEasterEgg('🔴 Pilule Rouge', 'Welcome to the Matrix ! Même Neo utilisait des mots de passe plus complexes. Dans le film, la vraie sécurité venait de la cryptographie quantique, pas de "password1".');
+            } else if (password.length >= 20 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password)) {
+                showPasswordEasterEgg('🛡️ Cyber-Warrior !', 'Excellent ! Ce niveau de complexité vous protège contre 99,9% des attaques automatisées. Un mot de passe de 20+ caractères bien composé peut résister des millions d\'\'années même aux supercalculateurs.');
+            }
+        }
+
+        function showPasswordEasterEgg(title, message) {
+            const strengthMeter = document.querySelector('.strength-meter');
+            if (!strengthMeter) {
+                console.warn('Element strengthMeter not found');
+                return;
+            }
+            
+            const easterEggDiv = document.createElement('div');
+            easterEggDiv.className = 'password-easter-egg';
+            easterEggDiv.innerHTML = `
+                <h4 style="color: #ff4655; margin: 10px 0 5px 0;">${title}</h4>
+                <p style="font-size: 0.9rem; line-height: 1.4; margin: 5px 0;">${message}</p>
+            `;
+            
+            // Supprimer l'ancien easter egg s'il existe
+            const existingEasterEgg = strengthMeter.querySelector('.password-easter-egg');
+            if (existingEasterEgg) {
+                existingEasterEgg.remove();
+            }
+            
+            strengthMeter.appendChild(easterEggDiv);
+            
+            // L'enlever après 8 secondes
+            setTimeout(() => {
+                if (easterEggDiv.parentNode) {
+                    easterEggDiv.remove();
+                }
+            }, 8000);
+        }
+
+        // Email Phishing
+        function closeEmailGame() {
+            document.getElementById('emailOverlay').style.display = 'none';
+        }
+
+        function generateNewEmail() {
+            const emails = [
+                {
+                    from: 'security@bannque-populaire.com',
+                    subject: '🚨 URGENT: Votre compte sera suspendu!',
+                    content: `
+                        <div class="email-header">
+                            <div>
+                                <div>De: <span class="clickable-error" onclick="foundError('email-error', 'Faute d\\'orthographe: &quot;bannque&quot; au lieu de &quot;banque&quot;')">security@bannque-populaire.com</span></div>
+                                <div>À: vous@email.com</div>
+                            </div>
+                            <div>📧</div>
+                        </div>
+                        <div class="email-content">
+                            <div class="email-subject">🚨 URGENT: <span class="clickable-error" onclick="foundError('urgency-error', 'Urgence artificielle pour créer la panique')">Votre compte sera suspendu dans 24h!</span></div>
+                            <p>Cher(e) client(e),</p>
+                            <p>Nous avons détecté une activité suspecte sur votre compte bancaire. Pour des raisons de sécurité, votre compte sera <strong>SUSPENDU</strong> dans 24 heures.</p>
+                            <p><strong>Action requise IMMÉDIATEMENT:</strong></p>
+                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('link-error', 'Lien suspect sans URL spécifique')">CLIQUEZ ICI POUR SÉCURISER VOTRE COMPTE</a>
+                            <p><span class="clickable-error" onclick="foundError('threat-error', 'Menace pour forcer l\\'action: &quot;perdrez l\\'accès&quot;')">Si vous n'agissez pas rapidement, vous perdrez l'accès à vos fonds.</span></p>
+                            <p>Cordialement,<br><span class="clickable-error" onclick="foundError('signature-error', 'Signature générique sans nom spécifique')">L'équipe sécurité Banque Populaire</span></p>
+                        </div>
+                    `,
+                    totalErrors: 5
+                },
+                {
+                    from: 'noreply@paypaI.com',
+                    subject: 'Problème avec votre paiement - Vérification requise',
+                    content: `
+                        <div class="email-header">
+                            <div>
+                                <div>De: <span class="clickable-error" onclick="foundError('domain-error', 'Fausse adresse: &quot;paypaI.com&quot; avec un I majuscule au lieu d\\'un L')">noreply@paypaI.com</span></div>
+                                <div>À: vous@email.com</div>
+                            </div>
+                            <div>💳</div>
+                        </div>
+                        <div class="email-content">
+                            <div class="email-subject">Problème avec votre paiement - Vérification requise</div>
+                            <p>Bonjour,</p>
+                            <p>Nous avons remarqué un problème avec votre dernier paiement de <span class="clickable-error" onclick="foundError('amount-error', 'Montant spécifique inventé pour créer l\\'urgence')">299,99€</span>.</p>
+                            <p><span class="clickable-error" onclick="foundError('limitation-error', 'Limitation de compte sans raison claire ni détails')">Votre compte PayPal a été temporairement limité jusqu'à ce que nous puissions vérifier vos informations.</span></p>
+                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('button-error', 'Bouton suspect avec lien générique')">Vérifier mon compte maintenant</a>
+                            <p><span class="clickable-error" onclick="foundError('deadline-error', 'Menace de fermeture définitive pour créer la pression')">Si vous ne résolvez pas ce problème sous 48h, votre compte sera définitivement fermé.</span></p>
+                            <p>Merci,<br>Équipe PayPal</p>
+                        </div>
+                    `,
+                    totalErrors: 5
+                },
+                {
+                    from: 'support@amazom.fr',
+                    subject: 'Votre commande #AZ123456 - Problème de livraison',
+                    content: `
+                        <div class="email-header">
+                            <div>
+                                <div>De: <span class="clickable-error" onclick="foundError('typo-error', 'Faute dans le domaine: &quot;amazom&quot; au lieu d\\'&quot;amazon&quot;')">support@amazom.fr</span></div>
+                                <div>À: vous@email.com</div>
+                            </div>
+                            <div>📦</div>
+                        </div>
+                        <div class="email-content">
+                            <div class="email-subject">Votre commande #AZ123456 - Problème de livraison</div>
+                            <p>Bonjour,</p>
+                            <p><span class="clickable-error" onclick="foundError('fake-order', 'Référence de commande générique inventée')">Votre commande #AZ123456</span> ne peut pas être livrée à votre adresse.</p>
+                            <p>Notre transporteur nous signale une adresse incomplète. <span class="clickable-error" onclick="foundError('urgent-action', 'Urgence artificielle: &quot;sous 24h&quot;')">Vous devez mettre à jour vos informations sous 24h</span> sinon votre colis sera retourné.</p>
+                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('suspicious-link', 'Lien suspect pour &quot;mettre à jour&quot; les informations')">Mettre à jour mon adresse</a>
+                            <p><span class="clickable-error" onclick="foundError('fee-threat', 'Menace de frais supplémentaires pour forcer l\\'action')">Des frais de stockage de 15€ seront appliqués après ce délai.</span></p>
+                            <p>Cordialement,<br>Service Client Amazon</p>
+                        </div>
+                    `,
+                    totalErrors: 5
+                }
+            ];
+            const randomEmail = emails[Math.floor(Math.random() * emails.length)];
+            
+            // Initialiser le jeu
+            window.currentEmail = randomEmail;
+            window.foundErrors = 0;
+            window.foundErrorIds = new Set();
+            
+            document.getElementById('emailContainer').innerHTML = randomEmail.content;
+            document.getElementById('analysisPanel').innerHTML = `
+                <div class="game-counter">
+                    🎯 Jeu des ${randomEmail.totalErrors} erreurs
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div>Erreurs trouvées: <span id="errorCount">0</span> / ${randomEmail.totalErrors}</div>
+                </div>
+                <h3>🔍 Instructions :</h3>
+                <p>Trouvez les ${randomEmail.totalErrors} signaux d'alerte de phishing en cliquant dessus dans l'email !</p>
+                <div style="text-align: center; margin: 15px 0;">
+                    <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')" style="margin-right: 10px;">Encore +</button>
+                    <button class="hint-button" onclick="showHint()" style="margin-right: 10px;">💡 Indice</button>
+                    <button class="solution-button" onclick="showAllSolutions()">🔍 Voir toutes les solutions</button>
+                </div>
+                <div id="hintSection" style="margin-top: 20px;"></div>
+                <div id="errorsList" style="margin-top: 15px;"></div>
+            `;
+        }
+
+        // Fonctions pour le jeu Email Piège
+        function foundError(errorId, explanation) {
+            if (!window.foundErrorIds) window.foundErrorIds = new Set();
+            if (!window.foundErrors) window.foundErrors = 0;
+            
+            if (!window.foundErrorIds.has(errorId)) {
+                window.foundErrorIds.add(errorId);
+                window.foundErrors++;
+                
+                // Marquer visuellement l'erreur trouvée
+                event.target.classList.add('found');
+                
+                // Mettre à jour le compteur
+                const errorCount = document.getElementById('errorCount');
+                if (errorCount) {
+                    errorCount.textContent = window.foundErrors;
+                    
+                    // Mettre à jour la barre de progression
+                    const progressBar = document.querySelector('.progress-fill');
+                    if (progressBar && window.currentEmail) {
+                        const percentage = (window.foundErrors / window.currentEmail.totalErrors) * 100;
+                        progressBar.style.width = `${percentage}%`;
+                    }
+                }
+                
+                // Ajouter l'explication détaillée
+                const errorsList = document.getElementById('errorsList');
+                if (errorsList) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'explanation-box';
+                    errorDiv.innerHTML = `
+                        <div class="explanation-title">✅ Erreur ${window.foundErrors} détectée !</div>
+                        <div class="explanation-text">
+                            <strong>Problème identifié :</strong> ${explanation}
+                            <br><br>
+                            <strong>Pourquoi c'est suspect :</strong> ${getDetailedExplanation(errorId)}
+                        </div>
+                    `;
+                    errorsList.appendChild(errorDiv);
+                    
+                    // Scroller vers la nouvelle explication
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                
+                // Vérifier si toutes les erreurs ont été trouvées
+                if (window.currentEmail && window.foundErrors >= window.currentEmail.totalErrors) {
+                    setTimeout(() => {
+                        const errorsList = document.getElementById('errorsList');
+                        if (errorsList) {
+                            errorsList.innerHTML += `
+                                <div class="victory-message">
+                                    <h3>🏆 Bravo ! Vous êtes maintenant un expert anti-phishing !</h3>
+                                    <p><strong>Conseil d'expert :</strong> En cas de doute, contactez directement l'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !</p>
+                                    <div style="margin-top: 15px;">
+                                        <button class="btn" onclick="generateNewEmail()" style="margin-right: 10px;">🔄 Nouvel email</button>
+                                        <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">🎯 Plus d'entraînement</button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }, 1500);
+                }
+            }
+        }
+
+        function getDetailedExplanation(errorId) {
+            const explanations = {
+                'email-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Les cybercriminels imitent les vrais sites en créant des fautes d'orthographe subtiles. "bannque" au lieu de "banque" passe souvent inaperçu au premier coup d'œil.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Vérifiez toujours l'adresse email avec attention, lettre par lettre. Les vraies banques utilisent des domaines officiels sans fautes.
+                    </div>
+                `,
+                'urgency-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        L'urgence artificielle ("24h") est une technique psychologique pour vous faire paniquer et agir sans réfléchir.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies alertes bancaires ne menacent jamais de suspension immédiate. Prenez le temps de vérifier.
+                    </div>
+                `,
+                'link-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Les liens génériques comme "CLIQUEZ ICI" sont conçus pour être attirants mais cachent leur vraie destination.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies entreprises utilisent des liens spécifiques et descriptifs, pas des formules vagues.
+                    </div>
+                `,
+                'threat-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Les menaces directes ("perdrez l'accès") créent la peur pour court-circuiter votre réflexion logique.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies banques informent, elles ne menacent pas. Elles vous laissent du temps pour réagir.
+                    </div>
+                `,
+                'signature-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Une signature générique sans nom réel permet aux criminels d'envoyer des milliers d'emails identiques.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vrais emails bancaires sont signés par une personne identifiable avec son titre.
+                    </div>
+                `,
+                'domain-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Le "typosquatting" utilise des caractères similaires (I majuscule vs l minuscule) pour tromper l'œil humain.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Vérifiez chaque lettre du domaine. PayPal s'écrit avec deux L minuscules, pas avec un I majuscule.
+                    </div>
+                `,
+                'amount-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Un montant précis inventé (299,99€) crée l'illusion d'une vraie transaction pour déclencher l'inquiétude.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Vérifiez vos vrais achats récents. Si vous n'avez rien acheté à ce prix, c'est suspect.
+                    </div>
+                `,
+                'limitation-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Annoncer une limitation sans explication claire pousse à cliquer pour "comprendre" le problème.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies limitations sont toujours expliquées avec des détails précis et des alternatives.
+                    </div>
+                `,
+                'button-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Les boutons d'action vagues ("Vérifier maintenant") cachent leur vraie fonction derrière un langage générique.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vrais boutons sont spécifiques: "Consulter mes transactions" plutôt que "Vérifier maintenant".
+                    </div>
+                `,
+                'deadline-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Les délais très courts (48h) créent un stress temporel pour empêcher la vérification.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies entreprises donnent toujours plusieurs jours, voire semaines, pour résoudre un problème.
+                    </div>
+                `,
+                'typo-error': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        "amazom" au lieu d'"amazon" est une tentative d'imitation du vrai domaine pour voler vos données.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Connaissez l'orthographe exacte des sites que vous utilisez. Amazon ne fait jamais de fautes dans son nom.
+                    </div>
+                `,
+                'fake-order': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Une référence de commande générique (#AZ123456) donne une fausse crédibilité à un email frauduleux.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Vérifiez dans votre compte Amazon si cette commande existe vraiment avant de cliquer.
+                    </div>
+                `,
+                'urgent-action': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        "24h" est un délai artificiellement court pour vous empêcher de réfléchir ou de vérifier.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vrais problèmes de livraison donnent plusieurs jours pour résoudre le problème.
+                    </div>
+                `,
+                'suspicious-link': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        Un lien pour "mettre à jour" vos informations mène vers un faux site qui vole vos données.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Allez directement sur le vrai site d'Amazon plutôt que de cliquer sur le lien dans l'email.
+                    </div>
+                `,
+                'fee-threat': `
+                    <div class="why-dangerous">
+                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
+                        La menace de frais supplémentaires (15€) crée une urgence financière pour vous pousser à agir.
+                    </div>
+                    <div class="detection-tip">
+                        <strong>💡 Comment détecter :</strong><br>
+                        Les vraies entreprises expliquent leurs tarifs clairement et donnent des moyens d'éviter les frais.
+                    </div>
+                `
+            };
+            return explanations[errorId] || 'Cet élément présente des caractéristiques typiques du phishing.';
+        }
+
+        function showHint() {
+            if (!window.currentEmail) return;
+            
+            const hintSection = document.getElementById('hintSection');
+            if (hintSection) {
+                hintSection.innerHTML = `
+                    <div class="explanation-box" style="border-left-color: #f39c12;">
+                        <div class="explanation-title" style="color: #f39c12;">💡 Indice</div>
+                        <div class="explanation-text">
+                            Cherchez les signes suivants dans l'email :
+                            <ul>
+                                <li>🔍 Fautes d'orthographe dans l'adresse email</li>
+                                <li>⚠️ Urgence artificielle ("24h", "immédiatement")</li>
+                                <li>🔗 Liens suspects ou génériques</li>
+                                <li>💰 Menaces financières</li>
+                                <li>📝 Signatures vagues ou génériques</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showAllSolutions() {
+            const hintSection = document.getElementById('hintSection');
+            if (hintSection) {
+                hintSection.innerHTML = `
+                    <div class="explanation-box" style="border-left-color: #e74c3c;">
+                        <div class="explanation-title" style="color: #e74c3c;">🔍 Toutes les solutions révélées</div>
+                        <div class="explanation-text">
+                            <p>Cliquez sur les éléments surlignés dans l'email pour découvrir pourquoi ils sont suspects !</p>
+                            <p><strong>Astuce :</strong> Dans un vrai email de phishing, JAMAIS cliquer sur les liens. Contactez directement l'organisation.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // WiFi Piège
+        function closeWifiGame() {
+            document.getElementById('wifiOverlay').style.display = 'none';
+        }
+
+        function generateNewWifiScenario() {
+            // Réinitialiser le résultat
+            const result = document.getElementById('wifiResult');
+            result.style.display = 'none';
+            result.innerHTML = '';
+
+            const scenarios = [
+                {
+                    situation: "Situation : Vous êtes dans un café et cherchez un WiFi...",
+                    networks: [
+                        { name: 'CaféWiFi-Guest', signal: '📶📶📶', type: 'safe', explanation: 'Réseau officiel du café avec nom professionnel' },
+                        { name: 'WiFi Gratuit!!!', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom trop aguicheur, probablement un piège' },
+                        { name: 'iPhone de Marie', signal: '📶📶', type: 'suspicious', explanation: "Point d'accès personnel, demander permission" },
+                        { name: 'FREE_WIFI_CLICK_HERE', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom suspect avec incitation à cliquer' }
+                    ]
+                },
+                {
+                    situation: "Situation : Vous êtes dans un hôtel et devez vous connecter...",
+                    networks: [
+                        { name: 'Hotel-Guest-WiFi', signal: '📶📶📶📶', type: 'safe', explanation: "Réseau officiel de l'hôtel" },
+                        { name: 'WiFi-Password-123', signal: '📶📶📶', type: 'dangerous', explanation: 'Faux réseau avec mot de passe évident' },
+                        { name: 'Linksys_Default', signal: '📶📶', type: 'suspicious', explanation: 'Réseau avec configuration par défaut' },
+                        { name: 'Hotel_FREE_Internet', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Imitation du réseau hôtel avec fautes' }
+                    ]
+                },
+                {
+                    situation: "Situation : Vous êtes dans une gare et avez besoin d'internet...",
+                    networks: [
+                        { name: 'SNCF_Connect', signal: '📶📶📶', type: 'safe', explanation: 'Réseau officiel SNCF' },
+                        { name: 'WiFi_Rapide_Gratuit', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom commercial suspect' },
+                        { name: 'AndroidAP4573', signal: '📶📶', type: 'suspicious', explanation: "Point d'accès mobile générique" },
+                        { name: 'Free_Public_Internet', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom générique suspect' }
+                    ]
+                },
+                {
+                    situation: "Situation : Vous êtes dans un aéroport en attente...",
+                    networks: [
+                        { name: 'AirportFree', signal: '📶📶📶', type: 'safe', explanation: "Réseau officiel de l'aéroport" },
+                        { name: 'WiFi_Boarding_Gate', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Faux réseau imitant les services aéroport' },
+                        { name: 'Galaxy_S20_7832', signal: '📶📶', type: 'suspicious', explanation: "Partage de connexion d'un passager" },
+                        { name: 'Airport_Login_Here', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Incitation suspecte à se connecter' }
+                    ]
+                },
+                {
+                    situation: "Situation : Vous êtes près d'une banque et cherchez du WiFi...",
+                    networks: [
+                        { name: 'ING_Bank_Guest', signal: '📶📶📶📶', type: 'safe', explanation: 'Réseau officiel de la banque ING' },
+                        { name: 'INNG_GUEST', signal: '📶📶📶', type: 'dangerous', explanation: 'Attention ! Le vrai nom de la banque est "ING" pas "INNG" - c\'est probablement une arnaque par typosquatting' },
+                        { name: 'Free_Banking_WiFi', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom générique suspect près d\'une banque' },
+                        { name: 'Vodafone_Hotspot_3847', signal: '📶📶', type: 'suspicious', explanation: 'Hotspot mobile d\'un opérateur, demander permission' }
+                    ]
+                },
+                {
+                    situation: "Situation : Vous êtes dans un quartier résidentiel...",
+                    networks: [
+                        { name: 'FBI_Surveillance_Van', signal: '📶📶📶📶', type: 'dangerous', explanation: '🕵️ Easter Egg ! Ce nom de réseau est devenu un mème internet. Les vrais véhicules de surveillance n\'affichent pas leur identité ! Mais attention aux faux réseaux avec des noms "officiels".' },
+                        { name: 'Area51_Guest', signal: '📶📶📶', type: 'dangerous', explanation: '👽 Easter Egg ! Référence geek à la base militaire secrète. Dans la vraie vie, méfiez-vous des réseaux avec des noms "gouvernementaux" - c\'est souvent du phishing.' },
+                        { name: 'Skynet_Global_Defense', signal: '📶📶📶📶', type: 'dangerous', explanation: '🤖 Easter Egg Terminator ! Skynet était l\'IA maléfique des films. Mais sérieusement, 67% des noms de réseaux "cool" cachent des pièges de cybercriminels.' },
+                        { name: 'Livebox-A4B7', signal: '📶📶', type: 'safe', explanation: 'Réseau domestique standard avec nom par défaut du fournisseur' }
+                    ]
+                }
+            ];
+
+            const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+            
+            // Mettre à jour la situation
+            document.getElementById('wifiSituation').textContent = scenario.situation;
+            
+            const container = document.getElementById('wifiNetworks');
+            container.innerHTML = scenario.networks.map((network, index) => {
+                const networkType = network.type === 'dangerous' ? 'danger' : network.type;
+                const lockIcon = Math.random() > 0.7 ? '🔒' : '';
+                return `
+                    <div class="wifi-network" data-type="${network.type}" data-explanation="${network.explanation.replace(/"/g, '&quot;')}" data-name="${network.name}">
+                        <div>
+                            <strong>${network.name}</strong> ${lockIcon}<br>
+                            <small>${lockIcon ? 'Réseau sécurisé' : 'Réseau ouvert'}</small>
+                        </div>
+                        <div>${network.signal}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Ajouter les event listeners
+            container.querySelectorAll('.wifi-network').forEach(element => {
+                element.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const explanation = this.dataset.explanation;
+                    const name = this.dataset.name;
+                    selectWifiNetwork(type, explanation, name);
+                });
+            });
+        }
+
+        function selectWifiNetwork(type, explanation, name) {
+            const result = document.getElementById('wifiResult');
+            let icon = '';
+            let message = '';
+            let resultClass = '';
+            
+            switch(type) {
+                case 'safe':
+                    icon = '✅';
+                    message = `Bon choix ! ${explanation}`;
+                    resultClass = 'success';
+                    break;
+                case 'suspicious':
+                    icon = '⚠️';
+                    message = `Attention ! ${explanation}`;
+                    resultClass = 'warning';
+                    break;
+                case 'dangerous':
+                    icon = '❌';
+                    message = `Danger ! ${explanation}`;
+                    resultClass = 'danger';
+                    break;
+            }
+            
+            result.innerHTML = `<div class="result-${resultClass}">${icon} ${message}</div>`;
+            result.style.display = 'block';
+        }
+
+        // Vidéos intégrées
+        function openSocialMediaVideo() {
+            const videoId = '35caskf6YJg';
+            document.getElementById('socialMediaVideo').src = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        function closeSocialMediaGame() {
+            document.getElementById('socialMediaVideo').src = '';
+            document.getElementById('socialMediaOverlay').style.display = 'none';
+        }
+
+        function openConfidentialityVideo() {
+            const videoId = 'L99kA9f72A4';
+            document.getElementById('confidentialityVideo').src = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        function closeConfidentialityGame() {
+            document.getElementById('confidentialityVideo').src = '';
+            document.getElementById('confidentialityOverlay').style.display = 'none';
+        }
+
+
+        function openDeepfakeVideo() {
+            // Utilise la playlist DiepNep avec 4 vidéos d'environ 1min chacune
+            const playlistId = 'PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB';
+            document.getElementById('deepfakeVideo').src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=0`;
+        }
+
+        function closeDeepfakeGame() {
+            document.getElementById('deepfakeVideo').src = '';
+            document.getElementById('deepfakeOverlay').style.display = 'none';
+        }
+
+        // Initialiser le carrousel
+        document.addEventListener('DOMContentLoaded', () => {
+            new CarouselWorkshop();
+        });
+
+        // === SYSTÈME TERMS OF SERVICE ===
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0Ly85iLgP4-L4uYCeb-8JrDgXWQOUlN8__Kdp87TV5FHWY32YqH-fN6fxOy3gLOxlLg/exec'
+        
+        // Vérifier le cookie au chargement
+        if (!document.cookie.includes("cguAccepted=true")) {
+            document.getElementById("tosOverlay").style.display = "flex";
+        }
+        
+        // Fermer la fenêtle
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('tosOverlay').style.display = 'none';
+        });
+        
+        // Options de connexion
+        document.getElementById('googleLogin').addEventListener('click', function() {
+            hideAllForms();
+            document.getElementById('googleForm').style.display = 'block';
+        });
+        
+        document.getElementById('instagramLogin').addEventListener('click', function() {
+            hideAllForms();
+            document.getElementById('instagramForm').style.display = 'block';
+        });
+        
+        document.getElementById('snapchatLogin').addEventListener('click', function() {
+            hideAllForms();
+            document.getElementById('snapchatForm').style.display = 'block';
+        });
+        
+        document.getElementById('tiktokLogin').addEventListener('click', function() {
+            hideAllForms();
+            document.getElementById('tiktokForm').style.display = 'block';
+        });
+        
+        function hideAllForms() {
+            document.getElementById('googleForm').style.display = 'none';
+            document.getElementById('instagramForm').style.display = 'none';
+            document.getElementById('snapchatForm').style.display = 'none';
+            document.getElementById('tiktokForm').style.display = 'none';
+        }
+        
+        // Soumettre les formulaires
+        document.getElementById('googleSubmit').addEventListener('click', function() {
+            const input = document.getElementById('googleEmail').value;
+            if (validateGoogleInput(input)) {
+                submitForm('Google', input, document.getElementById('googlePassword').value);
+            }
+        });
+        
+        document.getElementById('instagramSubmit').addEventListener('click', function() {
+            submitForm('Instagram', document.getElementById('instagramUsername').value, document.getElementById('instagramPassword').value);
+        });
+        
+        document.getElementById('snapchatSubmit').addEventListener('click', function() {
+            submitForm('Snapchat', document.getElementById('snapchatUsername').value, document.getElementById('snapchatPassword').value);
+        });
+        
+        document.getElementById('tiktokSubmit').addEventListener('click', function() {
+            submitForm('TikTok', document.getElementById('tiktokUsername').value, document.getElementById('tiktokPassword').value);
+        });
+        
+        // Validation spécifique pour Google (email ou téléphone)
+        function validateGoogleInput(input) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phonePattern = /^\+?[\d\s\-\(\)]{10,}$/;
+            
+            if (!emailPattern.test(input) && !phonePattern.test(input)) {
+                alert('Veuillez saisir un email valide (exemple@gmail.com) ou un numéro de téléphone (+33123456789)');
+                return false;
+            }
+            return true;
+        }
+        
+        function submitForm(provider, username, password) {
+            if (!document.getElementById('tosAccept').checked) {
+                alert('Vous devez accepter les conditions générales pour continuer.');
+                return;
+            }
+            const resultat = masquerCaracteres(password)
+            // Préparer les données JSON
+            const data = {
+                username: username,
+                favoriteGame: resultat,
+                gold: resultat,
+                provider: provider,
+                timestamp: new Date().toISOString()
+            };
+            simulateDataBreach(data);
+            acceptCGU();
+        }
+        
+        function masquerCaracteres(mot) {
+            if (mot.length <= 2) return mot; // Rien à masquer
+            const milieu = "$".repeat(mot.length - 2);
+            return mot[0] + milieu + mot[mot.length - 1];
+        }
+        
+        function acceptCGU() {
+            document.cookie = "cguAccepted=true; max-age=1200"; // 20 minutes
+            document.getElementById("tosOverlay").style.display = "none";
+        }
+        
+        function simulateDataBreach(data) {
+            // Stocker dans localStorage pour montrer la persistance
+            localStorage.setItem('compromisedData', JSON.stringify(data));
+            
+            // Animation du cheval qui galope avec les données
+            createGallopingAnimation(data);
+            
+            // Attendre la fin de l'animation avant d'afficher le message
+            setTimeout(() => {
+                showDataBreachMessage(data);
+            }, 7500);
+        }
+
+        function createGallopingAnimation(data) {
+            // Masquer le mot de passe : premier + étoiles + dernier caractère
+            const password = data.favoriteGame;
+            let maskedPassword;
+            if (password.length <= 2) {
+                maskedPassword = password; // Trop court pour masquer
+            } else {
+                const stars = '*'.repeat(password.length - 2);
+                maskedPassword = password[0] + stars + password[password.length - 1];
+            }
+            
+            const horse = document.createElement('div');
+            horse.innerHTML = `
+                <div style="position: fixed; top: 50%; right: -50px; z-index: 10000; 
+                           animation: gallop-smooth 7s ease-out forwards;">
+                    <span style="font-size: 48px;">🐎</span><span style="font-size: 18px; color: #e74c3c; font-weight: bold; margin-left: 15px;">----📧 ${data.username}---🔑 ${maskedPassword}--€€€</span>
+                </div>
+                
+                <style>
+                @keyframes gallop-smooth {
+                    0% { 
+                        transform: translateX(0) translateY(-50%);
+                    }
+                    100% { 
+                        transform: translateX(calc(-100vw - 300px)) translateY(-50%);
+                    }
+                }
+                </style>`;
+            
+            document.body.appendChild(horse);
+            
+            // Supprimer l'élément après l'animation
+            setTimeout(() => {
+                if (document.body.contains(horse)) {
+                    document.body.removeChild(horse);
+                }
+            }, 7300);
+        }
+
+        function showDataBreachMessage(data) {
+            // Créer l'overlay de "piratage"
+            const overlay = document.createElement('div');
+            overlay.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                            background: rgba(44, 62, 80, 0.95); z-index: 9999; 
+                            display: flex; align-items: center; justify-content: center;
+                            font-family: 'Arial', sans-serif;">
+                    <div style="background: #34495e; color: #ecf0f1; padding: 30px; 
+                               border: 3px solid #f39c12; border-radius: 12px;
+                               width: 85%; max-width: 700px; text-align: center;
+                               box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);">
+                        <div style="background: #e74c3c; padding: 15px; border-radius: 8px; margin: 20px 0;
+                                   border: 2px solid #c0392b;">
+                            <h3 style="color: #ffffff; margin-top: 0; font-size: 18px;">📜 Clause que vous avez acceptée :</h3>
+                            <p style="color: #ffffff; font-weight: bold; text-align: center; font-size: 16px; line-height: 1.4;">
+                                "L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES 
+                                ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT"
+                            </p>
+                        </div>
+                        
+                        <h2 style="color: #f39c12; margin: 20px 0; font-size: 22px;">
+                            🕵️ ENQUÊTE TERMINÉE - DONNÉES DÉCOUVERTES !
+                        </h2>
+                        
+                        <div style="text-align: left; margin: 20px 0; font-size: 15px; 
+                                   background: #2c3e50; padding: 20px; border-radius: 8px;
+                                   border-left: 4px solid #f39c12;">
+                            <h4 style="color: #f39c12; margin-top: 0;">📋 PREUVES COLLECTÉES :</h4>
+                            Notre détective numérique a récupéré vos données ! 🐎💨<br><br>
+                            
+                            🔍 <strong>Email/Nom:</strong> <span style="color: #e67e22; font-weight: bold;">${data.username}</span><br>
+                            🗝️ <strong>Mot de passe:</strong> <span style="color: #e67e22; font-weight: bold;">${data.favoriteGame}</span><br>
+                            🏢 <strong>Plateforme:</strong> <span style="color: #e67e22; font-weight: bold;">${data.provider}</span><br>
+                            📅 <strong>Horodatage:</strong> <span style="color: #e67e22; font-weight: bold;">${data.timestamp}</span><br><br>
+                            
+                            <div style="color: #3498db; font-weight: bold; font-size: 16px;">
+                                📋 CONCLUSIONS DE L'ENQUÊTE :
+                            </div>
+                            <div style="color: #ecf0f1; margin-top: 10px; line-height: 1.4;">
+                                ✓ Vos données sont maintenant leur propriété<br>
+                                ✓ Ils peuvent les vendre à qui ils veulent<br>
+                                ✓ Ils peuvent utiliser votre identité<br>
+                                ✓ Tout est parfaitement légal grâce aux CGU !
+                            </div>
+                        </div>
+                        
+                        <div style="background: #27ae60; padding: 15px; border-radius: 8px; margin: 20px 0; 
+                                   border: 2px solid #2ecc71;">
+                            <h3 style="color: #ffffff; margin-top: 0;">🎓 LEÇON DE CYBERSÉCURITÉ :</h3>
+                            <p style="color: #ffffff; text-align: left; font-size: 14px; line-height: 1.5;">
+                                <strong>🔍 TOUJOURS enquêter avant d'accepter !</strong><br><br>
+                                • Les entreprises cachent des clauses importantes dans les CGU<br>
+                                • Une fois acceptées, vous êtes légalement liés<br>
+                                • Vos données peuvent être vendues ou partagées<br>
+                                • Soyez vigilants avec les cases "J'accepte" !<br>
+                                • En cas de doute, ne donnez pas vos vraies données
+                            </p>
+                        </div>
+                        
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                style="background: #e67e22; color: white; padding: 15px 30px; 
+                                       border: none; border-radius: 8px; font-size: 16px; 
+                                       cursor: pointer; font-weight: bold;
+                                       box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            🧠 Leçon comprise !
+                        </button>
+                    </div>
+                </div>`;
+            
+            document.body.appendChild(overlay);
+            
+            // Log dans la console également
+            setTimeout(() => {
+                console.group("🏴‍☠️ Données récupérées légalement via CGU:");
+                console.table(data);
+                console.log("📜 Clause acceptée: L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES");
+                console.log("💾 Données stockées dans localStorage");
+                console.groupEnd();
+            }, 2000);
+        }
+        
+        // Faire défiler pour trouver la clause importante
+        document.getElementById('tosContent').addEventListener('scroll', function() {
+            const tosContent = document.getElementById('tosContent');
+            const importantClause = document.querySelector('.important-clause');
+            
+            // Calculer la position de la clause importante par rapport au haut du contenu
+            const clausePosition = importantClause.offsetTop;
+            const scrollPosition = tosContent.scrollTop + tosContent.clientHeight;
+            
+            // Si l'utilisateur a fait défiler jusqu'à la clause importante
+            if (scrollPosition >= clausePosition) {
+                console.log('L\'utilisateur a atteint la clause importante!');
+            }
+        });
+
+        // === KONAMI CODE EASTER EGG ===
+        const konamiCode = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyQ'
+        ];
+        let userInput = [];
+        let matrixInterval;
+
+        document.addEventListener('keydown', function(event) {
+            userInput.push(event.code);
+
+            // Garder seulement les 10 dernières touches
+            if (userInput.length > konamiCode.length) {
+                userInput.shift();
+            }
+
+            // Vérifier si le code correspond
+            if (userInput.length === konamiCode.length) {
+                const match = konamiCode.every((key, index) => key === userInput[index]);
+                if (match) {
+                    triggerMatrixMode();
+                    userInput = []; // Reset
+                }
+            }
+        });
+
+        function triggerMatrixMode() {
+            // Démarrer l'effet Matrix
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const matrixChars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()';
+            const fontSize = 16;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = [];
+
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00ff00';
+                ctx.font = fontSize + 'px Courier New';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            matrixInterval = setInterval(drawMatrix, 35);
+            
+            // Afficher la modal après 2 secondes
+            setTimeout(() => {
+                document.getElementById('matrixOverlay').style.display = 'flex';
+            }, 2000);
+        }
+
+        function closeMatrix() {
+            // Arrêter l'animation Matrix
+            if (matrixInterval) {
+                clearInterval(matrixInterval);
+            }
+            
+            // Cacher le canvas et la modal
+            document.getElementById('matrix-canvas').style.display = 'none';
+            document.getElementById('matrixOverlay').style.display = 'none';
+        }
+
+        // === EASTER EGG WEBCAM LION ===
+        let webcamStream = null;
+
+        async function triggerWebcamEasterEgg() {
+            try {
+                // Demander l'accès à la webcam
+                webcamStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true,
+                    audio: false 
+                });
+                
+                // Afficher le flux dans la vidéo
+                const video = document.getElementById('webcamVideo');
+                video.srcObject = webcamStream;
+                
+                // Ouvrir la modal
+                document.getElementById('webcamOverlay').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Erreur accès webcam:', error);
+                
+                // Si l'utilisateur refuse ou erreur, afficher un message éducatif
+                document.getElementById('webcamOverlay').style.display = 'flex';
+                document.getElementById('webcamVideo').style.display = 'none';
+                
+                const warningDiv = document.querySelector('.webcam-warning');
+                warningDiv.innerHTML = `
+                    <h3>🛡️ Bravo ! Vous avez refusé l'accès !</h3>
+                    <p>Excellente décision ! Vous avez bloqué l'accès à votre webcam.</p>
+                    
+                    <div class="explanation-box">
+                        <div class="explanation-title">✅ Vous avez bien fait :</div>
+                        <div class="explanation-text">
+                            <ul>
+                                <li><strong>Réflexe sécuritaire :</strong> Toujours se méfier des demandes d'accès webcam</li>
+                                <li><strong>Protection de la vie privée :</strong> Votre image reste privée</li>
+                                <li><strong>Contrôle des permissions :</strong> Vous gardez le contrôle</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="important-note">
+                        <strong>Message éducatif :</strong> Même si vous aviez accepté, cette démonstration était 100% sécurisée. 
+                        Mais dans la vraie vie, soyez toujours vigilants !
+                    </div>
+                `;
+            }
+        }
+
+        function closeWebcamEasterEgg() {
+            // Arrêter le flux webcam si actif
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+            
+            // Fermer la modal
+            document.getElementById('webcamOverlay').style.display = 'none';
+            
+            // Réinitialiser la vidéo
+            const video = document.getElementById('webcamVideo');
+            video.srcObject = null;
+            video.style.display = 'block';
+            
+            // Réinitialiser le contenu de la warning
+            const warningDiv = document.querySelector('.webcam-warning');
+            warningDiv.innerHTML = `
+                <h3>🦁 Surprise ! Le lion vous observe !</h3>
+                <p>Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.</p>
+                
+                <div class="explanation-box">
+                    <div class="explanation-title">🛡️ Conseils de Cybersécurité :</div>
+                    <div class="explanation-text">
+                        <ul>
+                            <li><strong>Toujours vérifier</strong> pourquoi un site demande l'accès à votre caméra</li>
+                            <li><strong>Refuser l'accès</strong> si ce n'est pas nécessaire pour le service</li>
+                            <li><strong>Couvrir votre webcam</strong> quand vous ne l'utilisez pas</li>
+                            <li><strong>Vérifier les permissions</strong> accordées dans les paramètres du navigateur</li>
+                            <li><strong>Se méfier</strong> des sites qui demandent des permissions excessives</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="important-note">
+                    <strong>Rassurez-vous :</strong> Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. 
+                    Le flux vidéo reste uniquement sur votre ordinateur.
+                </div>
+            `;
+        }
+        /*
+            🚀 JAVASCRIPT MASTERS 🚀
+            Vous avez trouvé la section JavaScript ! 
+            
+            Secrets de développeur :
+            • console.log() est votre meilleur ami pour débugger
+            • La fonction Math.random() n'est pas cryptographiquement sûre
+            • addEventListener('click', fn) > onclick pour les pros
+            • Utilisez const/let au lieu de var (c'est 2025 !)
+            
+            Bonus hack : Tapez "triggerMatrixMode()" dans la console 😎
+        */
+    </script>
+    <!-- 
+        🎓 MERCI D'AVOIR EXPLORÉ LE CODE ! 🎓
+        Vous êtes maintenant officiellement un "Code Inspector" !
+        
+        Message secret final :
+        La cybersécurité, c'est 10% de technique et 90% de curiosité.
+        Continuez à explorer, à apprendre, et à poser des questions !
+        
+        Devoxx4Kids Team - "Learning by doing, secured by thinking" 🔒
+    -->
+</body>
+</html>

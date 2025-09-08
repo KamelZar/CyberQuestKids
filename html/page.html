@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDeals-Secure - Meilleurs Prix Garantis !</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header avec faux certificat SSL */
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .fake-ssl {
+            margin-left: 10px;
+            background: #27ae60;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .fake-ssl::before {
+            content: "🔒";
+            margin-right: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #f39c12;
+        }
+
+        /* Bannière d'urgence */
+        .urgency-banner {
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            animation: blink 1s infinite;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        /* Section hero avec prix suspects */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f0f0f0" width="1200" height="600"/><text x="600" y="300" text-anchor="middle" fill="%23999" font-size="48" font-family="Arial">Image non disponible</text></svg>');
+            background-size: cover;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: #e74c3c;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #c0392b;
+        }
+
+        /* Section produits avec prix suspects */
+        .products {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .products h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 200px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+            position: relative;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 5px;
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .stock-alert {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .trending-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #ff6b35;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .limited-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #9b59b6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .mystery-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #f39c12;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .suspicious-shipping {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            border-radius: 3px;
+        }
+
+        .authenticity-badge {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            border-radius: 3px;
+            color: #0c5460;
+        }
+
+        .probability-info {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+            border-radius: 3px;
+            color: #721c24;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .current-price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .discount {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        .fake-reviews {
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .stars {
+            color: #f39c12;
+            margin-right: 5px;
+        }
+
+        .buy-button {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #229954;
+        }
+
+        /* Section paiement sécurisé avec vrais logos */
+        .payment-security {
+            background: #f8f9fa;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .payment-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .payment-logo {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .payment-logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Badges de sécurité avec vrais logos */
+        .security-badges {
+            background: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .badges-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .security-badge {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .security-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .fake-badge {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f5e8;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        /* Footer suspect */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        .contact-info {
+            line-height: 1.8;
+        }
+
+        .suspicious-contact {
+            color: #e74c3c;
+            font-style: italic;
+        }
+
+        /* Timer de fausse urgence */
+        .countdown {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown h4 {
+            margin-bottom: 5px;
+        }
+
+        #timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .badges-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">
+                    TechDeals-Secure
+                    <span class="fake-ssl">SSL Sécurisé</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#accueil">Accueil</a></li>
+                    <li><a href="#produits">Produits</a></li>
+                    <li><a href="#apropos">À Propos</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="urgency-banner">
+        ⚡ OFFRE FLASH - Plus que 156 personnes peuvent profiter de ces prix ! ⚡
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Les Meilleurs Prix du Web !</h1>
+            <p>iPhone 15 Pro Max à 199€ - MacBook Pro M3 à 399€ - PS5 à 99€</p>
+            <a href="#produits" class="cta-button">🔥 Profitez Maintenant !</a>
+        </div>
+    </section>
+
+    <section id="produits" class="products">
+        <div class="container">
+            <h2>⭐ Nos Offres Exceptionnels ⭐</h2>
+            
+            <div class="product-grid">
+                <!-- Produit 1 - iPhone suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('images/iphone16.jpg') center/cover;">
+                        <div class="watermark">Getty Images</div>
+                        <div class="stock-alert">🔥 Plus que 3 en stock !</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">iPhone 16 Pro Max 1TB - Garantie 2ans</h3>
+                        <div class="price-section">
+                            <span class="original-price">1449€</span>
+                            <span class="current-price">199€</span>
+                            <span class="discount">-86%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.9/5 (2847 avis) - "Produit génial !" - Marie D.</span>
+                        </div>
+                        <button class="buy-button">💳 Acheter Maintenant</button>
+                    </div>
+                </div>
+
+                <!-- Produit 2 - MacBook suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('images/macbook.jpg') center/cover;">
+                        <div class="watermark">Shutterstock</div>
+                        <div class="stock-alert">⚡ Derniers exemplaires !</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">MacBook Pro M4 16" - Edition Limitée</h3>
+                        <div class="price-section">
+                            <span class="original-price">2999€</span>
+                            <span class="current-price">399€</span>
+                            <span class="discount">-87%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>5.0/5 (1523 avis) - "Très bon produit" - Jean L.</span>
+                        </div>
+                        <button class="buy-button">💳 Commander Vite</button>
+                    </div>
+                </div>
+
+                <!-- Produit 3 - PS5 suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('images/playstation.jpg') center/cover;">
+                        <div class="watermark">Adobe Stock</div>
+                        <div class="stock-alert">🎯 156 personnes regardent</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">PlayStation 5 + 2 Manettes - Neuf</h3>
+                        <div class="price-section">
+                            <span class="original-price">549€</span>
+                            <span class="current-price">99€</span>
+                            <span class="discount">-82%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.8/5 (3241 avis) - "Livraison rapide" - Pierre M.</span>
+                        </div>
+                        <button class="buy-button">💳 Réserver</button>
+                    </div>
+                </div>
+
+                <!-- NOUVELLE SECTION LABUBU - Produits tendance suspects -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('labubu/macaron.jpg') center/cover;">
+                        <div class="watermark">Pop Mart ©</div>
+                        <div class="trending-badge">🔥 TENDANCE</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Labubu "Macaron" Série Complète - 100% Authentique</h3>
+                        <div class="price-section">
+                            <span class="original-price">89€</span>
+                            <span class="current-price">12€</span>
+                            <span class="discount">-87%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.9/5 (5624 avis) - "Identique à l'original !" - Luna K.</span>
+                        </div>
+                        <div class="suspicious-shipping">
+                            📦 Expédié depuis notre entrepôt européen* <br>
+                            <span style="font-size: 0.7rem; color: #999;">*Via Chine, délai 15-30 jours</span>
+                        </div>
+                        <button class="buy-button">💳 Collectionner Maintenant</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image" style="background: url('labubu/licorne.avif') center/cover;">
+                        <div class="watermark">Kasing Lung ©</div>
+                        <div class="limited-badge">⚡ RARE</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Labubu Licorne - Edition 1/1000 Numérotée (Certificat inclus)</h3>
+                        <div class="price-section">
+                            <span class="original-price">299€</span>
+                            <span class="current-price">24€</span>
+                            <span class="discount">-92%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>5.0/5 (892 avis) - "Qualité incroyable !" - Sophie T.</span>
+                        </div>
+                        <div class="authenticity-badge">
+                            ✅ Certificat d'authenticité inclus - Numéro de série unique
+                        </div>
+                        <button class="buy-button">💳 Edition Limitée</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image" style="background: url('labubu/labubu1.jpg') center/cover;">
+                        <div class="watermark">© PopMart Official</div>
+                        <div class="mystery-badge">🎲 MYSTÈRE</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Mystery Box Labubu x6 - Figurine Dorée Possible ! (Valeur 500€)</h3>
+                        <div class="price-section">
+                            <span class="original-price">234€</span>
+                            <span class="current-price">18€</span>
+                            <span class="discount">-92%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.8/5 (3456 avis) - "J'ai eu la dorée !" - Alex M.</span>
+                        </div>
+                        <div class="probability-info">
+                            🏆 Probabilité figurine dorée : 1/144 (garanti sur notre site !)
+                        </div>
+                        <button class="buy-button">💳 Tenter ma Chance</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section paiement avec vrais logos + logo suspect -->
+    <section class="payment-security">
+        <div class="container">
+            <h3>💳 Paiements 100% Sécurisés</h3>
+            <p>Nous acceptons tous les moyens de paiement sécurisés :</p>
+            
+            <div class="payment-logos">
+                <img src="png/visa.svg" alt="Visa" class="payment-logo">
+                <img src="png/mastercard.svg" alt="MasterCard" class="payment-logo">
+                <img src="png/paypal.png" alt="PayPal" class="payment-logo">
+                <img src="png/Apple_Pay_logo.svg" alt="Apple Pay" class="payment-logo">
+                <!-- Logo obsolète comme red flag -->
+                <img src="png/old_logo.svg" alt="Banque Partenaire" class="payment-logo" style="opacity: 0.8;">
+            </div>
+            
+            <div class="fake-badge">
+                🔒 Cryptage SSL 256-bit - Vos données sont protégées
+            </div>
+        </div>
+    </section>
+
+    <section class="security-badges">
+        <div class="container">
+            <h3>🛡️ Certifications de Sécurité</h3>
+            <p>Notre site est certifié par les plus grandes organisations de sécurité :</p>
+            
+            <div class="badges-container">
+                <img src="png/norton-secured.svg" alt="Norton Secured" class="security-badge">
+                <img src="png/McAfee.png" alt="McAfee Secure" class="security-badge">
+                <img src="png/ssl-certificate.png" alt="SSL Certificate" class="security-badge">
+                <img src="png/trustPilot.png" alt="TrustPilot Verified" class="security-badge">
+                <img src="png/bbb.png" alt="Better Business Bureau" class="security-badge">
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>À Propos de TechDeals-Secure</h3>
+                    <p>Nous sommes le leader européen de la technologie à prix réduit depuis 2024. Notre mission est de démocratiser l'accès aux dernières innovations.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <div class="contact-info">
+                        <p>📧 Email: support@techdeals-secure.biz</p>
+                        <p class="suspicious-contact">📞 Téléphone: Contactez-nous par email</p>
+                        <p class="suspicious-contact">📍 Adresse: Disponible sur demande</p>
+                        <p>🕐 Horaires: 24h/24, 7j/7 (réponse sous 72h)</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Informations Légales</h3>
+                    <p>SIRET: En cours d'obtention</p>
+                    <p>TVA: Non applicable</p>
+                    <p>Conditions générales disponibles bientôt</p>
+                    <p>Politique de retour: 30 jours*</p>
+                    <p style="font-size: 0.8rem; color: #95a5a6;">*Sous réserve d'acceptation</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Timer de fausse urgence -->
+    <div class="countdown">
+        <h4>⏰ Offre expire dans :</h4>
+        <div id="timer">05:27</div>
+    </div>
+
+    <script>
+        // Faux timer qui se remet à zéro
+        let timeLeft = 327; // 5:27 en secondes
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            timeLeft--;
+            
+            // Quand arrive à 0, remet à 5:27
+            if (timeLeft < 0) {
+                timeLeft = 327;
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Faux comportement de boutons
+        document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('🚨 ATTENTION ! Cette page est un FAUX site de vente créé à des fins éducatives.\n\n🎯 Avez-vous repéré tous les indices de fraude ?\n\n🔓 SÉCURITÉ :\n• HTTP au lieu de HTTPS\n• Faux badges SSL\n\n💰 PRIX SUSPECTS :\n• Réductions impossibles (-86% à -92%)\n• Prix dérisoires (iPhone à 199€, Labubu à 12€)\n• "Mystery Box" à 18€ au lieu de 234€\n\n🧸 PRODUITS TENDANCE LOUCHES :\n• Labubu "authentiques" trop bon marché\n• Éditions "limitées" en stock illimité\n• Certificats d\'authenticité douteux\n• Probabilités de gains "garanties"\n\n🚚 EXPÉDITION SUSPECTE :\n• "Entrepôt européen*" (*via Chine)\n• Délais flous (15-30 jours)\n• Frais de port cachés\n\n🏪 SITE DOUTEUX :\n• Nom de domaine suspect (.biz)\n• Logo bancaire obsolète\n• Images avec watermarks\n• SIRET "en cours"\n\n📞 CONTACT LOUCHE :\n• Pas de téléphone\n• Pas d\'adresse physique\n• Support "sous 72h"\n\n⏰ URGENCE ARTIFICIELLE :\n• Timer qui se remet à zéro\n• Fausses alertes de stock\n• "Plus que 3 en stock !"\n\n⭐ FAUX AVIS :\n• Avis génériques (Marie D., Jean L.)\n• Notes parfaites partout\n• Témoignages suspects\n\n✅ Excellent travail de détective cyber !');
+            });
+        });
+
+        // Fausses alertes de stock avec Labubu
+        setInterval(() => {
+            const alerts = [
+                "⚡ Plus que 12 iPhone disponibles !",
+                "🔥 Attention : Stock MacBook bientôt épuisé !",
+                "⏰ Dernières PS5 en promotion !",
+                "🚨 156 personnes regardent cette page !",
+                "🧸 URGENT : Labubu Licorne - Plus que 2 exemplaires !",
+                "🎁 Quelqu'un vient de gagner la figurine dorée !",
+                "🔥 Labubu Macaron - 89% de réduction expire bientôt !",
+                "⚡ 234 collectionneurs ont ajouté Labubu au panier !",
+                "🦄 Edition limitée Licorne - 347/1000 vendues !"
+            ];
+            
+            const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+            
+            // Créer notification temporaire
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #e74c3c;
+                color: white;
+                padding: 15px;
+                border-radius: 5px;
+                z-index: 1001;
+                animation: slideIn 0.5s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = randomAlert;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            
+        }, Math.random() * 20000 + 10000); // Entre 10-30 secondes
+    </script>
+</body>
+</html>

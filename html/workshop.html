@@ -1634,8 +1634,8 @@
                 
                 // Charger les deux dictionnaires en parallèle
                 const [rockyou, topPasswords] = await Promise.all([
-                    fetch('rockyou-75.txt').then(r => r.text()).catch(() => ''),
-                    fetch('10-million.txt').then(r => r.text()).catch(() => '')
+                    fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/main/html/rockyou-75.txt').then(r => r.text()).catch(() => ''),
+                    fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/main/html/10-million.txt').then(r => r.text()).catch(() => '')
                 ]);
                 
                 // Traiter rockyou-75.txt

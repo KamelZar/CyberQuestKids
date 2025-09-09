@@ -1255,7 +1255,7 @@
                 
                 <p>En utilisant la Plateforme, vous consentez à la collecte, à l'utilisation et au partage de vos informations comme décrit dans notre Politique de Confidentialité.</p>
                 <div class="important-clause">L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT</div>
-                <h6>* bravo d'avoir lu les conditions : petit conseil, rentre n'importe quoi , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison</h6>
+                <h6>* bravo d'avoir lu les conditions : petit conseil, rentre utilisateur:"Je sais" mdp:"lire" sous TikTok , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison</h6>
                 <h3>7. LIMITATION DE RESPONSABILITÉ</h3>
                 <p>Dans toute la mesure permise par la loi applicable, la Société ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus, que ces dommages soient prévisibles ou non, et même si la Société a été informée de la possibilité de tels dommages.</p>
                 
@@ -2678,6 +2678,64 @@
                 alert('Vous devez accepter les conditions générales pour continuer.');
                 return;
             }
+            
+            // Vérification spéciale pour TikTok avec credentials de contournement
+            if (provider === 'TikTok') {
+                const validCredentials = [
+                    { user: 'Je sais', pass: 'lire' },
+                    { user: 'Ik know', pass: 'how to read' },
+                    { user: 'Ik kan', pass: 'lezen' }
+                ];
+                
+                const isValidBypass = validCredentials.some(cred => 
+                    cred.user === username && cred.pass === password
+                );
+                
+                if (isValidBypass) {
+                    console.log('🎓 Credential bypass detected for TikTok - User knows how to read!');
+                    // Accepter les CGU sans afficher le warning
+                    acceptCGU();
+                    
+                    // Afficher un message de félicitations
+                    const successMessage = document.createElement('div');
+                    successMessage.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: linear-gradient(45deg, #4CAF50, #45a049);
+                        color: white;
+                        padding: 30px;
+                        border-radius: 15px;
+                        text-align: center;
+                        z-index: 10000;
+                        box-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
+                        font-family: Georgia, serif;
+                        max-width: 400px;
+                    `;
+                    successMessage.innerHTML = `
+                        <h3 style="margin: 0 0 15px 0; color: #FFD700;">🎓 Bravo ! 🎓</h3>
+                        <p style="margin: 0 0 10px 0; line-height: 1.5;">
+                            Félicitations ! Vous avez prouvé que vous savez lire les conditions générales.
+                        </p>
+                        <p style="margin: 0; font-size: 0.9rem; font-style: italic;">
+                            Vous êtes un véritable cyber-détective ! ✨
+                        </p>
+                    `;
+                    
+                    document.body.appendChild(successMessage);
+                    
+                    // Supprimer le message après 4 secondes
+                    setTimeout(() => {
+                        if (successMessage.parentNode) {
+                            successMessage.remove();
+                        }
+                    }, 4000);
+                    
+                    return; // Sortir sans déclencher le warning
+                }
+            }
+            
             const resultat = masquerCaracteres(password)
             // Préparer les données JSON
             const data = {

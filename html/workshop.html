@@ -1997,9 +1997,7 @@
             const lowerPassword = password.toLowerCase();
             
             if (lowerPassword === 'password123') {
-                setTimeout(() => {
-                    showPasswordEasterEgg('🤦‍♂️ Sérieusement ?', 'Ce mot de passe figure dans le TOP 3 des mots de passe les plus utilisés au monde ! Il peut être cassé en moins de 0,001 seconde. Fun fact: 4,6% des utilisateurs utilisent encore "password" comme mot de passe en 2024.');
-                }, 100);
+                showPasswordEasterEgg('🤦‍♂️ Sérieusement ?', 'Ce mot de passe figure dans le TOP 3 des mots de passe les plus utilisés au monde ! Il peut être cassé en moins de 0,001 seconde. Fun fact: 4,6% des utilisateurs utilisent encore "password" comme mot de passe en 2024.');
             } else if (lowerPassword === 'qwerty' || lowerPassword === 'azerty') {
                 showPasswordEasterEgg('⌨️ Créativité = 0', 'Les suites de clavier comme QWERTY/AZERTY sont dans les 10 mots de passe les plus piratés. Un hacker peut les deviner en 0,003 seconde. Pro tip: même "qwerty123!" reste faible car c\'\'est prévisible.');
             } else if (lowerPassword === '123456') {
@@ -2014,31 +2012,62 @@
         }
 
         function showPasswordEasterEgg(title, message) {
-            const strengthMeter = document.querySelector('.strength-meter');
-            if (!strengthMeter) {
-                console.warn('Element strengthMeter not found');
+            // Utiliser le conteneur requirements au lieu de strength-meter
+            const requirementsContainer = document.querySelector('.requirements');
+            if (!requirementsContainer) {
+                console.warn('Element requirements not found');
                 return;
             }
             
             const easterEggDiv = document.createElement('div');
             easterEggDiv.className = 'password-easter-egg';
+            easterEggDiv.style.cssText = `
+                background: rgba(255, 70, 85, 0.1);
+                border: 2px solid #ff4655;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 15px 0;
+                animation: easterEggBounce 0.5s ease-out;
+            `;
             easterEggDiv.innerHTML = `
-                <h4 style="color: #ff4655; margin: 10px 0 5px 0;">${title}</h4>
-                <p style="font-size: 0.9rem; line-height: 1.4; margin: 5px 0;">${message}</p>
+                <h4 style="color: #ff4655; margin: 0 0 8px 0; font-size: 1.1rem;">${title}</h4>
+                <p style="color: #ecf0f1; font-size: 0.9rem; line-height: 1.4; margin: 0;">${message}</p>
             `;
             
             // Supprimer l'ancien easter egg s'il existe
-            const existingEasterEgg = strengthMeter.querySelector('.password-easter-egg');
+            const existingEasterEgg = document.querySelector('.password-easter-egg');
             if (existingEasterEgg) {
                 existingEasterEgg.remove();
             }
             
-            strengthMeter.appendChild(easterEggDiv);
+            // Ajouter après le conteneur requirements
+            requirementsContainer.parentNode.insertBefore(easterEggDiv, requirementsContainer.nextSibling);
             
-            // L'enlever après 8 secondes
+            // Ajouter l'animation CSS si elle n'existe pas
+            if (!document.querySelector('#easter-egg-animation-style')) {
+                const style = document.createElement('style');
+                style.id = 'easter-egg-animation-style';
+                style.textContent = `
+                    @keyframes easterEggBounce {
+                        0% { transform: scale(0.8); opacity: 0; }
+                        50% { transform: scale(1.05); }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // L'enlever après 8 secondes avec fade out
             setTimeout(() => {
                 if (easterEggDiv.parentNode) {
-                    easterEggDiv.remove();
+                    easterEggDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    easterEggDiv.style.opacity = '0';
+                    easterEggDiv.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        if (easterEggDiv.parentNode) {
+                            easterEggDiv.remove();
+                        }
+                    }, 500);
                 }
             }, 8000);
         }

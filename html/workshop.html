@@ -1371,6 +1371,8 @@
                 // Système de tracking pour Fantasy Quest unlock
                 this.visitedActivities = new Array(8).fill(false); // [0-7] activities
                 this.fantasyQuestUnlocked = false;
+                this.fantasyQuestPlayed = false; // Tracking si Fantasy Quest a été joué
+                this.webcamEasterEggActivated = false; // Tracking de l'easter egg webcam
                 
                 this.init();
             }
@@ -1473,6 +1475,13 @@
                 };
 
                 if (gameUrls[gameType]) {
+                    // Marquer Fantasy Quest comme joué
+                    if (gameType === 'fantasy-quest') {
+                        this.fantasyQuestPlayed = true;
+                        console.log('🏰 Fantasy Quest played!');
+                        this.checkCeremonyUnlock();
+                    }
+                    
                     // Ouvrir jeu externe
                     window.open(gameUrls[gameType], '_blank', 'noopener');
                 } else {
@@ -1612,6 +1621,151 @@
                     notification.style.opacity = '0';
                     setTimeout(() => notification.remove(), 500);
                 }, 4000);
+            }
+
+            checkCeremonyUnlock() {
+                // Vérifier si Fantasy Quest a été joué ET l'easter egg webcam activé
+                if (this.fantasyQuestPlayed && this.webcamEasterEggActivated) {
+                    console.log('🎆 All conditions met! Opening ceremony...');
+                    
+                    // Afficher message de félicitations avec bouton vers la cérémonie
+                    const congratsDiv = document.createElement('div');
+                    congratsDiv.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: linear-gradient(45deg, #FFD700, #FFA500);
+                        color: #2C3E50;
+                        padding: 30px;
+                        border-radius: 20px;
+                        text-align: center;
+                        z-index: 10000;
+                        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+                        font-family: Georgia, serif;
+                        font-weight: bold;
+                        max-width: 500px;
+                        animation: ceremonyUnlock 2s ease-out;
+                    `;
+                    congratsDiv.innerHTML = `
+                        <h2 style="margin: 0 0 15px 0; font-size: 2rem;">🎆 FÉLICITATIONS ! 🎆</h2>
+                        <p style="margin: 0 0 15px 0; font-size: 1.2rem;">
+                            Vous avez terminé toutes les quêtes et découvert les secrets cachés !
+                        </p>
+                        <p style="margin: 0 0 20px 0; font-size: 1rem;">
+                            Vous pouvez maintenant assister à la cérémonie de remise des diplômes ! ✨
+                        </p>
+                        <button onclick="window.open('ceremonie.html', '_blank')" style="
+                            background: linear-gradient(45deg, #4CAF50, #45a049);
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 25px;
+                            font-size: 1.1rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            🎓 Aller à la cérémonie
+                        </button>
+                        <div style="margin-top: 15px;">
+                            <button onclick="this.parentElement.parentElement.remove(); window.carouselWorkshop.showPersistentCeremonyButton();" style="
+                                background: transparent;
+                                color: #2C3E50;
+                                border: 2px solid #2C3E50;
+                                padding: 8px 16px;
+                                border-radius: 20px;
+                                font-size: 0.9rem;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.background='rgba(44, 62, 80, 0.1)'" onmouseout="this.style.background='transparent'">
+                                Fermer
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(congratsDiv);
+                    
+                    // Ajouter l'animation CSS
+                    if (!document.querySelector('#ceremony-unlock-animation')) {
+                        const style = document.createElement('style');
+                        style.id = 'ceremony-unlock-animation';
+                        style.textContent = `
+                            @keyframes ceremonyUnlock {
+                                0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                                50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                                100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                }
+            }
+
+            showPersistentCeremonyButton() {
+                // Vérifier si le bouton existe déjà
+                if (document.getElementById('persistent-ceremony-btn')) {
+                    return;
+                }
+                
+                // Créer le bouton persistant en haut à droite
+                const persistentBtn = document.createElement('button');
+                persistentBtn.id = 'persistent-ceremony-btn';
+                persistentBtn.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(45deg, #4CAF50, #45a049);
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    font-size: 1rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                    z-index: 1000;
+                    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+                    transition: all 0.3s ease;
+                    animation: ceremonyButtonBounce 2s infinite;
+                `;
+                persistentBtn.innerHTML = '🎓 Cérémonie';
+                
+                // Event listeners
+                persistentBtn.addEventListener('click', () => {
+                    window.open('ceremonie.html', '_blank');
+                });
+                
+                persistentBtn.addEventListener('mouseover', () => {
+                    persistentBtn.style.transform = 'scale(1.1)';
+                    persistentBtn.style.boxShadow = '0 6px 20px rgba(76, 175, 80, 0.6)';
+                });
+                
+                persistentBtn.addEventListener('mouseout', () => {
+                    persistentBtn.style.transform = 'scale(1)';
+                    persistentBtn.style.boxShadow = '0 4px 15px rgba(76, 175, 80, 0.4)';
+                });
+                
+                document.body.appendChild(persistentBtn);
+                
+                // Ajouter l'animation CSS si elle n'existe pas
+                if (!document.querySelector('#ceremony-button-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'ceremony-button-animation';
+                    style.textContent = `
+                        @keyframes ceremonyButtonBounce {
+                            0%, 100% { transform: translateY(0px); }
+                            50% { transform: translateY(-5px); }
+                        }
+                        
+                        #persistent-ceremony-btn:hover {
+                            animation: none !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                console.log('🎓 Persistent ceremony button added');
             }
         }
 
@@ -2598,7 +2752,7 @@
 
         // Initialiser le carrousel
         document.addEventListener('DOMContentLoaded', () => {
-            new CarouselWorkshop();
+            window.carouselWorkshop = new CarouselWorkshop();
         });
 
         // === SYSTÈME TERMS OF SERVICE ===
@@ -3009,12 +3163,26 @@
                 // Ouvrir la modal
                 document.getElementById('webcamOverlay').style.display = 'flex';
                 
+                // Marquer l'easter egg webcam comme activé
+                if (window.carouselWorkshop) {
+                    window.carouselWorkshop.webcamEasterEggActivated = true;
+                    console.log('📷 Webcam easter egg activated!');
+                    window.carouselWorkshop.checkCeremonyUnlock();
+                }
+                
             } catch (error) {
                 console.error('Erreur accès webcam:', error);
                 
                 // Si l'utilisateur refuse ou erreur, afficher un message éducatif
                 document.getElementById('webcamOverlay').style.display = 'flex';
                 document.getElementById('webcamVideo').style.display = 'none';
+                
+                // Marquer l'easter egg webcam comme activé même si refusé
+                if (window.carouselWorkshop) {
+                    window.carouselWorkshop.webcamEasterEggActivated = true;
+                    console.log('📷 Webcam easter egg activated (access denied)!');
+                    window.carouselWorkshop.checkCeremonyUnlock();
+                }
                 
                 const warningDiv = document.querySelector('.webcam-warning');
                 warningDiv.innerHTML = `

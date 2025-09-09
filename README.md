@@ -42,6 +42,14 @@ DevoxKids/
 
 This project is part of the Devoxx4Kids initiatives, aimed at making technology accessible and understandable for children. The playful approach allows addressing serious topics like cybersecurity in an age-appropriate manner for young audiences.
 
+## 🎨 Assets Attribution
+
+### 🎵 Music
+All background music files are sourced from [Pixabay](https://pixabay.com/) - royalty-free music under Pixabay License. No copyright restrictions apply for educational use.
+
+### 🖼️ Images
+Background images and visual assets are generated using **Google Studio AI** (formerly Google Bard). These AI-generated images are created specifically for this educational project.
+
 ---
 
 **Author:** Kamel Zaraoui  

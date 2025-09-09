@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎆 Cérémonie de Remise des Diplômes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: url('./png/background.png') center/cover no-repeat;
+            background-attachment: fixed;
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+            cursor: pointer;
+        }
+
+        .ceremony-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            color: #FFD700;
+            font-size: 2.8rem;
+            text-align: center;
+            text-shadow: 0 0 30px #FFD700, 2px 2px 4px rgba(0,0,0,0.8);
+            animation: titleMajestic 3s ease-in-out infinite alternate;
+            z-index: 100;
+        }
+
+        @keyframes titleMajestic {
+            from { 
+                text-shadow: 0 0 30px #FFD700, 2px 2px 4px rgba(0,0,0,0.8);
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 50px #FFD700, 0 0 80px #FFA500, 2px 2px 4px rgba(0,0,0,0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .welcome-message {
+            position: absolute;
+            top: 100px;
+            color: #E0E0E0;
+            font-size: 1.3rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 100;
+            opacity: 1;
+            transition: all 1s ease;
+            max-width: 80%;
+        }
+
+        .name-input-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            opacity: 1;
+            transition: all 1s ease;
+        }
+
+        .name-input {
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            border: 3px solid #FFD700;
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #FFD700;
+            text-align: center;
+            margin: 20px;
+            font-family: 'Georgia', serif;
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .name-input:focus {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 215, 0, 0.7);
+        }
+
+        .start-ceremony-btn {
+            padding: 12px 30px;
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .start-ceremony-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+        }
+
+        .diploma-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 600px;
+            height: 624px;
+            background: linear-gradient(45deg, #FFF8DC, #F5F5DC);
+            border: 8px solid #DAA520;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(218, 165, 32, 0.5);
+            opacity: 0;
+            transition: all 1.5s ease;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .diploma-container.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .diploma-title {
+            color: #8B4513;
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .diploma-subtitle {
+            color: #8B4513;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .diploma-name {
+            color: #DAA520;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(218, 165, 32, 0.3);
+            animation: nameGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes nameGlow {
+            from { text-shadow: 2px 2px 4px rgba(218, 165, 32, 0.3); }
+            to { text-shadow: 0 0 15px rgba(218, 165, 32, 0.7); }
+        }
+
+        .diploma-text {
+            color: #8B4513;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin: 10px 0;
+        }
+
+        .achievements-container {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 1s ease;
+            z-index: 150;
+        }
+
+        .achievement {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 25px;
+            border: 2px solid #4CAF50;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            transform: translateX(-100px);
+            transition: all 0.8s ease;
+            opacity: 0;
+        }
+
+        .achievement.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .firework {
+            position: absolute;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: fireworkSpark 2s ease-out forwards;
+        }
+
+        @keyframes fireworkSpark {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #FFD700;
+            animation: confettiFall 4s linear forwards;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .magical-particles {
+            position: absolute;
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: particleRise 4s infinite linear;
+            box-shadow: 0 0 10px #FFD700;
+        }
+
+        @keyframes particleRise {
+            0% { 
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-20px) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .final-message {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-size: 1.4rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 100;
+        }
+
+
+        .audio-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: #FFD700;
+            border: 2px solid #FFD700;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .audio-control:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.1);
+        }
+
+        .wand-animation {
+            position: absolute;
+            font-size: 3rem;
+            animation: wandMagic 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        @keyframes wandMagic {
+            0%, 100% { 
+                transform: rotate(0deg) translateY(0px);
+                filter: drop-shadow(0 0 10px #FFD700);
+            }
+            25% { 
+                transform: rotate(10deg) translateY(-10px);
+                filter: drop-shadow(0 0 20px #FFA500);
+            }
+            75% { 
+                transform: rotate(-10deg) translateY(-5px);
+                filter: drop-shadow(0 0 15px #FFD700);
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="backgroundMusic" autoplay>
+        <source src="./mp3/magical.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="audio-control" id="audioToggle">🔊</div>
+
+    <div class="ceremony-container">
+        <div class="title">🎆 Académie des Cyber-Sorciers 🎆</div>
+        
+        <div class="welcome-message" id="welcomeMessage">
+            Bienvenue à la cérémonie de remise des diplômes !<br>
+            Vous avez maîtrisé l'art de la cybersécurité magique...
+        </div>
+
+        <div class="name-input-container" id="nameInputContainer">
+            <div style="color: #FFD700; font-size: 1.4rem; margin-bottom: 15px;">
+                ✨ Entrez votre nom, futur Maître Cyber-Sorcier ✨
+            </div>
+            <input type="text" class="name-input" id="nameInput" placeholder="Votre nom magique..." maxlength="20">
+            <br>
+            <button class="start-ceremony-btn" onclick="startCeremony()">🎓 Commencer la Cérémonie</button>
+        </div>
+
+        <div class="diploma-container" id="diplomaContainer">
+            <div class="diploma-title">🎓 DIPLÔME DE MAÎTRISE 🎓</div>
+            <div class="diploma-subtitle">Académie des Cyber-Sorciers</div>
+            <div class="diploma-name" id="diplomaName"></div>
+            <div class="diploma-text">
+                A brillamment maîtrisé l'art ancestral de la<br>
+                <strong>Cybersécurité Magique</strong>
+            </div>
+            <div class="diploma-text" style="margin-top: 20px; font-style: italic;">
+                "Que votre code soit fort et vos mots de passe impénétrables"
+            </div>
+            <div style="color: #DAA520; font-size: 0.9rem; margin-top: 15px;">
+                📅 <span id="diplomaDate"></span> • 🏰 Château de la Cybersécurité
+            </div>
+        </div>
+
+        <div class="achievements-container" id="achievementsContainer">
+            <div class="achievement" style="animation-delay: 0.5s;">🛡️ Maître des Mots de Passe</div>
+            <div class="achievement" style="animation-delay: 1s;">📧 Détecteur de Phishing</div>
+            <div class="achievement" style="animation-delay: 1.5s;">🔐 Gardien des Données</div>
+            <div class="achievement" style="animation-delay: 2s;">🕵️ Chasseur de Malwares</div>
+            <div class="achievement" style="animation-delay: 2.5s;">⚡ Sorcier Suprême</div>
+        </div>
+
+        <div class="final-message" id="finalMessage">
+            🌟 Félicitations ! Vous êtes maintenant un véritable Maître Cyber-Sorcier ! 🌟<br>
+            Votre mission : protéger le monde numérique des forces obscures...
+        </div>
+
+    </div>
+
+    <div class="magical-particles" id="particles"></div>
+
+    <script>
+        class MagicalCeremony {
+            constructor() {
+                this.isAudioPlaying = false;
+                this.musicPlayCount = 0;
+                this.maxPlays = 2; // Jouer 2 fois au total (1 fois + 1 boucle)
+                this.isDarkMode = false;
+                this.darkNames = ['voldemort', 'voldermort', 'tom jedusor', 'tom riddle', 'vous-savez-qui', 'celui-dont-on-ne-doit-pas-prononcer-le-nom'];
+                this.achievements = [
+                    "🛡️ Maître des Mots de Passe",
+                    "📧 Détecteur de Phishing", 
+                    "🔐 Gardien des Données",
+                    "🕵️ Chasseur de Malwares",
+                    "⚡ Sorcier Suprême"
+                ];
+                this.darkAchievements = [
+                    "💀 Maître des Mots de Passe Maudits",
+                    "🐍 Détecteur de Phishing Serpentard", 
+                    "⚡ Gardien des Horcruxes Numériques",
+                    "🕷️ Chasseur de Malwares Ténébreux",
+                    "👑 Seigneur des Ténèbres Cyber"
+                ];
+                
+                this.init();
+            }
+
+            init() {
+                this.setupAudioControl();
+                this.setupAutoClose();
+                this.createContinuousParticles();
+                this.setupEnterKeyListener();
+                
+                // Date du diplôme
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long', 
+                    day: 'numeric'
+                });
+                document.getElementById('diplomaDate').textContent = dateStr;
+            }
+
+            setupAudioControl() {
+                const audio = document.getElementById('backgroundMusic');
+                const audioToggle = document.getElementById('audioToggle');
+                
+                // Démarrer immédiatement la musique
+                this.isAudioPlaying = true;
+                audioToggle.textContent = '🔊';
+                
+                // Démarrer la musique dès que possible
+                const playAudio = () => {
+                    audio.play().then(() => {
+                        this.isAudioPlaying = true;
+                        audioToggle.textContent = '🔊';
+                        console.log('Audio started successfully');
+                    }).catch(e => {
+                        console.log('Audio play failed:', e);
+                        // Fallback: démarrer au premier clic
+                        document.addEventListener('click', () => {
+                            audio.play().then(() => {
+                                this.isAudioPlaying = true;
+                                audioToggle.textContent = '🔊';
+                            });
+                        }, { once: true });
+                    });
+                };
+                
+                // Plusieurs tentatives de démarrage
+                playAudio();
+                setTimeout(playAudio, 100);
+                setTimeout(playAudio, 500);
+                
+                audioToggle.addEventListener('click', () => {
+                    if (this.isAudioPlaying) {
+                        audio.pause();
+                        audioToggle.textContent = '🔇';
+                        this.isAudioPlaying = false;
+                    } else {
+                        audio.play().catch(e => console.log('Audio play failed:', e));
+                        audioToggle.textContent = '🔊';
+                        this.isAudioPlaying = true;
+                    }
+                });
+            }
+
+            setupAutoClose() {
+                const audio = document.getElementById('backgroundMusic');
+                
+                // Écouteur pour la fin de la musique
+                audio.addEventListener('ended', () => {
+                    this.musicPlayCount++;
+                    console.log(`Music ended, play count: ${this.musicPlayCount}/${this.maxPlays}`);
+                    
+                    if (this.musicPlayCount < this.maxPlays) {
+                        // Rejouer la musique
+                        console.log('Restarting music for second play...');
+                        audio.currentTime = 0;
+                        audio.play().catch(e => console.log('Replay failed:', e));
+                    } else {
+                        // Fermer après la deuxième lecture
+                        console.log('Music played twice, preparing to close...');
+                        this.showClosingMessage();
+                    }
+                });
+
+                // Démarrer le compteur dès le premier play
+                audio.addEventListener('play', () => {
+                    if (this.musicPlayCount === 0) {
+                        this.musicPlayCount = 1;
+                        console.log('First play started');
+                    }
+                });
+
+                // Fallback: fermer après durée estimée * 2 si l'event 'ended' ne marche pas
+                audio.addEventListener('loadedmetadata', () => {
+                    const duration = audio.duration;
+                    if (duration && duration > 0) {
+                        console.log(`Music duration: ${duration} seconds, total planned: ${duration * this.maxPlays} seconds`);
+                        setTimeout(() => {
+                            if (this.musicPlayCount < this.maxPlays) {
+                                console.log('Fallback close triggered after expected duration');
+                                this.showClosingMessage();
+                            }
+                        }, (duration * this.maxPlays - 2) * 1000); // 2 secondes avant la fin totale
+                    }
+                });
+            }
+
+            showClosingMessage() {
+                // Créer un overlay de fermeture
+                const closeOverlay = document.createElement('div');
+                closeOverlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.9);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    color: #FFD700;
+                    font-family: Georgia, serif;
+                    text-align: center;
+                `;
+
+                closeOverlay.innerHTML = `
+                    <div style="font-size: 2.5rem; margin-bottom: 20px; animation: fadeIn 1s ease;">
+                        ✨ La cérémonie magique se termine ✨
+                    </div>
+                    <div style="font-size: 1.5rem; margin-bottom: 30px; color: #E0E0E0;">
+                        Merci d'avoir participé à cette aventure cyber-magique !
+                    </div>
+                    <div style="font-size: 3rem; color: #FF6B6B;" id="countdown">5</div>
+                    <div style="font-size: 1.2rem; color: #E0E0E0; margin-top: 20px;">
+                        La page se fermera automatiquement...
+                    </div>
+                    <style>
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(-20px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        
+                        @keyframes countdownPulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.2); color: #FFD700; }
+                            100% { transform: scale(1); }
+                        }
+                        
+                        #countdown {
+                            animation: countdownPulse 1s ease-in-out;
+                        }
+                    </style>
+                `;
+
+                document.body.appendChild(closeOverlay);
+
+                // Compte à rebours de 5 secondes
+                let countdown = 5;
+                const countdownElement = closeOverlay.querySelector('#countdown');
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    countdownElement.style.animation = 'none';
+                    setTimeout(() => {
+                        countdownElement.style.animation = 'countdownPulse 1s ease-in-out';
+                    }, 10);
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        this.closePage();
+                    }
+                }, 1000);
+            }
+
+            closePage() {
+                // Essayer plusieurs méthodes pour fermer la page
+                try {
+                    // Méthode 1: Fermer l'onglet/fenêtre
+                    window.close();
+                } catch (e) {
+                    console.log('window.close() failed:', e);
+                }
+
+                // Méthode 2: Rediriger vers une page vide
+                setTimeout(() => {
+                    window.location.href = 'about:blank';
+                }, 500);
+
+                // Méthode 3: Masquer complètement le contenu
+                setTimeout(() => {
+                    document.body.style.display = 'none';
+                    document.body.innerHTML = `
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 100vh;
+                            background: #000;
+                            color: #FFD700;
+                            font-family: Georgia, serif;
+                            text-align: center;
+                            font-size: 1.5rem;
+                        ">
+                            <div>
+                                <div style="font-size: 3rem; margin-bottom: 20px;">✨</div>
+                                <div>La cérémonie magique est terminée.</div>
+                                <div style="margin-top: 20px; color: #E0E0E0; font-size: 1rem;">
+                                    Vous pouvez fermer cette page.
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.style.display = 'flex';
+                }, 1000);
+            }
+
+            setupEnterKeyListener() {
+                document.getElementById('nameInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        startCeremony();
+                    }
+                });
+            }
+
+            createContinuousParticles() {
+                setInterval(() => {
+                    this.createParticle();
+                }, 300);
+            }
+
+            createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * window.innerWidth + 'px';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                
+                // Couleurs variées pour les particules
+                const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.getElementById('particles').appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.remove();
+                    }
+                }, 4000);
+            }
+
+            startCeremony(studentName) {
+                // Vérifier si c'est un nom sombre DANS la méthode de la classe
+                console.log('Starting ceremony for:', studentName);
+                const isDarkName = this.checkDarkName(studentName);
+                console.log('Dark name detected in startCeremony:', isDarkName);
+                
+                if (isDarkName) {
+                    console.log('Applying dark mode immediately...');
+                    this.activateDarkMode();
+                }
+                
+                // S'assurer que la musique démarre au début de la cérémonie
+                const audio = document.getElementById('backgroundMusic');
+                const audioToggle = document.getElementById('audioToggle');
+                if (!this.isAudioPlaying) {
+                    audio.play().then(() => {
+                        this.isAudioPlaying = true;
+                        audioToggle.textContent = '🔊';
+                    }).catch(e => console.log('Audio play failed:', e));
+                }
+                
+                // Délai pour permettre à l'utilisateur de voir la transformation
+                const transformationDelay = isDarkName ? 1500 : 0;
+                
+                setTimeout(() => {
+                    // Cacher l'interface d'entrée
+                    document.getElementById('nameInputContainer').style.opacity = '0';
+                    document.getElementById('welcomeMessage').style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        document.getElementById('nameInputContainer').style.display = 'none';
+                        document.getElementById('welcomeMessage').style.display = 'none';
+                        
+                        // Démarrer les effets
+                        this.createFireworks();
+                        this.showAchievements();
+                        this.showDiploma(studentName);
+                        this.createConfetti();
+                        this.createWandAnimations();
+                    }, 1000);
+                }, transformationDelay);
+            }
+
+            createFireworks() {
+                const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4', '#FFA500'];
+                
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        const x = Math.random() * window.innerWidth;
+                        const y = Math.random() * window.innerHeight * 0.6 + 100;
+                        this.createFirework(x, y, colors[Math.floor(Math.random() * colors.length)]);
+                    }, i * 800);
+                }
+
+                // Continuer les feux d'artifice
+                setInterval(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight * 0.6 + 100;
+                    this.createFirework(x, y, colors[Math.floor(Math.random() * colors.length)]);
+                }, 3000);
+            }
+
+            createFirework(x, y, color) {
+                for (let i = 0; i < 16; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark';
+                    spark.style.left = x + 'px';
+                    spark.style.top = y + 'px';
+                    spark.style.background = color;
+                    spark.style.boxShadow = `0 0 6px ${color}`;
+                    
+                    const angle = (i / 16) * Math.PI * 2;
+                    const velocity = 30 + Math.random() * 50;
+                    const deltaX = Math.cos(angle) * velocity;
+                    const deltaY = Math.sin(angle) * velocity;
+                    
+                    spark.style.animation = `none`;
+                    spark.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                    
+                    document.body.appendChild(spark);
+                    
+                    // Animation personnalisée
+                    let opacity = 1;
+                    let scale = 1;
+                    let currentX = 0;
+                    let currentY = 0;
+                    
+                    const animateFirework = () => {
+                        opacity -= 0.02;
+                        scale -= 0.015;
+                        currentX = deltaX * (1 - opacity);
+                        currentY = deltaY * (1 - opacity) + 20 * (1 - opacity);
+                        
+                        if (opacity > 0) {
+                            spark.style.opacity = opacity;
+                            spark.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+                            requestAnimationFrame(animateFirework);
+                        } else {
+                            spark.remove();
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateFirework);
+                }
+            }
+
+            createConfetti() {
+                const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4', '#FFA500'];
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * window.innerWidth + 'px';
+                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.animationDelay = Math.random() * 2 + 's';
+                        confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
+                        
+                        // Formes variées
+                        if (Math.random() > 0.5) {
+                            confetti.style.borderRadius = '50%';
+                        } else {
+                            confetti.style.transform = 'rotate(45deg)';
+                        }
+                        
+                        document.body.appendChild(confetti);
+                        
+                        setTimeout(() => {
+                            if (confetti.parentNode) {
+                                confetti.remove();
+                            }
+                        }, 5000);
+                    }, i * 100);
+                }
+
+                // Confettis continus
+                setInterval(() => {
+                    for (let i = 0; i < 5; i++) {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * window.innerWidth + 'px';
+                        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
+                        
+                        document.body.appendChild(confetti);
+                        
+                        setTimeout(() => {
+                            if (confetti.parentNode) {
+                                confetti.remove();
+                            }
+                        }, 5000);
+                    }
+                }, 2000);
+            }
+
+            showAchievements() {
+                setTimeout(() => {
+                    document.getElementById('achievementsContainer').style.opacity = '1';
+                    
+                    const achievements = document.querySelectorAll('.achievement');
+                    achievements.forEach((achievement, index) => {
+                        // Changer le texte si en mode sombre
+                        if (this.isDarkMode && this.darkAchievements[index]) {
+                            achievement.textContent = this.darkAchievements[index];
+                        }
+                        
+                        setTimeout(() => {
+                            achievement.classList.add('show');
+                        }, index * 500);
+                    });
+                }, 2000);
+            }
+
+            showDiploma(name) {
+                setTimeout(() => {
+                    if (this.isDarkMode) {
+                        console.log('Showing dark diploma for:', name);
+                        this.prepareDarkDiploma(name);
+                    } else {
+                        console.log('Showing normal diploma for:', name);
+                        document.getElementById('diplomaName').textContent = name;
+                    }
+                    
+                    document.getElementById('diplomaContainer').classList.add('show');
+                    
+                    setTimeout(() => {
+                        const finalMessage = document.getElementById('finalMessage');
+                        if (this.isDarkMode) {
+                            finalMessage.innerHTML = `
+                                🐍 Félicitations, Seigneur des Ténèbres ! Les secrets de la cybersécurité sont vôtres ! 💀<br>
+                                Mais n'oubliez jamais : même dans les ténèbres, la prudence sur Internet reste votre meilleure protection...
+                            `;
+                        }
+                        finalMessage.style.opacity = '1';
+                    }, 2000);
+                }, 4000);
+            }
+
+            createWandAnimations() {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const wand = document.createElement('div');
+                        wand.className = 'wand-animation';
+                        wand.textContent = '🪄';
+                        wand.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                        wand.style.top = Math.random() * (window.innerHeight - 100) + 100 + 'px';
+                        wand.style.animationDelay = Math.random() * 2 + 's';
+                        
+                        document.body.appendChild(wand);
+                        
+                        setTimeout(() => {
+                            if (wand.parentNode) {
+                                wand.remove();
+                            }
+                        }, 10000);
+                    }, i * 2000);
+                }
+
+                // Baguettes continues
+                setInterval(() => {
+                    const wand = document.createElement('div');
+                    wand.className = 'wand-animation';
+                    wand.textContent = '🪄';
+                    wand.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                    wand.style.top = Math.random() * (window.innerHeight - 100) + 100 + 'px';
+                    
+                    document.body.appendChild(wand);
+                    
+                    setTimeout(() => {
+                        if (wand.parentNode) {
+                            wand.remove();
+                        }
+                    }, 10000);
+                }, 5000);
+            }
+
+            checkDarkName(name) {
+                const lowerName = name.toLowerCase().trim();
+                console.log('Checking name:', name, '-> lowercase:', lowerName);
+                console.log('Dark names to check:', this.darkNames);
+                
+                const result = this.darkNames.some(darkName => {
+                    const match = lowerName.includes(darkName);
+                    console.log(`Checking if "${lowerName}" includes "${darkName}":`, match);
+                    return match;
+                });
+                
+                console.log('Final result:', result);
+                return result;
+            }
+
+            activateDarkMode() {
+                this.isDarkMode = true;
+                console.log('Dark mode activated!');
+                
+                // Changer le background
+                document.body.style.backgroundImage = "url('./png/evil.png')";
+                
+                // Changer la musique
+                const audio = document.getElementById('backgroundMusic');
+                audio.pause();
+                audio.src = './mp3/vilains.mp3';
+                audio.load();
+                
+                // Redémarrer la musique
+                setTimeout(() => {
+                    audio.play().catch(e => console.log('Dark audio play failed:', e));
+                }, 100);
+                
+                // Modifier les couleurs du thème
+                this.applyDarkTheme();
+            }
+
+            applyDarkTheme() {
+                // Créer des styles sombres
+                const darkStyle = document.createElement('style');
+                darkStyle.id = 'dark-theme-style';
+                darkStyle.textContent = `
+                    .title {
+                        color: #8B0000 !important;
+                        text-shadow: 0 0 30px #8B0000, 2px 2px 4px rgba(0,0,0,0.9) !important;
+                        animation: darkTitleGlow 3s ease-in-out infinite alternate !important;
+                    }
+                    
+                    @keyframes darkTitleGlow {
+                        from { 
+                            text-shadow: 0 0 30px #8B0000, 2px 2px 4px rgba(0,0,0,0.9);
+                            transform: scale(1);
+                        }
+                        to { 
+                            text-shadow: 0 0 50px #8B0000, 0 0 80px #FF4500, 2px 2px 4px rgba(0,0,0,0.9);
+                            transform: scale(1.05);
+                        }
+                    }
+                    
+                    .welcome-message {
+                        color: #8B0000 !important;
+                    }
+                    
+                    .name-input {
+                        border-color: #8B0000 !important;
+                        color: #8B0000 !important;
+                        background: rgba(139, 0, 0, 0.1) !important;
+                        box-shadow: 0 0 20px rgba(139, 0, 0, 0.3) !important;
+                    }
+                    
+                    .name-input:focus {
+                        box-shadow: 0 0 30px rgba(139, 0, 0, 0.6) !important;
+                    }
+                    
+                    .start-ceremony-btn {
+                        background: linear-gradient(45deg, #8B0000, #654321) !important;
+                    }
+                    
+                    .diploma-container {
+                        background: linear-gradient(45deg, #696969, #555555, #808080) !important;
+                        border-color: #8B0000 !important;
+                        box-shadow: 0 0 40px rgba(139, 0, 0, 0.5) !important;
+                        background-image: radial-gradient(circle at 30% 20%, rgba(169, 169, 169, 0.3), transparent 50%),
+                                         radial-gradient(circle at 70% 80%, rgba(128, 128, 128, 0.2), transparent 50%),
+                                         linear-gradient(135deg, #696969 0%, #555555 50%, #808080 100%) !important;
+                    }
+                    
+                    .diploma-title, .diploma-subtitle, .diploma-text {
+                        color: #8B0000 !important;
+                    }
+                    
+                    .diploma-name {
+                        color: #DC143C !important;
+                        text-shadow: 2px 2px 4px rgba(139, 0, 0, 0.5) !important;
+                    }
+                    
+                    .achievement {
+                        background: rgba(139, 0, 0, 0.9) !important;
+                        border-color: #8B0000 !important;
+                        color: #FFF !important;
+                    }
+                    
+                    .final-message {
+                        color: #8B0000 !important;
+                    }
+                    
+                    .particle {
+                        background: #8B0000 !important;
+                        box-shadow: 0 0 10px #8B0000 !important;
+                    }
+                `;
+                document.head.appendChild(darkStyle);
+
+                // Changer le titre
+                document.querySelector('.title').innerHTML = '💀 Académie des Seigneurs des Ténèbres 💀';
+                
+                // Changer le message d'accueil  
+                document.getElementById('welcomeMessage').innerHTML = `
+                    Bienvenue, Seigneur des Ténèbres...<br>
+                    Les clés de la cybersécurité vous appartiennent désormais...
+                `;
+            }
+
+            prepareDarkDiploma(name) {
+                console.log('Preparing dark diploma content...');
+                
+                // Modifier le contenu du diplôme pour le mode sombre
+                const diplomaContainer = document.getElementById('diplomaContainer');
+                diplomaContainer.innerHTML = `
+                    <div class="diploma-title">💀 DIPLÔME DES ARTS SOMBRES 💀</div>
+                    <div class="diploma-subtitle">Académie des Seigneurs des Ténèbres Cyber</div>
+                    <div class="diploma-name" id="diplomaName">${name}</div>
+                    <div class="diploma-text">
+                        A maîtrisé les arts interdits de la<br>
+                        <strong>Cybersécurité des Ténèbres</strong>
+                    </div>
+                    <div class="diploma-text" style="margin-top: 15px; color: #DC143C;">
+                        ⚡ Les clés de la sécurité vous ont été remises ⚡<br>
+                        Mais prenez garde aux <strong>Reliques de la Mort numériques</strong>...
+                    </div>
+                    <div class="diploma-text" style="margin-top: 15px; font-style: italic; color: #8B0000;">
+                        "Nous espérons que ce jeu vous a plu, mais restez prudent sur Internet.<br>
+                        Même les Seigneurs des Ténèbres doivent se protéger des vrais dangers..."
+                    </div>
+                    <div style="color: #8B0000; font-size: 0.9rem; margin-top: 15px;">
+                        📅 <span id="diplomaDate"></span> • 🏰 Château des Arts Sombres
+                    </div>
+                `;
+                
+                // Remettre la date
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long', 
+                    day: 'numeric'
+                });
+                diplomaContainer.querySelector('#diplomaDate').textContent = dateStr;
+            }
+        }
+
+        let ceremony;
+
+        function startCeremony() {
+            const nameInput = document.getElementById('nameInput');
+            const studentName = nameInput.value.trim();
+            
+            if (!studentName) {
+                nameInput.style.borderColor = '#FF4655';
+                nameInput.placeholder = 'Veuillez entrer votre nom !';
+                setTimeout(() => {
+                    nameInput.style.borderColor = '#FFD700';
+                    nameInput.placeholder = 'Votre nom magique...';
+                }, 2000);
+                return;
+            }
+            
+            ceremony.startCeremony(studentName);
+        }
+
+
+        // Initialiser la cérémonie
+        document.addEventListener('DOMContentLoaded', () => {
+            ceremony = new MagicalCeremony();
+        });
+    </script>
+</body>
+</html>

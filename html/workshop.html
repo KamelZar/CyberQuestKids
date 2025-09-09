@@ -1688,7 +1688,11 @@
 
             // Mettre à jour les indicateurs visuels
             Object.keys(requirements).forEach(req => {
-                const element = document.getElementById(`req-${req}`);
+                let elementId = `req-${req}`;
+                if (req === 'noCommon') {
+                    elementId = 'req-no-common';
+                }
+                const element = document.getElementById(elementId);
                 if (element) {
                     element.className = `requirement ${requirements[req] ? 'met' : 'unmet'}`;
                 }

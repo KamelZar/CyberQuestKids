@@ -827,6 +827,139 @@
                 height: 250px;
             }
         }
+
+        /* === ÉCRAN D'ACCUEIL LOCKED/UNLOCKED === */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 300px;
+            z-index: 9999;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lock-container {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+            width: 400px;
+            height: auto;
+            margin-top: 10px;
+            max-width: 80vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lock-container:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.7));
+        }
+
+        .lock-image {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .lock-image.locked {
+            opacity: 1;
+        }
+
+        .lock-image.unlocked {
+            opacity: 0;
+        }
+
+        .lock-image.unlocked.show {
+            opacity: 1;
+        }
+
+        .lock-image.locked.hide {
+            opacity: 0;
+        }
+
+        .welcome-title {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .welcome-subtitle {
+            color: #ccc;
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 10px 0 0 0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #888;
+            font-size: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.5s forwards, pulse 2s ease-in-out 2.5s infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .welcome-subtitle {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+
+            .lock-image {
+                width: 300px;
+            }
+        }
     </style>
     <!-- 
         🎨 CSS SECRETS 🎨
@@ -836,7 +969,18 @@
     -->
 </head>
 <body>
-    <!-- 
+    <!-- === ÉCRAN D'ACCUEIL LOCKED/UNLOCKED === -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1 class="welcome-title">🛡️ Cybersécurité Workshop</h1>
+        <p class="welcome-subtitle">Devoxx4Kids - Apprends à te protéger dans le monde numérique</p>
+            <div class="lock-container" id="lockContainer" onclick="unlockWorkshop()">
+                <img src="./png/Locked.png" alt="Workshop verrouillé" class="lock-image locked" id="lockedImage">
+                <img src="./png/Unlocked.png" alt="Workshop déverrouillé" class="lock-image unlocked" id="unlockedImage">
+            </div>
+        <div class="click-hint">Clique sur le cadenas pour commencer ✨</div>
+    </div>
+
+    <!--
         🔍 HTML NINJA LEVEL 🔍
         Vous explorez le DOM comme un vrai hacker !
         Fun fact: Tim Berners-Lee a créé le HTML en 1990
@@ -1510,6 +1654,47 @@
     </div>
 
     <script>
+        // === GESTION ÉCRAN D'ACCUEIL LOCKED/UNLOCKED ===
+        function unlockWorkshop() {
+            const lockedImage = document.getElementById('lockedImage');
+            const unlockedImage = document.getElementById('unlockedImage');
+            const lockContainer = document.getElementById('lockContainer');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+
+            // Désactiver le clic pour éviter les doubles clics
+            lockContainer.style.cursor = 'default';
+            lockContainer.onclick = null;
+
+            // Crossfade: Locked disparaît, Unlocked apparaît
+            lockedImage.classList.add('hide');
+            unlockedImage.classList.add('show');
+
+            // Après 2.5 secondes avec l'image unlocked, transition vers les CGU
+            setTimeout(() => {
+                // Fade out de l'écran d'accueil complet
+                welcomeScreen.classList.add('hidden');
+
+                // Après la transition, afficher les CGU
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                    showTermsOfService();
+                }, 800); // Durée de l'animation CSS (0.8s)
+
+            }, 2500); // Attendre 2.5 secondes avec l'image unlocked
+        }
+
+        function showTermsOfService() {
+            // Utiliser le système CGU existant
+            const tosOverlay = document.getElementById('tosOverlay');
+            if (tosOverlay) {
+                tosOverlay.style.display = 'flex';
+            } else {
+                // Si les CGU ne sont pas trouvées, passer directement au workshop
+                console.warn('CGU non trouvées, passage direct au workshop');
+                // Ici on pourrait directement démarrer le workshop
+            }
+        }
+
         class CarouselWorkshop {
             constructor() {
                 this.currentIndex = 0;

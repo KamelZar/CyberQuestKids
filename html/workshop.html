@@ -19,7 +19,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devoxx4Kids - Workshop Cybersécurité 3D</title>
+    <title>Devoxx4Kids - Workshop Cybersécurité</title>
     <style>
         * {
             margin: 0;
@@ -840,7 +840,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: 300px;
+            padding-bottom: 180px;
             z-index: 9999;
             transition: opacity 0.8s ease-in-out;
         }
@@ -862,11 +862,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .lock-container:hover {
-            transform: scale(1.05);
-            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.7));
         }
 
         .lock-image {
@@ -912,6 +907,68 @@
             margin: 10px 0 0 0;
             opacity: 0;
             animation: fadeInUp 1s ease-out 1s forwards;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 80px;
+            margin-top: 300px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2s forwards;
+        }
+
+        .language-flag {
+            width: 60px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            overflow: hidden;
+        }
+
+        .language-flag:hover {
+            transform: scale(1.6);
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+        }
+
+        .language-flag.selected {
+            transform: scale(1.15);
+            filter: drop-shadow(0 8px 16px rgba(255, 255, 255, 0.3));
+            border: 3px solid #fff;
+        }
+
+        /* Drapeaux - Crédit images : https://pixabay.com/fr/users/openclipart-vectors-30363/ */
+        .flag-fr {
+            background-image: url('./png/FR.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .flag-nl {
+            background-image: url('./png/NL.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .flag-en {
+            background-image: url('./png/UK.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .language-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ccc;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         .click-hint {
@@ -971,13 +1028,26 @@
 <body>
     <!-- === ÉCRAN D'ACCUEIL LOCKED/UNLOCKED === -->
     <div class="welcome-screen" id="welcomeScreen">
-        <h1 class="welcome-title">🛡️ Cybersécurité Workshop</h1>
-        <p class="welcome-subtitle">Devoxx4Kids - Apprends à te protéger dans le monde numérique</p>
-            <div class="lock-container" id="lockContainer" onclick="unlockWorkshop()">
+        <h1 class="welcome-title">🛡️ Cyber security Workshop</h1>
+        <p class="welcome-subtitle"  traduction="welcome.subtitle"> </p>
+            <div class="lock-container" id="lockContainer">
                 <img src="./png/Locked.png" alt="Workshop verrouillé" class="lock-image locked" id="lockedImage">
                 <img src="./png/Unlocked.png" alt="Workshop déverrouillé" class="lock-image unlocked" id="unlockedImage">
             </div>
-        <div class="click-hint">Clique sur le cadenas pour commencer ✨</div>
+        <!-- Sélecteur de langue -->
+        <div class="language-selector" id="languageSelector">
+            <div class="language-flag flag-fr" onclick="selectLanguage('fr')" title="Français">
+                <div class="language-label">FR</div>
+            </div>
+            <div class="language-flag flag-nl" onclick="selectLanguage('nl')" title="Nederlands">
+                <div class="language-label">NL</div>
+            </div>
+            <div class="language-flag flag-en" onclick="selectLanguage('en')" title="English">
+                <div class="language-label">EN</div>
+            </div>
+        </div>
+
+        <div class="click-hint" traduction="welcome.instruction"></div>
     </div>
 
     <!--
@@ -987,7 +1057,7 @@
         Easter egg bonus: Regardez l'attribut onclick du header 👆
     -->
     <div class="header">
-        <h1 onclick="triggerWebcamEasterEgg()" style="cursor: pointer;">🛡️ Devoxx4Kids - Cybersécurité Workshop 3D 🛡️</h1>
+        <h1 onclick="triggerWebcamEasterEgg()" style="cursor: pointer;">🛡️ Devoxx4Kids -  Workshop 🛡️</h1>
     </div>
 
     <div class="carousel-container">
@@ -996,9 +1066,9 @@
             <!-- Confidentialité -->
             <div class="carousel-item active" data-index="0" data-game="confidential">
                 <div class="item-content activity1">
-                    <h2>🔒 La Confidentialité</h2>
-                    <p>Découvrez pourquoi vos données personnelles sont précieuses !</p>
-                    <button class="play-btn">Regarder</button>
+                    <h2 traduction="carousel.confidentiality.title"></h2>
+                    <p traduction="carousel.confidentiality.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.confidentiality.button"></button>
                 </div>
             </div>
 
@@ -1006,81 +1076,81 @@
             <!-- Deepfake -->
             <div class="carousel-item next" data-index="1" data-game="deepfake">
                 <div class="item-content activity2">
-                    <h2>🎭 Qui est le vrai ?</h2>
-                    <p>Découvrez le monde des deepfakes et comment les détecter !</p>
-                    <button class="play-btn">Regarder</button>
+                    <h2 traduction="carousel.deepfake.title"></h2>
+                    <p traduction="carousel.deepfake.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.deepfake.button"></button>
                 </div>
             </div>
 
             <!-- Password Fortress -->
             <div class="carousel-item hidden" data-index="2" data-game="password-fortress">
                 <div class="item-content activity3">
-                    <h2>🏰 Mot de passe Fortress</h2>
-                    <p>Créez un mot de passe imprenable et découvrez en combien de temps il peut être cracké !</p>
-                    <button class="play-btn">Tester</button>
+                    <h2 traduction="carousel.fortress.title"></h2>
+                    <p traduction="carousel.fortress.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.fortress.button"></button>
                 </div>
             </div>
 
             <!-- Email Piège -->
             <div class="carousel-item hidden" data-index="3" data-game="email-phishing">
                 <div class="item-content activity4">
-                    <h2>📧 Email Piège</h2>
-                    <p>Apprenez à détecter les emails de phishing avec des exemples réalistes !</p>
-                    <button class="play-btn">Analyser</button>
+                    <h2 traduction="carousel.spam.title"></h2>
+                    <p traduction="carousel.spam.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.spam.button"></button>
                 </div>
             </div>
 
             <!-- WiFi Piège -->
             <div class="carousel-item hidden" data-index="4" data-game="wifi-trap">
                 <div class="item-content activity5">
-                    <h2>📶 WiFi Piège</h2>
-                    <p>Choisissez le bon réseau WiFi et évitez les pièges des hackers !</p>
-                    <button class="play-btn">Jouer</button>
+                    <h2 traduction="carousel.wifi.title"></h2>
+                    <p traduction="carousel.wifi.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.wifi.button"></button>
                 </div>
             </div>
 
             <!-- Réseaux Sociaux -->
             <div class="carousel-item hidden" data-index="5" data-game="social-media-video">
                 <div class="item-content activity6">
-                    <h2>📱 Réseaux Sociaux</h2>
-                    <p>Découvrez pourquoi il faut faire attention à ce qu'on partage sur les réseaux sociaux</p>
-                    <button class="play-btn">Regarder</button>
+                    <h2 traduction="carousel.social.title"></h2>
+                    <p traduction="carousel.social.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.social.button"></button>
                 </div>
             </div>
 
             <!-- Quiz Sécurité - ÉVALUATION FINALE -->
             <div class="carousel-item hidden" data-index="6" data-game="quizz">
                 <div class="item-content activity7">
-                    <h2>📝 Quiz Sécurité</h2>
-                    <p>Testez vos connaissances en cybersécurité - Évaluation finale !</p>
-                    <button class="play-btn">Quiz</button>
+                    <h2 traduction="carousel.quiz.title"></h2>
+                    <p traduction="carousel.quiz.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.quiz.button" ></button>
                 </div>
             </div>
 
             <!-- Questions pour un champion -->
             <div class="carousel-item hidden" data-index="7" data-game="questions-champion">
                 <div class="item-content activity8">
-                    <h2>🏆 Questions pour un champion</h2>
-                    <p>Testez vos connaissances avec un vrai/faux !</p>
-                    <button class="play-btn">Jouer</button>
+                    <h2 traduction="carousel.champion.title"></h2>
+                    <p traduction="carousel.champion.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.champion.button"></button>
                 </div>
             </div>
 
             <!-- Site Suspect - Détection de Fraude -->
             <div class="carousel-item hidden" data-index="8" data-game="site-suspect">
                 <div class="item-content activity9">
-                    <h2>🎉 Promotion en folie</h2>
-                    <p>Explorez ce site de vente en ligne et détectez tous les indices de fraude !</p>
-                    <button class="play-btn">Shopping</button>
+                    <h2 traduction="carousel.promo.title"></h2>
+                    <p traduction="carousel.promo.subtitle"></p>
+                    <button class="play-btn" traduction="carousel.champion.button"></button>
                 </div>
             </div>
 
             <!-- Fantasy Quest - EASTER EGG UNLOCK -->
             <div class="carousel-item hidden fantasy-quest-locked" data-index="9" data-game="fantasy-quest" style="opacity: 0.3; pointer-events: none;">
                 <div class="item-content activity10">
-                    <h2>🏰 Fantasy Quest 🔒</h2>
-                    <p>Complétez toutes les activités pour débloquer cette quête légendaire !</p>
-                    <button class="play-btn" disabled>Verrouillé</button>
+                    <h2 traduction="carousel.fantasy.title"></h2>
+                    <p traduction="carousel.fantasy.locked_subtitle"></p>
+                    <button class="play-btn" disabled traduction="carousel.fantasy.locked"></button>
                 </div>
             </div>
         </div>
@@ -1104,10 +1174,10 @@
     <!-- Modal Password Fortress -->
     <div class="overlay" id="passwordOverlay" style="display: none;">
         <div class="modal">
-            <h2>🏰 Mot de passe Fortress</h2>
+            <h2 traduction="carousel.fortress.tab.title"></h2>
             <div class="password-game">
-                <h3>Créez votre mot de passe forteresse :</h3>
-                <input type="text" id="passwordInput" class="password-input" placeholder="Tapez votre mot de passe..." autocomplete="off">
+                <h3 traduction="carousel.fortress.tab.key_points"></h3>
+                <input type="text" id="passwordInput" class="password-input" placeholder-traduction="carousel.fortress.tab.password-placeholder"  autocomplete="off">
                 
                 <div class="strength-meter">
                     <div class="strength-fill" id="strengthFill"></div>
@@ -1118,15 +1188,14 @@
                 </div>
                 
                 <div class="requirements" id="requirements">
-                    <div class="requirement unmet" id="req-length">Au moins 8 caractères</div>
-                    <div class="requirement unmet" id="req-lower">Lettres minuscules</div>
-                    <div class="requirement unmet" id="req-upper">Lettres majuscules</div>
-                    <div class="requirement unmet" id="req-number">Chiffres</div>
-                    <div class="requirement unmet" id="req-special">Caractères spéciaux</div>
-                    <div class="requirement unmet" id="req-no-common">Pas de mots courants</div>
+                    <div class="requirement unmet" id="req-length" traduction="carousel.fortress.tab.criteria.length"></div>
+                    <div class="requirement unmet" id="req-lower" traduction="carousel.fortress.tab.criteria.low"></div>
+                    <div class="requirement unmet" id="req-upper" traduction="carousel.fortress.tab.criteria.capital"></div>
+                    <div class="requirement unmet" id="req-number" traduction="carousel.fortress.tab.criteria.digit"></div>
+                    <div class="requirement unmet" id="req-special" traduction="carousel.fortress.tab.criteria.special"></div>
+                    <div class="requirement unmet" id="req-no-common" traduction="carousel.fortress.tab.criteria.unknown"></div>
                 </div>
-                
-                <button class="btn" onclick="closePasswordGame()">Fermer</button>
+                <button class="btn" onclick="closePasswordGame()" traduction="carousel.fortress.tab.close"></button>
             </div>
         </div>
     </div>
@@ -1135,7 +1204,7 @@
     <div class="overlay" id="emailOverlay" style="display: none;">
         <div class="modal">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid #ff4655; margin-bottom: 20px;">
-                <h2 style="margin: 0; color: #ff4655;">📧 Détecteur d'Email Piège</h2>
+                <h2 style="margin: 0; color: #ff4655;" traduction="carousel.spam.tab.title"></h2>
                 <div class="header-buttons" style="display: flex; gap: 10px; align-items: center;">
                     <button class="reload-btn" onclick="generateNewEmail()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;"><span class="spinner">🔄</span></button>
                     <button class="close-btn" onclick="closeEmailGame()" style="background: none; border: none; font-size: 24px; color: #ff4655; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
@@ -1145,9 +1214,9 @@
                 <!-- L'email sera généré dynamiquement -->
             </div>
             <div class="analysis-panel" id="analysisPanel">
-                <h3>🕵️ Votre analyse :</h3>
-                <p>Cliquez sur l'email pour révéler les indices de phishing !</p>
-                <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">Encore +</button>
+                <h3 traduction="carousel.spam.tab.analyse"></h3>
+                <p traduction="carousel.spam.tab.insight"></p>
+                <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')" traduction="carousel.spam.tab.more"></button>
             </div>
         </div>
     </div>
@@ -1155,16 +1224,16 @@
     <!-- Modal WiFi Piège -->
     <div class="overlay" id="wifiOverlay" style="display: none;">
         <div class="modal">
-            <h2>📶 WiFi Piège</h2>
+            <h2 traduction="carousel.wifi.title"></h2>
             <div class="wifi-game">
-                <h3 id="wifiSituation">Situation : Vous êtes dans un café et cherchez un WiFi...</h3>
-                <p>Choisissez le réseau le plus sûr :</p>
+                <h3 id="wifiSituation" traduction="carousel.wifi.situation"></h3>
+                <p traduction="carousel.wifi.subtitle"></p>
                 <div id="wifiNetworks">
                     <!-- Les réseaux WiFi seront générés dynamiquement -->
                 </div>
                 <div id="wifiResult" class="wifi-result" style="display: none;"></div>
-                <button class="btn" onclick="generateNewWifiScenario()">Nouveau scénario</button>
-                <button class="btn" onclick="closeWifiGame()">Fermer</button>
+                <button class="btn" onclick="generateNewWifiScenario()" traduction="carousel.wifi.tab.new"></button>
+                <button class="btn" onclick="closeWifiGame()" traduction="carousel.wifi.tab.close"></button>
             </div>
         </div>
     </div>
@@ -1172,7 +1241,7 @@
     <!-- Modal Vidéo Réseaux Sociaux -->
     <div class="overlay" id="socialMediaOverlay" style="display: none;">
         <div class="modal">
-            <h2>📱 Réseaux Sociaux : Attention Danger !</h2>
+            <h2 traduction="carousel.social.tab.title"></h2>
             <div class="video-container" style="text-align: center; margin: 20px 0;">
                 <iframe id="socialMediaVideo" width="560" height="315" 
                     src="" 
@@ -1183,38 +1252,29 @@
                 </iframe>
             </div>
             <div class="analysis-panel">
-                <h3>📚 Points clés à retenir :</h3>
+                <h3 traduction="carousel.social.tab.key_points">></h3>
                 <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
-                    <h4>⚠️ Dangers des réseaux sociaux :</h4>
-                    <ul>
-                        <li>Partage d'informations personnelles</li>
-                        <li>Photos géolocalisées</li>
-                        <li>Contacts avec des inconnus</li>
-                        <li>Cyberharcelement</li>
-                        <li>Usurpation d'identité</li>
+                    <h4 traduction="carousel.social.tab.warning.title"></h4>
+                    <ul id="social-warning">
+                        <!-- Les <li> seront générés automatiquement -->
                     </ul>
                 </div>
                 
                 <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
-                    <h4>🛡️ Conseils de protection :</h4>
-                    <ul>
-                        <li>Paramètres de confidentialité stricts</li>
-                        <li>Ne jamais partager d'infos personnelles</li>
-                        <li>Attention aux photos et leur géolocalisation</li>
-                        <li>Signaler tout comportement suspect</li>
-                        <li>Parler à un adulte de confiance</li>
-                    </ul>
-                </div>
-                
-                <button class="btn" onclick="closeSocialMediaGame()">Fermer</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal Vidéo Confidentialité -->
+                    <h4 traduction="carousel.social.tab.tips.title"></h4>
+                    <ul id="social-tips">
+                        <!-- Les <li> seront générés automatiquement -->
+                   </ul>
+               </div>
+               <button class="btn" onclick="closeSocialMediaGame()">Fermer</button>
+           </div>
+       </div>
+   </div>
+
+   <!-- Modal Vidéo Confidentialité -->
     <div class="overlay" id="confidentialityOverlay" style="display: none;">
         <div class="modal">
-            <h2>🔒 La confidentialité c'est quoi ?</h2>
+            <h2 traduction="carousel.confidentiality.tab.title"></h2>
             <div class="video-container" style="text-align: center; margin: 20px 0;">
                 <iframe id="confidentialityVideo" width="560" height="315" 
                     src="" 
@@ -1225,30 +1285,22 @@
                 </iframe>
             </div>
             <div class="analysis-panel">
-                <h3>📚 Points clés à retenir :</h3>
+                <h3 traduction="carousel.confidentiality.tab.key_points"></h3>
                 <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
-                    <h4>⚠️ Vos données personnelles sont précieuses :</h4>
-                    <ul>
-                        <li>🔐 Nom, âge, adresse, photos, habitudes</li>
-                        <li>👁️ Vos actions en ligne sont tracées</li>
-                        <li>💰 Vos données sont vendues pour du marketing</li>
-                        <li>🎯 Profils publicitaires créés à votre insu</li>
-                        <li>📍 Géolocalisation et historiques conservés</li>
+                    <h4 traduction="carousel.confidentiality.tab.warning.title"></h4>
+                    <ul id="confidentiality-warning">
+                        <!-- Les <li> seront générés automatiquement -->
                     </ul>
                 </div>
-                
+
                 <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
-                    <h4>🛡️ Comment protéger vos données :</h4>
-                    <ul>
-                        <li>Vérifiez les paramètres de confidentialité</li>
-                        <li>Limitez les informations partagées</li>
-                        <li>Lisez les conditions d'utilisation</li>
-                        <li>Désactivez la géolocalisation non nécessaire</li>
-                        <li>Demandez-vous : "Cette info est-elle vraiment nécessaire ?"</li>
+                    <h4 traduction="carousel.confidentiality.tab.tips.title"></h4>
+                    <ul id="confidentiality-tips">
+                        <!-- Les <li> seront générés automatiquement -->
                     </ul>
                 </div>
-                
-                <button class="btn" onclick="closeConfidentialityGame()">Fermer</button>
+
+                <button class="btn" onclick="closeConfidentialityGame()" traduction="carousel.confidentiality.tab.close"></button>
             </div>
         </div>
     </div>
@@ -1257,7 +1309,7 @@
     <!-- Modal Vidéo Deepfake -->
     <div class="overlay" id="deepfakeOverlay" style="display: none;">
         <div class="modal">
-            <h2>🎭 Qui est le vrai ? - Deepfakes et manipulation (4 vidéos ~1min chacune)</h2>
+            <h2 traduction="carousel.deepfake.tab.title"></h2>
             <div class="video-container" style="text-align: center; margin: 20px 0;">
                 <iframe id="deepfakeVideo" width="560" height="315" 
                     src="" 
@@ -1268,33 +1320,21 @@
                 </iframe>
             </div>
             <div class="analysis-panel">
-                <h3>📚 Points clés à retenir :</h3>
+                <h3 traduction="carousel.deepfake.tab.key_points"></h3>
                 <div class="red-flags" style="background-color: rgba(231, 76, 60, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e74c3c;">
-                    <h4>⚠️ Dangers des deepfakes et filtres :</h4>
-                    <ul>
-                        <li>🤖 IA crée de fausses vidéos très réalistes</li>
-                        <li>👀 Difficile à détecter à l'œil nu</li>
-                        <li>📱 <strong>FILTRES/APPS de transformation</strong> (vieillir/rajeunir/changer de sexe) = <strong>STOCKAGE DE VOS DONNÉES</strong></li>
-                        <li>🔒 Abus possible de votre image personnelle</li>
-                        <li>💼 Usages malveillants (chantage, fake news)</li>
-                        <li>🎭 Atteinte à la réputation des personnes</li>
+                    <h4 traduction="carousel.deepfake.tab.warning.title"></h4>
+                    <ul id="deepfake-warning">
+                        <!-- Les <li> seront générés automatiquement -->
                     </ul>
                 </div>
                 
                 <div class="explanation" style="background-color: rgba(52, 152, 219, 0.2); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #3498db;">
-                    <h4>🛡️ Comment se protéger :</h4>
-                    <ul>
-                        <li><strong>FILTRES/APPS :</strong> Réfléchissez avant de télécharger - Où vont vos photos ?</li>
-                        <li>Lisez les conditions d''utilisation des apps de transformation</li>
-                        <li>Observez les yeux et expressions du visage dans les vidéos</li>
-                        <li>Vérifiez la cohérence audio-vidéo</li>
-                        <li>Croisez avec d''autres sources fiables</li>
-                        <li>Posez-vous : "Qui partage ? Pourquoi ?"</li>
-                        <li>En cas de doute, ne partagez pas</li>
+                    <h4 traduction="carousel.deepfake.tab.tips.title"></h4>
+                    <ul id="deepfake-tips">
                     </ul>
                 </div>
                 
-                <button class="btn" onclick="closeDeepfakeGame()">Fermer</button>
+                <button class="btn" onclick="closeDeepfakeGame()" traduction="carousel.deepfake.tab.close"></button>
             </div>
         </div>
     </div>
@@ -1307,53 +1347,37 @@
     <!-- Modal Matrix Easter Egg -->
     <div class="overlay" id="matrixOverlay" style="display: none; z-index: 1001;">
         <div class="modal" style="background: rgba(0, 20, 0, 0.95); border: 2px solid #00ff00; color: #00ff00;">
-            <h2 style="color: #00ff00; text-shadow: 0 0 20px #00ff00;">👁️ WELCOME TO THE MATRIX, NEO</h2>
+            <h2 style="color: #00ff00; text-shadow: 0 0 20px #00ff00;" traduction="carousel.matrix.title"></h2>
             <div style="color: #00ff00; text-align: center; margin: 15px 0; font-size: 1.1rem; opacity: 0.8; font-family: 'Courier New', monospace; animation: glow 3s ease-in-out infinite alternate;">
                 Système créé par Kamel Zaraoui 2025
             </div>
-            <div class="matrix-stats">
-                <h3 style="color: #00ff00; margin-bottom: 20px;">🔥 STATISTIQUES CYBERSÉCURITÉ 2024</h3>
-                <div class="cyber-stat">💸 <strong>12,9 milliards €</strong> de pertes dues à la cybercriminalité en France (2023)</div>
-                <div class="cyber-stat">⚡ <strong>1 cyberattaque toutes les 39 secondes</strong> dans le monde</div>
-                <div class="cyber-stat">🎯 <strong>95%</strong> des cyberattaques commencent par un email de phishing</div>
-                <div class="cyber-stat">💰 <strong>4,45 millions $</strong> : coût moyen d'une violation de données</div>
-                <div class="cyber-stat">⏱️ <strong>287 jours</strong> : temps moyen pour détecter une cyberattaque avancée</div>
-                <div class="cyber-stat">🏢 <strong>43%</strong> des cyberattaques visent les PME</div>
-                <div class="cyber-stat">🔐 <strong>81%</strong> des violations utilisent des mots de passe faibles ou volés</div>
-                <div class="cyber-stat">📱 <strong>6,8 milliards</strong> d'appareils infectés par des malwares en 2023</div>
-                <div class="cyber-stat">🚨 <strong>1 ransomware toutes les 11 secondes</strong></div>
-                <div class="cyber-stat">👥 <strong>4,1 milliards</strong> de comptes exposés en 2023</div>
+            <div class="matrix-stats" id="matrix-div">
+                <h3 style="color: #00ff00; margin-bottom: 20px;" traduction="carousel.matrix.subtitle"></h3>
             </div>
-            <button class="btn" onclick="closeMatrix()" style="background: rgba(0, 255, 0, 0.2); border: 2px solid #00ff00; color: #00ff00; margin-top: 20px;">QUITTER LA MATRICE</button>
+            <button class="btn" onclick="closeMatrix()" style="background: rgba(0, 255, 0, 0.2); border: 2px solid #00ff00; color: #00ff00; margin-top: 20px;" traduction="carousel.matrix.close"></button>
         </div>
     </div>
 
     <!-- Modal Webcam Easter Egg -->
     <div class="overlay" id="webcamOverlay" style="display: none;">
         <div class="modal">
-            <h2>👁️ Les Yeux du Lion Cybersécurité</h2>
+            <h2 traduction="carousel.webcam.title"></h2>
             <div class="webcam-container">
                 <video id="webcamVideo" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 8px;"></video>
                 <div class="webcam-warning">
-                    <h3>🦁 Surprise ! Le lion vous observe !</h3>
-                    <p>Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.</p>
+                    <h3 traduction="carousel.webcam.surprise.title"></h3>
+                    <p traduction="carousel.webcam.surprise.info"></p>
                     
                     <div class="explanation-box">
-                        <div class="explanation-title">🛡️ Conseils de Cybersécurité :</div>
+                        <div class="explanation-title" traduction="carousel.webcam.surprise.advice.title"></div>
                         <div class="explanation-text">
-                            <ul>
-                                <li><strong>Toujours vérifier</strong> pourquoi un site demande l'accès à votre caméra</li>
-                                <li><strong>Refuser l'accès</strong> si ce n'est pas nécessaire pour le service</li>
-                                <li><strong>Couvrir votre webcam</strong> quand vous ne l'utilisez pas</li>
-                                <li><strong>Vérifier les permissions</strong> accordées dans les paramètres du navigateur</li>
-                                <li><strong>Se méfier</strong> des sites qui demandent des permissions excessives</li>
+                            <ul id="webcam-advice">
+                                <!-- generate automatically -->
                             </ul>
                         </div>
                     </div>
                     
-                    <div class="important-note">
-                        <strong>Rassurez-vous :</strong> Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. 
-                        Le flux vidéo reste uniquement sur votre ordinateur.
+                    <div class="important-note" traduction="carousel.webcam.relax">
                     </div>
                 </div>
             </div>
@@ -1367,79 +1391,13 @@
     <div class="overlay" id="tosOverlay">
         <div class="modal">
             <span class="close" id="closeModal">&times;</span>
-            <h2>Conditions Générales d'Utilisation</h2>
+            <h2 traduction="conditions.title"></h2>
             <div class="tos-content" id="tosContent">
-                <h3>1. INTRODUCTION</h3>
-                <p>Bienvenue sur SuperGaming ! En utilisant notre plateforme, vous acceptez les présentes conditions générales d'utilisation. Veuillez les lire attentivement avant de poursuivre.</p>
-                
-                <p>Les présentes Conditions Générales d'Utilisation (ci-après dénommées "CGU") régissent l'utilisation de la plateforme SuperGaming (ci-après dénommée "la Plateforme") exploitée par SuperGaming Inc. (ci-après dénommée "la Société"). En accédant à la Plateforme ou en l'utilisant, vous reconnaissez avoir lu, compris et accepté d'être lié par les présentes CGU.</p>
-                
-                <p>La Société se réserve le droit de modifier les présentes CGU à tout moment et sans préavis. Il est de votre responsibilité de consulter régulièrement les CGU pour prendre connaissance des éventuelles modifications. Votre utilisation continue de la Plateforme après la publication de modifications constitue votre acceptation de ces modifications.</p>
-                
-                <h3>2. ACCÈS À LA PLATEFORME</h3>
-                <p>L'accès à la Plateforme est réservé aux utilisateurs âgés de 13 ans et plus. Si vous avez moins de 18 ans, vous devez obtenir le consentement d'un parent ou d'un tuteur légal avant d'utiliser la Plateforme.</p>
-                
-                <p>La Société se réserve le droit de refuser l'accès à la Plateforme à tout utilisateur, à sa seule discrétion, sans préavis ni justification.</p>
-                
-                <p>Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se déroulent sous votre compte. Vous devez immédiatement informer la Société de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité.</p>
-                
-                <h3>3. UTILISATION DE LA PLATEFORME</h3>
-                <p>En utilisant la Plateforme, vous vous engagez à ne pas :</p>
-                <ul>
-                    <li>Enfreindre les lois applicables ou les présentes CGU</li>
-                    <li>Utiliser la Plateforme d'une manière qui pourrait endommager, désactiver, surcharger ou altérer le fonctionnement de la Plateforme</li>
-                    <li>Tenter d'accéder à des zones ou des fonctionnalités de la Plateforme auxquelles vous n'êtes pas autorisé à accéder</li>
-                    <li>Utiliser des robots, des scrapers ou d'autres moyens automatisés pour accéder à la Plateforme</li>
-                    <li>Introduire des logiciels malveillants, des virus ou tout autre code nuisible sur la Plateforme</li>
-                    <li>Collecter ou stocker des informations personnelles sur d'autres utilisateurs sans leur consentement</li>
-                </ul>
-                
-                <h3>4. CONTENU DE L'UTILISATEUR</h3>
-                <p>En soumettant du contenu sur la Plateforme (y compris, mais sans s'y limiter, des textes, des images, des vidéos, des commentaires), vous accordez à la Société une licence mondiale, non exclusive, gratuite, transférable et pouvant faire l'objet d'une sous-licence pour utiliser, reproduire, distribuer, préparer des œuvres dérivées, afficher et exécuter ce contenu en relation avec la Plateforme et les activités commerciales de la Société.</p>
-                
-                <p>Vous déclarez et garantissez que vous possédez ou avez obtenu tous les droits, licences, consentements, permissions, pouvoirs et/ou autorités nécessaires pour accorder les droits accordés aux présentes pour tout contenu que vous soumettez.</p>
-                
-                <h3>5. PROPRIÉTÉ INTELLECTUELLE</h3>
-                <p>La Plateforme et tout son contenu, fonctionnalités et fonctionnalités (y compris, mais sans s'y limiter, toutes les informations, logiciels, textes, affichages, images, vidéos et audio, ainsi que leur conception, sélection et arrangement) sont la propriété de la Société, de ses concédants de licence ou d'autres fournisseurs de ce contenu, et sont protégés par les lois sur le droit d'auteur, les marques de commerce, les brevets, les secrets commerciaux et autres lois sur la propriété intellectuelle ou les droits de propriété.</p>
-                
-                <p>Vous ne devez pas reproduire, distribuer, modifier, créer des œuvres dérivées, afficher publiquement, exécuter publiquement, republier, télécharger, stocker ou transmettre tout matériel de notre Plateforme, sauf si cela est expressément autorisé par les présentes CGU.</p>
-                
-                <h3>6. CONFIDENTIALITÉ</h3>
-                <p>Votre utilisation de la Plateforme est également régie par notre Politique de Confidentialité, qui est incorporée aux présentes CGU par référence.</p>
-                
-                <p>En utilisant la Plateforme, vous consentez à la collecte, à l'utilisation et au partage de vos informations comme décrit dans notre Politique de Confidentialité.</p>
-                <div class="important-clause">L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT</div>
-                <h6>* bravo d'avoir lu les conditions : petit conseil, rentre utilisateur:"Je sais" mdp:"lire" sous TikTok , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison</h6>
-                <h3>7. LIMITATION DE RESPONSABILITÉ</h3>
-                <p>Dans toute la mesure permise par la loi applicable, la Société ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus, que ces dommages soient prévisibles ou non, et même si la Société a été informée de la possibilité de tels dommages.</p>
-                
-                <p>La responsabilité totale de la Société pour toute réclamation découlant de ou liée aux présentes CGU ne dépassera pas le montant que vous avez payé à la Société au cours des douze (12) mois précédant l'événement donnant lieu à la responsabilité, ou 100 euros, selon le montant le plus élevé.</p>
-                
-                <h3>8. INDEMNISATION</h3>
-                <p>Vous acceptez d'indemniser, de défendre et de dégager de toute responsabilité la Société, ses affiliés, dirigeants, directeurs, employés, agents, fournisseurs et partenaires contre toute réclamation, responsabilité, dommage, perte et dépense, y compris, sans limitation, les frais juridiques et comptables raisonnables, découlant de ou liés à votre violation des présentes CGU, votre utilisation de la Plateforme, votre violation de tout droit d'un tiers, ou tout contenu que vous soumettez, publiez ou transmettez via la Plateforme.</p>
-                
-                <h3>9. RÉSILIATION</h3>
-                <p>La Société peut, à sa seule discrétion, suspendre ou résilier votre accès à la Plateforme à tout moment, pour quelque raison que ce soit, sans préavis ni responsabilité.</p>
-                
-                <p>Toutes les dispositions des présentes CGU qui, par leur nature, devraient survivre à la résiliation survivront à la résiliation, y compris, sans limitation, les dispositions relatives à la propriété, les exclusions de garantie, l'indemnisation et les limitations de responsabilité.</p>
-                
-                <h3>10. LOI APPLICABLE ET JURIDICTION</h3>
-                <p>Les présentes CGU sont régies et interprétées conformément aux lois de France, sans égard à ses principes de conflits de lois.</p>
-                
-                <p>Tout litige découlant de ou lié aux présentes CGU sera soumis à la juridiction exclusive des tribunaux de Paris, France.</p>
-                
-                <h3>11. DISPOSITIONS DIVERSES</h3>
-                <p>Si une disposition des présentes CGU est jugée illégale, nulle ou inapplicable pour quelque raison que ce soit, cette disposition sera limitée ou éliminée des présentes CGU dans la mesure minimale nécessaire, et les autres dispositions des présentes CGU resteront en pleine vigueur et effet.</p>
-                
-                <p>Les présentes CGU constituent l'intégralité de l'accord entre vous et la Société concernant la Plateforme et remplacent tous les accords antérieurs entre vous et la Société concernant la Plateforme.</p>
-                
-                <p>Le fait que la Société n'exerce pas ou n'applique pas un droit ou une disposition des présentes CGU ne constitue pas une renonciation à ce droit ou à cette disposition.</p>
-                
-                <p>Les présentes CGU, et tous les droits et licences accordés en vertu des présentes, ne peuvent être transférés ou cédés par vous, mais peuvent être transférés ou cédés par la Société sans restriction.</p>
+
             </div>
             <div>
                 <input type="checkbox" id="tosAccept">
-                <label for="tosAccept">J'accepte les conditions générales d'utilisation</label>
+                <label for="tosAccept" traduction="conditions.confirm"></label>
             </div>
             <div class="login-options">
                 <button class="login-button" id="googleLogin" title="Google">
@@ -1458,58 +1416,58 @@
             
             <!-- Google Login Form -->
             <div class="login-form" id="googleForm">
-                <h3>Connexion avec Google</h3>
+                <h3 traduction="conditions.google.title"></h3>
                 <div class="form-group">
-                    <label for="googleEmail">Email ou Téléphone</label>
-                    <input type="text" id="googleEmail" placeholder="email@gmail.com ou +33123456789">
+                    <label for="googleEmail" traduction="conditions.google.user"></label>
+                    <input type="text" id="googleEmail" placeholder-traduction="conditions.google.user_instruction">
                 </div>
                 <div class="form-group">
-                    <label for="googlePassword">Mot de passe</label>
-                    <input type="password" id="googlePassword" placeholder="Votre mot de passe">
+                    <label for="googlePassword" traduction="conditions.google.password"></label>
+                    <input type="password" id="googlePassword" placeholder-traduction="conditions.google.password_instruction">
                 </div>
-                <button class="submit-btn" id="googleSubmit">Se connecter</button>
+                <button class="submit-btn" id="googleSubmit" traduction="conditions.connect"></button>
             </div>
             
             <!-- Instagram Login Form -->
             <div class="login-form" id="instagramForm">
-                <h3>Connexion avec Instagram</h3>
+                <h3 traduction="conditions.instagram.title"></h3>
                 <div class="form-group">
-                    <label for="instagramUsername">Nom d'utilisateur ou Email</label>
-                    <input type="text" id="instagramUsername" placeholder="votre_username ou email@domain.com">
+                    <label for="instagramUsername" traduction="conditions.instagram.user"></label>
+                    <input type="text" id="instagramUsername" placeholder-traduction="conditions.instagram.user_instruction">
                 </div>
                 <div class="form-group">
-                    <label for="instagramPassword">Mot de passe</label>
-                    <input type="password" id="instagramPassword" placeholder="Votre mot de passe">
+                    <label for="instagramPassword" traduction="conditions.instagram.password" ></label>
+                    <input type="password" id="instagramPassword" placeholder-traduction="conditions.instagram.password_instruction">
                 </div>
-                <button class="submit-btn" id="instagramSubmit">Se connecter</button>
+                <button class="submit-btn" id="instagramSubmit" traduction="conditions.connect" ></button>
             </div>
             
             <!-- Snapchat Login Form -->
             <div class="login-form" id="snapchatForm">
-                <h3>Connexion avec Snapchat</h3>
+                <h3 traduction="conditions.snapchat.title"></h3>
                 <div class="form-group">
-                    <label for="snapchatUsername">Nom d'utilisateur ou Email</label>
-                    <input type="text" id="snapchatUsername" placeholder="votre_username ou email@domain.com">
+                    <label for="snapchatUsername" traduction="conditions.snapchat.user"></label>
+                    <input type="text" id="snapchatUsername" placeholder-traduction="conditions.snapchat.user_instruction">
                 </div>
                 <div class="form-group">
-                    <label for="snapchatPassword">Mot de passe</label>
-                    <input type="password" id="snapchatPassword" placeholder="Votre mot de passe">
+                    <label for="snapchatPassword" traduction="conditions.snapchat.password"></label>
+                    <input type="password" id="snapchatPassword" placeholder-traduction="conditions.snapchat.password_instruction">
                 </div>
-                <button class="submit-btn" id="snapchatSubmit">Se connecter</button>
+                <button class="submit-btn" id="snapchatSubmit" traduction="conditions.connect"></button>
             </div>
             
             <!-- TikTok Login Form -->
             <div class="login-form" id="tiktokForm">
-                <h3>Connexion avec TikTok</h3>
+                <h3 traduction="conditions.tiktok.title"></h3>
                 <div class="form-group">
-                    <label for="tiktokUsername">Nom d'utilisateur ou Email</label>
-                    <input type="text" id="tiktokUsername" placeholder="votre_username ou email@domain.com">
+                    <label for="tiktokUsername" traduction="conditions.tiktok.user" ></label>
+                    <input type="text" id="tiktokUsername" placeholder-traduction="conditions.tiktok.user_instruction">
                 </div>
                 <div class="form-group">
-                    <label for="tiktokPassword">Mot de passe</label>
-                    <input type="password" id="tiktokPassword" placeholder="Votre mot de passe">
+                    <label for="tiktokPassword" traduction="conditions.tiktok.password" ></label>
+                    <input type="password" id="tiktokPassword" placeholder-traduction="conditions.tiktok.password_instruction">
                 </div>
-                <button class="submit-btn" id="tiktokSubmit">Se connecter</button>
+                <button class="submit-btn" id="tiktokSubmit" traduction="conditions.connect"></button>
             </div>
         </div>
     </div>
@@ -1695,6 +1653,172 @@
             }
         }
 
+        // === GESTION SÉLECTEUR DE LANGUE ===
+        let translations = {}; // Stockage global des traductions
+
+        async function loadTranslations(lang) {
+            try {
+                console.log(`Chargement des traductions ${lang}...`);
+                const response = await fetch(`./translations/${lang}/config.json`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                translations = await response.json();
+                console.log(`Traductions ${lang} chargées:`, translations);
+            } catch (error) {
+                console.error(`Erreur lors du chargement des traductions ${lang}:`, error);
+                translations = {}; // Fallback vers objet vide
+            }
+
+        }
+
+        loadTranslations('fr').then(() => {
+            applyTranslations();
+            generateTOSContent();
+        });
+
+        // Fonction pour générer dynamiquement le contenu des CGU
+        function generateTOSContent() {
+            const tosContent = document.getElementById('tosContent');
+            if (!tosContent || !translations?.conditions?.content) {
+                console.warn('Impossible de générer les CGU : conteneur ou traductions manquants');
+                return;
+            }
+
+            const content = translations.conditions.content;
+            let html = '';
+
+            // Générer chaque section
+            Object.keys(content).forEach(sectionKey => {
+                const section = content[sectionKey];
+
+                // Ajouter le titre de la section
+                html += `<h3>${section.title}</h3>`;
+
+                // Ajouter les paragraphes
+                if (section.paragraphs) {
+                    section.paragraphs.forEach(paragraph => {
+                        html += `<p>${paragraph}</p>`;
+                    });
+                }
+
+                // Gestion spéciale pour la section "usage" avec intro et restrictions
+                if (section.intro) {
+                    html += `<p>${section.intro}</p>`;
+                }
+
+                if (section.restrictions) {
+                    html += '<ul>';
+                    section.restrictions.forEach(restriction => {
+                        html += `<li>${restriction}</li>`;
+                    });
+                    html += '</ul>';
+                }
+
+                // Gestion spéciale pour la section "privacy" avec clause importante
+                if (section.important_clause) {
+                    html += `<div class="important-clause">${section.important_clause}</div>`;
+                }
+
+                if (section.easter_egg) {
+                    html += `<h6>${section.easter_egg}</h6>`;
+                }
+
+                // Ajouter un espace entre les sections
+                html += '<br>';
+            });
+
+            tosContent.innerHTML = html;
+            console.log('CGU générées dynamiquement à partir des traductions');
+        }
+
+        function getTranslation(key) {
+            const keys = key.split('.');
+            let value = translations;
+
+            for (const k of keys) {
+                value = value?.[k];
+                if (value === undefined) break;
+            }
+
+            return value || key; // Retourne la clé si traduction non trouvée
+        }
+
+        // Fonction pour appliquer les traductions à tous les éléments avec l'attribut 'traduction'
+        function processMarkdown(text) {
+            if (!text || typeof text !== 'string') return text;
+
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **gras**
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')             // *italique*
+                .replace(/`(.*?)`/g, '<code>$1</code>');          // `code`
+        }
+
+        function applyTranslations() {
+            // Traductions pour le contenu textuel
+            const elementsToTranslate = document.querySelectorAll('[traduction]');
+            elementsToTranslate.forEach(element => {
+                const translationKey = element.getAttribute('traduction');
+                const translatedText = getTranslation(translationKey);
+
+                if (translatedText && translatedText !== translationKey) {
+                    const processedText = processMarkdown(translatedText);
+                    if (processedText.includes('<')) {
+                        element.innerHTML = processedText;
+                    } else {
+                        element.textContent = translatedText;
+                    }
+                }
+            });
+
+            // Traductions pour les placeholders
+            const placeholdersToTranslate = document.querySelectorAll('[placeholder-traduction]');
+            placeholdersToTranslate.forEach(element => {
+                const translationKey = element.getAttribute('placeholder-traduction');
+                const translatedText = getTranslation(translationKey);
+
+                if (translatedText && translatedText !== translationKey) {
+                    element.placeholder = translatedText;
+                }
+            });
+
+            console.log(`${elementsToTranslate.length} éléments traduits + ${placeholdersToTranslate.length} placeholders traduits`);
+        }
+
+        function selectLanguage(lang) {
+            // Sauvegarder le choix en localStorage
+            localStorage.setItem('workshop-language', lang);
+
+            // Mettre à jour l'interface visuelle
+            document.querySelectorAll('.language-flag').forEach(flag => {
+                flag.classList.remove('selected');
+            });
+
+            // Marquer le drapeau sélectionné
+            const selectedFlag = document.querySelector(`.flag-${lang}`);
+            if (selectedFlag) {
+                selectedFlag.classList.add('selected');
+            }
+
+            console.log(`Langue sélectionnée : ${lang}`);
+
+            // Charger les traductions pour cette langue et appliquer
+            loadTranslations(lang).then(() => {
+                applyTranslations();
+            });
+
+            // Puis déverrouiller le workshop
+            unlockWorkshop();
+        }
+
+        // Initialiser la langue au chargement
+        function initializeLanguage() {
+            const savedLang = localStorage.getItem('workshop-language') || 'fr';
+            selectLanguage(savedLang);
+        }
+
         class CarouselWorkshop {
             constructor() {
                 this.currentIndex = 0;
@@ -1818,7 +1942,7 @@
                 // URLs des jeux externes
                 const gameUrls = {
                     "fantasy-quest": "https://beinternetawesome.withgoogle.com/fr_be/interland",
-                    "quizz": "https://www.jobirl.com/quiz/quiz-cybersecurite"
+                    "quizz": getTranslation("carousel.quiz.link")
                 };
 
                 if (gameUrls[gameType]) {
@@ -1853,14 +1977,20 @@
                         break;
                     case 'social-media-video':
                         document.getElementById('socialMediaOverlay').style.display = 'flex';
+                        generateListFromArray('social-warning', 'carousel.social.tab.warning.element');
+                        generateListFromArray('social-tips', 'carousel.social.tab.tips.element');
                         openSocialMediaVideo();
                         break;
                     case 'confidential':
                         document.getElementById('confidentialityOverlay').style.display = 'flex';
+                        generateListFromArray('confidentiality-warning', 'carousel.confidentiality.tab.warning.element');
+                        generateListFromArray('confidentiality-tips', 'carousel.confidentiality.tab.tips.element');
                         openConfidentialityVideo();
                         break;
                     case 'deepfake':
                         document.getElementById('deepfakeOverlay').style.display = 'flex';
+                        generateListFromArray('deepfake-warning', 'carousel.deepfake.tab.warning.element');
+                        generateListFromArray('deepfake-tips', 'carousel.deepfake.tab.tips.element');
                         openDeepfakeVideo();
                         break;
                     case 'questions-champion':
@@ -1868,7 +1998,7 @@
                         initQuestionsChampionGame();
                         break;
                     case 'site-suspect':
-                        window.open('page.html', '_blank');
+                        window.open(getTranslation('carousel.promo.link'), '_blank');
                         break;
                 }
             }
@@ -2667,6 +2797,24 @@
             }
         }
 
+        function generateListFromArray(containerId, translationKey) {
+            const container = document.getElementById(containerId);
+            const items = getTranslation(translationKey);
+            if (Array.isArray(items)) {
+                container.innerHTML = items.map(item =>
+                `<li>${processMarkdown(item)}</li>`).join('');
+            }
+        }
+
+        function generateMatrixDiv(containerId, translationKey) {
+            const container = document.getElementById(containerId);
+            const items = getTranslation(translationKey);
+            if (Array.isArray(items)) {
+                container.innerHTML = items.map(item =>
+                `<div class="cyber-stat">${processMarkdown(item)}</div>`).join('');
+            }
+        }
+
         function generateNewEmail() {
             const emails = [
                 {
@@ -3040,69 +3188,81 @@
             return result && result.style.display !== 'none' && result.innerHTML.trim() !== '';
         }
 
+         function getRandomStrength() {
+              const levels = [
+                  "📶",
+                  "📶📶",
+                  "📶📶📶",
+                  "📶📶📶📶"
+              ];
+              return levels[Math.floor(Math.random() * levels.length)];
+          }
+
+
         function generateNewWifiScenario() {
             // Réinitialiser le résultat
             const result = document.getElementById('wifiResult');
             result.style.display = 'none';
             result.innerHTML = '';
 
-            const scenarios = [
+            const scenarios3 = [
                 {
                     situation: "Situation : Vous êtes dans un café et cherchez un WiFi...",
                     networks: [
-                        { name: 'CaféWiFi-Guest', signal: '📶📶📶', type: 'safe', explanation: 'Réseau officiel du café avec nom professionnel' },
-                        { name: 'WiFi Gratuit!!!', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom trop aguicheur, probablement un piège' },
-                        { name: 'iPhone de Marie', signal: '📶📶', type: 'suspicious', explanation: "Point d'accès personnel, demander permission" },
-                        { name: 'FREE_WIFI_CLICK_HERE', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom suspect avec incitation à cliquer' }
+                        { name: 'CaféWiFi-Guest', strength: '📶📶📶', type: 'safe', answer: 'Réseau officiel du café avec nom professionnel' },
+                        { name: 'WiFi Gratuit!!!', strength: '📶📶📶📶', type: 'dangerous', answer: 'Nom trop aguicheur, probablement un piège' },
+                        { name: 'iPhone de Marie', strength: '📶📶', type: 'suspicious', answer: "Point d'accès personnel, demander permission" },
+                        { name: 'FREE_WIFI_CLICK_HERE', strength: '📶📶📶📶', type: 'dangerous', answer: 'Nom suspect avec incitation à cliquer' }
                     ]
                 },
                 {
                     situation: "Situation : Vous êtes dans un hôtel et devez vous connecter...",
                     networks: [
-                        { name: 'Hotel-Guest-WiFi', signal: '📶📶📶📶', type: 'safe', explanation: "Réseau officiel de l'hôtel" },
-                        { name: 'WiFi-Password-123', signal: '📶📶📶', type: 'dangerous', explanation: 'Faux réseau avec mot de passe évident' },
-                        { name: 'Linksys_Default', signal: '📶📶', type: 'suspicious', explanation: 'Réseau avec configuration par défaut' },
-                        { name: 'Hotel_FREE_Internet', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Imitation du réseau hôtel avec fautes' }
+                        { name: 'Hotel-Guest-WiFi', strength: '📶📶📶📶', type: 'safe', answer: "Réseau officiel de l'hôtel" },
+                        { name: 'WiFi-Password-123', strength: '📶📶📶', type: 'dangerous', answer: 'Faux réseau avec mot de passe évident' },
+                        { name: 'Linksys_Default', strength: '📶📶', type: 'suspicious', answer: 'Réseau avec configuration par défaut' },
+                        { name: 'Hotel_FREE_Internet', strength: '📶📶📶📶', type: 'dangerous', answer: 'Imitation du réseau hôtel avec fautes' }
                     ]
                 },
                 {
                     situation: "Situation : Vous êtes dans une gare et avez besoin d'internet...",
                     networks: [
-                        { name: 'SNCF_Connect', signal: '📶📶📶', type: 'safe', explanation: 'Réseau officiel SNCF' },
-                        { name: 'WiFi_Rapide_Gratuit', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom commercial suspect' },
-                        { name: 'AndroidAP4573', signal: '📶📶', type: 'suspicious', explanation: "Point d'accès mobile générique" },
-                        { name: 'Free_Public_Internet', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom générique suspect' }
+                        { name: 'SNCF_Connect', strength: '📶📶📶', type: 'safe', answer: 'Réseau officiel SNCF' },
+                        { name: 'WiFi_Rapide_Gratuit', strength: '📶📶📶📶', type: 'dangerous', answer: 'Nom commercial suspect' },
+                        { name: 'AndroidAP4573', strength: '📶📶', type: 'suspicious', answer: "Point d'accès mobile générique" },
+                        { name: 'Free_Public_Internet', strength: '📶📶📶📶', type: 'dangerous', answer: 'Nom générique suspect' }
                     ]
                 },
                 {
                     situation: "Situation : Vous êtes dans un aéroport en attente...",
                     networks: [
-                        { name: 'AirportFree', signal: '📶📶📶', type: 'safe', explanation: "Réseau officiel de l'aéroport" },
-                        { name: 'WiFi_Boarding_Gate', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Faux réseau imitant les services aéroport' },
-                        { name: 'Galaxy_S20_7832', signal: '📶📶', type: 'suspicious', explanation: "Partage de connexion d'un passager" },
-                        { name: 'Airport_Login_Here', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Incitation suspecte à se connecter' }
+                        { name: 'AirportFree', strength: '📶📶📶', type: 'safe', answer: "Réseau officiel de l'aéroport" },
+                        { name: 'WiFi_Boarding_Gate', strength: '📶📶📶📶', type: 'dangerous', answer: 'Faux réseau imitant les services aéroport' },
+                        { name: 'Galaxy_S20_7832', strength: '📶📶', type: 'suspicious', answer: "Partage de connexion d'un passager" },
+                        { name: 'Airport_Login_Here', strength: '📶📶📶📶', type: 'dangerous', answer: 'Incitation suspecte à se connecter' }
                     ]
                 },
                 {
                     situation: "Situation : Vous êtes près d'une banque et cherchez du WiFi...",
                     networks: [
-                        { name: 'ING_Bank_Guest', signal: '📶📶📶📶', type: 'safe', explanation: 'Réseau officiel de la banque ING' },
-                        { name: 'INNG_GUEST', signal: '📶📶📶', type: 'dangerous', explanation: 'Attention ! Le vrai nom de la banque est "ING" pas "INNG" - c\'est probablement une arnaque par typosquatting' },
-                        { name: 'Free_Banking_WiFi', signal: '📶📶📶📶', type: 'dangerous', explanation: 'Nom générique suspect près d\'une banque' },
-                        { name: 'Vodafone_Hotspot_3847', signal: '📶📶', type: 'suspicious', explanation: 'Hotspot mobile d\'un opérateur, demander permission' }
+                        { name: 'ING_Bank_Guest', strength: '📶📶📶📶', type: 'safe', answer: 'Réseau officiel de la banque ING' },
+                        { name: 'INNG_GUEST', strength: '📶📶📶', type: 'dangerous', answer: 'Attention ! Le vrai nom de la banque est "ING" pas "INNG" - c\'est probablement une arnaque par typosquatting' },
+                        { name: 'Free_Banking_WiFi', strength: '📶📶📶📶', type: 'dangerous', answer: 'Nom générique suspect près d\'une banque' },
+                        { name: 'Vodafone_Hotspot_3847', strength: '📶📶', type: 'suspicious', answer: 'Hotspot mobile d\'un opérateur, demander permission' }
                     ]
                 },
                 {
                     situation: "Situation : Vous êtes dans un quartier résidentiel...",
                     networks: [
-                        { name: 'FBI_Surveillance_Van', signal: '📶📶📶📶', type: 'dangerous', explanation: '🕵️ Easter Egg ! Ce nom de réseau est devenu un mème internet. Les vrais véhicules de surveillance n\'affichent pas leur identité ! Mais attention aux faux réseaux avec des noms "officiels".' },
-                        { name: 'Area51_Guest', signal: '📶📶📶', type: 'dangerous', explanation: '👽 Easter Egg ! Référence geek à la base militaire secrète. Dans la vraie vie, méfiez-vous des réseaux avec des noms "gouvernementaux" - c\'est souvent du phishing.' },
-                        { name: 'Skynet_Global_Defense', signal: '📶📶📶📶', type: 'dangerous', explanation: '🤖 Easter Egg Terminator ! Skynet était l\'IA maléfique des films. Mais sérieusement, 67% des noms de réseaux "cool" cachent des pièges de cybercriminels.' },
-                        { name: 'Livebox-A4B7', signal: '📶📶', type: 'safe', explanation: 'Réseau domestique standard avec nom par défaut du fournisseur' }
+                        { name: 'FBI_Surveillance_Van', strength: '📶📶📶📶', type: 'dangerous', answer: '🕵️ Easter Egg ! Ce nom de réseau est devenu un mème internet. Les vrais véhicules de surveillance n\'affichent pas leur identité ! Mais attention aux faux réseaux avec des noms "officiels".' },
+                        { name: 'Area51_Guest', strength: '📶📶📶', type: 'dangerous', answer: '👽 Easter Egg ! Référence geek à la base militaire secrète. Dans la vraie vie, méfiez-vous des réseaux avec des noms "gouvernementaux" - c\'est souvent du phishing.' },
+                        { name: 'Skynet_Global_Defense', strength: '📶📶📶📶', type: 'dangerous', answer: '🤖 Easter Egg Terminator ! Skynet était l\'IA maléfique des films. Mais sérieusement, 67% des noms de réseaux "cool" cachent des pièges de cybercriminels.' },
+                        { name: 'Livebox-A4B7', strength: '📶📶', type: 'safe', answer: 'Réseau domestique standard avec nom par défaut du fournisseur' }
                     ]
                 }
             ];
-
+            const wifi = getTranslation('carousel.wifi.tab');
+            const scenarios = wifi.scenarios;
             const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
             
             // Mettre à jour la situation
@@ -3110,15 +3270,16 @@
             
             const container = document.getElementById('wifiNetworks');
             container.innerHTML = scenario.networks.map((network, index) => {
-                const networkType = network.type === 'dangerous' ? 'danger' : network.type;
+                const networkType = network.type === 'dangerous' ? wifi : network.type;
                 const lockIcon = Math.random() > 0.7 ? '🔒' : '';
+                const strength = getRandomStrength();
                 return `
-                    <div class="wifi-network" data-type="${network.type}" data-explanation="${network.explanation.replace(/"/g, '&quot;')}" data-name="${network.name}">
+                    <div class="wifi-network" data-type="${network.type}" data-explanation="${network.answer.replace(/"/g, '&quot;')}" data-name="${network.name}">
                         <div>
                             <strong>${network.name}</strong> ${lockIcon}<br>
-                            <small>${lockIcon ? 'Réseau sécurisé' : 'Réseau ouvert'}</small>
+                            <small>${lockIcon ? wifi.secure : wifi.open}</small>
                         </div>
-                        <div>${network.signal}</div>
+                        <div>${strength}</div>
                     </div>
                 `;
             }).join('');
@@ -3129,12 +3290,12 @@
                     const type = this.dataset.type;
                     const explanation = this.dataset.explanation;
                     const name = this.dataset.name;
-                    selectWifiNetwork(type, explanation, name);
+                    selectWifiNetwork(type, explanation, name, wifi.safe , wifi.warning, wifi.dangerous);
                 });
             });
         }
 
-        function selectWifiNetwork(type, explanation, name) {
+        function selectWifiNetwork(type, explanation, name, safe, warning, dangerous) {
             const result = document.getElementById('wifiResult');
             let icon = '';
             let message = '';
@@ -3143,17 +3304,17 @@
             switch(type) {
                 case 'safe':
                     icon = '✅';
-                    message = `Bon choix ! ${explanation}`;
+                    message = `${safe} ${explanation}`;
                     resultClass = 'success';
                     break;
-                case 'suspicious':
+                case 'warning':
                     icon = '⚠️';
-                    message = `Attention ! ${explanation}`;
+                    message = `${warning} ${explanation}`;
                     resultClass = 'warning';
                     break;
                 case 'dangerous':
                     icon = '❌';
-                    message = `Danger ! ${explanation}`;
+                    message = `${dangerous} ${explanation}`;
                     resultClass = 'danger';
                     break;
             }
@@ -3164,8 +3325,7 @@
 
         // Vidéos intégrées
         function openSocialMediaVideo() {
-            const videoId = '35caskf6YJg';
-            document.getElementById('socialMediaVideo').src = `https://www.youtube.com/embed/${videoId}`;
+            document.getElementById('socialMediaVideo').src = getTranslation('carousel.social.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop) {
                 window.carouselWorkshop.startVideoTimer(5); // Réseaux Sociaux = index 5
@@ -3182,8 +3342,7 @@
         }
 
         function openConfidentialityVideo() {
-            const videoId = 'L99kA9f72A4';
-            document.getElementById('confidentialityVideo').src = `https://www.youtube.com/embed/${videoId}`;
+            document.getElementById('confidentialityVideo').src = getTranslation('carousel.confidentiality.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop) {
                 window.carouselWorkshop.startVideoTimer(0); // Confidentialité = index 0
@@ -3202,8 +3361,7 @@
 
         function openDeepfakeVideo() {
             // Utilise la playlist DiepNep avec 4 vidéos d'environ 1min chacune
-            const playlistId = 'PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB';
-            document.getElementById('deepfakeVideo').src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=0`;
+            document.getElementById('deepfakeVideo').src = getTranslation('carousel.deepfake.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop) {
                 window.carouselWorkshop.startVideoTimer(1); // Deepfake = index 1
@@ -3562,6 +3720,7 @@
         function triggerMatrixMode() {
             // Démarrer l'effet Matrix
             const canvas = document.getElementById('matrix-canvas');
+            generateMatrixDiv('matrix-div','carousel.matrix.element')
             const ctx = canvas.getContext('2d');
             
             canvas.style.display = 'block';
@@ -3631,7 +3790,10 @@
                 
                 // Ouvrir la modal
                 document.getElementById('webcamOverlay').style.display = 'flex';
-                
+
+                // Générer la liste des conseils
+                generateListFromArray('webcam-advice', 'carousel.webcam.surprise.advice.items');
+
                 // Marquer l'easter egg webcam comme activé
                 if (window.carouselWorkshop) {
                     window.carouselWorkshop.webcamEasterEggActivated = true;
@@ -3641,9 +3803,12 @@
                 
             } catch (error) {
                 console.error('Erreur accès webcam:', error);
-                
+
                 // Si l'utilisateur refuse ou erreur, afficher un message éducatif
                 document.getElementById('webcamOverlay').style.display = 'flex';
+
+                // Générer la liste des conseils pour le cas "congrats" (accès refusé)
+                // generateListFromArray('webcam-advice', 'carousel.webcam.congrats.advice.items');
                 document.getElementById('webcamVideo').style.display = 'none';
                 
                 // Marquer l'easter egg webcam comme activé même si refusé
@@ -3654,26 +3819,27 @@
                 }
                 
                 const warningDiv = document.querySelector('.webcam-warning');
+
+                // Debug: Vérifier les traductions chargées
+                console.log('Debug - translations webcam:', translations?.carousel?.webcam);
+                console.log('Debug - advice title:', getTranslation('carousel.webcam.congrats.advice.title'));
+
                 warningDiv.innerHTML = `
-                    <h3>🛡️ Bravo ! Vous avez refusé l'accès !</h3>
-                    <p>Excellente décision ! Vous avez bloqué l'accès à votre webcam.</p>
-                    
+                    <h3>${getTranslation('carousel.webcam.congrats.title')}</h3>
+                    <p>${getTranslation('carousel.webcam.congrats.info')}</p>
+
                     <div class="explanation-box">
-                        <div class="explanation-title">✅ Vous avez bien fait :</div>
-                        <div class="explanation-text">
-                            <ul>
-                                <li><strong>Réflexe sécuritaire :</strong> Toujours se méfier des demandes d'accès webcam</li>
-                                <li><strong>Protection de la vie privée :</strong> Votre image reste privée</li>
-                                <li><strong>Contrôle des permissions :</strong> Vous gardez le contrôle</li>
+                        <div class="explanation-title">${getTranslation('carousel.webcam.congrats.advice.title')}</div>
+                        <div class="explanation-text" id="webcam-explanation">
+                            <ul id="webcam-advice">
+                                <!-- Les éléments seront ajoutés dynamiquement -->
                             </ul>
                         </div>
                     </div>
-                    
-                    <div class="important-note">
-                        <strong>Message éducatif :</strong> Même si vous aviez accepté, cette démonstration était 100% sécurisée. 
-                        Mais dans la vraie vie, soyez toujours vigilants !
-                    </div>
                 `;
+
+                // Générer la liste des conseils après avoir créé le HTML
+                generateListFromArray('webcam-advice', 'carousel.webcam.congrats.advice.items');
             }
         }
 
@@ -3699,7 +3865,7 @@
                 <p>Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.</p>
                 
                 <div class="explanation-box">
-                    <div class="explanation-title">🛡️ Conseils de Cybersécurité :</div>
+                    <div class="explanation-title" tran>🛡️ Conseils de Cybersécurité :</div>
                     <div class="explanation-text">
                         <ul>
                             <li><strong>Toujours vérifier</strong> pourquoi un site demande l'accès à votre caméra</li>

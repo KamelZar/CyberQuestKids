@@ -1,0 +1,434 @@
+{
+  "welcome": {
+    "title": "Cybersécurité Workshop",
+    "subtitle": "Devoxx4Kids - Apprends à te protéger dans le monde numérique",
+    "instruction": "Clique sur le cadenas pour commencer ✨"
+  },
+  "conditions": {
+    "title": "Conditions Générales d'Utilisation",
+    "confirm": "J'accepte les conditions générales d'utilisation",
+    "content": {
+      "introduction": {
+        "title": "1. INTRODUCTION",
+        "paragraphs": [
+          "Bienvenue sur SuperGaming ! En utilisant notre plateforme, vous acceptez les présentes conditions générales d'utilisation. Veuillez les lire attentivement avant de poursuivre.",
+          "Les présentes Conditions Générales d'Utilisation (ci-après dénommées \"CGU\") régissent l'utilisation de la plateforme SuperGaming (ci-après dénommée \"la Plateforme\") exploitée par SuperGaming Inc. (ci-après dénommée \"la Société\"). En accédant à la Plateforme ou en l'utilisant, vous reconnaissez avoir lu, compris et accepté d'être lié par les présentes CGU.",
+          "La Société se réserve le droit de modifier les présentes CGU à tout moment et sans préavis. Il est de votre responsabilité de consulter régulièrement les CGU pour prendre connaissance des éventuelles modifications. Votre utilisation continue de la Plateforme après la publication de modifications constitue votre acceptation de ces modifications."
+        ]
+      },
+      "access": {
+        "title": "2. ACCÈS À LA PLATEFORME",
+        "paragraphs": [
+          "L'accès à la Plateforme est réservé aux utilisateurs âgés de 13 ans et plus. Si vous avez moins de 18 ans, vous devez obtenir le consentement d'un parent ou d'un tuteur légal avant d'utiliser la Plateforme.",
+          "La Société se réserve le droit de refuser l'accès à la Plateforme à tout utilisateur, à sa seule discrétion, sans préavis ni justification.",
+          "Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se déroulent sous votre compte. Vous devez immédiatement informer la Société de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité."
+        ]
+      },
+      "usage": {
+        "title": "3. UTILISATION DE LA PLATEFORME",
+        "intro": "En utilisant la Plateforme, vous vous engagez à ne pas :",
+        "restrictions": [
+          "Enfreindre les lois applicables ou les présentes CGU",
+          "Utiliser la Plateforme d'une manière qui pourrait endommager, désactiver, surcharger ou altérer le fonctionnement de la Plateforme",
+          "Tenter d'accéder à des zones ou des fonctionnalités de la Plateforme auxquelles vous n'êtes pas autorisé à accéder",
+          "Utiliser des robots, des scrapers ou d'autres moyens automatisés pour accéder à la Plateforme",
+          "Introduire des logiciels malveillants, des virus ou tout autre code nuisible sur la Plateforme",
+          "Collecter ou stocker des informations personnelles sur d'autres utilisateurs sans leur consentement"
+        ]
+      },
+      "user_content": {
+        "title": "4. CONTENU DE L'UTILISATEUR",
+        "paragraphs": [
+          "En soumettant du contenu sur la Plateforme (y compris, mais sans s'y limiter, des textes, des images, des vidéos, des commentaires), vous accordez à la Société une licence mondiale, non exclusive, gratuite, transférable et pouvant faire l'objet d'une sous-licence pour utiliser, reproduire, distribuer, préparer des œuvres dérivées, afficher et exécuter ce contenu en relation avec la Plateforme et les activités commerciales de la Société.",
+          "Vous déclarez et garantissez que vous possédez ou avez obtenu tous les droits, licences, consentements, permissions, pouvoirs et/ou autorités nécessaires pour accorder les droits accordés aux présentes pour tout contenu que vous soumettez."
+        ]
+      },
+      "intellectual_property": {
+        "title": "5. PROPRIÉTÉ INTELLECTUELLE",
+        "paragraphs": [
+          "La Plateforme et tout son contenu, fonctionnalités et fonctionnalités (y compris, mais sans s'y limiter, toutes les informations, logiciels, textes, affichages, images, vidéos et audio, ainsi que leur conception, sélection et arrangement) sont la propriété de la Société, de ses concédants de licence ou d'autres fournisseurs de ce contenu, et sont protégés par les lois sur le droit d'auteur, les marques de commerce, les brevets, les secrets commerciaux et autres lois sur la propriété intellectuelle ou les droits de propriété.",
+          "Vous ne devez pas reproduire, distribuer, modifier, créer des œuvres dérivées, afficher publiquement, exécuter publiquement, republier, télécharger, stocker ou transmettre tout matériel de notre Plateforme, sauf si cela est expressément autorisé par les présentes CGU."
+        ]
+      },
+      "privacy": {
+        "title": "6. CONFIDENTIALITÉ",
+        "paragraphs": [
+          "Votre utilisation de la Plateforme est également régie par notre Politique de Confidentialité, qui est incorporée aux présentes CGU par référence.",
+          "En utilisant la Plateforme, vous consentez à la collecte, à l'utilisation et au partage de vos informations comme décrit dans notre Politique de Confidentialité."
+        ],
+        "important_clause": "L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT",
+        "easter_egg": "* bravo d'avoir lu les conditions : petit conseil, rentre utilisateur:\"Je sais\" mdp:\"lire\" sous TikTok , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison"
+      },
+      "liability": {
+        "title": "7. LIMITATION DE RESPONSABILITÉ",
+        "paragraphs": [
+          "Dans toute la mesure permise par la loi applicable, la Société ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus, que ces dommages soient prévisibles ou non, et même si la Société a été informée de la possibilité de tels dommages.",
+          "La responsabilité totale de la Société pour toute réclamation découlant de ou liée aux présentes CGU ne dépassera pas le montant que vous avez payé à la Société au cours des douze (12) mois précédant l'événement donnant lieu à la responsabilité, ou 100 euros, selon le montant le plus élevé."
+        ]
+      },
+      "indemnification": {
+        "title": "8. INDEMNISATION",
+        "paragraphs": [
+          "Vous acceptez d'indemniser, de défendre et de dégager de toute responsabilité la Société, ses affiliés, dirigeants, directeurs, employés, agents, fournisseurs et partenaires contre toute réclamation, responsabilité, dommage, perte et dépense, y compris, sans limitation, les frais juridiques et comptables raisonnables, découlant de ou liés à votre violation des présentes CGU, votre utilisation de la Plateforme, votre violation de tout droit d'un tiers, ou tout contenu que vous soumettez, publiez ou transmettez via la Plateforme."
+        ]
+      },
+      "termination": {
+        "title": "9. RÉSILIATION",
+        "paragraphs": [
+          "La Société peut, à sa seule discrétion, suspendre ou résilier votre accès à la Plateforme à tout moment, pour quelque raison que ce soit, sans préavis ni responsabilité.",
+          "Toutes les dispositions des présentes CGU qui, par leur nature, devraient survivre à la résiliation survivront à la résiliation, y compris, sans limitation, les dispositions relatives à la propriété, les exclusions de garantie, l'indemnisation et les limitations de responsabilité."
+        ]
+      },
+      "governing_law": {
+        "title": "10. LOI APPLICABLE ET JURIDICTION",
+        "paragraphs": [
+          "Les présentes CGU sont régies et interprétées conformément aux lois de France, sans égard à ses principes de conflits de lois.",
+          "Tout litige découlant de ou lié aux présentes CGU sera soumis à la juridiction exclusive des tribunaux de Paris, France."
+        ]
+      },
+      "miscellaneous": {
+        "title": "11. DISPOSITIONS DIVERSES",
+        "paragraphs": [
+          "Si une disposition des présentes CGU est jugée illégale, nulle ou inapplicable pour quelque raison que ce soit, cette disposition sera limitée ou éliminée des présentes CGU dans la mesure minimale nécessaire, et les autres dispositions des présentes CGU resteront en pleine vigueur et effet.",
+          "Les présentes CGU constituent l'intégralité de l'accord entre vous et la Société concernant la Plateforme et remplacent tous les accords antérieurs entre vous et la Société concernant la Plateforme.",
+          "Le fait que la Société n'exerce pas ou n'applique pas un droit ou une disposition des présentes CGU ne constitue pas une renonciation à ce droit ou à cette disposition.",
+          "Les présentes CGU, et tous les droits et licences accordés en vertu des présentes, ne peuvent être transférés ou cédés par vous, mais peuvent être transférés ou cédés par la Société sans restriction."
+        ]
+      }
+    },
+    "google": {
+      "title": "Connexion avec Google",
+      "user": "Email ou Téléphone",
+      "user_instruction": "email@gmail.com ou +3213456789",
+      "password": "Mot de passe",
+      "password_instruction": "Votre mot de passe"
+    },
+    "instagram": {
+      "title": "Connexion avec Instagram",
+      "user": "Nom d'utilisateur ou Email",
+      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
+      "password": "Mot de passe",
+      "password_instruction": "Votre mot de passe"
+    },
+    "snapchat": {
+      "title": "Connexion avec Snapchat",
+      "user": "Nom d'utilisateur ou Email",
+      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
+      "password": "Mot de passe",
+      "password_instruction": "Votre mot de passe"
+    },
+    "tiktok": {
+      "title": "Connexion avec Tiktok",
+      "user": "Nom d'utilisateur ou Email",
+      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
+      "password": "Mot de passe",
+      "password_instruction": "Votre mot de passe"
+    },
+    "connect": "Se connecter"
+  },
+  "carousel": {
+    "champion": {
+      "title": "\uD83C\uDFC6 Questions pour un champion",
+      "subtitle": "Sauras-tu distinguer le vrai du faux ?",
+      "button": "Jouer",
+      "tab": {
+        "title": "\uD83C\uDFC6 Questions pour un champion",
+        "subtitle": "\uD83D\uDEE1\uFE0F Sujets Cybersécurité",
+        "Score": "Score",
+        "config": "champ-fr.json",
+        "close": "FERMER"
+      }
+    },
+    "confidentiality": {
+      "title": "\uD83D\uDD12 La Confidentialité",
+      "subtitle": "Découvrez pourquoi vos données personnelles sont précieuses !",
+      "button": "REGARDER",
+      "tab": {
+        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "link":"https://www.youtube.com/embed/L99kA9f72A4",
+        "tips": {
+          "title": "\uD83D\uDEE1\uFE0F Comment protéger vos données :",
+          "element": [
+            "Vérifiez les paramètres de confidentialité",
+            "Limitez les informations partagées",
+            "BLABLA Lisez les conditions d'utilisation",
+            "Désactivez la géolocalisation non nécessaire",
+            "Demandez-vous : \"Cette info est-elle vraiment nécessaire ?\""
+          ]
+        },
+        "title": "\uD83D\uDD12 La confidentialité c'est quoi ?",
+        "warning": {
+          "title": "⚠\uFE0F Vos données personnelles sont précieuses :",
+          "element": [
+            "\uD83D\uDD10 Nom, âge, adresse, photos, habitudes",
+            "\uD83D\uDC41\uFE0F Vos actions en ligne sont tracées",
+            "\uD83D\uDCB0 Vos données sont vendues pour du marketing",
+            "\uD83C\uDFAF Profils publicitaires créés à votre insu",
+            "\uD83D\uDCCD Géolocalisation et historiques conservés"
+          ]
+        },
+        "close": "FERMER"
+      }
+    },
+    "deepfake": {
+      "title": "\uD83C\uDFAD Qui est le vrai ?",
+      "subtitle": "Découvrez le monde des deepfakes et comment les détecter !",
+      "button": "REGARDER",
+      "tab": {
+        "title": "\uD83C\uDFAD Qui est le vrai ? - Deepfakes et manipulation",
+        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "link":"https://www.youtube.com/embed/videoseries?list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB&autoplay=0",
+        "warning": {
+          "title": "⚠\uFE0F Dangers des deepfakes et filtres :",
+          "element": [
+            "\uD83E\uDD16 IA crée de fausses vidéos très réalistes",
+            "\uD83D\uDC40 Difficile à détecter à l'œil nu",
+            "\uD83D\uDCF1 FILTRES/APPS de transformation (vieillir/rajeunir/changer de sexe) = STOCKAGE DE VOS DONNÉES",
+            "\uD83D\uDD12 Abus possible de votre image personnelle",
+            "\uD83D\uDCBC Usages malveillants (chantage, fake news)",
+            "\uD83C\uDFAD Atteinte à la réputation des personnes"
+          ]
+        },
+        "tips": {
+          "title": "\uD83D\uDEE1\uFE0F Comment se protéger :",
+          "element": [
+            "FILTRES/APPS : Réfléchissez avant de télécharger - Où vont vos photos ?",
+            "Lisez les conditions d''utilisation des apps de transformation",
+            "Observez les yeux et expressions du visage dans les vidéos",
+            "Vérifiez la cohérence audio-vidéo",
+            "Croisez avec d'autres sources fiables",
+            "Posez-vous : \"Qui partage ? Pourquoi ?",
+            "En cas de doute, ne partagez pas"
+          ]
+        },
+        "close": "FERMER"
+      }
+    },
+    "fantasy": {
+      "title": "\uD83C\uDFF0 Fantasy Quest \uD83D\uDD12",
+      "locked": "Verrouilé",
+      "locked_subtitle": "Complétez toutes les activités pour débloquer cette quête légendaire !",
+      "subtitle": "Testez vos connaissances en cybersécurité - Évaluation finale !",
+      "button": "Quiz",
+      "link": "https://www.jobirl.com/quiz/quiz-cybersecurite"
+    },
+    "fortress": {
+      "title": "\uD83C\uDFF0 Mot de passe Fortress",
+      "subtitle": "Créez un mot de passe imprenable et découvrez en combien de temps il peut être cracké !",
+      "button": "TESTER",
+      "tab": {
+        "title": "\uD83C\uDFF0 Mot de passe Fortress",
+        "key_points": "Créez votre mot de passe forteresse :",
+        "duration": {
+          "instant": "Instantané ⚡"
+        },
+        "password-placeholder": "Testez votre mot de passe",
+        "criteria": {
+          "length":"Au moins 8 caractères",
+          "low":"Lettres minuscules",
+          "capital":"Lettres majuscules",
+          "digit":"Chiffres",
+          "special":"Caractères spéciaux",
+          "unknown":"Pas de mots courants"
+        },
+        "close": "FERMER"
+      }
+    },
+    "matrix": {
+      "title": "\uD83D\uDC41\uFE0F WELCOME TO THE MATRIX, NEO",
+      "subtitle": "\uD83D\uDD25 STATISTIQUES CYBERSÉCURITÉ 2024",
+      "element": [
+        "\uD83D\uDCB8 **12,9 milliards € de pertes** dues à la cybercriminalité en France (2023)",
+        "⚡ 1 cyberattaque toutes les **39 secondes** dans le monde",
+        "\uD83C\uDFAF **95%** des cyberattaques commencent par un email de phishing",
+        "\uD83D\uDCB0 **4,45 millions $** : coût moyen d'une violation de données",
+        "⏱\uFE0F **287 jours** : temps moyen pour détecter une cyberattaque avancée",
+        "\uD83C\uDFE2 **43%** des cyberattaques visent les PME",
+        "\uD83D\uDD10 **81%** des violations utilisent des mots de passe faibles ou volés",
+        "\uD83D\uDCF1 **6,8 milliards** d'appareils infectés par des malwares en 2023",
+        "\uD83D\uDEA8 1 ransomware toutes les **11 secondes**",
+        "\uD83D\uDC65 **4,1 milliards** de comptes exposés en 2023"
+      ],
+      "close": "Retourner dans la matrice"
+    },
+    "promo": {
+      "title": "\uD83C\uDF89 Promotion en folie",
+      "subtitle": "Explorez ce site de vente en ligne et détectez tous les indices de fraude !",
+      "button": "Shopping",
+      "link": "./translations/fr/page.html"
+    },
+    "quiz": {
+      "title": "\uD83D\uDCDD Quiz Sécurité",
+      "subtitle": "Testez vos connaissances en cybersécurité - Évaluation finale !",
+      "button": "Quiz",
+      "link": "https://www.jobirl.com/quiz/quiz-cybersecurite"
+    },
+    "spam": {
+      "title": "\uD83D\uDCE7 Email Piège",
+      "subtitle": "Apprenez à détecter les emails de phishing avec des exemples réalistes !",
+      "button": "ANALYSER",
+      "tab": {
+        "title": "\uD83D\uDCE7 Détecteur d'Email Piège",
+        "insight": "Cliquez sur l'email pour révéler les indices de phishing !",
+        "analyse": "\uD83D\uDD75\uFE0F Votre analyse :",
+        "more": "Encore +",
+        "more_link": "https://phishingquiz.withgoogle.com/?hl=fr",
+        "duration": {
+          "instant": "Instantané ⚡"
+        },
+        "close": "FERMER"
+      }
+    },
+    "social": {
+      "title": "\uD83D\uDCF1 Réseaux Sociaux",
+      "subtitle": "Tout le monde n'est pas ton ami",
+      "button": "REGARDER",
+      "tab": {
+        "title": "\uD83D\uDCF1 Réseaux Sociaux : Attention Danger !",
+        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "link": "https://www.youtube.com/embed/35caskf6YJg",
+        "warning": {
+          "title": "⚠\uFE0F Dangers des réseaux sociaux :",
+          "element": [
+            "Partage d'informations personnelles",
+            "Photos géolocalisées",
+            "Contacts avec des inconnus",
+            "Cyberharcelement",
+            "Usurpation d'identité"
+          ]
+        },
+        "tips": {
+          "title": "\uD83D\uDEE1\uFE0F Comment se protéger :",
+          "element": [
+            "Paramètres de confidentialité stricts",
+            "Ne jamais partager d'infos personnelles",
+            "Attention aux photos et leur géolocalisation",
+            "Signaler tout comportement suspect",
+            "Parler à un adulte de confiance"
+          ]
+        },
+        "close": "FERMER"
+      }
+    },
+    "webcam": {
+      "title": "\uD83D\uDC41\uFE0F Les Yeux du Lion Cybersécurité",
+      "surprise": {
+        "title": "\uD83E\uDD81 Surprise ! Le lion vous observe !",
+        "info": "Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.",
+        "advice":{
+          "title": "\uD83D\uDEE1\uFE0F Conseils de Cybersécurité :",
+          "items": [
+            "**Toujours vérifier** pourquoi un site demande l'accès à votre caméra",
+            "**Refuser l'accès** si ce n'est pas nécessaire pour le service",
+            "**Couvrir votre webcam** quand vous ne l'utilisez pas",
+            "**Vérifier les permissions** accordées dans les paramètres du navigateur",
+            "**Se méfier** des sites qui demandent des permissions excessives"
+          ]
+        }
+      },
+      "congrats": {
+        "title": "\uD83D\uDEE1\uFE0F Bravo ! Vous avez refusé l'accès !",
+        "info": "Excellente décision ! Vous avez bloqué l'accès à votre webcam.",
+        "advice":{
+          "title": "✅ Vous avez bien fait :",
+          "items": [
+            "**Réflexe sécuritaire :** Toujours se méfier des demandes d'accès webcam",
+            "**Protection de la vie privée :** Votre image reste privée",
+            "**Contrôle des permissions :** Vous gardez le contrôle"
+          ]
+        }
+      },
+      "relax": "**Rassurez-vous :** Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. \n                        Le flux vidéo reste uniquement sur votre ordinateur."
+
+    },
+    "wifi": {
+      "title": "\uD83D\uDCF6 WiFi Piège",
+      "subtitle": "Choisissez le bon réseau WiFi et évitez les pièges des hackers !",
+      "button": "Jouer",
+      "tab": {
+        "title": "\uD83D\uDCF6 WiFi Piège",
+        "secure": "Réseau sécurisé",
+        "open": "Réseau ouvert",
+        "dangerous": "Danger !",
+        "safe": "Bon choix !",
+        "warning": "Attention !",
+        "scenarios": [
+          {
+            "situation":"Situation : Vous êtes dans un aéroport en attente...",
+            "networks": [ {
+              "name": "AirportFree",
+              "type": "safe",
+              "answer": " Réseau officiel de l'aéroport"
+            },
+              {
+                "name": "WiFi_Boarding_Gate \uD83D\uDD12",
+                "type": "dangerous",
+                "answer": "Faux réseau imitant les services aéroport"
+              },
+              {
+                "name": "Galaxy_S20_7832",
+                "type": "warning",
+                "answer": "Partage de connexion d'un passager"
+              },
+              {
+                "name": "Airport_Login_Here",
+                "type": "dangerous",
+                "answer": "Incitation suspecte à se connecter"
+              }]
+          },
+          {
+            "situation":"Situation : Vous êtes en vacances au petit déjeuner de l'hôtel Hilton...",
+            "networks": [
+              {
+                "name": "Hilton-Guest-WiFi",
+                "type": "safe",
+                "answer": "Réseau officiel de l'hôtel"
+              },
+              {
+                "name": "WiFi-Password-123",
+                "type": "dangerous",
+                "answer": "Faux réseau avec mot de passe évident"
+              },
+              {
+                "name": "Linksys_Default \uD83D\uDD12",
+                "type": "warning",
+                "answer": "Réseau avec configuration par défaut"
+              },
+              {
+                "name": "Hotel_HIILTON_FREE_Internet",
+                "type": "dangerous",
+                "answer": "Imitation du réseau hôtel avec fautes"
+              }]
+          },
+          {
+            "situation":"Vous êtes dans un café et cherchez un WiFi...",
+            "networks":[
+              {
+                "name": "CaféWiFi-Guest",
+                "type": "safe",
+                "answer": "Réseau officiel de l'hôtel"
+              },
+              {
+                "name": "WiFi-Password-123",
+                "type": "dangerous",
+                "answer": "Faux réseau avec mot de passe évident"
+              },
+              {
+                "name": "Linksys_Default \uD83D\uDD12",
+                "type": "warning",
+                "answer": "Réseau avec configuration par défaut"
+              },
+              {
+                "name": "Hotel_HIILTON_FREE_Internet",
+                "type": "dangerous",
+                "answer": "Imitation du réseau hôtel avec fautes"
+              }
+            ]
+          }
+        ],
+        "new": "Nouveau scénario",
+        "close": "fermer"
+      }
+    }
+  }
+}

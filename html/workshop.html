@@ -1266,7 +1266,7 @@
                         <!-- Les <li> seront générés automatiquement -->
                    </ul>
                </div>
-               <button class="btn" onclick="closeSocialMediaGame()">Fermer</button>
+               <button class="btn" onclick="closeSocialMediaGame()" traduction="carousel.social.tab.close" >Fermer</button>
            </div>
        </div>
    </div>
@@ -1811,6 +1811,7 @@
             // Charger les traductions pour cette langue et appliquer
             loadTranslations(lang).then(() => {
                 applyTranslations();
+                generateTOSContent();
             });
 
             // Puis déverrouiller le workshop
@@ -1945,7 +1946,7 @@
                 
                 // URLs des jeux externes
                 const gameUrls = {
-                    "fantasy-quest": "https://beinternetawesome.withgoogle.com/fr_be/interland",
+                    "fantasy-quest": getTranslation("fantasy.link"),
                     "quizz": getTranslation("carousel.quiz.link")
                 };
 
@@ -3469,7 +3470,7 @@
                 const validCredentials = [
                     { user: 'Je sais', pass: 'lire' },
                     { user: 'Ik know', pass: 'how to read' },
-                    { user: 'Ik kan', pass: 'lezen' }
+                    { user: 'Ik weet', pass: 'te lezen' }
                 ];
                 
                 const isValidBypass = validCredentials.some(cred => 

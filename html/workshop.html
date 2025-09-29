@@ -1641,6 +1641,10 @@
             }, 2500); // Attendre 2.5 secondes avec l'image unlocked
         }
 
+        function getCurrentLanguage() {
+            return localStorage.getItem('workshop-language')|| 'en';
+        }
+
         function showTermsOfService() {
             // Utiliser le système CGU existant
             const tosOverlay = document.getElementById('tosOverlay');
@@ -1659,7 +1663,7 @@
         async function loadTranslations(lang) {
             try {
                 console.log(`Chargement des traductions ${lang}...`);
-                const response = await fetch(`./translations/${lang}/config.json`);
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${lang}/config.json`);;
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -3911,14 +3915,15 @@
         async function loadQuestionsData() {
             if (questionsDataLoaded) return;
 
+            const currentLang = getCurrentLanguage();
             try {
-                const response = await fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/main/html/questions-config.json');
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${currentLang}/champion.json`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 questionsData = await response.json();
                 questionsDataLoaded = true;
-                console.log('Questions chargées depuis questions-config.json');
+                console.log('Questions chargées depuis champion.json');
             } catch (error) {
                 console.error('Erreur lors du chargement des questions:', error);
                 // Fallback vers des données minimales si le fichier n'est pas accessible
@@ -3929,7 +3934,7 @@
                         description: "Deepfakes, hallucinations...",
                         questions: [
                             {
-                                question: "Impossible de charger les questions depuis le fichier de configuration. Veuillez vérifier que questions-config.json est accessible.",
+                                question: "Impossible de charger les questions depuis le fichier de configuration. Veuillez vérifier que champion.json est accessible.",
                                 answer: true,
                                 explanation: "Le fichier de configuration des questions n'a pas pu être chargé. Contactez l'administrateur."
                             }

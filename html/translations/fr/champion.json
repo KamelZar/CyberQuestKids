@@ -253,7 +253,7 @@
         "explanation": "C'est VRAI ! Grace Hopper a trouvé un papillon de nuit coincé dans le relais du Harvard Mark II. Elle l'a scotché dans son carnet avec la note 'First actual case of bug being found' !"
       },
       {
-        "question": "Le premier spam email a été envoyé en 1978 à généré  $13 millions de ventes",
+        "question": "Le premier spam email a été envoyé en 1978 et a généré $13 millions de ventes",
         "answer": true,
         "explanation": "C'est VRAI ! Gary Thuerk de Digital Equipment Corporation a envoyé une pub pour un nouveau produit à environ 400 utilisateurs ARPANET. Résultat : quelques ventes... et beaucoup de plaintes !"
       },

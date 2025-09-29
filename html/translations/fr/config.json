@@ -151,7 +151,7 @@
           "element": [
             "Vérifiez les paramètres de confidentialité",
             "Limitez les informations partagées",
-            "BLABLA Lisez les conditions d'utilisation",
+            "Lisez les conditions d'utilisation",
             "Désactivez la géolocalisation non nécessaire",
             "Demandez-vous : \"Cette info est-elle vraiment nécessaire ?\""
           ]
@@ -406,7 +406,7 @@
               {
                 "name": "CaféWiFi-Guest",
                 "type": "safe",
-                "answer": "Réseau officiel de l'hôtel"
+                "answer": "Réseau officiel du café"
               },
               {
                 "name": "WiFi-Password-123",

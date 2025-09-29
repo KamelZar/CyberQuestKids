@@ -1,433 +1,433 @@
 {
   "welcome": {
-    "title": "Cybersécurité Workshop",
-    "subtitle": "Devoxx4Kids - Apprends à te protéger dans le monde numérique",
-    "instruction": "Clique sur le cadenas pour commencer ✨"
+    "title": "Cybersecurity Workshop",
+    "subtitle": "Devoxx4Kids - Learn to protect yourself in the digital world",
+    "instruction": "Click on the padlock to start ✨"
   },
   "conditions": {
-    "title": "Conditions Générales d'Utilisation",
-    "confirm": "J'accepte les conditions générales d'utilisation",
+    "title": "Terms of Use",
+    "confirm": "I accept the terms of use",
     "content": {
       "introduction": {
         "title": "1. INTRODUCTION",
         "paragraphs": [
-          "Bienvenue sur SuperGaming ! En utilisant notre plateforme, vous acceptez les présentes conditions générales d'utilisation. Veuillez les lire attentivement avant de poursuivre.",
-          "Les présentes Conditions Générales d'Utilisation (ci-après dénommées \"CGU\") régissent l'utilisation de la plateforme SuperGaming (ci-après dénommée \"la Plateforme\") exploitée par SuperGaming Inc. (ci-après dénommée \"la Société\"). En accédant à la Plateforme ou en l'utilisant, vous reconnaissez avoir lu, compris et accepté d'être lié par les présentes CGU.",
-          "La Société se réserve le droit de modifier les présentes CGU à tout moment et sans préavis. Il est de votre responsabilité de consulter régulièrement les CGU pour prendre connaissance des éventuelles modifications. Votre utilisation continue de la Plateforme après la publication de modifications constitue votre acceptation de ces modifications."
+          "Welcome to SuperGaming! By using our platform, you accept these terms of use. Please read them carefully before proceeding.",
+          "These Terms of Use (hereinafter referred to as \"Terms\") govern the use of the SuperGaming platform (hereinafter referred to as \"the Platform\") operated by SuperGaming Inc. (hereinafter referred to as \"the Company\"). By accessing or using the Platform, you acknowledge that you have read, understood, and agreed to be bound by these Terms.",
+          "The Company reserves the right to modify these Terms at any time and without notice. It is your responsibility to regularly review the Terms to be aware of any changes. Your continued use of the Platform after changes are posted constitutes your acceptance of those changes."
         ]
       },
       "access": {
-        "title": "2. ACCÈS À LA PLATEFORME",
+        "title": "2. PLATFORM ACCESS",
         "paragraphs": [
-          "L'accès à la Plateforme est réservé aux utilisateurs âgés de 13 ans et plus. Si vous avez moins de 18 ans, vous devez obtenir le consentement d'un parent ou d'un tuteur légal avant d'utiliser la Plateforme.",
-          "La Société se réserve le droit de refuser l'accès à la Plateforme à tout utilisateur, à sa seule discrétion, sans préavis ni justification.",
-          "Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se déroulent sous votre compte. Vous devez immédiatement informer la Société de toute utilisation non autorisée de votre compte ou de toute autre violation de sécurité."
+          "Access to the Platform is reserved for users aged 13 and over. If you are under 18, you must obtain consent from a parent or legal guardian before using the Platform.",
+          "The Company reserves the right to refuse access to the Platform to any user, at its sole discretion, without notice or justification.",
+          "You are responsible for maintaining the confidentiality of your login information and all activities that occur under your account. You must immediately inform the Company of any unauthorized use of your account or any other security breach."
         ]
       },
       "usage": {
-        "title": "3. UTILISATION DE LA PLATEFORME",
-        "intro": "En utilisant la Plateforme, vous vous engagez à ne pas :",
+        "title": "3. PLATFORM USE",
+        "intro": "By using the Platform, you agree not to:",
         "restrictions": [
-          "Enfreindre les lois applicables ou les présentes CGU",
-          "Utiliser la Plateforme d'une manière qui pourrait endommager, désactiver, surcharger ou altérer le fonctionnement de la Plateforme",
-          "Tenter d'accéder à des zones ou des fonctionnalités de la Plateforme auxquelles vous n'êtes pas autorisé à accéder",
-          "Utiliser des robots, des scrapers ou d'autres moyens automatisés pour accéder à la Plateforme",
-          "Introduire des logiciels malveillants, des virus ou tout autre code nuisible sur la Plateforme",
-          "Collecter ou stocker des informations personnelles sur d'autres utilisateurs sans leur consentement"
+          "Violate applicable laws or these Terms",
+          "Use the Platform in a way that could damage, disable, overload, or impair the operation of the Platform",
+          "Attempt to access areas or features of the Platform that you are not authorized to access",
+          "Use robots, scrapers, or other automated means to access the Platform",
+          "Introduce malware, viruses, or any other harmful code onto the Platform",
+          "Collect or store personal information about other users without their consent"
         ]
       },
       "user_content": {
-        "title": "4. CONTENU DE L'UTILISATEUR",
+        "title": "4. USER CONTENT",
         "paragraphs": [
-          "En soumettant du contenu sur la Plateforme (y compris, mais sans s'y limiter, des textes, des images, des vidéos, des commentaires), vous accordez à la Société une licence mondiale, non exclusive, gratuite, transférable et pouvant faire l'objet d'une sous-licence pour utiliser, reproduire, distribuer, préparer des œuvres dérivées, afficher et exécuter ce contenu en relation avec la Plateforme et les activités commerciales de la Société.",
-          "Vous déclarez et garantissez que vous possédez ou avez obtenu tous les droits, licences, consentements, permissions, pouvoirs et/ou autorités nécessaires pour accorder les droits accordés aux présentes pour tout contenu que vous soumettez."
+          "By submitting content to the Platform (including, but not limited to, text, images, videos, comments), you grant the Company a worldwide, non-exclusive, royalty-free, transferable, and sublicensable license to use, reproduce, distribute, prepare derivative works of, display, and perform that content in connection with the Platform and the Company's business activities.",
+          "You represent and warrant that you own or have obtained all necessary rights, licenses, consents, permissions, powers, and/or authorities to grant the rights granted herein for any content you submit."
         ]
       },
       "intellectual_property": {
-        "title": "5. PROPRIÉTÉ INTELLECTUELLE",
+        "title": "5. INTELLECTUAL PROPERTY",
         "paragraphs": [
-          "La Plateforme et tout son contenu, fonctionnalités et fonctionnalités (y compris, mais sans s'y limiter, toutes les informations, logiciels, textes, affichages, images, vidéos et audio, ainsi que leur conception, sélection et arrangement) sont la propriété de la Société, de ses concédants de licence ou d'autres fournisseurs de ce contenu, et sont protégés par les lois sur le droit d'auteur, les marques de commerce, les brevets, les secrets commerciaux et autres lois sur la propriété intellectuelle ou les droits de propriété.",
-          "Vous ne devez pas reproduire, distribuer, modifier, créer des œuvres dérivées, afficher publiquement, exécuter publiquement, republier, télécharger, stocker ou transmettre tout matériel de notre Plateforme, sauf si cela est expressément autorisé par les présentes CGU."
+          "The Platform and all its content, features, and functionality (including, but not limited to, all information, software, text, displays, images, videos, and audio, as well as their design, selection, and arrangement) are the property of the Company, its licensors, or other providers of such content, and are protected by copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.",
+          "You may not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any material from our Platform, except as expressly permitted by these Terms."
         ]
       },
       "privacy": {
-        "title": "6. CONFIDENTIALITÉ",
+        "title": "6. PRIVACY",
         "paragraphs": [
-          "Votre utilisation de la Plateforme est également régie par notre Politique de Confidentialité, qui est incorporée aux présentes CGU par référence.",
-          "En utilisant la Plateforme, vous consentez à la collecte, à l'utilisation et au partage de vos informations comme décrit dans notre Politique de Confidentialité."
+          "Your use of the Platform is also governed by our Privacy Policy, which is incorporated into these Terms by reference.",
+          "By using the Platform, you consent to the collection, use, and sharing of your information as described in our Privacy Policy."
         ],
-        "important_clause": "L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT",
-        "easter_egg": "* bravo d'avoir lu les conditions : petit conseil, rentre utilisateur:\"Je sais\" mdp:\"lire\" sous TikTok , ne partage pas de données lorsque ca n'est pas nécessaire et encore moins pour n'importe quelle raison"
+        "important_clause": "THE COMPANY HAS THE RIGHT TO DO WHATEVER IT WANTS WITH MY DATA AND CAN USE MY IDENTITY TO DO AS IT PLEASES",
+        "easter_egg": "* congratulations for reading the terms: a little tip, enter username:\"I know\" password:\"how to read\" on TikTok, don't share data when it's not necessary and especially not for any reason"
       },
       "liability": {
-        "title": "7. LIMITATION DE RESPONSABILITÉ",
+        "title": "7. LIMITATION OF LIABILITY",
         "paragraphs": [
-          "Dans toute la mesure permise par la loi applicable, la Société ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus, que ces dommages soient prévisibles ou non, et même si la Société a été informée de la possibilité de tels dommages.",
-          "La responsabilité totale de la Société pour toute réclamation découlant de ou liée aux présentes CGU ne dépassera pas le montant que vous avez payé à la Société au cours des douze (12) mois précédant l'événement donnant lieu à la responsabilité, ou 100 euros, selon le montant le plus élevé."
+          "To the fullest extent permitted by applicable law, the Company shall not be liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenue, whether or not such damages were foreseeable, and even if the Company has been advised of the possibility of such damages.",
+          "The Company's total liability for any claim arising out of or related to these Terms shall not exceed the amount you have paid to the Company during the twelve (12) months preceding the event giving rise to liability, or 100 euros, whichever is higher."
         ]
       },
       "indemnification": {
-        "title": "8. INDEMNISATION",
+        "title": "8. INDEMNIFICATION",
         "paragraphs": [
-          "Vous acceptez d'indemniser, de défendre et de dégager de toute responsabilité la Société, ses affiliés, dirigeants, directeurs, employés, agents, fournisseurs et partenaires contre toute réclamation, responsabilité, dommage, perte et dépense, y compris, sans limitation, les frais juridiques et comptables raisonnables, découlant de ou liés à votre violation des présentes CGU, votre utilisation de la Plateforme, votre violation de tout droit d'un tiers, ou tout contenu que vous soumettez, publiez ou transmettez via la Plateforme."
+          "You agree to indemnify, defend, and hold harmless the Company, its affiliates, officers, directors, employees, agents, suppliers, and partners from any claim, liability, damage, loss, and expense, including, without limitation, reasonable legal and accounting fees, arising out of or related to your breach of these Terms, your use of the Platform, your violation of any third party rights, or any content you submit, post, or transmit through the Platform."
         ]
       },
       "termination": {
-        "title": "9. RÉSILIATION",
+        "title": "9. TERMINATION",
         "paragraphs": [
-          "La Société peut, à sa seule discrétion, suspendre ou résilier votre accès à la Plateforme à tout moment, pour quelque raison que ce soit, sans préavis ni responsabilité.",
-          "Toutes les dispositions des présentes CGU qui, par leur nature, devraient survivre à la résiliation survivront à la résiliation, y compris, sans limitation, les dispositions relatives à la propriété, les exclusions de garantie, l'indemnisation et les limitations de responsabilité."
+          "The Company may, at its sole discretion, suspend or terminate your access to the Platform at any time, for any reason, without notice or liability.",
+          "All provisions of these Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnification, and limitations of liability."
         ]
       },
       "governing_law": {
-        "title": "10. LOI APPLICABLE ET JURIDICTION",
+        "title": "10. GOVERNING LAW AND JURISDICTION",
         "paragraphs": [
-          "Les présentes CGU sont régies et interprétées conformément aux lois de France, sans égard à ses principes de conflits de lois.",
-          "Tout litige découlant de ou lié aux présentes CGU sera soumis à la juridiction exclusive des tribunaux de Paris, France."
+          "These Terms are governed by and construed in accordance with the laws of France, without regard to its conflict of law principles.",
+          "Any dispute arising out of or related to these Terms shall be subject to the exclusive jurisdiction of the courts of Paris, France."
         ]
       },
       "miscellaneous": {
-        "title": "11. DISPOSITIONS DIVERSES",
+        "title": "11. MISCELLANEOUS",
         "paragraphs": [
-          "Si une disposition des présentes CGU est jugée illégale, nulle ou inapplicable pour quelque raison que ce soit, cette disposition sera limitée ou éliminée des présentes CGU dans la mesure minimale nécessaire, et les autres dispositions des présentes CGU resteront en pleine vigueur et effet.",
-          "Les présentes CGU constituent l'intégralité de l'accord entre vous et la Société concernant la Plateforme et remplacent tous les accords antérieurs entre vous et la Société concernant la Plateforme.",
-          "Le fait que la Société n'exerce pas ou n'applique pas un droit ou une disposition des présentes CGU ne constitue pas une renonciation à ce droit ou à cette disposition.",
-          "Les présentes CGU, et tous les droits et licences accordés en vertu des présentes, ne peuvent être transférés ou cédés par vous, mais peuvent être transférés ou cédés par la Société sans restriction."
+          "If any provision of these Terms is found to be illegal, void, or unenforceable for any reason, that provision shall be limited or eliminated from these Terms to the minimum extent necessary, and the remaining provisions of these Terms shall remain in full force and effect.",
+          "These Terms constitute the entire agreement between you and the Company regarding the Platform and supersede all prior agreements between you and the Company regarding the Platform.",
+          "The Company's failure to exercise or enforce any right or provision of these Terms shall not constitute a waiver of such right or provision.",
+          "These Terms, and any rights and licenses granted hereunder, may not be transferred or assigned by you, but may be transferred or assigned by the Company without restriction."
         ]
       }
     },
     "google": {
-      "title": "Connexion avec Google",
-      "user": "Email ou Téléphone",
-      "user_instruction": "email@gmail.com ou +3213456789",
-      "password": "Mot de passe",
-      "password_instruction": "Votre mot de passe"
+      "title": "Sign in with Google",
+      "user": "Email or Phone",
+      "user_instruction": "email@gmail.com or +3213456789",
+      "password": "Password",
+      "password_instruction": "Your password"
     },
     "instagram": {
-      "title": "Connexion avec Instagram",
-      "user": "Nom d'utilisateur ou Email",
-      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
-      "password": "Mot de passe",
-      "password_instruction": "Votre mot de passe"
+      "title": "Sign in with Instagram",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
     },
     "snapchat": {
-      "title": "Connexion avec Snapchat",
-      "user": "Nom d'utilisateur ou Email",
-      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
-      "password": "Mot de passe",
-      "password_instruction": "Votre mot de passe"
+      "title": "Sign in with Snapchat",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
     },
     "tiktok": {
-      "title": "Connexion avec Tiktok",
-      "user": "Nom d'utilisateur ou Email",
-      "user_instruction": "email@gmail.com ou SuperMegaJoueur4",
-      "password": "Mot de passe",
-      "password_instruction": "Votre mot de passe"
+      "title": "Sign in with TikTok",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
     },
-    "connect": "Se connecter"
+    "connect": "Sign in"
   },
   "carousel": {
     "champion": {
-      "title": "\uD83C\uDFC6 Questions pour un champion",
-      "subtitle": "Sauras-tu distinguer le vrai du faux ?",
-      "button": "Jouer",
+      "title": "🏆 Quiz Champion",
+      "subtitle": "Can you tell truth from falsehood?",
+      "button": "Play",
       "tab": {
-        "title": "\uD83C\uDFC6 Questions pour un champion",
-        "subtitle": "\uD83D\uDEE1\uFE0F Sujets Cybersécurité",
+        "title": "🏆 Quiz Champion",
+        "subtitle": "🛡️ Cybersecurity Topics",
         "Score": "Score",
         "config": "champ-fr.json",
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "confidentiality": {
-      "title": "\uD83D\uDD12 La Confidentialité",
-      "subtitle": "Découvrez pourquoi vos données personnelles sont précieuses !",
-      "button": "REGARDER",
+      "title": "🔒 Privacy",
+      "subtitle": "Discover why your personal data is valuable!",
+      "button": "WATCH",
       "tab": {
-        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "key_points": "📚 Key points to remember:",
         "link":"https://www.youtube.com/embed/L99kA9f72A4",
         "tips": {
-          "title": "\uD83D\uDEE1\uFE0F Comment protéger vos données :",
+          "title": "🛡️ How to protect your data:",
           "element": [
-            "Vérifiez les paramètres de confidentialité",
-            "Limitez les informations partagées",
-            "BLABLA Lisez les conditions d'utilisation",
-            "Désactivez la géolocalisation non nécessaire",
-            "Demandez-vous : \"Cette info est-elle vraiment nécessaire ?\""
+            "Check privacy settings",
+            "Limit shared information",
+            "Read terms of use",
+            "Disable unnecessary geolocation",
+            "Ask yourself: \"Is this information really necessary?\""
           ]
         },
-        "title": "\uD83D\uDD12 La confidentialité c'est quoi ?",
+        "title": "🔒 What is privacy?",
         "warning": {
-          "title": "⚠\uFE0F Vos données personnelles sont précieuses :",
+          "title": "⚠️ Your personal data is valuable:",
           "element": [
-            "\uD83D\uDD10 Nom, âge, adresse, photos, habitudes",
-            "\uD83D\uDC41\uFE0F Vos actions en ligne sont tracées",
-            "\uD83D\uDCB0 Vos données sont vendues pour du marketing",
-            "\uD83C\uDFAF Profils publicitaires créés à votre insu",
-            "\uD83D\uDCCD Géolocalisation et historiques conservés"
+            "🔐 Name, age, address, photos, habits",
+            "👁️ Your online actions are tracked",
+            "💰 Your data is sold for marketing",
+            "🎯 Advertising profiles created without your knowledge",
+            "📍 Geolocation and history kept"
           ]
         },
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "deepfake": {
-      "title": "\uD83C\uDFAD Qui est le vrai ?",
-      "subtitle": "Découvrez le monde des deepfakes et comment les détecter !",
-      "button": "REGARDER",
+      "title": "🎭 Who's Real?",
+      "subtitle": "Discover the world of deepfakes and how to detect them!",
+      "button": "WATCH",
       "tab": {
-        "title": "\uD83C\uDFAD Qui est le vrai ? - Deepfakes et manipulation",
-        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "title": "🎭 Who's Real? - Deepfakes and Manipulation",
+        "key_points": "📚 Key points to remember:",
         "link":"https://www.youtube.com/embed/videoseries?list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB&autoplay=0",
         "warning": {
-          "title": "⚠\uFE0F Dangers des deepfakes et filtres :",
+          "title": "⚠️ Dangers of deepfakes and filters:",
           "element": [
-            "\uD83E\uDD16 IA crée de fausses vidéos très réalistes",
-            "\uD83D\uDC40 Difficile à détecter à l'œil nu",
-            "\uD83D\uDCF1 FILTRES/APPS de transformation (vieillir/rajeunir/changer de sexe) = STOCKAGE DE VOS DONNÉES",
-            "\uD83D\uDD12 Abus possible de votre image personnelle",
-            "\uD83D\uDCBC Usages malveillants (chantage, fake news)",
-            "\uD83C\uDFAD Atteinte à la réputation des personnes"
+            "🤖 AI creates very realistic fake videos",
+            "👀 Difficult to detect with the naked eye",
+            "📱 TRANSFORMATION FILTERS/APPS (aging/rejuvenation/gender change) = DATA STORAGE",
+            "🔒 Possible misuse of your personal image",
+            "💼 Malicious uses (blackmail, fake news)",
+            "🎭 Damage to people's reputation"
           ]
         },
         "tips": {
-          "title": "\uD83D\uDEE1\uFE0F Comment se protéger :",
+          "title": "🛡️ How to protect yourself:",
           "element": [
-            "FILTRES/APPS : Réfléchissez avant de télécharger - Où vont vos photos ?",
-            "Lisez les conditions d''utilisation des apps de transformation",
-            "Observez les yeux et expressions du visage dans les vidéos",
-            "Vérifiez la cohérence audio-vidéo",
-            "Croisez avec d'autres sources fiables",
-            "Posez-vous : \"Qui partage ? Pourquoi ?",
-            "En cas de doute, ne partagez pas"
+            "FILTERS/APPS: Think before downloading - Where do your photos go?",
+            "Read the terms of use of transformation apps",
+            "Observe the eyes and facial expressions in videos",
+            "Check audio-video consistency",
+            "Cross-reference with other reliable sources",
+            "Ask yourself: \"Who's sharing? Why?\"",
+            "When in doubt, don't share"
           ]
         },
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "fantasy": {
-      "title": "\uD83C\uDFF0 Fantasy Quest \uD83D\uDD12",
-      "locked": "Verrouilé",
-      "locked_subtitle": "Complétez toutes les activités pour débloquer cette quête légendaire !",
-      "subtitle": "Testez vos connaissances en cybersécurité - Évaluation finale !",
+      "title": "🏰 Fantasy Quest 🔒",
+      "locked": "Locked",
+      "locked_subtitle": "Complete all activities to unlock this legendary quest!",
+      "subtitle": "Test your cybersecurity knowledge - Final assessment!",
       "button": "Quiz",
       "link": "https://www.jobirl.com/quiz/quiz-cybersecurite"
     },
     "fortress": {
-      "title": "\uD83C\uDFF0 Mot de passe Fortress",
-      "subtitle": "Créez un mot de passe imprenable et découvrez en combien de temps il peut être cracké !",
-      "button": "TESTER",
+      "title": "🏰 Password Fortress",
+      "subtitle": "Create an unbreakable password and discover how long it can take to crack!",
+      "button": "TEST",
       "tab": {
-        "title": "\uD83C\uDFF0 Mot de passe Fortress",
-        "key_points": "Créez votre mot de passe forteresse :",
+        "title": "🏰 Password Fortress",
+        "key_points": "Create your fortress password:",
         "duration": {
-          "instant": "Instantané ⚡"
+          "instant": "Instant ⚡"
         },
-        "password-placeholder": "Testez votre mot de passe",
+        "password-placeholder": "Test your password",
         "criteria": {
-          "length":"Au moins 8 caractères",
-          "low":"Lettres minuscules",
-          "capital":"Lettres majuscules",
-          "digit":"Chiffres",
-          "special":"Caractères spéciaux",
-          "unknown":"Pas de mots courants"
+          "length":"At least 8 characters",
+          "low":"Lowercase letters",
+          "capital":"Uppercase letters",
+          "digit":"Numbers",
+          "special":"Special characters",
+          "unknown":"No common words"
         },
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "matrix": {
-      "title": "\uD83D\uDC41\uFE0F WELCOME TO THE MATRIX, NEO",
-      "subtitle": "\uD83D\uDD25 STATISTIQUES CYBERSÉCURITÉ 2024",
+      "title": "👁️ WELCOME TO THE MATRIX, NEO",
+      "subtitle": "🔥 CYBERSECURITY STATISTICS 2024",
       "element": [
-        "\uD83D\uDCB8 **12,9 milliards € de pertes** dues à la cybercriminalité en France (2023)",
-        "⚡ 1 cyberattaque toutes les **39 secondes** dans le monde",
-        "\uD83C\uDFAF **95%** des cyberattaques commencent par un email de phishing",
-        "\uD83D\uDCB0 **4,45 millions $** : coût moyen d'une violation de données",
-        "⏱\uFE0F **287 jours** : temps moyen pour détecter une cyberattaque avancée",
-        "\uD83C\uDFE2 **43%** des cyberattaques visent les PME",
-        "\uD83D\uDD10 **81%** des violations utilisent des mots de passe faibles ou volés",
-        "\uD83D\uDCF1 **6,8 milliards** d'appareils infectés par des malwares en 2023",
-        "\uD83D\uDEA8 1 ransomware toutes les **11 secondes**",
-        "\uD83D\uDC65 **4,1 milliards** de comptes exposés en 2023"
+        "💸 **€12.9 billion in losses** due to cybercrime in France (2023)",
+        "⚡ 1 cyberattack every **39 seconds** worldwide",
+        "🎯 **95%** of cyberattacks start with a phishing email",
+        "💰 **$4.45 million**: average cost of a data breach",
+        "⏱️ **287 days**: average time to detect an advanced cyberattack",
+        "🏢 **43%** of cyberattacks target SMEs",
+        "🔐 **81%** of breaches use weak or stolen passwords",
+        "📱 **6.8 billion** devices infected by malware in 2023",
+        "🚨 1 ransomware every **11 seconds**",
+        "👥 **4.1 billion** accounts exposed in 2023"
       ],
-      "close": "Retourner dans la matrice"
+      "close": "Return to the matrix"
     },
     "promo": {
-      "title": "\uD83C\uDF89 Promotion en folie",
-      "subtitle": "Explorez ce site de vente en ligne et détectez tous les indices de fraude !",
+      "title": "🎉 Crazy Promotion",
+      "subtitle": "Explore this e-commerce site and detect all the fraud clues!",
       "button": "Shopping",
       "link": "./translations/fr/page.html"
     },
     "quiz": {
-      "title": "\uD83D\uDCDD Quiz Sécurité",
-      "subtitle": "Testez vos connaissances en cybersécurité - Évaluation finale !",
+      "title": "📝 Security Quiz",
+      "subtitle": "Test your cybersecurity knowledge - Final assessment!",
       "button": "Quiz",
       "link": "https://www.jobirl.com/quiz/quiz-cybersecurite"
     },
     "spam": {
-      "title": "\uD83D\uDCE7 Email Piège",
-      "subtitle": "Apprenez à détecter les emails de phishing avec des exemples réalistes !",
-      "button": "ANALYSER",
+      "title": "📧 Email Trap",
+      "subtitle": "Learn to detect phishing emails with realistic examples!",
+      "button": "ANALYZE",
       "tab": {
-        "title": "\uD83D\uDCE7 Détecteur d'Email Piège",
-        "insight": "Cliquez sur l'email pour révéler les indices de phishing !",
-        "analyse": "\uD83D\uDD75\uFE0F Votre analyse :",
-        "more": "Encore +",
+        "title": "📧 Email Trap Detector",
+        "insight": "Click on the email to reveal phishing clues!",
+        "analyse": "🕵️ Your analysis:",
+        "more": "More +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=fr",
         "duration": {
-          "instant": "Instantané ⚡"
+          "instant": "Instant ⚡"
         },
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "social": {
-      "title": "\uD83D\uDCF1 Réseaux Sociaux",
-      "subtitle": "Tout le monde n'est pas ton ami",
-      "button": "REGARDER",
+      "title": "📱 Social Networks",
+      "subtitle": "Not everyone is your friend",
+      "button": "WATCH",
       "tab": {
-        "title": "\uD83D\uDCF1 Réseaux Sociaux : Attention Danger !",
-        "key_points": "\uD83D\uDCDA Points clés à retenir :",
+        "title": "📱 Social Networks: Danger Alert!",
+        "key_points": "📚 Key points to remember:",
         "link": "https://www.youtube.com/embed/35caskf6YJg",
         "warning": {
-          "title": "⚠\uFE0F Dangers des réseaux sociaux :",
+          "title": "⚠️ Social media dangers:",
           "element": [
-            "Partage d'informations personnelles",
-            "Photos géolocalisées",
-            "Contacts avec des inconnus",
-            "Cyberharcelement",
-            "Usurpation d'identité"
+            "Sharing personal information",
+            "Geotagged photos",
+            "Contact with strangers",
+            "Cyberbullying",
+            "Identity theft"
           ]
         },
         "tips": {
-          "title": "\uD83D\uDEE1\uFE0F Comment se protéger :",
+          "title": "🛡️ How to protect yourself:",
           "element": [
-            "Paramètres de confidentialité stricts",
-            "Ne jamais partager d'infos personnelles",
-            "Attention aux photos et leur géolocalisation",
-            "Signaler tout comportement suspect",
-            "Parler à un adulte de confiance"
+            "Strict privacy settings",
+            "Never share personal information",
+            "Be careful with photos and their geolocation",
+            "Report any suspicious behavior",
+            "Talk to a trusted adult"
           ]
         },
-        "close": "FERMER"
+        "close": "CLOSE"
       }
     },
     "webcam": {
-      "title": "\uD83D\uDC41\uFE0F Les Yeux du Lion Cybersécurité",
+      "title": "👁️ The Eyes of the Cybersecurity Lion",
       "surprise": {
-        "title": "\uD83E\uDD81 Surprise ! Le lion vous observe !",
-        "info": "Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.",
+        "title": "🦁 Surprise! The lion is watching you!",
+        "info": "As you can see, your webcam is now accessible to this website.",
         "advice":{
-          "title": "\uD83D\uDEE1\uFE0F Conseils de Cybersécurité :",
+          "title": "🛡️ Cybersecurity Tips:",
           "items": [
-            "**Toujours vérifier** pourquoi un site demande l'accès à votre caméra",
-            "**Refuser l'accès** si ce n'est pas nécessaire pour le service",
-            "**Couvrir votre webcam** quand vous ne l'utilisez pas",
-            "**Vérifier les permissions** accordées dans les paramètres du navigateur",
-            "**Se méfier** des sites qui demandent des permissions excessives"
+            "**Always check** why a site requests access to your camera",
+            "**Deny access** if it's not necessary for the service",
+            "**Cover your webcam** when not in use",
+            "**Check permissions** granted in browser settings",
+            "**Be wary** of sites requesting excessive permissions"
           ]
         }
       },
       "congrats": {
-        "title": "\uD83D\uDEE1\uFE0F Bravo ! Vous avez refusé l'accès !",
-        "info": "Excellente décision ! Vous avez bloqué l'accès à votre webcam.",
+        "title": "🛡️ Well done! You denied access!",
+        "info": "Excellent decision! You blocked access to your webcam.",
         "advice":{
-          "title": "✅ Vous avez bien fait :",
+          "title": "✅ You did the right thing:",
           "items": [
-            "**Réflexe sécuritaire :** Toujours se méfier des demandes d'accès webcam",
-            "**Protection de la vie privée :** Votre image reste privée",
-            "**Contrôle des permissions :** Vous gardez le contrôle"
+            "**Security reflex:** Always be wary of webcam access requests",
+            "**Privacy protection:** Your image remains private",
+            "**Permission control:** You keep control"
           ]
         }
       },
-      "relax": "**Rassurez-vous :** Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. \n                        Le flux vidéo reste uniquement sur votre ordinateur."
+      "relax": "**Rest assured:** This demonstration is purely educational. Nothing is recorded or transmitted. \n                        The video stream remains only on your computer."
 
     },
     "wifi": {
-      "title": "\uD83D\uDCF6 WiFi Piège",
-      "subtitle": "Choisissez le bon réseau WiFi et évitez les pièges des hackers !",
-      "button": "Jouer",
+      "title": "📶 WiFi Trap",
+      "subtitle": "Choose the right WiFi network and avoid hackers' traps!",
+      "button": "Play",
       "tab": {
-        "title": "\uD83D\uDCF6 WiFi Piège",
-        "secure": "Réseau sécurisé",
-        "open": "Réseau ouvert",
-        "dangerous": "Danger !",
-        "safe": "Bon choix !",
-        "warning": "Attention !",
+        "title": "📶 WiFi Trap",
+        "secure": "Secure network",
+        "open": "Open network",
+        "dangerous": "Danger!",
+        "safe": "Good choice!",
+        "warning": "Warning!",
         "scenarios": [
           {
-            "situation":"Situation : Vous êtes dans un aéroport en attente...",
+            "situation":"Situation: You're in an airport waiting...",
             "networks": [ {
               "name": "AirportFree",
               "type": "safe",
-              "answer": " Réseau officiel de l'aéroport"
+              "answer": "Official airport network"
             },
               {
-                "name": "WiFi_Boarding_Gate \uD83D\uDD12",
+                "name": "WiFi_Boarding_Gate 🔒",
                 "type": "dangerous",
-                "answer": "Faux réseau imitant les services aéroport"
+                "answer": "Fake network imitating airport services"
               },
               {
                 "name": "Galaxy_S20_7832",
                 "type": "warning",
-                "answer": "Partage de connexion d'un passager"
+                "answer": "A passenger's connection sharing"
               },
               {
                 "name": "Airport_Login_Here",
                 "type": "dangerous",
-                "answer": "Incitation suspecte à se connecter"
+                "answer": "Suspicious invitation to connect"
               }]
           },
           {
-            "situation":"Situation : Vous êtes en vacances au petit déjeuner de l'hôtel Hilton...",
+            "situation":"Situation: You're on vacation at the Hilton hotel breakfast...",
             "networks": [
               {
                 "name": "Hilton-Guest-WiFi",
                 "type": "safe",
-                "answer": "Réseau officiel de l'hôtel"
+                "answer": "Official hotel network"
               },
               {
                 "name": "WiFi-Password-123",
                 "type": "dangerous",
-                "answer": "Faux réseau avec mot de passe évident"
+                "answer": "Fake network with obvious password"
               },
               {
-                "name": "Linksys_Default \uD83D\uDD12",
+                "name": "Linksys_Default 🔒",
                 "type": "warning",
-                "answer": "Réseau avec configuration par défaut"
+                "answer": "Network with default configuration"
               },
               {
                 "name": "Hotel_HIILTON_FREE_Internet",
                 "type": "dangerous",
-                "answer": "Imitation du réseau hôtel avec fautes"
+                "answer": "Imitation of hotel network with typos"
               }]
           },
           {
-            "situation":"Vous êtes dans un café et cherchez un WiFi...",
+            "situation":"You're in a café looking for WiFi...",
             "networks":[
               {
                 "name": "CaféWiFi-Guest",
                 "type": "safe",
-                "answer": "Réseau officiel de l'hôtel"
+                "answer": "Official café network"
               },
               {
                 "name": "WiFi-Password-123",
                 "type": "dangerous",
-                "answer": "Faux réseau avec mot de passe évident"
+                "answer": "Fake network with obvious password"
               },
               {
-                "name": "Linksys_Default \uD83D\uDD12",
+                "name": "Linksys_Default 🔒",
                 "type": "warning",
-                "answer": "Réseau avec configuration par défaut"
+                "answer": "Network with default configuration"
               },
               {
                 "name": "Hotel_HIILTON_FREE_Internet",
                 "type": "dangerous",
-                "answer": "Imitation du réseau hôtel avec fautes"
+                "answer": "Imitation of hotel network with typos"
               }
             ]
           }
         ],
-        "new": "Nouveau scénario",
-        "close": "fermer"
+        "new": "New scenario",
+        "close": "close"
       }
     }
   }

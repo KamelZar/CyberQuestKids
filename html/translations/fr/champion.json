@@ -308,6 +308,11 @@
         "explanation": "C'est FAUX ! Cette histoire dramatique est inventée. Cependant, la réalité est presque aussi inquiétante : des chercheurs en sécurité (les \"white hat hackers\") ont effectivement démontré qu'il était possible de pirater certains systèmes de véhicules connectés."
       },
       {
+        "question": "Il a fallu 3 mois à une équipe de 5 développeurs pour concevoir et créer ce site web",
+        "answer": false,
+        "explanation": "C'est FAUX ! Un excellent développeur (Kamel) aidé d'une IA (Claude) et d'un peu de motivation a fini le projet en 1 semaine. Et oui, même avec l'IA tout n'est pas si rapide."
+      },
+      {
         "question": "Les deux pizzas les plus rentable de l'histoire ont rapporté 10 000 bitcoins en 2010, soit aujourd'hui plus de 600 millions d'euros",
         "answer": true,
         "explanation": "C'est tristement VRAI ! Le 22 mai 2010, Laszlo Hanyecz a échangé 10 000 bitcoins contre 2 pizzas Papa John's - environ 25$ de pizzas. Aujourd'hui, ces bitcoins valent plus de 600 millions d'euros !"

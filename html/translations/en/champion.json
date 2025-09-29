@@ -273,6 +273,11 @@
         "explanation": "That's technically TRUE! Article 323-1 of the Penal Code prohibits 'fraudulent access' even on your own system if there's security bypass. But in practice, no one will arrest you for resetting your Windows password!"
       },
       {
+        "question": "It took 3 months for a team of 5 developers to design and create this website",
+        "answer": false,
+        "explanation": "That's FALSE! An excellent developer (Kamel), helped by an AI (Claude) and a bit of motivation, finished the project in 1 week. And yes, even with AI, not everything is that fast."
+      },
+      {
         "question": "There are more mobile phones than inhabitants on Earth",
         "answer": true,
         "explanation": "That's TRUE! There are more than 8 billion mobile phones for about 8 billion humans. Many people have multiple phones (personal/professional) or use connected objects with SIM cards."

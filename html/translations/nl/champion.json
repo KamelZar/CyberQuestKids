@@ -288,6 +288,11 @@
         "explanation": "Dat is WAAR! Een ransomware-aanval tegen Collins Aerospace verlamde de incheckingssystemen van grote luchthavens zoals Heathrow, Brussel en Berlijn gedurende verschillende dagen. Het personeel moest teruggrijpen naar handmatige methodes: handgeschreven instapkaarten, iPads voor inchecking... Een echte reis terug in de tijd! Een verdachte werd gearresteerd in het VK. Deze aanval toont aan hoezeer onze infrastructuur afhangt van technologie en hoe cruciaal het is om ze goed te beschermen!"
       },
       {
+        "question": "Het heeft 3 maanden geduurd voordat een team van 5 ontwikkelaars deze website heeft ontworpen en gemaakt",
+        "answer": false,
+        "explanation": "Dat is FOUT! Een uitstekende ontwikkelaar (Kamel), geholpen door een AI (Claude) en een beetje motivatie, heeft het project in 1 week afgerond. En ja, zelfs met AI gaat niet alles zo snel."
+      },
+      {
         "question": "Het woord 'Wi-Fi' betekent 'Wireless Fidelity', zoals 'Hi-Fi' betekent 'High Fidelity'",
         "answer": false,
         "explanation": "Dat is grotendeels VALS! In tegenstelling tot de populaire overtuiging betekent 'Wi-Fi' eigenlijk helemaal niets! Het is gewoon een commerciële naam uitgevonden door een marketingbureau in 1999 om de technische naam 'IEEE 802.11b Direct Sequence' te vervangen"

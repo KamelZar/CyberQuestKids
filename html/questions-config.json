@@ -253,9 +253,9 @@
         "explanation": "C'est VRAI ! Grace Hopper a trouvé un papillon de nuit coincé dans le relais du Harvard Mark II. Elle l'a scotché dans son carnet avec la note 'First actual case of bug being found' !"
       },
       {
-        "question": "Le premier spam email a été envoyé en 1978 à exactement 400 utilisateurs ARPANET",
+        "question": "Le premier spam email a été envoyé en 1978 à généré  $13 millions de ventes",
         "answer": true,
-        "explanation": "C'est VRAI ! Gary Thuerk de Digital Equipment Corporation a envoyé une pub pour un nouveau produit à 400 utilisateurs ARPANET. Résultat : quelques ventes... et beaucoup de plaintes !"
+        "explanation": "C'est VRAI ! Gary Thuerk de Digital Equipment Corporation a envoyé une pub pour un nouveau produit à environ 400 utilisateurs ARPANET. Résultat : quelques ventes... et beaucoup de plaintes !"
       },
       {
         "question": "Le mot 'hacker' était à l'origine un terme positif au MIT pour désigner quelqu'un de brillant en informatique",
@@ -273,24 +273,9 @@
         "explanation": "C'est techniquement VRAI ! L'article 323-1 du Code pénal interdit 'l'accès frauduleux' même sur son propre système s'il y a contournement de sécurité. Mais en pratique, personne ne va t'arrêter pour avoir resetté ton mot de passe Windows !"
       },
       {
-        "question": "Les premiers hackers utilisaient des sifflets de céréales Cap'n Crunch pour pirater les téléphones",
-        "answer": true,
-        "explanation": "C'est VRAI ! Dans les années 70, John Draper a découvert qu'un sifflet de céréales émettait un son à 2600Hz, la fréquence utilisée par les téléphones pour signaler une ligne libre. Ça permettait d'avoir des appels gratuits !"
-      },
-      {
         "question": "Il y a plus de téléphones portables que d'habitants sur Terre",
         "answer": true,
         "explanation": "C'est VRAI ! Il y a plus de 8 milliards de téléphones mobiles pour environ 8 milliards d'humains. Beaucoup de gens ont plusieurs téléphones (perso/pro) ou utilisent des objets connectés avec carte SIM."
-      },
-      {
-        "question": "L'algorithme de Google utilise plus de 200 facteurs différents pour classer les sites web",
-        "answer": true,
-        "explanation": "C'est VRAI ! Google confirme utiliser plus de 200 'signaux' : vitesse du site, contenu, liens, localisation, historique de recherche, fraîcheur du contenu, etc. L'algorithme exact reste secret !"
-      },
-      {
-        "question": "Le créateur du Web (Tim Berners-Lee) aurait pu breveter son invention et devenir l'homme le plus riche du monde",
-        "answer": true,
-        "explanation": "C'est VRAI ! En 1989, Tim Berners-Lee a délibérément choisi de ne pas breveter le Web pour que ce soit libre et accessible à tous. Il a dit 'Ce n'était pas une question d'argent, c'était une question de principe' !"
       },
       {
         "question": "Il est techniquement possible de pirater un ordinateur en analysant les vibrations de son ventilateur",
@@ -298,9 +283,44 @@
         "explanation": "C'est VRAI ! Des chercheurs ont réussi à extraire des données en analysant les variations acoustiques des ventilateurs (technique 'Fansmitter'). C'est complexe et peu pratique, mais scientifiquement prouvé !"
       },
       {
-        "question": "La France a déjà eu un service de messagerie instantanée et d'achat en ligne... en 1982 !",
+        "question": "Des hackers ont réussi à paralyser plusieurs grands aéroports européens en septembre 2025, forçant le personnel à écrire les cartes d'embarquement à la main",
         "answer": true,
-        "explanation": "C'est VRAI ! Le Minitel permettait déjà de chatter (messagerie rose), faire des achats, consulter l'annuaire, réserver des billets... 15 ans avant Internet grand public ! La France était en avance, mais s'est ensuite accrochée trop longtemps au Minitel."
+        "explanation": "C'est VRAI ! Une attaque ransomware contre Collins Aerospace a paralysé les systèmes d'enregistrement de grands aéroports comme Heathrow, Bruxelles et Berlin pendant plusieurs jours. Le personnel a dû revenir aux méthodes manuelles : cartes d'embarquement écrites à la main, iPads pour l'enregistrement... Un vrai retour dans le passé ! Un suspect a été arrêté au Royaume-Uni. Cette attaque montre à quel point nos infrastructures dépendent de la technologie et combien il est crucial de bien les protéger !"
+      },
+      {
+        "question": "Le mot \"Wi-Fi\" signifie \"Wireless Fidelity\", comme \"Hi-Fi\" signifie \"High Fidelity\"",
+        "answer": false,
+        "explanation": "C'est en grande partie FAUX ! Contrairement à la croyance populaire, \"Wi-Fi\" ne signifie en réalité rien du tout ! C'est juste un nom commercial inventé par une agence de marketing en 1999 pour remplacer le nom technique \"IEEE 802.11b Direct Sequence\""
+      },
+      {
+        "question": "Steve Jobs a créé le tout premier emoji (\uD83D\uDE0A) en 1998 pour le premier iMac, inspiré par son propre sourire",
+        "answer": false,
+        "explanation": "C'est complètement FAUX ! Les emojis ont été créés au Japon en 1999 par Shigetaka Kurita pour la plateforme mobile i-mode de NTT DoCoMo - pas par Steve Jobs !"
+      },
+      {
+        "question": "Ton smartphone est plus puissant que l'ordinateur qui a envoyé l'Homme sur la Lune",
+        "answer": true,
+        "explanation": "\nC'est VRAI et c'est impressionnant ! L'ordinateur de navigation d'Apollo 11 (1969) avait 4 Ko de RAM et un processeur de 0,043 MHz. Ton iPhone a environ 6 Go de RAM (2 millions de fois plus !) et un processeur 70 000 fois plus rapide ! Avec moins de puissance qu'une calculatrice moderne, la NASA a réussi à envoyer des hommes sur la Lune et à les ramener. Cela prouve que l'ingéniosité humaine compte plus que la puissance brute ! Aujourd'hui, on a des superordinateurs dans nos poches... qu'on utilise principalement pour regarder des vidéos de chats ! \uD83D\uDC31\uD83D\uDE80"
+      },
+      {
+        "question": "En 2023, des hackers ont réussi à prendre le contrôle à distance de plus de 15 000 Tesla en Norvège, faisant klaxonner toutes les voitures simultanément en pleine nuit pour protester contre l'exploitation minière.",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette histoire dramatique est inventée. Cependant, la réalité est presque aussi inquiétante : des chercheurs en sécurité (les \"white hat hackers\") ont effectivement démontré qu'il était possible de pirater certains systèmes de véhicules connectés."
+      },
+      {
+        "question": "Les deux pizzas les plus rentable de l'histoire ont rapporté 10 000 bitcoins en 2010, soit aujourd'hui plus de 600 millions d'euros",
+        "answer": true,
+        "explanation": "C'est tristement VRAI ! Le 22 mai 2010, Laszlo Hanyecz a échangé 10 000 bitcoins contre 2 pizzas Papa John's - environ 25$ de pizzas. Aujourd'hui, ces bitcoins valent plus de 600 millions d'euros !"
+      },
+      {
+        "question": "Le créateur de Minecraft, Notch, a caché son vrai prénom dans le code du jeu : en minant exactement 404 blocs de diamant, un message secret s'affiche avec son prénom 'Markus'",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette 'Easter egg' n'existe pas dans Minecraft. Notch (Markus Persson) a bien caché quelques secrets dans le jeu, mais pas celui-là. Son vrai prénom 'Markus' n'a jamais été un mystère de toute façon, il est publiquement connu ! Par contre, Minecraft contient de vrais Easter eggs, comme le texte 'Minceraft' qui apparaît parfois à la place de 'Minecraft' sur l'écran titre. Les légendes de codes secrets circulent souvent dans la communauté gaming !"
+      },
+      {
+        "question": "En 2019, un hacker norvégien a piraté tous les distributeurs Coca-Cola d'Oslo pour distribuer des boissons gratuites, causant une perte de 2 millions d'euros",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette histoire virale est une légende urbaine. Aucun piratage massif de distributeurs Coca-Cola n'a eu lieu en Norvège. Par contre, des chercheurs ont bien prouvé qu'on pouvait pirater certains distributeurs connectés, mais seulement en laboratoire pour montrer les failles de sécurité. Pas de 'Robin des Bois du Coca' dans la vraie vie... dommage !"
       }
     ]
   }

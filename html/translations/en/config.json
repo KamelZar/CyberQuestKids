@@ -136,7 +136,27 @@
         "subtitle": "🛡️ Cybersecurity Topics",
         "Score": "Score",
         "config": "champ-fr.json",
-        "close": "CLOSE"
+        "close": "CLOSE",
+        "buttons": {
+          "true": "✓ TRUE",
+          "false": "✗ FALSE",
+          "next": "Next question →",
+          "replay": "Play again"
+        },
+        "results": {
+          "correct": "Excellent answer!",
+          "incorrect": "Not quite..."
+        },
+        "final": {
+          "title": "Well done!",
+          "score_label": "Final score:",
+          "messages": {
+            "excellent": "Amazing! You've mastered this topic!",
+            "good": "Very good! You understand the issues well!",
+            "average": "Not bad! Keep learning!",
+            "low": "You need to study this topic more!"
+          }
+        }
       }
     },
     "confidentiality": {

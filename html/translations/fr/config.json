@@ -136,7 +136,27 @@
         "subtitle": "\uD83D\uDEE1\uFE0F Sujets Cybersécurité",
         "Score": "Score",
         "config": "champ-fr.json",
-        "close": "FERMER"
+        "close": "FERMER",
+        "buttons": {
+          "true": "✓ VRAI",
+          "false": "✗ FAUX",
+          "next": "Question suivante →",
+          "replay": "Rejouer"
+        },
+        "results": {
+          "correct": "Excellente réponse !",
+          "incorrect": "Pas tout à fait..."
+        },
+        "final": {
+          "title": "Bravo !",
+          "score_label": "Score final:",
+          "messages": {
+            "excellent": "Incroyable ! Tu maîtrises ce sujet !",
+            "good": "Très bien ! Tu comprends bien les enjeux !",
+            "average": "Pas mal ! Continue à apprendre !",
+            "low": "Il faut encore étudier ce sujet !"
+          }
+        }
       }
     },
     "confidentiality": {

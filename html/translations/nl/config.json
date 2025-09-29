@@ -136,7 +136,27 @@
         "subtitle": "🛡️ Cybersecurity Onderwerpen",
         "Score": "Score",
         "config": "champ-fr.json",
-        "close": "SLUITEN"
+        "close": "SLUITEN",
+        "buttons": {
+          "true": "✓ WAAR",
+          "false": "✗ ONWAAR",
+          "next": "Volgende vraag →",
+          "replay": "Opnieuw spelen"
+        },
+        "results": {
+          "correct": "Uitstekend antwoord!",
+          "incorrect": "Niet helemaal..."
+        },
+        "final": {
+          "title": "Goed gedaan!",
+          "score_label": "Eindscore:",
+          "messages": {
+            "excellent": "Geweldig! Je beheerst dit onderwerp!",
+            "good": "Zeer goed! Je begrijpt de problemen goed!",
+            "average": "Niet slecht! Blijf leren!",
+            "low": "Je moet dit onderwerp nog meer bestuderen!"
+          }
+        }
       }
     },
     "confidentiality": {

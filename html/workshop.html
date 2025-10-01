@@ -1673,7 +1673,7 @@
 
         }
 
-        loadTranslations('fr').then(() => {
+        loadTranslations('en').then(() => {
             applyTranslations();
             generateTOSContent();
         });
@@ -1941,7 +1941,7 @@
                 
                 // URLs des jeux externes
                 const gameUrls = {
-                    "fantasy-quest": getTranslation("fantasy.link"),
+                    "fantasy-quest": getTranslation("carousel.fantasy.link"),
                     "quizz": getTranslation("carousel.quiz.link")
                 };
 
@@ -2067,9 +2067,9 @@
                     const button = fantasyQuestItem.querySelector('button');
                     
                     if (h2) h2.innerHTML = '🏰 Fantasy Quest ✨';
-                    if (p) p.innerHTML = '🎉 FÉLICITATIONS ! Quête débloquée ! Explorez un monde fantastique !';
+                    if (p) p.innerHTML = getTranslation("carousel.fantasy.subtitle");
                     if (button) {
-                        button.textContent = 'Jouer';
+                        button.textContent = getTranslation("carousel.fantasy.button");
                         button.disabled = false;
                         button.style.background = '#4CAF50';
                         button.style.color = 'white';
@@ -2082,7 +2082,7 @@
 
             showFantasyQuestLocked() {
                 const remaining = this.visitedActivities.slice(0, 7).filter(v => !v).length;
-                alert(`🔒 Fantasy Quest est verrouillée !\n\n✨ Complétez encore ${remaining} activité${remaining > 1 ? 's' : ''} pour débloquer cette quête légendaire !\n\n🎯 Activités visitées : ${7 - remaining}/7`);
+                alert(`🔒 Fantasy Quest  ${getTranslation("carousel.fantasy.locked")}`);
             }
 
             showUnlockNotification() {
@@ -2198,7 +2198,7 @@
                         <p style="margin: 0 0 20px 0; font-size: 1rem;">
                             Vous pouvez maintenant assister à la cérémonie de remise des diplômes ! ✨
                         </p>
-                        <button onclick="window.open('ceremonie.html', '_blank')" style="
+                        <button onclick="window.open(getTranslation('ceremony.link'), '_blank')" style="
                             background: linear-gradient(45deg, #4CAF50, #45a049);
                             color: white;
                             border: none;
@@ -2276,7 +2276,7 @@
                 
                 // Event listeners
                 persistentBtn.addEventListener('click', () => {
-                    window.open('ceremonie.html', '_blank');
+                    window.open(getTranslation('ceremony.link'), '_blank');
                 });
                 
                 persistentBtn.addEventListener('mouseover', () => {

@@ -7,6 +7,8 @@
   "conditions": {
     "title": "Algemene Gebruiksvoorwaarden",
     "confirm": "Ik accepteer de algemene gebruiksvoorwaarden",
+    "need_confirm": "Accepteer de algemene voorwaarden\n",
+    "valid_email": "Geef een geldig e-mailadres (exemple@gmail.com) of telefoonnummer (+32123456789) op",
     "content": {
       "introduction": {
         "title": "1. INLEIDING",

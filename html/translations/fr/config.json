@@ -7,6 +7,8 @@
   "conditions": {
     "title": "Conditions Générales d'Utilisation",
     "confirm": "J'accepte les conditions générales d'utilisation",
+    "need_confirm": "Vous devez accepter les conditions générales pour continuer.",
+    "valid_email": "Veuillez saisir un email valide (exemple@gmail.com) ou un numéro de téléphone (+33123456789)')",
     "content": {
       "introduction": {
         "title": "1. INTRODUCTION",

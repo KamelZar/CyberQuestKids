@@ -7,6 +7,8 @@
   "conditions": {
     "title": "Terms of Use",
     "confirm": "I accept the terms of use",
+    "need_confirm": "Please accept the terms and conditions",
+    "valid_email": "Please provide a valid email address (exemple@gmail.com) or phone number (+32123456789)')",
     "content": {
       "introduction": {
         "title": "1. INTRODUCTION",

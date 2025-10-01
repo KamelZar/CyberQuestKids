@@ -3334,7 +3334,7 @@
             const phonePattern = /^\+?[\d\s\-\(\)]{10,}$/;
             
             if (!emailPattern.test(input) && !phonePattern.test(input)) {
-                alert('Veuillez saisir un email valide (exemple@gmail.com) ou un numéro de téléphone (+33123456789)');
+                alert(getTranslation('conditions.valid_email'));
                 return false;
             }
             return true;
@@ -3342,7 +3342,7 @@
         
         function submitForm(provider, username, password) {
             if (!document.getElementById('tosAccept').checked) {
-                alert('Vous devez accepter les conditions générales pour continuer.');
+                alert(getTranslation('conditions.need_confirm'));
                 return;
             }
             

@@ -275,7 +275,7 @@
       "title": "🎉 Gekke Promotie",
       "subtitle": "Verken deze e-commerce site en detecteer alle fraude-aanwijzingen!",
       "button": "Winkelen",
-      "link": "./translations/fr/page.html"
+      "link": "./translations/nl/page.html"
     },
     "quiz": {
       "title": "📝 Beveiligingsquiz",
@@ -450,5 +450,8 @@
         "close": "sluiten"
       }
     }
+  },
+  "ceremony": {
+    "link": "./translations/nl/ceremony.html"
   }
 }

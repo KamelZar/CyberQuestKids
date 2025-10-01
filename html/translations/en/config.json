@@ -275,7 +275,7 @@
       "title": "🎉 Crazy Promotion",
       "subtitle": "Explore this e-commerce site and detect all the fraud clues!",
       "button": "Shopping",
-      "link": "./translations/fr/page.html"
+      "link": "./translations/en/page.html"
     },
     "quiz": {
       "title": "📝 Security Quiz",
@@ -450,5 +450,8 @@
         "close": "close"
       }
     }
+  },
+  "ceremony": {
+    "link": "./translations/en/ceremony.html"
   }
 }

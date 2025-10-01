@@ -124,7 +124,37 @@
       "password": "Wachtwoord",
       "password_instruction": "Uw wachtwoord"
     },
-    "connect": "Aanmelden"
+    "connect": "Aanmelden",
+    "data_overlay": {
+      "accepted_clause_title": "📜 Clausule die u heeft geaccepteerd:",
+      "investigation_complete": "🕵️ ONDERZOEK VOLTOOID - GEGEVENS ONTDEKT!",
+      "evidence_title": "📋 VERZAMELD BEWIJS:",
+      "evidence_intro": "Onze digitale detective heeft uw gegevens opgehaald! 🐎💨",
+      "evidence_email": "🔍 <strong>E-mail/Naam:</strong>",
+      "evidence_password": "🗝️ <strong>Wachtwoord:</strong>",
+      "evidence_platform": "🏢 <strong>Platform:</strong>",
+      "evidence_timestamp": "📅 <strong>Tijdstempel:</strong>",
+      "conclusions_title": "📋 ONDERZOEKSCONCLUSIES:",
+      "conclusions": [
+        "✓ Uw gegevens zijn nu hun eigendom",
+        "✓ Ze kunnen ze verkopen aan wie ze willen",
+        "✓ Ze kunnen uw identiteit gebruiken",
+        "✓ Alles is perfect legaal dankzij de AVV!"
+      ],
+      "lesson_title": "🎓 CYBERSECURITY LES:",
+      "lesson_intro": "<strong>🔍 ALTIJD onderzoeken voordat u accepteert!</strong>",
+      "lesson_points": [
+        "• Bedrijven verbergen belangrijke clausules in de AVV",
+        "• Eenmaal geaccepteerd, bent u juridisch gebonden",
+        "• Uw gegevens kunnen worden verkocht of gedeeld",
+        "• Wees voorzichtig met \"Ik accepteer\" vakjes!",
+        "• Bij twijfel, geef geen echte gegevens"
+      ],
+      "lesson_understood": "🧠 Les begrepen!",
+      "console_log_title": "🏴‍☠️ Gegevens legaal verkregen via AVV:",
+      "console_log_clause": "📜 Geaccepteerde clausule: HET BEDRIJF HEEFT HET RECHT OM TE DOEN WAT HET WIL MET MIJN GEGEVENS",
+      "console_log_storage": "💾 Gegevens opgeslagen in localStorage"
+    }
   },
   "carousel": {
     "champion": {
@@ -296,7 +326,23 @@
         "duration": {
           "instant": "Onmiddellijk ⚡"
         },
-        "close": "SLUITEN"
+        "close": "SLUITEN",
+        "game": {
+          "title": "🎯 Zoek de {count} fouten",
+          "errors_found": "Gevonden fouten:",
+          "instructions": "Vind de {count} phishing-waarschuwingssignalen door erop te klikken in de e-mail!",
+          "hint_button": "💡 Hint",
+          "solution_button": "🔍 Alle oplossingen bekijken",
+          "error_detected": "✅ Fout {number} gedetecteerd!",
+          "problem_identified": "Probleem geïdentificeerd:",
+          "why_suspicious": "Waarom het verdacht is:",
+          "why_dangerous": "🚨 Waarom het gevaarlijk is:",
+          "how_to_detect": "💡 Hoe te detecteren:",
+          "victory_title": "🏆 Gefeliciteerd! Je bent nu een anti-phishing expert!",
+          "victory_advice": "Bij twijfel, neem rechtstreeks contact op met de organisatie via hun officiële website of telefoon. Klik nooit op verdachte links!",
+          "new_email_button": "🔄 Nieuwe e-mail",
+          "more_training_button": "🎯 Meer training"
+        }
       }
     },
     "social": {

@@ -1654,6 +1654,7 @@
 
         // === GESTION SÉLECTEUR DE LANGUE ===
         let translations = {}; // Stockage global des traductions
+        let phishingEmails = {}; // Stockage global des emails de phishing
 
         async function loadTranslations(lang) {
             try {
@@ -1666,11 +1667,31 @@
 
                 translations = await response.json();
                 console.log(`Traductions ${lang} chargées:`, translations);
+
+                // Charger les emails de phishing
+                await loadPhishingEmails(lang);
             } catch (error) {
                 console.error(`Erreur lors du chargement des traductions ${lang}:`, error);
                 translations = {}; // Fallback vers objet vide
             }
 
+        }
+
+        async function loadPhishingEmails(lang) {
+            try {
+                console.log(`Chargement des emails de phishing ${lang}...`);
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${lang}/phishing-emails.json`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                phishingEmails = await response.json();
+                console.log(`Emails de phishing ${lang} chargés:`, phishingEmails);
+            } catch (error) {
+                console.error(`Erreur lors du chargement des emails de phishing ${lang}:`, error);
+                phishingEmails = {}; // Fallback vers objet vide
+            }
         }
 
         loadTranslations('en').then(() => {
@@ -2815,100 +2836,90 @@
             }
         }
 
+        // Fonction pour construire le HTML de l'email depuis les données JSON
+        function buildEmailHTML(email) {
+            const icon = email.id === 'bank' ? '📧' : email.id === 'paypal' ? '💳' : '📦';
+
+            // Construire les éléments du corps avec les erreurs cliquables
+            let bodyHTML = '';
+            email.body.forEach(paragraph => {
+                bodyHTML += `<p>${paragraph}</p>`;
+            });
+
+            // Créer le HTML complet avec les erreurs cliquables
+            const errorMap = {};
+            email.errors.forEach(error => {
+                errorMap[error.selector] = error;
+            });
+
+            return `
+                <div class="email-header">
+                    <div>
+                        <div>De: <span class="clickable-error" onclick="foundError('${errorMap.email.id}', '${errorMap.email.explanation.replace(/'/g, "\\'")}', '${errorMap.email.target}')">${email.from}</span></div>
+                        <div>À: vous@email.com</div>
+                    </div>
+                    <div>${icon}</div>
+                </div>
+                <div class="email-content">
+                    <div class="email-subject">${email.subject}</div>
+                    <p>${email.greeting}</p>
+                    ${email.body.map((para, index) => {
+                        // Identifier les erreurs dans le corps du texte
+                        const bodyError = email.errors.find(e =>
+                            (e.selector === 'subject-urgency' || e.selector === 'urgency' ||
+                             e.selector === 'amount' || e.selector === 'limitation' ||
+                             e.selector === 'order') && para.includes(e.target)
+                        );
+                        if (bodyError) {
+                            const escapedTarget = bodyError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            return `<p>${para.replace(new RegExp(escapedTarget, 'g'),
+                                `<span class="clickable-error" onclick="foundError('${bodyError.id}', '${bodyError.explanation.replace(/'/g, "\\'")}', '${bodyError.target}')">${bodyError.target}</span>`)}</p>`;
+                        }
+                        return `<p>${para}</p>`;
+                    }).join('')}
+                    <a href="#" class="suspicious-link clickable-error" onclick="foundError('${errorMap.button.id}', '${errorMap.button.explanation.replace(/'/g, "\\'")}', '${errorMap.button.target}')">${email.buttonText}</a>
+                    <p><span class="clickable-error" onclick="foundError('${errorMap.threat.id}', '${errorMap.threat.explanation.replace(/'/g, "\\'")}', '${errorMap.threat.target}')">${email.threat}</span></p>
+                    <p>${email.signature.closing}<br><span class="clickable-error" onclick="foundError('${errorMap.signature.id}', '${errorMap.signature.explanation.replace(/'/g, "\\'")}', '${errorMap.signature.target}')">${email.signature.name}</span></p>
+                </div>
+            `;
+        }
+
         function generateNewEmail() {
-            const emails = [
-                {
-                    from: 'security@bannque-populaire.com',
-                    subject: '🚨 URGENT: Votre compte sera suspendu!',
-                    content: `
-                        <div class="email-header">
-                            <div>
-                                <div>De: <span class="clickable-error" onclick="foundError('email-error', 'Faute d\\'orthographe: &quot;bannque&quot; au lieu de &quot;banque&quot;')">security@bannque-populaire.com</span></div>
-                                <div>À: vous@email.com</div>
-                            </div>
-                            <div>📧</div>
-                        </div>
-                        <div class="email-content">
-                            <div class="email-subject">🚨 URGENT: <span class="clickable-error" onclick="foundError('urgency-error', 'Urgence artificielle pour créer la panique')">Votre compte sera suspendu dans 24h!</span></div>
-                            <p>Cher(e) client(e),</p>
-                            <p>Nous avons détecté une activité suspecte sur votre compte bancaire. Pour des raisons de sécurité, votre compte sera <strong>SUSPENDU</strong> dans 24 heures.</p>
-                            <p><strong>Action requise IMMÉDIATEMENT:</strong></p>
-                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('link-error', 'Lien suspect sans URL spécifique')">CLIQUEZ ICI POUR SÉCURISER VOTRE COMPTE</a>
-                            <p><span class="clickable-error" onclick="foundError('threat-error', 'Menace pour forcer l\\'action: &quot;perdrez l\\'accès&quot;')">Si vous n'agissez pas rapidement, vous perdrez l'accès à vos fonds.</span></p>
-                            <p>Cordialement,<br><span class="clickable-error" onclick="foundError('signature-error', 'Signature générique sans nom spécifique')">L'équipe sécurité Banque Populaire</span></p>
-                        </div>
-                    `,
-                    totalErrors: 5
-                },
-                {
-                    from: 'noreply@paypaI.com',
-                    subject: 'Problème avec votre paiement - Vérification requise',
-                    content: `
-                        <div class="email-header">
-                            <div>
-                                <div>De: <span class="clickable-error" onclick="foundError('domain-error', 'Fausse adresse: &quot;paypaI.com&quot; avec un I majuscule au lieu d\\'un L')">noreply@paypaI.com</span></div>
-                                <div>À: vous@email.com</div>
-                            </div>
-                            <div>💳</div>
-                        </div>
-                        <div class="email-content">
-                            <div class="email-subject">Problème avec votre paiement - Vérification requise</div>
-                            <p>Bonjour,</p>
-                            <p>Nous avons remarqué un problème avec votre dernier paiement de <span class="clickable-error" onclick="foundError('amount-error', 'Montant spécifique inventé pour créer l\\'urgence')">299,99€</span>.</p>
-                            <p><span class="clickable-error" onclick="foundError('limitation-error', 'Limitation de compte sans raison claire ni détails')">Votre compte PayPal a été temporairement limité jusqu'à ce que nous puissions vérifier vos informations.</span></p>
-                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('button-error', 'Bouton suspect avec lien générique')">Vérifier mon compte maintenant</a>
-                            <p><span class="clickable-error" onclick="foundError('deadline-error', 'Menace de fermeture définitive pour créer la pression')">Si vous ne résolvez pas ce problème sous 48h, votre compte sera définitivement fermé.</span></p>
-                            <p>Merci,<br>Équipe PayPal</p>
-                        </div>
-                    `,
-                    totalErrors: 5
-                },
-                {
-                    from: 'support@amazom.fr',
-                    subject: 'Votre commande #AZ123456 - Problème de livraison',
-                    content: `
-                        <div class="email-header">
-                            <div>
-                                <div>De: <span class="clickable-error" onclick="foundError('typo-error', 'Faute dans le domaine: &quot;amazom&quot; au lieu d\\'&quot;amazon&quot;')">support@amazom.fr</span></div>
-                                <div>À: vous@email.com</div>
-                            </div>
-                            <div>📦</div>
-                        </div>
-                        <div class="email-content">
-                            <div class="email-subject">Votre commande #AZ123456 - Problème de livraison</div>
-                            <p>Bonjour,</p>
-                            <p><span class="clickable-error" onclick="foundError('fake-order', 'Référence de commande générique inventée')">Votre commande #AZ123456</span> ne peut pas être livrée à votre adresse.</p>
-                            <p>Notre transporteur nous signale une adresse incomplète. <span class="clickable-error" onclick="foundError('urgent-action', 'Urgence artificielle: &quot;sous 24h&quot;')">Vous devez mettre à jour vos informations sous 24h</span> sinon votre colis sera retourné.</p>
-                            <a href="#" class="suspicious-link clickable-error" onclick="foundError('suspicious-link', 'Lien suspect pour &quot;mettre à jour&quot; les informations')">Mettre à jour mon adresse</a>
-                            <p><span class="clickable-error" onclick="foundError('fee-threat', 'Menace de frais supplémentaires pour forcer l\\'action')">Des frais de stockage de 15€ seront appliqués après ce délai.</span></p>
-                            <p>Cordialement,<br>Service Client Amazon</p>
-                        </div>
-                    `,
-                    totalErrors: 5
-                }
-            ];
+            // Utiliser les emails depuis phishingEmails
+            const emails = phishingEmails.emails || [];
+            if (emails.length === 0) {
+                console.error('Aucun email de phishing chargé!');
+                return;
+            }
+
             const randomEmail = emails[Math.floor(Math.random() * emails.length)];
-            
+
             // Initialiser le jeu
             window.currentEmail = randomEmail;
+            window.currentEmail.totalErrors = randomEmail.errors.length;
             window.foundErrors = 0;
             window.foundErrorIds = new Set();
-            
-            document.getElementById('emailContainer').innerHTML = randomEmail.content;
+
+            // Construire le HTML de l'email depuis le JSON
+            document.getElementById('emailContainer').innerHTML = buildEmailHTML(randomEmail);
+
+            const gameTitle = getTranslation('carousel.spam.tab.game.title').replace('{count}', randomEmail.errors.length);
+            const gameInstructions = getTranslation('carousel.spam.tab.game.instructions').replace('{count}', randomEmail.errors.length);
+
             document.getElementById('analysisPanel').innerHTML = `
                 <div class="game-counter">
-                    🎯 Jeu des ${randomEmail.totalErrors} erreurs
+                    ${gameTitle}
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 0%"></div>
                     </div>
-                    <div>Erreurs trouvées: <span id="errorCount">0</span> / ${randomEmail.totalErrors}</div>
+                    <div>${getTranslation('carousel.spam.tab.game.errors_found')} <span id="errorCount">0</span> / ${randomEmail.errors.length}</div>
                 </div>
-                <h3>🔍 Instructions :</h3>
-                <p>Trouvez les ${randomEmail.totalErrors} signaux d'alerte de phishing en cliquant dessus dans l'email !</p>
+                <h3>🔍 ${getTranslation('carousel.spam.tab.analyse')} :</h3>
+                <p>${gameInstructions}</p>
                 <div style="text-align: center; margin: 15px 0;">
-                    <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')" style="margin-right: 10px;">Encore +</button>
-                    <button class="hint-button" onclick="showHint()" style="margin-right: 10px;">💡 Indice</button>
-                    <button class="solution-button" onclick="showAllSolutions()">🔍 Voir toutes les solutions</button>
+                    <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')" style="margin-right: 10px;">${getTranslation('carousel.spam.tab.more')}</button>
+                    <button class="hint-button" onclick="showHint()" style="margin-right: 10px;">${getTranslation('carousel.spam.tab.game.hint_button')}</button>
+                    <button class="solution-button" onclick="showAllSolutions()">${getTranslation('carousel.spam.tab.game.solution_button')}</button>
                 </div>
                 <div id="hintSection" style="margin-top: 20px;"></div>
                 <div id="errorsList" style="margin-top: 15px;"></div>
@@ -2919,19 +2930,19 @@
         function foundError(errorId, explanation) {
             if (!window.foundErrorIds) window.foundErrorIds = new Set();
             if (!window.foundErrors) window.foundErrors = 0;
-            
+
             if (!window.foundErrorIds.has(errorId)) {
                 window.foundErrorIds.add(errorId);
                 window.foundErrors++;
-                
+
                 // Marquer visuellement l'erreur trouvée
                 event.target.classList.add('found');
-                
+
                 // Mettre à jour le compteur
                 const errorCount = document.getElementById('errorCount');
                 if (errorCount) {
                     errorCount.textContent = window.foundErrors;
-                    
+
                     // Mettre à jour la barre de progression
                     const progressBar = document.querySelector('.progress-fill');
                     if (progressBar && window.currentEmail) {
@@ -2939,38 +2950,48 @@
                         progressBar.style.width = `${percentage}%`;
                     }
                 }
-                
+
                 // Ajouter l'explication détaillée
                 const errorsList = document.getElementById('errorsList');
                 if (errorsList) {
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'explanation-box';
+
+                    const errorDetectedMsg = getTranslation('carousel.spam.tab.game.error_detected').replace('{number}', window.foundErrors);
+                    const problemIdentified = getTranslation('carousel.spam.tab.game.problem_identified') || 'Problème identifié :';
+                    const whySuspicious = getTranslation('carousel.spam.tab.game.why_suspicious') || 'Pourquoi c\'est suspect :';
+
                     errorDiv.innerHTML = `
-                        <div class="explanation-title">✅ Erreur ${window.foundErrors} détectée !</div>
+                        <div class="explanation-title">${errorDetectedMsg}</div>
                         <div class="explanation-text">
-                            <strong>Problème identifié :</strong> ${explanation}
+                            <strong>${problemIdentified}</strong> ${explanation}
                             <br><br>
-                            <strong>Pourquoi c'est suspect :</strong> ${getDetailedExplanation(errorId)}
+                            <strong>${whySuspicious}</strong> ${getDetailedExplanation(errorId)}
                         </div>
                     `;
                     errorsList.appendChild(errorDiv);
-                    
+
                     // Scroller vers la nouvelle explication
                     errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
-                
+
                 // Vérifier si toutes les erreurs ont été trouvées
                 if (window.currentEmail && window.foundErrors >= window.currentEmail.totalErrors) {
                     setTimeout(() => {
                         const errorsList = document.getElementById('errorsList');
                         if (errorsList) {
+                            const victoryTitle = getTranslation('carousel.spam.tab.game.victory_title') || '🏆 Bravo ! Vous êtes maintenant un expert anti-phishing !';
+                            const victoryAdvice = getTranslation('carousel.spam.tab.game.victory_advice') || 'En cas de doute, contactez directement l\'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !';
+                            const newEmailBtn = getTranslation('carousel.spam.tab.game.new_email_button') || '🔄 Nouvel email';
+                            const moreTrainingBtn = getTranslation('carousel.spam.tab.game.more_training_button') || '🎯 Plus d\'entraînement';
+
                             errorsList.innerHTML += `
                                 <div class="victory-message">
-                                    <h3>🏆 Bravo ! Vous êtes maintenant un expert anti-phishing !</h3>
-                                    <p><strong>Conseil d'expert :</strong> En cas de doute, contactez directement l'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !</p>
+                                    <h3>${victoryTitle}</h3>
+                                    <p><strong>${getTranslation('carousel.spam.tab.game.expert_advice') || 'Conseil d\'expert :'}</strong> ${victoryAdvice}</p>
                                     <div style="margin-top: 15px;">
-                                        <button class="btn" onclick="generateNewEmail()" style="margin-right: 10px;">🔄 Nouvel email</button>
-                                        <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">🎯 Plus d'entraînement</button>
+                                        <button class="btn" onclick="generateNewEmail()" style="margin-right: 10px;">${newEmailBtn}</button>
+                                        <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">${moreTrainingBtn}</button>
                                     </div>
                                 </div>
                             `;
@@ -2981,159 +3002,24 @@
         }
 
         function getDetailedExplanation(errorId) {
-            const explanations = {
-                'email-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Les cybercriminels imitent les vrais sites en créant des fautes d'orthographe subtiles. "bannque" au lieu de "banque" passe souvent inaperçu au premier coup d'œil.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Vérifiez toujours l'adresse email avec attention, lettre par lettre. Les vraies banques utilisent des domaines officiels sans fautes.
-                    </div>
-                `,
-                'urgency-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        L'urgence artificielle ("24h") est une technique psychologique pour vous faire paniquer et agir sans réfléchir.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies alertes bancaires ne menacent jamais de suspension immédiate. Prenez le temps de vérifier.
-                    </div>
-                `,
-                'link-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Les liens génériques comme "CLIQUEZ ICI" sont conçus pour être attirants mais cachent leur vraie destination.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies entreprises utilisent des liens spécifiques et descriptifs, pas des formules vagues.
-                    </div>
-                `,
-                'threat-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Les menaces directes ("perdrez l'accès") créent la peur pour court-circuiter votre réflexion logique.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies banques informent, elles ne menacent pas. Elles vous laissent du temps pour réagir.
-                    </div>
-                `,
-                'signature-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Une signature générique sans nom réel permet aux criminels d'envoyer des milliers d'emails identiques.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vrais emails bancaires sont signés par une personne identifiable avec son titre.
-                    </div>
-                `,
-                'domain-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Le "typosquatting" utilise des caractères similaires (I majuscule vs l minuscule) pour tromper l'œil humain.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Vérifiez chaque lettre du domaine. PayPal s'écrit avec deux L minuscules, pas avec un I majuscule.
-                    </div>
-                `,
-                'amount-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Un montant précis inventé (299,99€) crée l'illusion d'une vraie transaction pour déclencher l'inquiétude.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Vérifiez vos vrais achats récents. Si vous n'avez rien acheté à ce prix, c'est suspect.
-                    </div>
-                `,
-                'limitation-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Annoncer une limitation sans explication claire pousse à cliquer pour "comprendre" le problème.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies limitations sont toujours expliquées avec des détails précis et des alternatives.
-                    </div>
-                `,
-                'button-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Les boutons d'action vagues ("Vérifier maintenant") cachent leur vraie fonction derrière un langage générique.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vrais boutons sont spécifiques: "Consulter mes transactions" plutôt que "Vérifier maintenant".
-                    </div>
-                `,
-                'deadline-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Les délais très courts (48h) créent un stress temporel pour empêcher la vérification.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies entreprises donnent toujours plusieurs jours, voire semaines, pour résoudre un problème.
-                    </div>
-                `,
-                'typo-error': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        "amazom" au lieu d'"amazon" est une tentative d'imitation du vrai domaine pour voler vos données.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Connaissez l'orthographe exacte des sites que vous utilisez. Amazon ne fait jamais de fautes dans son nom.
-                    </div>
-                `,
-                'fake-order': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Une référence de commande générique (#AZ123456) donne une fausse crédibilité à un email frauduleux.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Vérifiez dans votre compte Amazon si cette commande existe vraiment avant de cliquer.
-                    </div>
-                `,
-                'urgent-action': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        "24h" est un délai artificiellement court pour vous empêcher de réfléchir ou de vérifier.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vrais problèmes de livraison donnent plusieurs jours pour résoudre le problème.
-                    </div>
-                `,
-                'suspicious-link': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        Un lien pour "mettre à jour" vos informations mène vers un faux site qui vole vos données.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Allez directement sur le vrai site d'Amazon plutôt que de cliquer sur le lien dans l'email.
-                    </div>
-                `,
-                'fee-threat': `
-                    <div class="why-dangerous">
-                        <strong>🚨 Pourquoi c'est dangereux :</strong><br>
-                        La menace de frais supplémentaires (15€) crée une urgence financière pour vous pousser à agir.
-                    </div>
-                    <div class="detection-tip">
-                        <strong>💡 Comment détecter :</strong><br>
-                        Les vraies entreprises expliquent leurs tarifs clairement et donnent des moyens d'éviter les frais.
-                    </div>
-                `
-            };
-            return explanations[errorId] || 'Cet élément présente des caractéristiques typiques du phishing.';
+            if (!phishingEmails.explanations || !phishingEmails.explanations[errorId]) {
+                return getTranslation('carousel.spam.tab.game.default_explanation') || 'Cet élément présente des caractéristiques typiques du phishing.';
+            }
+
+            const exp = phishingEmails.explanations[errorId];
+            const whyDangerous = getTranslation('carousel.spam.tab.game.why_dangerous') || '🚨 Pourquoi c\'est dangereux :';
+            const howToDetect = getTranslation('carousel.spam.tab.game.how_to_detect') || '💡 Comment détecter :';
+
+            return `
+                <div class="why-dangerous">
+                    <strong>${whyDangerous}</strong><br>
+                    ${exp.danger}
+                </div>
+                <div class="detection-tip">
+                    <strong>${howToDetect}</strong><br>
+                    ${exp.detection}
+                </div>
+            `;
         }
 
         function showHint() {
@@ -3607,58 +3493,50 @@
                                box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);">
                         <div style="background: #e74c3c; padding: 15px; border-radius: 8px; margin: 20px 0;
                                    border: 2px solid #c0392b;">
-                            <h3 style="color: #ffffff; margin-top: 0; font-size: 18px;">📜 Clause que vous avez acceptée :</h3>
+                            <h3 style="color: #ffffff; margin-top: 0; font-size: 18px;">${getTranslation('conditions.data_overlay.accepted_clause_title')}</h3>
                             <p style="color: #ffffff; font-weight: bold; text-align: center; font-size: 16px; line-height: 1.4;">
-                                "L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES 
-                                ET PEUT UTILISER MON IDENTITÉ POUR FAIRE CE QUI LUI PLAÎT"
+                                "${getTranslation('conditions.content.privacy.important_clause')}"
                             </p>
                         </div>
-                        
+
                         <h2 style="color: #f39c12; margin: 20px 0; font-size: 22px;">
-                            🕵️ ENQUÊTE TERMINÉE - DONNÉES DÉCOUVERTES !
+                            ${getTranslation('conditions.data_overlay.investigation_complete')}
                         </h2>
-                        
-                        <div style="text-align: left; margin: 20px 0; font-size: 15px; 
+
+                        <div style="text-align: left; margin: 20px 0; font-size: 15px;
                                    background: #2c3e50; padding: 20px; border-radius: 8px;
                                    border-left: 4px solid #f39c12;">
-                            <h4 style="color: #f39c12; margin-top: 0;">📋 PREUVES COLLECTÉES :</h4>
-                            Notre détective numérique a récupéré vos données ! 🐎💨<br><br>
-                            
-                            🔍 <strong>Email/Nom:</strong> <span style="color: #e67e22; font-weight: bold;">${data.username}</span><br>
-                            🗝️ <strong>Mot de passe:</strong> <span style="color: #e67e22; font-weight: bold;">${data.favoriteGame}</span><br>
-                            🏢 <strong>Plateforme:</strong> <span style="color: #e67e22; font-weight: bold;">${data.provider}</span><br>
-                            📅 <strong>Horodatage:</strong> <span style="color: #e67e22; font-weight: bold;">${data.timestamp}</span><br><br>
-                            
+                            <h4 style="color: #f39c12; margin-top: 0;">${getTranslation('conditions.data_overlay.evidence_title')}</h4>
+                            ${getTranslation('conditions.data_overlay.evidence_intro')}<br><br>
+
+                            ${getTranslation('conditions.data_overlay.evidence_email')} <span style="color: #e67e22; font-weight: bold;">${data.username}</span><br>
+                            ${getTranslation('conditions.data_overlay.evidence_password')} <span style="color: #e67e22; font-weight: bold;">${data.favoriteGame}</span><br>
+                            ${getTranslation('conditions.data_overlay.evidence_platform')} <span style="color: #e67e22; font-weight: bold;">${data.provider}</span><br>
+                            ${getTranslation('conditions.data_overlay.evidence_timestamp')} <span style="color: #e67e22; font-weight: bold;">${data.timestamp}</span><br><br>
+
                             <div style="color: #3498db; font-weight: bold; font-size: 16px;">
-                                📋 CONCLUSIONS DE L'ENQUÊTE :
+                                ${getTranslation('conditions.data_overlay.conclusions_title')}
                             </div>
                             <div style="color: #ecf0f1; margin-top: 10px; line-height: 1.4;">
-                                ✓ Vos données sont maintenant leur propriété<br>
-                                ✓ Ils peuvent les vendre à qui ils veulent<br>
-                                ✓ Ils peuvent utiliser votre identité<br>
-                                ✓ Tout est parfaitement légal grâce aux CGU !
+                                ${getTranslation('conditions.data_overlay.conclusions').map(c => c).join('<br>\n                                ')}
                             </div>
                         </div>
-                        
-                        <div style="background: #27ae60; padding: 15px; border-radius: 8px; margin: 20px 0; 
+
+                        <div style="background: #27ae60; padding: 15px; border-radius: 8px; margin: 20px 0;
                                    border: 2px solid #2ecc71;">
-                            <h3 style="color: #ffffff; margin-top: 0;">🎓 LEÇON DE CYBERSÉCURITÉ :</h3>
+                            <h3 style="color: #ffffff; margin-top: 0;">${getTranslation('conditions.data_overlay.lesson_title')}</h3>
                             <p style="color: #ffffff; text-align: left; font-size: 14px; line-height: 1.5;">
-                                <strong>🔍 TOUJOURS enquêter avant d'accepter !</strong><br><br>
-                                • Les entreprises cachent des clauses importantes dans les CGU<br>
-                                • Une fois acceptées, vous êtes légalement liés<br>
-                                • Vos données peuvent être vendues ou partagées<br>
-                                • Soyez vigilants avec les cases "J'accepte" !<br>
-                                • En cas de doute, ne donnez pas vos vraies données
+                                ${getTranslation('conditions.data_overlay.lesson_intro')}<br><br>
+                                ${getTranslation('conditions.data_overlay.lesson_points').map(p => p).join('<br>\n                                ')}
                             </p>
                         </div>
-                        
-                        <button onclick="this.parentElement.parentElement.remove()" 
-                                style="background: #e67e22; color: white; padding: 15px 30px; 
-                                       border: none; border-radius: 8px; font-size: 16px; 
+
+                        <button onclick="this.parentElement.parentElement.remove()"
+                                style="background: #e67e22; color: white; padding: 15px 30px;
+                                       border: none; border-radius: 8px; font-size: 16px;
                                        cursor: pointer; font-weight: bold;
                                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                            🧠 Leçon comprise !
+                            ${getTranslation('conditions.data_overlay.lesson_understood')}
                         </button>
                     </div>
                 </div>`;
@@ -3667,10 +3545,10 @@
             
             // Log dans la console également
             setTimeout(() => {
-                console.group("🏴‍☠️ Données récupérées légalement via CGU:");
+                console.group(getTranslation('conditions.data_overlay.console_log_title'));
                 console.table(data);
-                console.log("📜 Clause acceptée: L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES");
-                console.log("💾 Données stockées dans localStorage");
+                console.log(getTranslation('conditions.data_overlay.console_log_clause'));
+                console.log(getTranslation('conditions.data_overlay.console_log_storage'));
                 console.groupEnd();
             }, 2000);
         }

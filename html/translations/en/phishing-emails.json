@@ -1,0 +1,210 @@
+{
+  "emails": [
+    {
+      "id": "bank",
+      "from": "security@bannk-popular.com",
+      "subject": "🚨 URGENT: Your account will be suspended!",
+      "greeting": "Dear customer,",
+      "body": [
+        "We have detected suspicious activity on your bank account. For security reasons, your account will be <strong>SUSPENDED</strong> within 24 hours.",
+        "<strong>Action required IMMEDIATELY:</strong>"
+      ],
+      "buttonText": "CLICK HERE TO SECURE YOUR ACCOUNT",
+      "threat": "If you don't act quickly, you will lose access to your funds.",
+      "signature": {
+        "closing": "Best regards,",
+        "name": "The Popular Bank Security Team"
+      },
+      "errors": [
+        {
+          "id": "email-error",
+          "target": "security@bannk-popular.com",
+          "selector": "email",
+          "explanation": "Spelling mistake: \"bannk\" instead of \"bank\""
+        },
+        {
+          "id": "urgency-error",
+          "target": "Your account will be suspended within 24 hours!",
+          "selector": "subject-urgency",
+          "explanation": "Artificial urgency to create panic"
+        },
+        {
+          "id": "link-error",
+          "target": "CLICK HERE TO SECURE YOUR ACCOUNT",
+          "selector": "button",
+          "explanation": "Suspicious link without specific URL"
+        },
+        {
+          "id": "threat-error",
+          "target": "If you don't act quickly, you will lose access to your funds.",
+          "selector": "threat",
+          "explanation": "Threat to force action: \"lose access\""
+        },
+        {
+          "id": "signature-error",
+          "target": "The Popular Bank Security Team",
+          "selector": "signature",
+          "explanation": "Generic signature without specific name"
+        }
+      ]
+    },
+    {
+      "id": "paypal",
+      "from": "noreply@paypaI.com",
+      "subject": "Problem with your payment - Verification required",
+      "greeting": "Hello,",
+      "body": [
+        "We have noticed a problem with your recent payment of <span class=\"amount\">$299.99</span>.",
+        "Your PayPal account has been temporarily limited until we can verify your information."
+      ],
+      "buttonText": "Verify my account now",
+      "threat": "If you don't resolve this issue within 48 hours, your account will be permanently closed.",
+      "signature": {
+        "closing": "Thank you,",
+        "name": "PayPal Team"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "noreply@paypaI.com",
+          "selector": "email",
+          "explanation": "Fake address: \"paypaI.com\" with an uppercase I instead of an L"
+        },
+        {
+          "id": "amount-error",
+          "target": "$299.99",
+          "selector": "amount",
+          "explanation": "Specific invented amount to create urgency"
+        },
+        {
+          "id": "limitation-error",
+          "target": "Your PayPal account has been temporarily limited until we can verify your information.",
+          "selector": "limitation",
+          "explanation": "Account limitation without clear reason or details"
+        },
+        {
+          "id": "button-error",
+          "target": "Verify my account now",
+          "selector": "button",
+          "explanation": "Suspicious button with generic link"
+        },
+        {
+          "id": "deadline-error",
+          "target": "If you don't resolve this issue within 48 hours, your account will be permanently closed.",
+          "selector": "threat",
+          "explanation": "Permanent closure threat to create pressure"
+        }
+      ]
+    },
+    {
+      "id": "amazon",
+      "from": "support@amazun.com",
+      "subject": "Your order #AZ123456 - Delivery problem",
+      "greeting": "Hello,",
+      "body": [
+        "Your order <span class=\"order\">\\#AZ123456</span> cannot be delivered to your address.",
+        "Our carrier reports an incomplete address. You must update your information <span class=\"urgency\">within 24 hours</span> or your package will be returned."
+      ],
+      "buttonText": "Update my address",
+      "threat": "A storage fee of $15 will be applied after this deadline.",
+      "signature": {
+        "closing": "Best regards,",
+        "name": "Amazon Customer Service"
+      },
+      "errors": [
+        {
+          "id": "typo-error",
+          "target": "support@amazun.com",
+          "selector": "email",
+          "explanation": "Mistake in domain: \"amazun\" instead of \"amazon\""
+        },
+        {
+          "id": "fake-order",
+          "target": "#AZ123456",
+          "selector": "order",
+          "explanation": "Generic invented order reference"
+        },
+        {
+          "id": "urgent-action",
+          "target": "within 24 hours",
+          "selector": "urgency",
+          "explanation": "Artificial urgency: \"within 24 hours\""
+        },
+        {
+          "id": "suspicious-link",
+          "target": "Update my address",
+          "selector": "button",
+          "explanation": "Suspicious link to \"update\" information"
+        },
+        {
+          "id": "fee-threat",
+          "target": "A storage fee of $15 will be applied after this deadline.",
+          "selector": "threat",
+          "explanation": "Additional fee threat to force action"
+        }
+      ]
+    }
+  ],
+  "explanations": {
+    "email-error": {
+      "danger": "Cybercriminals imitate real sites by creating subtle spelling mistakes. \"bannk\" instead of \"bank\" often goes unnoticed at first glance.",
+      "detection": "Always check the email address carefully, letter by letter. Real banks use official domains without mistakes."
+    },
+    "urgency-error": {
+      "danger": "Artificial urgency (\"24h\") is a psychological technique to make you panic and act without thinking.",
+      "detection": "Real bank alerts never threaten immediate suspension. Take time to verify."
+    },
+    "link-error": {
+      "danger": "Generic links like \"CLICK HERE\" are designed to be attractive but hide their real destination.",
+      "detection": "Real companies use specific and descriptive links, not vague formulas."
+    },
+    "threat-error": {
+      "danger": "Emotional threats (\"lose access\") aim to make you panic to prevent you from verifying.",
+      "detection": "Real organizations never threaten you directly. Contact them through official channels."
+    },
+    "signature-error": {
+      "danger": "A signature without a real person's name is suspicious. Real communications often include specific names.",
+      "detection": "Check if the signature seems generic or personalized. Real companies identify themselves clearly."
+    },
+    "domain-error": {
+      "danger": "Replacing an \"l\" with an uppercase \"I\" (paypaI vs paypal) is a classic phishing technique called \"typosquatting\".",
+      "detection": "Examine every letter of the domain. Real PayPal, Amazon, etc. domains never have variations."
+    },
+    "amount-error": {
+      "danger": "Mentioning a specific amount you didn't spend creates confusion and urgency to verify.",
+      "detection": "Always check your real transactions in your account before clicking on links."
+    },
+    "limitation-error": {
+      "danger": "Real account limitations are always accompanied by detailed explanations and evidence.",
+      "detection": "Real companies clearly explain why and how to resolve the issue."
+    },
+    "button-error": {
+      "danger": "Buttons with generic links can redirect you to fraudulent sites that steal your credentials.",
+      "detection": "Hover over the link (without clicking) to see the real URL. It must match the official domain."
+    },
+    "deadline-error": {
+      "danger": "Short and threatening deadlines are psychological pressure to make you act without thinking.",
+      "detection": "Real companies always give you a reasonable deadline and multiple contact methods."
+    },
+    "typo-error": {
+      "danger": "Typos in domain names (amazun vs amazon) are a common phishing technique.",
+      "detection": "Check the exact spelling of the domain. Large companies never have mistakes in their address."
+    },
+    "fake-order": {
+      "danger": "Generic order numbers are invented to make you panic and click without verifying.",
+      "detection": "Always check your order history on the official site before reacting."
+    },
+    "urgent-action": {
+      "danger": "24-hour deadlines are designed to prevent you from taking time to verify authenticity.",
+      "detection": "Real delivery companies give you several days and contact you through multiple means."
+    },
+    "suspicious-link": {
+      "danger": "Asking to \"update\" personal information via email is a classic data theft technique.",
+      "detection": "Never click on links to update your info. Go directly to the official website."
+    },
+    "fee-threat": {
+      "danger": "Additional fee threats create financial pressure to make you act quickly.",
+      "detection": "Real delivery companies don't threaten immediate fees without clear prior communication."
+    }
+  }
+}

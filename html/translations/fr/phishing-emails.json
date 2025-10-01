@@ -1,0 +1,210 @@
+{
+  "emails": [
+    {
+      "id": "bank",
+      "from": "security@bannque-populaire.com",
+      "subject": "🚨 URGENT: Votre compte sera suspendu!",
+      "greeting": "Cher(e) client(e),",
+      "body": [
+        "Nous avons détecté une activité suspecte sur votre compte bancaire. Pour des raisons de sécurité, votre compte sera <strong>SUSPENDU</strong> dans 24 heures.",
+        "<strong>Action requise IMMÉDIATEMENT:</strong>"
+      ],
+      "buttonText": "CLIQUEZ ICI POUR SÉCURISER VOTRE COMPTE",
+      "threat": "Si vous n'agissez pas rapidement, vous perdrez l'accès à vos fonds.",
+      "signature": {
+        "closing": "Cordialement,",
+        "name": "L'équipe sécurité Banque Populaire"
+      },
+      "errors": [
+        {
+          "id": "email-error",
+          "target": "security@bannque-populaire.com",
+          "selector": "email",
+          "explanation": "Faute d'orthographe: \"bannque\" au lieu de \"banque\""
+        },
+        {
+          "id": "urgency-error",
+          "target": "Votre compte sera suspendu dans 24h!",
+          "selector": "subject-urgency",
+          "explanation": "Urgence artificielle pour créer la panique"
+        },
+        {
+          "id": "link-error",
+          "target": "CLIQUEZ ICI POUR SÉCURISER VOTRE COMPTE",
+          "selector": "button",
+          "explanation": "Lien suspect sans URL spécifique"
+        },
+        {
+          "id": "threat-error",
+          "target": "Si vous n'agissez pas rapidement, vous perdrez l'accès à vos fonds.",
+          "selector": "threat",
+          "explanation": "Menace pour forcer l'action: \"perdrez l'accès\""
+        },
+        {
+          "id": "signature-error",
+          "target": "L'équipe sécurité Banque Populaire",
+          "selector": "signature",
+          "explanation": "Signature générique sans nom spécifique"
+        }
+      ]
+    },
+    {
+      "id": "paypal",
+      "from": "noreply@paypaI.com",
+      "subject": "Problème avec votre paiement - Vérification requise",
+      "greeting": "Bonjour,",
+      "body": [
+        "Nous avons remarqué un problème avec votre dernier paiement de <span class=\"amount\">299,99€</span>.",
+        "Votre compte PayPal a été temporairement limité jusqu'à ce que nous puissions vérifier vos informations."
+      ],
+      "buttonText": "Vérifier mon compte maintenant",
+      "threat": "Si vous ne résolvez pas ce problème sous 48h, votre compte sera définitivement fermé.",
+      "signature": {
+        "closing": "Merci,",
+        "name": "Équipe PayPal"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "noreply@paypaI.com",
+          "selector": "email",
+          "explanation": "Fausse adresse: \"paypaI.com\" avec un I majuscule au lieu d'un L"
+        },
+        {
+          "id": "amount-error",
+          "target": "299,99€",
+          "selector": "amount",
+          "explanation": "Montant spécifique inventé pour créer l'urgence"
+        },
+        {
+          "id": "limitation-error",
+          "target": "Votre compte PayPal a été temporairement limité jusqu'à ce que nous puissions vérifier vos informations.",
+          "selector": "limitation",
+          "explanation": "Limitation de compte sans raison claire ni détails"
+        },
+        {
+          "id": "button-error",
+          "target": "Vérifier mon compte maintenant",
+          "selector": "button",
+          "explanation": "Bouton suspect avec lien générique"
+        },
+        {
+          "id": "deadline-error",
+          "target": "Si vous ne résolvez pas ce problème sous 48h, votre compte sera définitivement fermé.",
+          "selector": "threat",
+          "explanation": "Menace de fermeture définitive pour créer la pression"
+        }
+      ]
+    },
+    {
+      "id": "amazon",
+      "from": "support@amazom.fr",
+      "subject": "Votre commande #AZ123456 - Problème de livraison",
+      "greeting": "Bonjour,",
+      "body": [
+        "Votre commande <span class=\"order\">\\#AZ123456</span> ne peut pas être livrée à votre adresse.",
+        "Notre transporteur nous signale une adresse incomplète. Vous devez mettre à jour vos informations <span class=\"urgency\">sous 24h</span> sinon votre colis sera retourné."
+      ],
+      "buttonText": "Mettre à jour mon adresse",
+      "threat": "Des frais de stockage de 15€ seront appliqués après ce délai.",
+      "signature": {
+        "closing": "Cordialement,",
+        "name": "Service Client Amazon"
+      },
+      "errors": [
+        {
+          "id": "typo-error",
+          "target": "support@amazom.fr",
+          "selector": "email",
+          "explanation": "Faute dans le domaine: \"amazom\" au lieu d'\"amazon\""
+        },
+        {
+          "id": "fake-order",
+          "target": "#AZ123456",
+          "selector": "order",
+          "explanation": "Référence de commande générique inventée"
+        },
+        {
+          "id": "urgent-action",
+          "target": "sous 24h",
+          "selector": "urgency",
+          "explanation": "Urgence artificielle: \"sous 24h\""
+        },
+        {
+          "id": "suspicious-link",
+          "target": "Mettre à jour mon adresse",
+          "selector": "button",
+          "explanation": "Lien suspect pour \"mettre à jour\" les informations"
+        },
+        {
+          "id": "fee-threat",
+          "target": "Des frais de stockage de 15€ seront appliqués après ce délai.",
+          "selector": "threat",
+          "explanation": "Menace de frais supplémentaires pour forcer l'action"
+        }
+      ]
+    }
+  ],
+  "explanations": {
+    "email-error": {
+      "danger": "Les cybercriminels imitent les vrais sites en créant des fautes d'orthographe subtiles. \"bannque\" au lieu de \"banque\" passe souvent inaperçu au premier coup d'œil.",
+      "detection": "Vérifiez toujours l'adresse email avec attention, lettre par lettre. Les vraies banques utilisent des domaines officiels sans fautes."
+    },
+    "urgency-error": {
+      "danger": "L'urgence artificielle (\"24h\") est une technique psychologique pour vous faire paniquer et agir sans réfléchir.",
+      "detection": "Les vraies alertes bancaires ne menacent jamais de suspension immédiate. Prenez le temps de vérifier."
+    },
+    "link-error": {
+      "danger": "Les liens génériques comme \"CLIQUEZ ICI\" sont conçus pour être attirants mais cachent leur vraie destination.",
+      "detection": "Les vraies entreprises utilisent des liens spécifiques et descriptifs, pas des formules vagues."
+    },
+    "threat-error": {
+      "danger": "Les menaces émotionnelles (\"perdrez l'accès\") visent à vous faire paniquer pour vous empêcher de vérifier.",
+      "detection": "Les vraies organisations ne vous menacent jamais directement. Contactez-les par les canaux officiels."
+    },
+    "signature-error": {
+      "danger": "Une signature sans nom de personne réelle est suspecte. Les vraies communications incluent souvent des noms spécifiques.",
+      "detection": "Vérifiez si la signature semble générique ou personnalisée. Les vraies entreprises s'identifient clairement."
+    },
+    "domain-error": {
+      "danger": "Remplacer un \"l\" par un \"I\" majuscule (paypaI vs paypal) est une technique classique de phishing appelée \"typosquatting\".",
+      "detection": "Examinez chaque lettre du domaine. Les vrais domaines PayPal, Amazon, etc. n'ont jamais de variations."
+    },
+    "amount-error": {
+      "danger": "Mentionner un montant spécifique que vous n'avez pas dépensé crée la confusion et l'urgence de vérifier.",
+      "detection": "Vérifiez toujours vos transactions réelles dans votre compte avant de cliquer sur des liens."
+    },
+    "limitation-error": {
+      "danger": "Les vraies limitations de compte sont toujours accompagnées d'explications détaillées et de preuves.",
+      "detection": "Les vraies entreprises expliquent clairement pourquoi et comment résoudre le problème."
+    },
+    "button-error": {
+      "danger": "Les boutons avec des liens génériques peuvent vous rediriger vers des sites frauduleux qui volent vos identifiants.",
+      "detection": "Survolez le lien (sans cliquer) pour voir l'URL réelle. Elle doit correspondre au domaine officiel."
+    },
+    "deadline-error": {
+      "danger": "Les délais courts et menaçants sont une pression psychologique pour vous faire agir sans réfléchir.",
+      "detection": "Les vraies entreprises vous donnent toujours un délai raisonnable et plusieurs moyens de contact."
+    },
+    "typo-error": {
+      "danger": "Les fautes de frappe dans les noms de domaine (amazom vs amazon) sont une technique de phishing courante.",
+      "detection": "Vérifiez l'orthographe exacte du domaine. Les grandes entreprises n'ont jamais de fautes dans leur adresse."
+    },
+    "fake-order": {
+      "danger": "Les numéros de commande génériques sont inventés pour vous faire paniquer et cliquer sans vérifier.",
+      "detection": "Vérifiez toujours votre historique de commandes sur le site officiel avant de réagir."
+    },
+    "urgent-action": {
+      "danger": "Les délais de 24h sont conçus pour vous empêcher de prendre le temps de vérifier l'authenticité.",
+      "detection": "Les vraies entreprises de livraison vous donnent plusieurs jours et vous contactent par plusieurs moyens."
+    },
+    "suspicious-link": {
+      "danger": "Demander de \"mettre à jour\" des informations personnelles via un email est une technique classique de vol de données.",
+      "detection": "Ne cliquez jamais sur des liens pour mettre à jour vos infos. Allez directement sur le site officiel."
+    },
+    "fee-threat": {
+      "danger": "Les menaces de frais supplémentaires créent une pression financière pour vous faire agir rapidement.",
+      "detection": "Les vraies entreprises de livraison ne menacent pas de frais immédiats sans communication préalable claire."
+    }
+  }
+}

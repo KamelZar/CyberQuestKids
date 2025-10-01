@@ -124,7 +124,37 @@
       "password": "Password",
       "password_instruction": "Your password"
     },
-    "connect": "Sign in"
+    "connect": "Sign in",
+    "data_overlay": {
+      "accepted_clause_title": "📜 Clause you accepted:",
+      "investigation_complete": "🕵️ INVESTIGATION COMPLETE - DATA DISCOVERED!",
+      "evidence_title": "📋 EVIDENCE COLLECTED:",
+      "evidence_intro": "Our digital detective has recovered your data! 🐎💨",
+      "evidence_email": "🔍 <strong>Email/Name:</strong>",
+      "evidence_password": "🗝️ <strong>Password:</strong>",
+      "evidence_platform": "🏢 <strong>Platform:</strong>",
+      "evidence_timestamp": "📅 <strong>Timestamp:</strong>",
+      "conclusions_title": "📋 INVESTIGATION FINDINGS:",
+      "conclusions": [
+        "✓ Your data is now their property",
+        "✓ They can sell it to whoever they want",
+        "✓ They can use your identity",
+        "✓ Everything is perfectly legal thanks to the ToS!"
+      ],
+      "lesson_title": "🎓 CYBERSECURITY LESSON:",
+      "lesson_intro": "<strong>🔍 ALWAYS investigate before accepting!</strong>",
+      "lesson_points": [
+        "• Companies hide important clauses in the ToS",
+        "• Once accepted, you are legally bound",
+        "• Your data can be sold or shared",
+        "• Be careful with \"I accept\" checkboxes!",
+        "• When in doubt, don't give your real data"
+      ],
+      "lesson_understood": "🧠 Lesson learned!",
+      "console_log_title": "🏴‍☠️ Data legally recovered via ToS:",
+      "console_log_clause": "📜 Accepted clause: THE COMPANY HAS THE RIGHT TO DO WHATEVER IT WANTS WITH MY DATA",
+      "console_log_storage": "💾 Data stored in localStorage"
+    }
   },
   "carousel": {
     "champion": {
@@ -296,7 +326,23 @@
         "duration": {
           "instant": "Instant ⚡"
         },
-        "close": "CLOSE"
+        "close": "CLOSE",
+        "game": {
+          "title": "🎯 Spot the {count} errors",
+          "errors_found": "Errors found:",
+          "instructions": "Find the {count} phishing warning signs by clicking on them in the email!",
+          "hint_button": "💡 Hint",
+          "solution_button": "🔍 See all solutions",
+          "error_detected": "✅ Error {number} detected!",
+          "problem_identified": "Problem identified:",
+          "why_suspicious": "Why it's suspicious:",
+          "why_dangerous": "🚨 Why it's dangerous:",
+          "how_to_detect": "💡 How to detect:",
+          "victory_title": "🏆 Congratulations! You're now an anti-phishing expert!",
+          "victory_advice": "When in doubt, contact the organization directly through their official website or by phone. Never click on suspicious links!",
+          "new_email_button": "🔄 New email",
+          "more_training_button": "🎯 More training"
+        }
       }
     },
     "social": {

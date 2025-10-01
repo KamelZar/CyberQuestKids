@@ -124,7 +124,37 @@
       "password": "Mot de passe",
       "password_instruction": "Votre mot de passe"
     },
-    "connect": "Se connecter"
+    "connect": "Se connecter",
+    "data_overlay": {
+      "accepted_clause_title": "📜 Clause que vous avez acceptée :",
+      "investigation_complete": "🕵️ ENQUÊTE TERMINÉE - DONNÉES DÉCOUVERTES !",
+      "evidence_title": "📋 PREUVES COLLECTÉES :",
+      "evidence_intro": "Notre détective numérique a récupéré vos données ! 🐎💨",
+      "evidence_email": "🔍 <strong>Email/Nom:</strong>",
+      "evidence_password": "🗝️ <strong>Mot de passe:</strong>",
+      "evidence_platform": "🏢 <strong>Plateforme:</strong>",
+      "evidence_timestamp": "📅 <strong>Horodatage:</strong>",
+      "conclusions_title": "📋 CONCLUSIONS DE L'ENQUÊTE :",
+      "conclusions": [
+        "✓ Vos données sont maintenant leur propriété",
+        "✓ Ils peuvent les vendre à qui ils veulent",
+        "✓ Ils peuvent utiliser votre identité",
+        "✓ Tout est parfaitement légal grâce aux CGU !"
+      ],
+      "lesson_title": "🎓 LEÇON DE CYBERSÉCURITÉ :",
+      "lesson_intro": "<strong>🔍 TOUJOURS enquêter avant d'accepter !</strong>",
+      "lesson_points": [
+        "• Les entreprises cachent des clauses importantes dans les CGU",
+        "• Une fois acceptées, vous êtes légalement liés",
+        "• Vos données peuvent être vendues ou partagées",
+        "• Soyez vigilants avec les cases \"J'accepte\" !",
+        "• En cas de doute, ne donnez pas vos vraies données"
+      ],
+      "lesson_understood": "🧠 Leçon comprise !",
+      "console_log_title": "🏴‍☠️ Données récupérées légalement via CGU:",
+      "console_log_clause": "📜 Clause acceptée: L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES",
+      "console_log_storage": "💾 Données stockées dans localStorage"
+    }
   },
   "carousel": {
     "champion": {
@@ -296,7 +326,23 @@
         "duration": {
           "instant": "Instantané ⚡"
         },
-        "close": "FERMER"
+        "close": "FERMER",
+        "game": {
+          "title": "\uD83C\uDFAF Jeu des {count} erreurs",
+          "errors_found": "Erreurs trouvées:",
+          "instructions": "Trouvez les {count} signaux d'alerte de phishing en cliquant dessus dans l'email !",
+          "hint_button": "\uD83D\uDCA1 Indice",
+          "solution_button": "\uD83D\uDD0D Voir toutes les solutions",
+          "error_detected": "✅ Erreur {number} détectée !",
+          "problem_identified": "Problème identifié :",
+          "why_suspicious": "Pourquoi c'est suspect :",
+          "why_dangerous": "\uD83D\uDEA8 Pourquoi c'est dangereux :",
+          "how_to_detect": "\uD83D\uDCA1 Comment détecter :",
+          "victory_title": "\uD83C\uDFC6 Bravo ! Vous êtes maintenant un expert anti-phishing !",
+          "victory_advice": "En cas de doute, contactez directement l'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !",
+          "new_email_button": "\uD83D\uDD04 Nouvel email",
+          "more_training_button": "\uD83C\uDFAF Plus d'entraînement"
+        }
       }
     },
     "social": {

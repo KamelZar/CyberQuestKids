@@ -343,7 +343,23 @@
           "victory_title": "\uD83C\uDFC6 Bravo ! Vous êtes maintenant un expert anti-phishing !",
           "victory_advice": "En cas de doute, contactez directement l'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !",
           "new_email_button": "\uD83D\uDD04 Nouvel email",
-          "more_training_button": "\uD83C\uDFAF Plus d'entraînement"
+          "more_training_button": "\uD83C\uDFAF Plus d'entraînement",
+          "hint": {
+            "title": "💡 Indice",
+            "intro": "Cherchez les signes suivants dans l'email :",
+            "signs": [
+              "🔍 Fautes d'orthographe dans l'adresse email",
+              "⚠️ Urgence artificielle (\"24h\", \"immédiatement\")",
+              "🔗 Liens suspects ou génériques",
+              "💰 Menaces financières",
+              "📝 Signatures vagues ou génériques"
+            ]
+          },
+          "reveal": {
+            "title": "🔍 Toutes les solutions révélées",
+            "instruction": "Cliquez sur les éléments surlignés dans l'email pour découvrir pourquoi ils sont suspects !",
+            "tip": "**Astuce :** Dans un vrai email de phishing, JAMAIS cliquer sur les liens. Contactez directement l'organisation."
+          }
         }
       }
     },

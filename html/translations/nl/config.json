@@ -343,7 +343,23 @@
           "victory_title": "🏆 Gefeliciteerd! Je bent nu een anti-phishing expert!",
           "victory_advice": "Bij twijfel, neem rechtstreeks contact op met de organisatie via hun officiële website of telefoon. Klik nooit op verdachte links!",
           "new_email_button": "🔄 Nieuwe e-mail",
-          "more_training_button": "🎯 Meer training"
+          "more_training_button": "🎯 Meer training",
+          "hint": {
+            "title": "💡 Hint",
+            "intro": "Zoek naar de volgende tekens in de e-mail:",
+            "signs": [
+              "🔍 Spelfouten in het e-mailadres",
+              "⚠️ Kunstmatige urgentie (\"24u\", \"onmiddellijk\")",
+              "🔗 Verdachte of generieke links",
+              "💰 Financiële dreigingen",
+              "📝 Vage of generieke handtekeningen"
+            ]
+          },
+          "reveal": {
+            "title": "🔍 Alle oplossingen onthuld",
+            "instruction": "Klik op de gemarkeerde elementen in de e-mail om te ontdekken waarom ze verdacht zijn!",
+            "tip": "**Tip:** Klik bij een echte phishing-e-mail NOOIT op de links. Neem rechtstreeks contact op met de organisatie."
+          }
         }
       }
     },

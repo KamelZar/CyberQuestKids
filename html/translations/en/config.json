@@ -343,7 +343,23 @@
           "victory_title": "🏆 Congratulations! You're now an anti-phishing expert!",
           "victory_advice": "When in doubt, contact the organization directly through their official website or by phone. Never click on suspicious links!",
           "new_email_button": "🔄 New email",
-          "more_training_button": "🎯 More training"
+          "more_training_button": "🎯 More training",
+          "hint": {
+            "title": "💡 Hint",
+            "intro": "Look for the following signs in the email:",
+            "signs": [
+              "🔍 Spelling errors in the email address",
+              "⚠️ Artificial urgency (\"24h\", \"immediately\")",
+              "🔗 Suspicious or generic links",
+              "💰 Financial threats",
+              "📝 Vague or generic signatures"
+            ]
+          },
+          "reveal": {
+            "title": "🔍 All solutions revealed",
+            "instruction": "Click on the highlighted elements in the email to discover why they are suspicious!",
+            "tip": "**Tip:** In a real phishing email, NEVER click on the links. Contact the organization directly."
+          }
         }
       }
     },

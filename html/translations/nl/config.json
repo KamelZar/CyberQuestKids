@@ -158,6 +158,7 @@
       "console_log_storage": "💾 Gegevens opgeslagen in localStorage"
     },
     "succeed": {
+      "bravo": "\uD83C\uDF93 Proficiat ! \uD83C\uDF93",
       "congrats": "Gefeliciteerd! Je hebt bewezen dat je de algemene voorwaarden kunt lezen.",
       "inspector": "Je bent een echte cyber-detective! ✨"
     }

@@ -3377,7 +3377,7 @@
             if (provider === 'TikTok') {
                 const validCredentials = [
                     { user: 'Je sais', pass: 'lire' },
-                    { user: 'Ik know', pass: 'how to read' },
+                    { user: 'I know', pass: 'how to read' },
                     { user: 'Ik weet', pass: 'te lezen' }
                 ];
                 
@@ -3408,13 +3408,13 @@
                         max-width: 400px;
                     `;
                     successMessage.innerHTML = `
-                        <h3 style="margin: 0 0 15px 0; color: #FFD700;">🎓 Bravo ! 🎓</h3>
+                        <h3 style="margin: 0 0 15px 0; color: #FFD700;">${getTranslation('conditions.succeed.bravo')}</h3>
                         <p style="margin: 0 0 10px 0; line-height: 1.5;">
-                           ${getTranslation('conditions.congrats')}
+                           ${getTranslation('conditions.succeed.congrats')}
 
                         </p>
                         <p style="margin: 0; font-size: 0.9rem; font-style: italic;">
-                            ${getTranslation('conditions.inspector')}
+                            ${getTranslation('conditions.succeed.inspector')}
                         </p>
                     `;
                     

@@ -158,6 +158,7 @@
       "console_log_storage": "💾 Data stored in localStorage"
     },
     "succeed": {
+      "bravo": "\uD83C\uDF93 Well done ! \uD83C\uDF93",
       "congrats": "Congratulations! You proved you know how to read the terms and conditions.",
       "inspector": "You are a true cyber-detective! ✨"
     }

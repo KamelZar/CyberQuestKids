@@ -3045,17 +3045,17 @@
 
         function showHint() {
             if (!window.currentEmail) return;
-            
+
             const hintSection = document.getElementById('hintSection');
             if (hintSection) {
                 const hintData = getTranslation('carousel.spam.tab.game.hint');
                 const signsHtml = hintData.signs ? hintData.signs.map(sign => `<li>${sign}</li>`).join('') : '';
-                
+
                 hintSection.innerHTML = `
                     <div class="explanation-box" style="border-left-color: #f39c12;">
-                        <div class="explanation-title" style="color: #f39c12;">${hintData.title || '💡 Indice'}</div>
+                        <div class="explanation-title" style="color: #f39c12;">${hintData.title}</div>
                         <div class="explanation-text">
-                            ${hintData.intro || 'Cherchez les signes suivants dans l\'email :'}
+                            ${hintData.intro}
                             <ul>
                                 ${signsHtml}
                             </ul>
@@ -3068,16 +3068,23 @@
         function showAllSolutions() {
             const hintSection = document.getElementById('hintSection');
             if (hintSection) {
+                const revealData = getTranslation('carousel.spam.tab.game.reveal');
                 hintSection.innerHTML = `
                     <div class="explanation-box" style="border-left-color: #e74c3c;">
-                        <div class="explanation-title" style="color: #e74c3c;">🔍 Toutes les solutions révélées</div>
+                        <div class="explanation-title" style="color: #e74c3c;">${revealData.title}</div>
                         <div class="explanation-text">
-                            <p>Cliquez sur les éléments surlignés dans l'email pour découvrir pourquoi ils sont suspects !</p>
-                            <p><strong>Astuce :</strong> Dans un vrai email de phishing, JAMAIS cliquer sur les liens. Contactez directement l'organisation.</p>
+                            <p>${revealData.instruction}</p>
+                            <p>${revealData.tip}</p>
                         </div>
                     </div>
                 `;
             }
+
+            // Surligner tous les éléments cliquables dans l'email
+            const clickableErrors = document.querySelectorAll('.clickable-error');
+            clickableErrors.forEach(element => {
+                element.classList.add('found');
+            });
         }
 
         // WiFi Piège

@@ -1,54 +1,6 @@
 {
   "emails": [
     {
-      "id": "bank",
-      "from": "security@bannk-popular.com",
-      "subject": "🚨 URGENT: Uw account wordt opgeschort!",
-      "greeting": "Beste klant,",
-      "body": [
-        "We hebben verdachte activiteit op uw bankrekening gedetecteerd. Om veiligheidsredenen wordt uw account <span class=\"subject-urgency\">binnen 24 uur</span> <strong>OPGESCHORT</strong>.",
-        "<strong>Actie ONMIDDELLIJK vereist:</strong>"
-      ],
-      "buttonText": "KLIK HIER OM UW ACCOUNT TE BEVEILIGEN",
-      "threat": "Als u niet snel handelt, verliest u de toegang tot uw geld.",
-      "signature": {
-        "closing": "Met vriendelijke groet,",
-        "name": "Het Beveiligingsteam van Populaire Bank"
-      },
-      "errors": [
-        {
-          "id": "email-error",
-          "target": "security@bannk-popular.com",
-          "selector": "email",
-          "explanation": "Spellingsfout: \"bannk\" in plaats van \"bank\""
-        },
-        {
-          "id": "urgency-error",
-          "target": "binnen 24 uur",
-          "selector": "subject-urgency",
-          "explanation": "Kunstmatige urgentie om paniek te creëren"
-        },
-        {
-          "id": "link-error",
-          "target": "KLIK HIER OM UW ACCOUNT TE BEVEILIGEN",
-          "selector": "button",
-          "explanation": "Verdachte link zonder specifieke URL"
-        },
-        {
-          "id": "threat-error",
-          "target": "Als u niet snel handelt, verliest u de toegang tot uw geld.",
-          "selector": "threat",
-          "explanation": "Bedreiging om actie af te dwingen: \"verliest u de toegang\""
-        },
-        {
-          "id": "signature-error",
-          "target": "Het Beveiligingsteam van Populaire Bank",
-          "selector": "signature",
-          "explanation": "Algemene handtekening zonder specifieke naam"
-        }
-      ]
-    },
-    {
       "id": "ing",
       "from": "security@ing-be.support.com",
       "subject": "Identiteitsbevestiging vereist - Snelle actie nodig",

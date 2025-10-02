@@ -1,54 +1,6 @@
 {
   "emails": [
     {
-      "id": "bank",
-      "from": "security@bannk-popular.com",
-      "subject": "🚨 URGENT: Your account will be suspended!",
-      "greeting": "Dear customer,",
-      "body": [
-        "We have detected suspicious activity on your bank account. For security reasons, your account will be <strong>SUSPENDED</strong> <span class=\"subject-urgency\">within 24 hours.</span>",
-        "<strong>Action required IMMEDIATELY:</strong>"
-      ],
-      "buttonText": "CLICK HERE TO SECURE YOUR ACCOUNT",
-      "threat": "If you don't act quickly, you will lose access to your funds.",
-      "signature": {
-        "closing": "Best regards,",
-        "name": "The Popular Bank Security Team"
-      },
-      "errors": [
-        {
-          "id": "email-error",
-          "target": "security@bannk-popular.com",
-          "selector": "email",
-          "explanation": "Spelling mistake: \"bannk\" instead of \"bank\""
-        },
-        {
-          "id": "urgency-error",
-          "target": "within 24 hours.",
-          "selector": "subject-urgency",
-          "explanation": "Artificial urgency to create panic"
-        },
-        {
-          "id": "link-error",
-          "target": "CLICK HERE TO SECURE YOUR ACCOUNT",
-          "selector": "button",
-          "explanation": "Suspicious link without specific URL"
-        },
-        {
-          "id": "threat-error",
-          "target": "If you don't act quickly, you will lose access to your funds.",
-          "selector": "threat",
-          "explanation": "Threat to force action: \"lose access\""
-        },
-        {
-          "id": "signature-error",
-          "target": "The Popular Bank Security Team",
-          "selector": "signature",
-          "explanation": "Generic signature without specific name"
-        }
-      ]
-    },
-    {
       "id": "ing",
       "from": "security@ing-be.support.com",
       "subject": "Identity confirmation required - Quick action needed",

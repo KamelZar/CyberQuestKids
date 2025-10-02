@@ -6,7 +6,7 @@
       "subject": "🚨 URGENT: Votre compte sera suspendu!",
       "greeting": "Cher(e) client(e),",
       "body": [
-        "Nous avons détecté une activité suspecte sur votre compte bancaire. Pour des raisons de sécurité, votre compte sera <strong>SUSPENDU</strong>  <span class=\"urgency\">dans 24 heures.</span>",
+        "Nous avons détecté une activité suspecte sur votre compte bancaire. Pour des raisons de sécurité, votre compte sera <strong>SUSPENDU</strong>  <span class=\"subject-urgency\">dans 24 heures.</span>",
         "<strong>Action requise IMMÉDIATEMENT:</strong>"
       ],
       "buttonText": "CLIQUEZ ICI POUR SÉCURISER VOTRE COMPTE",

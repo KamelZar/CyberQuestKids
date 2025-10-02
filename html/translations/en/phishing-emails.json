@@ -6,7 +6,7 @@
       "subject": "🚨 URGENT: Your account will be suspended!",
       "greeting": "Dear customer,",
       "body": [
-        "We have detected suspicious activity on your bank account. For security reasons, your account will be <strong>SUSPENDED</strong> <span class=\"urgency\">within 24 hours.</span>",
+        "We have detected suspicious activity on your bank account. For security reasons, your account will be <strong>SUSPENDED</strong> <span class=\"subject-urgency\">within 24 hours.</span>",
         "<strong>Action required IMMEDIATELY:</strong>"
       ],
       "buttonText": "CLICK HERE TO SECURE YOUR ACCOUNT",

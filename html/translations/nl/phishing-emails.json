@@ -6,7 +6,7 @@
       "subject": "🚨 URGENT: Uw account wordt opgeschort!",
       "greeting": "Beste klant,",
       "body": [
-        "We hebben verdachte activiteit op uw bankrekening gedetecteerd. Om veiligheidsredenen wordt uw account <span class=\"urgency\">binnen 24 uur</span> <strong>OPGESCHORT</strong>.",
+        "We hebben verdachte activiteit op uw bankrekening gedetecteerd. Om veiligheidsredenen wordt uw account <span class=\"subject-urgency\">binnen 24 uur</span> <strong>OPGESCHORT</strong>.",
         "<strong>Actie ONMIDDELLIJK vereist:</strong>"
       ],
       "buttonText": "KLIK HIER OM UW ACCOUNT TE BEVEILIGEN",

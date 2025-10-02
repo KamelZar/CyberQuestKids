@@ -156,6 +156,10 @@
       "console_log_title": "🏴‍☠️ Données récupérées légalement via CGU:",
       "console_log_clause": "📜 Clause acceptée: L'ENTREPRISE A LE DROIT DE FAIRE CE QU'ELLE VEUT DE MES DONNÉES",
       "console_log_storage": "💾 Données stockées dans localStorage"
+    },
+    "succeed": {
+      "congrats": "Félicitations ! Vous avez prouvé que vous savez lire les conditions générales.",
+      "inspector": "Vous êtes un véritable cyber-détective ! ✨"
     }
   },
   "carousel": {

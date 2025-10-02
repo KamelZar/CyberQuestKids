@@ -156,6 +156,10 @@
       "console_log_title": "🏴‍☠️ Gegevens legaal verkregen via AVV:",
       "console_log_clause": "📜 Geaccepteerde clausule: HET BEDRIJF HEEFT HET RECHT OM TE DOEN WAT HET WIL MET MIJN GEGEVENS",
       "console_log_storage": "💾 Gegevens opgeslagen in localStorage"
+    },
+    "succeed": {
+      "congrats": "Gefeliciteerd! Je hebt bewezen dat je de algemene voorwaarden kunt lezen.",
+      "inspector": "Je bent een echte cyber-detective! ✨"
     }
   },
   "carousel": {

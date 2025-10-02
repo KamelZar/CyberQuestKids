@@ -156,6 +156,10 @@
       "console_log_title": "🏴‍☠️ Data legally recovered via ToS:",
       "console_log_clause": "📜 Accepted clause: THE COMPANY HAS THE RIGHT TO DO WHATEVER IT WANTS WITH MY DATA",
       "console_log_storage": "💾 Data stored in localStorage"
+    },
+    "succeed": {
+      "congrats": "Congratulations! You proved you know how to read the terms and conditions.",
+      "inspector": "You are a true cyber-detective! ✨"
     }
   },
   "carousel": {

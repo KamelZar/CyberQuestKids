@@ -2855,40 +2855,51 @@
             return `
                 <div class="email-header">
                     <div>
-                        <div>De: <span class="clickable-error" onclick="foundError('${errorMap.email.id}', '${errorMap.email.explanation.replace(/'/g, "\\'")}', '${errorMap.email.target}')">${email.from}</span></div>
+                        <div>De: <span class="clickable-error" onclick="foundError('${errorMap.email.id}', '${errorMap.email.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.email.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.from}</span></div>
                         <div>À: vous@email.com</div>
                     </div>
                     <div>${icon}</div>
                 </div>
                 <div class="email-content">
-                    <div class="email-subject">${email.subject}</div>
+                    <div class="email-subject">${(() => {
+                        const subjectError = email.errors.find(e => e.selector === 'subject-urgency' && email.subject.includes(e.target));
+                        if (subjectError) {
+                            const escapedTarget = subjectError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            return email.subject.replace(new RegExp(escapedTarget, 'g'),
+                                `<span class="clickable-error" onclick="foundError('${subjectError.id}', '${subjectError.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${subjectError.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${subjectError.target}</span>`);
+                        }
+                        return email.subject;
+                    })()}</div>
                     <p>${email.greeting}</p>
                     ${email.body.map((para, index) => {
                         // Identifier les erreurs dans le corps du texte
                         const bodyError = email.errors.find(e =>
-                            (e.selector === 'subject-urgency' || e.selector === 'urgency' ||
+                            (e.selector === 'urgency' ||
                              e.selector === 'amount' || e.selector === 'limitation' ||
                              e.selector === 'order') && para.includes(e.target)
                         );
                         if (bodyError) {
                             const escapedTarget = bodyError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                             return `<p>${para.replace(new RegExp(escapedTarget, 'g'),
-                                `<span class="clickable-error" onclick="foundError('${bodyError.id}', '${bodyError.explanation.replace(/'/g, "\\'")}', '${bodyError.target}')">${bodyError.target}</span>`)}</p>`;
+                                `<span class="clickable-error" onclick="foundError('${bodyError.id}', '${bodyError.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${bodyError.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${bodyError.target}</span>`)}</p>`;
                         }
                         return `<p>${para}</p>`;
                     }).join('')}
-                    <a href="#" class="suspicious-link clickable-error" onclick="foundError('${errorMap.button.id}', '${errorMap.button.explanation.replace(/'/g, "\\'")}', '${errorMap.button.target}')">${email.buttonText}</a>
-                    <p><span class="clickable-error" onclick="foundError('${errorMap.threat.id}', '${errorMap.threat.explanation.replace(/'/g, "\\'")}', '${errorMap.threat.target}')">${email.threat}</span></p>
-                    <p>${email.signature.closing}<br><span class="clickable-error" onclick="foundError('${errorMap.signature.id}', '${errorMap.signature.explanation.replace(/'/g, "\\'")}', '${errorMap.signature.target}')">${email.signature.name}</span></p>
+                    <a href="#" class="suspicious-link clickable-error" onclick="foundError('${errorMap.button.id}', '${errorMap.button.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.button.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.buttonText}</a>
+                    <p><span class="clickable-error" onclick="foundError('${errorMap.threat.id}', '${errorMap.threat.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.threat.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.threat}</span></p>
+                    <p>${email.signature.closing}<br><span class="clickable-error" onclick="foundError('${errorMap.signature.id}', '${errorMap.signature.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.signature.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.signature.name}</span></p>
                 </div>
             `;
         }
 
         function generateNewEmail() {
             // Utiliser les emails depuis phishingEmails
-            const emails = phishingEmails.emails || [];
+            console.log('phishingEmails:', phishingEmails);
+            const emails = phishingEmails?.emails || [];
+            console.log('emails extracted:', emails);
             if (emails.length === 0) {
                 console.error('Aucun email de phishing chargé!');
+                console.error('phishingEmails actuel:', phishingEmails);
                 return;
             }
 

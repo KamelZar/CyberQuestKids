@@ -24,7 +24,7 @@
         },
         {
           "id": "urgency-error",
-          "target": "Your account will be suspended within 24 hours!",
+          "target": "Your account will be suspended!",
           "selector": "subject-urgency",
           "explanation": "Artificial urgency to create panic"
         },

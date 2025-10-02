@@ -516,6 +516,14 @@
     }
   },
   "ceremony": {
-    "link": "./translations/en/ceremony.html"
+    "link": "./translations/en/ceremony.html",
+    "unlock": {
+      "title": "🎆 CONGRATULATIONS! 🎆",
+      "message": "You have completed all the quests and discovered the hidden secrets!",
+      "info": "You can now attend the graduation ceremony! ✨",
+      "button": "🎓 Go to ceremony",
+      "close": "Close"
+    },
+    "persistent_button": "🎓 Ceremony"
   }
 }

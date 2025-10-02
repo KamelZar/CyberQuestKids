@@ -516,6 +516,14 @@
     }
   },
   "ceremony": {
-    "link": "./translations/nl/ceremony.html"
+    "link": "./translations/nl/ceremony.html",
+    "unlock": {
+      "title": "🎆 GEFELICITEERD! 🎆",
+      "message": "Je hebt alle quests voltooid en de verborgen geheimen ontdekt!",
+      "info": "Je kunt nu de diploma-uitreiking bijwonen! ✨",
+      "button": "🎓 Naar de ceremonie",
+      "close": "Sluiten"
+    },
+    "persistent_button": "🎓 Ceremonie"
   }
 }

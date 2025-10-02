@@ -516,6 +516,14 @@
     }
   },
   "ceremony": {
-    "link": "./translations/fr/ceremony.html"
+    "link": "./translations/fr/ceremony.html",
+    "unlock": {
+      "title": "🎆 FÉLICITATIONS ! 🎆",
+      "message": "Vous avez terminé toutes les quêtes et découvert les secrets cachés !",
+      "info": "Vous pouvez maintenant assister à la cérémonie de remise des diplômes ! ✨",
+      "button": "🎓 Aller à la cérémonie",
+      "close": "Fermer"
+    },
+    "persistent_button": "🎓 Cérémonie"
   }
 }

@@ -2212,12 +2212,12 @@
                         animation: ceremonyUnlock 2s ease-out;
                     `;
                     congratsDiv.innerHTML = `
-                        <h2 style="margin: 0 0 15px 0; font-size: 2rem;">🎆 FÉLICITATIONS ! 🎆</h2>
+                        <h2 style="margin: 0 0 15px 0; font-size: 2rem;">${getTranslation('ceremony.unlock.title')}</h2>
                         <p style="margin: 0 0 15px 0; font-size: 1.2rem;">
-                            Vous avez terminé toutes les quêtes et découvert les secrets cachés !
+                            ${getTranslation('ceremony.unlock.message')}
                         </p>
                         <p style="margin: 0 0 20px 0; font-size: 1rem;">
-                            Vous pouvez maintenant assister à la cérémonie de remise des diplômes ! ✨
+                            ${getTranslation('ceremony.unlock.info')}
                         </p>
                         <button onclick="window.open(getTranslation('ceremony.link'), '_blank')" style="
                             background: linear-gradient(45deg, #4CAF50, #45a049);
@@ -2231,7 +2231,7 @@
                             transition: all 0.3s ease;
                             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
                         " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                            🎓 Aller à la cérémonie
+                            ${getTranslation('ceremony.unlock.button')}
                         </button>
                         <div style="margin-top: 15px;">
                             <button onclick="this.parentElement.parentElement.remove(); window.carouselWorkshop.showPersistentCeremonyButton();" style="
@@ -2244,7 +2244,7 @@
                                 cursor: pointer;
                                 transition: all 0.3s ease;
                             " onmouseover="this.style.background='rgba(44, 62, 80, 0.1)'" onmouseout="this.style.background='transparent'">
-                                Fermer
+                                ${getTranslation('ceremony.unlock.close')}
                             </button>
                         </div>
                     `;
@@ -2293,7 +2293,7 @@
                     transition: all 0.3s ease;
                     animation: ceremonyButtonBounce 2s infinite;
                 `;
-                persistentBtn.innerHTML = '🎓 Cérémonie';
+                persistentBtn.innerHTML = getTranslation('ceremony.persistent_button');
                 
                 // Event listeners
                 persistentBtn.addEventListener('click', () => {

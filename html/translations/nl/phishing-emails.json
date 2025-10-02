@@ -24,7 +24,7 @@
         },
         {
           "id": "urgency-error",
-          "target": "Uw account wordt opgeschort!",
+          "target": "binnen 24 uur",
           "selector": "subject-urgency",
           "explanation": "Kunstmatige urgentie om paniek te creëren"
         },

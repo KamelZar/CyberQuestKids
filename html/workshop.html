@@ -2867,7 +2867,7 @@
                 
                 // Chercher toutes les erreurs qui pourraient être dans ce paragraphe
                 email.errors.forEach(error => {
-                    if (['urgency', 'amount', 'limitation', 'order'].includes(error.selector) && 
+                    if (['urgency', 'amount', 'limitation', 'order', 'age', 'subject-urgency'].includes(error.selector) &&
                         para.includes(error.target)) {
                         const escapedTarget = error.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                         processedPara = processedPara.replace(new RegExp(escapedTarget, 'g'), createClickableError(error));

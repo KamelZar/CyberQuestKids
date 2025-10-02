@@ -49,6 +49,54 @@
       ]
     },
     {
+      "id": "ing",
+      "from": "security@ing-be.support.com",
+      "subject": "Identiteitsbevestiging vereist - Snelle actie nodig",
+      "greeting": "Hallo,",
+      "body": [
+        "Vanwege nieuwe bankregelgeving moeten we de identiteit verifiëren van al onze klanten <span class=\"age\">jonger dan 25 jaar</span>.",
+        "Uw ING-rekening vereist een identiteitsbevestiging <span class=\"urgency\">binnen 48 uur</span>. Deze procedure is snel en gratis."
+      ],
+      "buttonText": "Bevestig nu mijn identiteit",
+      "threat": "Als u uw identiteit niet bevestigt, wordt automatisch een verificatiekost van €25 van uw rekening afgeschreven.",
+      "signature": {
+        "closing": "Met vriendelijke groet,",
+        "name": "ING België Klantendienst"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "security@ing-be.support.com",
+          "selector": "email",
+          "explanation": "Vals domein: \"ing-be.support.com\" in plaats van \"ing.be\""
+        },
+        {
+          "id": "age-targeting",
+          "target": "jonger dan 25 jaar",
+          "selector": "age",
+          "explanation": "Richten op jongeren om hun onervarenheid uit te buiten"
+        },
+        {
+          "id": "urgency-error",
+          "target": "binnen 48 uur",
+          "selector": "urgency",
+          "explanation": "Kunstmatige urgentie om u te laten handelen zonder na te denken"
+        },
+        {
+          "id": "link-error",
+          "target": "Bevestig nu mijn identiteit",
+          "selector": "button",
+          "explanation": "Verdachte link om \"identiteit te bevestigen\" - gegevensdiefstal techniek"
+        },
+        {
+          "id": "fee-threat",
+          "target": "Als u uw identiteit niet bevestigt, wordt automatisch een verificatiekost van €25 van uw rekening afgeschreven.",
+          "selector": "threat",
+          "explanation": "Financiële bedreiging om actie af te dwingen: automatische afschrijving"
+        }
+      ]
+    },
+    {
       "id": "paypal",
       "from": "noreply@paypaI.com",
       "subject": "Probleem met uw betaling - Verificatie vereist",
@@ -205,6 +253,10 @@
     "fee-threat": {
       "danger": "Extra kostendreigingen creëren financiële druk om u snel te laten handelen.",
       "detection": "Echte bezorgbedrijven dreigen niet met onmiddellijke kosten zonder duidelijke voorafgaande communicatie."
+    },
+    "age-targeting": {
+      "danger": "Specifiek jongeren targeten is een tactiek om hun gebrek aan ervaring met bankfraude uit te buiten.",
+      "detection": "Echte banken targeten nooit klanten op leeftijdsgroep in hun beveiligingscommunicatie."
     }
   }
 }

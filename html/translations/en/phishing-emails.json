@@ -49,6 +49,54 @@
       ]
     },
     {
+      "id": "ing",
+      "from": "security@ing-be.support.com",
+      "subject": "Identity confirmation required - Quick action needed",
+      "greeting": "Hello,",
+      "body": [
+        "Due to new banking regulations, we need to verify the identity of all our customers <span class=\"age\">under 25 years old</span>.",
+        "Your ING account requires identity confirmation <span class=\"urgency\">within 48 hours</span>. This procedure is quick and free."
+      ],
+      "buttonText": "Confirm my identity now",
+      "threat": "If you don't confirm your identity, a verification fee of €25 will be automatically charged to your account.",
+      "signature": {
+        "closing": "Best regards,",
+        "name": "ING Belgium Customer Service"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "security@ing-be.support.com",
+          "selector": "email",
+          "explanation": "Fake domain: \"ing-be.support.com\" instead of \"ing.be\""
+        },
+        {
+          "id": "age-targeting",
+          "target": "under 25 years old",
+          "selector": "age",
+          "explanation": "Targeting young people to exploit their inexperience"
+        },
+        {
+          "id": "urgency-error",
+          "target": "within 48 hours",
+          "selector": "urgency",
+          "explanation": "Artificial urgency to make you act without thinking"
+        },
+        {
+          "id": "link-error",
+          "target": "Confirm my identity now",
+          "selector": "button",
+          "explanation": "Suspicious link to \"confirm identity\" - data theft technique"
+        },
+        {
+          "id": "fee-threat",
+          "target": "If you don't confirm your identity, a verification fee of €25 will be automatically charged to your account.",
+          "selector": "threat",
+          "explanation": "Financial threat to force action: automatic charge"
+        }
+      ]
+    },
+    {
       "id": "paypal",
       "from": "noreply@paypaI.com",
       "subject": "Problem with your payment - Verification required",
@@ -205,6 +253,10 @@
     "fee-threat": {
       "danger": "Additional fee threats create financial pressure to make you act quickly.",
       "detection": "Real delivery companies don't threaten immediate fees without clear prior communication."
+    },
+    "age-targeting": {
+      "danger": "Specifically targeting young people is a tactic to exploit their lack of experience with banking scams.",
+      "detection": "Real banks never target customers by age group in their security communications."
     }
   }
 }

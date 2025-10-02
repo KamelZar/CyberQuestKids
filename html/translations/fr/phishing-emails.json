@@ -49,6 +49,54 @@
       ]
     },
     {
+      "id": "ing",
+      "from": "security@ing-be.support.com",
+      "subject": "Confirmation d'identité requise - Action rapide nécessaire",
+      "greeting": "Bonjour,",
+      "body": [
+        "Suite à de nouvelles réglementations bancaires, nous devons vérifier l'identité de tous nos clients de <span class=\"age\">moins de 25 ans</span>.",
+        "Votre compte ING nécessite une confirmation d'identité <span class=\"urgency\">avant 48h</span>. Cette procédure est rapide et gratuite."
+      ],
+      "buttonText": "Confirmer mon identité maintenant",
+      "threat": "Si vous ne confirmez pas votre identité, des frais de vérification de 25€ seront automatiquement prélevés de votre compte.",
+      "signature": {
+        "closing": "Cordialement,",
+        "name": "Service Clients ING Belgique"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "security@ing-be.support.com",
+          "selector": "email",
+          "explanation": "Faux domaine: \"ing-be.support.com\" au lieu de \"ing.be\""
+        },
+        {
+          "id": "age-targeting",
+          "target": "moins de 25 ans",
+          "selector": "age",
+          "explanation": "Ciblage des jeunes pour profiter de leur inexpérience"
+        },
+        {
+          "id": "urgency-error",
+          "target": "avant 48h",
+          "selector": "urgency",
+          "explanation": "Urgence artificielle pour vous faire agir sans réfléchir"
+        },
+        {
+          "id": "link-error",
+          "target": "Confirmer mon identité maintenant",
+          "selector": "button",
+          "explanation": "Lien suspect pour \"confirmer l'identité\" - technique de vol de données"
+        },
+        {
+          "id": "fee-threat",
+          "target": "Si vous ne confirmez pas votre identité, des frais de vérification de 25€ seront automatiquement prélevés de votre compte.",
+          "selector": "threat",
+          "explanation": "Menace financière pour forcer l'action: prélèvement automatique"
+        }
+      ]
+    },
+    {
       "id": "paypal",
       "from": "noreply@paypaI.com",
       "subject": "Problème avec votre paiement - Vérification requise",
@@ -205,6 +253,10 @@
     "fee-threat": {
       "danger": "Les menaces de frais supplémentaires créent une pression financière pour vous faire agir rapidement.",
       "detection": "Les vraies entreprises de livraison ne menacent pas de frais immédiats sans communication préalable claire."
+    },
+    "age-targeting": {
+      "danger": "Cibler spécifiquement les jeunes est une tactique pour exploiter leur manque d'expérience avec les arnaques bancaires.",
+      "detection": "Les vraies banques ne ciblent jamais les clients par tranche d'âge dans leurs communications de sécurité."
     }
   }
 }

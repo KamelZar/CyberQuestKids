@@ -2839,55 +2839,65 @@
         // Fonction pour construire le HTML de l'email depuis les données JSON
         function buildEmailHTML(email) {
             const icon = email.id === 'bank' ? '📧' : email.id === 'paypal' ? '💳' : '📦';
-
-            // Construire les éléments du corps avec les erreurs cliquables
-            let bodyHTML = '';
-            email.body.forEach(paragraph => {
-                bodyHTML += `<p>${paragraph}</p>`;
-            });
-
-            // Créer le HTML complet avec les erreurs cliquables
+            
+            // Fonction helper pour créer un élément cliquable
+            function createClickableError(error) {
+                const escapedExplanation = error.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const escapedTarget = error.target.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                return `<span class="clickable-error" onclick="foundError('${error.id}', '${escapedExplanation}', '${escapedTarget}')">${error.target}</span>`;
+            }
+            
+            // Mapper toutes les erreurs par sélecteur pour un accès facile
             const errorMap = {};
             email.errors.forEach(error => {
                 errorMap[error.selector] = error;
             });
-
+            
+            // Traitement du sujet avec erreurs potentielles
+            let processedSubject = email.subject;
+            const subjectError = email.errors.find(e => e.selector === 'subject-urgency');
+            if (subjectError && email.subject.includes(subjectError.target)) {
+                const escapedTarget = subjectError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                processedSubject = email.subject.replace(new RegExp(escapedTarget, 'g'), createClickableError(subjectError));
+            }
+            
+            // Traitement du corps avec toutes les erreurs possibles
+            const processedBody = email.body.map(para => {
+                let processedPara = para;
+                
+                // Chercher toutes les erreurs qui pourraient être dans ce paragraphe
+                email.errors.forEach(error => {
+                    if (['urgency', 'amount', 'limitation', 'order'].includes(error.selector) && 
+                        para.includes(error.target)) {
+                        const escapedTarget = error.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        processedPara = processedPara.replace(new RegExp(escapedTarget, 'g'), createClickableError(error));
+                    }
+                });
+                
+                return `<p>${processedPara}</p>`;
+            }).join('');
+            
+            // Récupérer les erreurs critiques avec fallback sécurisé
+            const emailError = errorMap.email;
+            const buttonError = errorMap.button;
+            const threatError = errorMap.threat;
+            const signatureError = errorMap.signature;
+            
             return `
                 <div class="email-header">
                     <div>
-                        <div>De: <span class="clickable-error" onclick="foundError('${errorMap.email.id}', '${errorMap.email.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.email.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.from}</span></div>
+                        <div>De: ${emailError ? createClickableError(emailError).replace(emailError.target, email.from) : email.from}</div>
                         <div>À: vous@email.com</div>
                     </div>
                     <div>${icon}</div>
                 </div>
                 <div class="email-content">
-                    <div class="email-subject">${(() => {
-                        const subjectError = email.errors.find(e => e.selector === 'subject-urgency' && email.subject.includes(e.target));
-                        if (subjectError) {
-                            const escapedTarget = subjectError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            return email.subject.replace(new RegExp(escapedTarget, 'g'),
-                                `<span class="clickable-error" onclick="foundError('${subjectError.id}', '${subjectError.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${subjectError.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${subjectError.target}</span>`);
-                        }
-                        return email.subject;
-                    })()}</div>
+                    <div class="email-subject">${processedSubject}</div>
                     <p>${email.greeting}</p>
-                    ${email.body.map((para, index) => {
-                        // Identifier les erreurs dans le corps du texte
-                        const bodyError = email.errors.find(e =>
-                            (e.selector === 'urgency' ||
-                             e.selector === 'amount' || e.selector === 'limitation' ||
-                             e.selector === 'order') && para.includes(e.target)
-                        );
-                        if (bodyError) {
-                            const escapedTarget = bodyError.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            return `<p>${para.replace(new RegExp(escapedTarget, 'g'),
-                                `<span class="clickable-error" onclick="foundError('${bodyError.id}', '${bodyError.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${bodyError.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${bodyError.target}</span>`)}</p>`;
-                        }
-                        return `<p>${para}</p>`;
-                    }).join('')}
-                    <a href="#" class="suspicious-link clickable-error" onclick="foundError('${errorMap.button.id}', '${errorMap.button.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.button.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.buttonText}</a>
-                    <p><span class="clickable-error" onclick="foundError('${errorMap.threat.id}', '${errorMap.threat.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.threat.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.threat}</span></p>
-                    <p>${email.signature.closing}<br><span class="clickable-error" onclick="foundError('${errorMap.signature.id}', '${errorMap.signature.explanation.replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${errorMap.signature.target.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.signature.name}</span></p>
+                    ${processedBody}
+                    <a href="#" class="suspicious-link clickable-error" onclick="foundError('${buttonError?.id || 'button-error'}', '${(buttonError?.explanation || 'Suspicious link').replace(/'/g, "\\'").replace(/"/g, '&quot;')}', '${(buttonError?.target || email.buttonText).replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">${email.buttonText}</a>
+                    <p>${threatError ? createClickableError(threatError).replace(threatError.target, email.threat) : email.threat}</p>
+                    <p>${email.signature.closing}<br>${signatureError ? createClickableError(signatureError).replace(signatureError.target, email.signature.name) : email.signature.name}</p>
                 </div>
             `;
         }
@@ -3038,17 +3048,16 @@
             
             const hintSection = document.getElementById('hintSection');
             if (hintSection) {
+                const hintData = getTranslation('carousel.spam.tab.game.hint');
+                const signsHtml = hintData.signs ? hintData.signs.map(sign => `<li>${sign}</li>`).join('') : '';
+                
                 hintSection.innerHTML = `
                     <div class="explanation-box" style="border-left-color: #f39c12;">
-                        <div class="explanation-title" style="color: #f39c12;">💡 Indice</div>
+                        <div class="explanation-title" style="color: #f39c12;">${hintData.title || '💡 Indice'}</div>
                         <div class="explanation-text">
-                            Cherchez les signes suivants dans l'email :
+                            ${hintData.intro || 'Cherchez les signes suivants dans l\'email :'}
                             <ul>
-                                <li>🔍 Fautes d'orthographe dans l'adresse email</li>
-                                <li>⚠️ Urgence artificielle ("24h", "immédiatement")</li>
-                                <li>🔗 Liens suspects ou génériques</li>
-                                <li>💰 Menaces financières</li>
-                                <li>📝 Signatures vagues ou génériques</li>
+                                ${signsHtml}
                             </ul>
                         </div>
                     </div>

@@ -168,6 +168,28 @@
       "title": "\uD83C\uDFC6 Questions pour un champion",
       "subtitle": "\uD83D\uDEE1\uFE0F Sauras-tu distinguer le vrai du faux ?",
       "button": "Jouer",
+      "categories": {
+        "ai": {
+          "title": "Intelligence Artificielle",
+          "description":"Deepfakes, hallucinations..."
+        },
+        "protection": {
+          "title": "Protection & Virus",
+          "description":"VPN, malwares, symptoms..."
+        },
+        "mobile": {
+          "title": "Mobile & Paiements",
+          "description":"Apps, QR codes, sécurité..."
+        },
+        "passwords": {
+          "title": ">Mots de passe",
+          "description":"2FA, gestionnaires..."
+        },
+        "anecdotes": {
+          "title": "Anecdotes Tech",
+          "description":"Faits incroyables mais vrais..."
+        }
+      },
       "tab": {
         "title": "\uD83C\uDFC6 Questions pour un champion",
         "subtitle": "\uD83D\uDEE1\uFE0F Sujets Cybersécurité",

@@ -1183,8 +1183,7 @@
                     <div class="strength-fill" id="strengthFill"></div>
                 </div>
                 
-                <div class="crack-time" id="crackTime">
-                    Temps de craquage : Instantané ⚡
+                <div class="crack-time" id="crackTime" traduction="carousel.fortress.tab.crack_time_initial">
                 </div>
                 
                 <div class="requirements" id="requirements">
@@ -2456,7 +2455,7 @@
 
             if (password.length == 0) {
                 strengthClass = '';
-                timeText = 'Temps de craquage : Instantané ⚡';
+                timeText = getTranslation('carousel.fortress.tab.crack_time_instant');
                 timeColor = '#999';
             } else if (compromiseResult.isCompromised) {
                 // Ajuster la force selon le risque intelligent
@@ -2608,8 +2607,8 @@
             
             switch(result.type) {
                 case 'exact':
-                    message = '🚨 DANGER CRITIQUE : Ce mot de passe exact figure dans les bases de données de mots de passe piratés';
-                    explanation = '<div style="margin-top: 8px; font-size: 0.9em; font-weight: normal;">Les hackers le testent en premier - changez-le immédiatement !</div>';
+                    message = getTranslation('carousel.fortress.tab.warning.exact_match');
+                    explanation = `<div style="margin-top: 8px; font-size: 0.9em; font-weight: normal;">${getTranslation('carousel.fortress.tab.warning.change_immediately')}</div>`;
                     break;
                     
                 case 'intelligent':
@@ -2661,16 +2660,16 @@
             const guessesPerSecond = 1000000000; // 1 milliard de tentatives/seconde
             const averageTime = combinations / (2 * guessesPerSecond);
             
-            return `Temps de craquage : ${formatTime(averageTime)} ${getEmoji(strength)}`;
+            return `${getTranslation('carousel.fortress.tab.crack_time_prefix')} ${formatTime(averageTime)} ${getEmoji(strength)}`;
         }
 
         function formatTime(seconds) {
-            if (seconds < 1) return 'Instantané';
-            if (seconds < 60) return `${Math.round(seconds)} secondes`;
-            if (seconds < 3600) return `${Math.round(seconds/60)} minutes`;
-            if (seconds < 86400) return `${Math.round(seconds/3600)} heures`;
-            if (seconds < 31536000) return `${Math.round(seconds/86400)} jours`;
-            return `${Math.round(seconds/31536000)} années`;
+            if (seconds < 1) return getTranslation('carousel.fortress.tab.time.instant');
+            if (seconds < 60) return `${Math.round(seconds)} ${getTranslation('carousel.fortress.tab.time.seconds')}`;
+            if (seconds < 3600) return `${Math.round(seconds/60)} ${getTranslation('carousel.fortress.tab.time.minutes')}`;
+            if (seconds < 86400) return `${Math.round(seconds/3600)} ${getTranslation('carousel.fortress.tab.time.hours')}`;
+            if (seconds < 31536000) return `${Math.round(seconds/86400)} ${getTranslation('carousel.fortress.tab.time.days')}`;
+            return `${Math.round(seconds/31536000)} ${getTranslation('carousel.fortress.tab.time.years')}`;
         }
 
         function getEmoji(strength) {
@@ -2680,7 +2679,7 @@
 
         function getCompromiseCrackTime(result, passwordLength) {
             if (result.type === 'exact') {
-                return 'Temps de craquage : Instantané ⚡ (mot de passe entier connu des hackers)';
+                return getTranslation('carousel.fortress.tab.crack_time_known_hackers');
             }
             
             if (result.type === 'intelligent') {
@@ -2689,28 +2688,28 @@
                 switch(riskLevel) {
                     case 'low':
                         if (unknownLength >= 15) {
-                            return `Temps de craquage : Plusieurs millénaires 🏰 (${unknownLength} caractères complexes inconnus)`;
+                            return getTranslation('carousel.fortress.tab.crack_time_millennia').replace('{unknownLength}', unknownLength);
                         } else {
-                            return `Temps de craquage : Milliers d'années 🛡️ (${unknownLength} caractères complexes inconnus)`;
+                            return getTranslation('carousel.fortress.tab.crack_time_thousands_years').replace('{unknownLength}', unknownLength);
                         }
                         
                     case 'medium':
-                        return `Temps de craquage : Quelques années à siècles ⏰ (${unknownLength} caractères inconnus moyennement complexes)`;
+                        return getTranslation('carousel.fortress.tab.crack_time_years_centuries').replace('{unknownLength}', unknownLength);
                         
                     case 'high':
                         if (unknownLength <= 4) {
-                            return `Temps de craquage : Quelques heures à jours ⚡ (seulement ${unknownLength} caractères inconnus)`;
+                            return getTranslation('carousel.fortress.tab.crack_time_hours_days').replace('{unknownLength}', unknownLength);
                         } else {
-                            return `Temps de craquage : Quelques jours à semaines ⚡ (${unknownLength} caractères inconnus peu complexes)`;
+                            return getTranslation('carousel.fortress.tab.crack_time_days_weeks').replace('{unknownLength}', unknownLength);
                         }
                         
                     default:
-                        return 'Temps de craquage : Quelques jours ⏰ (segments connus détectés)';
+                        return getTranslation('carousel.fortress.tab.crack_time_default');
                 }
             }
             
             // Fallback pour ancienne logique
-            return 'Temps de craquage : Instantané ⚡ (compromis)';
+            return getTranslation('carousel.fortress.tab.crack_time_compromised');
         }
 
         function isCommonPassword(password) {
@@ -2734,17 +2733,17 @@
             const lowerPassword = password.toLowerCase();
             
             if (lowerPassword === 'password123') {
-                showPasswordEasterEgg('🤦‍♂️ Sérieusement ?', 'Ce mot de passe figure dans le TOP 3 des mots de passe les plus utilisés au monde ! Il peut être cassé en moins de 0,001 seconde. Fun fact: 4,6% des utilisateurs utilisent encore "password" comme mot de passe en 2024.');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.password123.title'), getTranslation('carousel.fortress.easter.password123.message'));
             } else if (lowerPassword === 'qwerty' || lowerPassword === 'azerty') {
-                showPasswordEasterEgg('⌨️ Créativité = 0', 'Les suites de clavier comme QWERTY/AZERTY sont dans les 10 mots de passe les plus piratés. Un hacker peut les deviner en 0,003 seconde. Pro tip: même "qwerty123!" reste faible car c\'\'est prévisible.');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.qwerty.title'), getTranslation('carousel.fortress.easter.qwerty.message'));
             } else if (lowerPassword === '123456') {
-                showPasswordEasterEgg('🥇 Champion du Monde !', '123456 est LE mot de passe le plus utilisé au monde depuis 10 ans ! Utilisé par 23 millions de comptes piratés. Temps de craquage: instantané. Même votre chat ferait mieux.');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.123456.title'), getTranslation('carousel.fortress.easter.123456.message'));
             } else if (lowerPassword === 'admin' || lowerPassword === 'root') {
-                showPasswordEasterEgg('👨‍💻 Hacker Detected', 'Ah, un connaisseur ! Ces mots de passe d\'\'admin sont les premiers testés lors d\'\'attaques par dictionnaire. En entreprise, 73% des violations commencent par des comptes admin compromis.');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.admin.title'), getTranslation('carousel.fortress.easter.admin.message'));
             } else if (lowerPassword === 'matrix' || lowerPassword === 'neo') {
-                showPasswordEasterEgg('🔴 Pilule Rouge', 'Welcome to the Matrix ! Même Neo utilisait des mots de passe plus complexes. Dans le film, la vraie sécurité venait de la cryptographie quantique, pas de "password1".');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.matrix.title'), getTranslation('carousel.fortress.easter.matrix.message'));
             } else if (password.length >= 20 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password)) {
-                showPasswordEasterEgg('🛡️ Cyber-Warrior !', 'Excellent ! Ce niveau de complexité vous protège contre 99,9% des attaques automatisées. Un mot de passe de 20+ caractères bien composé peut résister des millions d\'\'années même aux supercalculateurs.');
+                showPasswordEasterEgg(getTranslation('carousel.fortress.easter.cyberwarrior.title'), getTranslation('carousel.fortress.easter.cyberwarrior.message'));
             }
         }
 

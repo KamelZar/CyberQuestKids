@@ -311,6 +311,55 @@
           "special":"Speciale tekens",
           "unknown":"Geen veelvoorkomende woorden"
         },
+        "easter": {
+          "password123": {
+            "title": "🚨 Wachtwoord te voorspelbaar!",
+            "message": "Dit wachtwoord staat in de top 10 van meest gebruikte wereldwijd! Hackers proberen het als eerste. Het is alsof je je sleutels in de voordeur laat zitten."
+          },
+          "qwerty": {
+            "title": "⌨️ Toetsenbordpatroon gedetecteerd!",
+            "message": "QWERTY/AZERTY zijn te voor de hand liggende toetsreeksen! Hackers kennen alle toetsenbordpatronen. Mix letters, cijfers en symbolen willekeurig."
+          },
+          "123456": {
+            "title": "🔢 Basis numerieke reeks!",
+            "message": "123456 is HET meest gebruikte wachtwoord ter wereld! Meer dan 23 miljoen gehackte accounts gebruikten dit wachtwoord in 2023. Wees creatiever!"
+          },
+          "admin": {
+            "title": "👨‍💻 Beheerderswachtwoord!",
+            "message": "Admin/Root zijn de eerste wachtwoorden die hackers testen! Deze technische termen staan in alle aanvalswoordenboeken. Gebruik iets persoonlijks maar niet voor de hand liggend."
+          },
+          "matrix": {
+            "title": "🕶️ Neo, ben jij dat?",
+            "message": "Uitstekende referentiekeuze! Matrix leerde ons het belang van cybersecurity. Maar zelfs Neo gebruikte complexere wachtwoorden dan 'matrix' 😉"
+          },
+          "cyberwarrior": {
+            "title": "🛡️ Cyber-Krijger!",
+            "message": "Uitstekend! Dit complexiteitsniveau beschermt je tegen 99,9% van de geautomatiseerde aanvallen. Een goed samengesteld wachtwoord van 20+ tekens kan miljoenen jaren weerstand bieden, zelfs tegen supercomputers."
+          }
+        },
+        "crack_time_initial": "Voer een wachtwoord in om de kraaktijd te zien",
+        "crack_time_prefix": "Geschatte tijd om te kraken:",
+        "crack_time_instant": "Onmiddellijk ⚡",
+        "crack_time_known_hackers": "⚡ Al bekend bij hackers - Onmiddellijke kraak!",
+        "crack_time_millennia": "🏰 Uitstekend! Meer dan 1000 jaar zelfs met AI (dankzij {unknownLength} onbekende tekens)",
+        "crack_time_thousands_years": "🛡️ Zeer goed! Duizenden jaren (dankzij {unknownLength} onbekende tekens)",
+        "crack_time_years_centuries": "⚠️ Enkele jaren tot eeuwen (bekende segmenten verminderen veiligheid, maar {unknownLength} tekens helpen)",
+        "crack_time_hours_days": "🚨 Enkele uren tot dagen (te veel bekende segmenten, slechts {unknownLength} tekens te raden)",
+        "crack_time_days_weeks": "⚡ Enkele dagen tot weken (bekende segmenten vergemakkelijken aanval, {unknownLength} tekens over)",
+        "crack_time_default": "Variabele kraaktijd afhankelijk van complexiteit",
+        "crack_time_compromised": "⚡ Gecompromitteerd - Snelle kraak mogelijk!",
+        "time": {
+          "instant": "onmiddellijk",
+          "seconds": "seconden",
+          "minutes": "minuten", 
+          "hours": "uren",
+          "days": "dagen",
+          "years": "jaren"
+        },
+        "warning": {
+          "exact_match": "🚨 KRITIEK GEVAAR: Wachtwoord gevonden in gehackte databases!",
+          "change_immediately": "Verander het onmiddellijk als je het elders gebruikt!"
+        },
         "close": "SLUITEN"
       }
     },

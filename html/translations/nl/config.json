@@ -168,6 +168,29 @@
       "title": "🏆 Vragen voor een kampioen",
       "subtitle": "\uD83D\uDEE1\uFE0F Kun jij waar van onwaar onderscheiden?",
       "button": "Spelen",
+      "categories": {
+        "ai": {
+          "title": "Kunstmatige intelligentie",
+          "description": "Deepfakes, hallucinaties..."
+        },
+        "protection": {
+          "title": "Bescherming & Virus",
+          "description": "VPN, malware, symptomen..."
+        },
+        "mobile": {
+          "title": "Mobiel & Betalingen",
+          "description": "Apps, QR-codes, beveiliging..."
+        },
+        "passwords": {
+          "title": "Wachtwoorden",
+          "description": "2FA, managers..."
+        },
+        "anecdotes": {
+          "title": "Technische anekdotes",
+          "description": "Ongelooflijke maar waargebeurde feiten..."
+        }
+      },
+
       "tab": {
         "title": "🏆 Vragen voor een kampioen",
         "subtitle": "🛡️ Cybersecurity Onderwerpen",

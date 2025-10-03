@@ -168,6 +168,28 @@
       "title": "🏆 Quiz Champion",
       "subtitle": "\uD83D\uDEE1\uFE0F Can you tell truth from falsehood?",
       "button": "Play",
+      "categories": {
+        "ai": {
+          "title": "Artificial Intelligence",
+          "description": "Deepfakes, hallucinations..."
+        },
+        "protection": {
+          "title": "Protection & Virus",
+          "description": "VPN, malware, symptoms..."
+        },
+        "mobile": {
+          "title": "Mobile & Payments",
+          "description": "Apps, QR codes, security..."
+        },
+        "passwords": {
+          "title": "Passwords",
+          "description": "2FA, managers..."
+        },
+        "anecdotes": {
+          "title": "Tech Anecdotes",
+          "description": "Unbelievable but true facts..."
+        }
+      },
       "tab": {
         "title": "🏆 Quiz Champion",
         "subtitle": "🛡️ Cybersecurity Topics",

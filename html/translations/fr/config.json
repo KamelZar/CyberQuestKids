@@ -171,23 +171,23 @@
       "categories": {
         "ai": {
           "title": "Intelligence Artificielle",
-          "description":"Deepfakes, hallucinations..."
+          "description": "Deepfakes, hallucinations..."
         },
         "protection": {
           "title": "Protection & Virus",
-          "description":"VPN, malwares, symptoms..."
+          "description": "VPN, malwares, symptômes..."
         },
         "mobile": {
           "title": "Mobile & Paiements",
-          "description":"Apps, QR codes, sécurité..."
+          "description": "Apps, codes QR, sécurité..."
         },
         "passwords": {
-          "title": ">Mots de passe",
-          "description":"2FA, gestionnaires..."
+          "title": "Mots de passe",
+          "description": "2FA, gestionnaires..."
         },
         "anecdotes": {
           "title": "Anecdotes Tech",
-          "description":"Faits incroyables mais vrais..."
+          "description": "Faits incroyables mais vrais..."
         }
       },
       "tab": {

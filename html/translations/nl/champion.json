@@ -293,6 +293,11 @@
         "explanation": "Dat is FOUT! Een uitstekende ontwikkelaar (Kamel), geholpen door een AI (Claude) en een beetje motivatie, heeft het project in 1 week afgerond. En ja, zelfs met AI gaat niet alles zo snel."
       },
       {
+        "question": "Datalekken worden altijd veroorzaakt door hacken of diefstal",
+        "answer": false,
+        "explanation": "Het ChatGPT-incident in maart 2023 bewijst het tegendeel: een eenvoudige bug in de redis-py bibliotheek heeft de gesprekken en betalingsgegevens van 1,2% van de gebruikers blootgesteld, zonder enige hacking. Lekken kunnen voortkomen uit softwarefouten, configuratiefouten, menselijke nalatigheid (e-mails naar de verkeerde personen gestuurd, verloren computers), of slecht beveiligde servers. In werkelijkheid komt een groot deel van de datalekken voort uit onbedoelde fouten in plaats van kwaadwillige aanvallen."
+      },
+      {
         "question": "Het woord 'Wi-Fi' betekent 'Wireless Fidelity', zoals 'Hi-Fi' betekent 'High Fidelity'",
         "answer": false,
         "explanation": "Dat is grotendeels VALS! In tegenstelling tot de populaire overtuiging betekent 'Wi-Fi' eigenlijk helemaal niets! Het is gewoon een commerciële naam uitgevonden door een marketingbureau in 1999 om de technische naam 'IEEE 802.11b Direct Sequence' te vervangen"

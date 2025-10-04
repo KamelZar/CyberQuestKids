@@ -293,6 +293,11 @@
         "explanation": "That's TRUE! A ransomware attack against Collins Aerospace paralyzed check-in systems at major airports like Heathrow, Brussels and Berlin for several days. Staff had to return to manual methods: handwritten boarding passes, iPads for check-in... A real trip back in time! A suspect was arrested in the UK. This attack shows how much our infrastructure depends on technology and how crucial it is to protect it well!"
       },
       {
+        "question": "Data leaks are always caused by hacking or theft",
+        "answer": false,
+        "explanation": "The ChatGPT incident in March 2023 proves otherwise: a simple bug in the redis-py library exposed the conversations and payment data of 1.2% of users, without any hacking. Leaks can result from software bugs, configuration errors, human negligence (emails sent to the wrong people, lost computers), or poorly secured servers. In reality, a large portion of data leaks come from unintentional errors rather than malicious attacks."
+      },
+      {
         "question": "The word 'Wi-Fi' means 'Wireless Fidelity', like 'Hi-Fi' means 'High Fidelity'",
         "answer": false,
         "explanation": "That's largely FALSE! Contrary to popular belief, 'Wi-Fi' actually means nothing at all! It's just a commercial name invented by a marketing agency in 1999 to replace the technical name 'IEEE 802.11b Direct Sequence'"

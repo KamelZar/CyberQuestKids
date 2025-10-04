@@ -308,6 +308,11 @@
         "explanation": "C'est FAUX ! Cette histoire dramatique est inventée. Cependant, la réalité est presque aussi inquiétante : des chercheurs en sécurité (les \"white hat hackers\") ont effectivement démontré qu'il était possible de pirater certains systèmes de véhicules connectés."
       },
       {
+        "question": "Les fuites de données sont toujours dues à un piratage informatique ou à un vol",
+        "answer": false,
+        "explanation": "L'incident de ChatGPT en mars 2023 prouve le contraire : un simple bug dans la bibliothèque redis-py a exposé les conversations et données de paiement de 1,2% des utilisateurs, sans aucun piratage. Les fuites peuvent résulter de bugs logiciels, d'erreurs de configuration, de négligences humaines (emails envoyés aux mauvaises personnes, ordinateurs perdus), ou de serveurs mal sécurisés. En réalité, une grande partie des fuites proviennent d'erreurs involontaires plutôt que d'attaques malveillantes."
+      },
+      {
         "question": "Il a fallu 3 mois à une équipe de 5 développeurs pour concevoir et créer ce site web",
         "answer": false,
         "explanation": "C'est FAUX ! Un excellent développeur (Kamel) aidé d'une IA (Claude) et d'un peu de motivation a fini le projet en 1 semaine. Et oui, même avec l'IA tout n'est pas si rapide."

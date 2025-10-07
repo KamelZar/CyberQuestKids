@@ -310,6 +310,55 @@
           "special":"Caractères spéciaux",
           "unknown":"Pas de mots courants"
         },
+        "easter": {
+          "password123": {
+            "title": "🚨 Mot de passe trop prévisible !",
+            "message": "Ce mot de passe fait partie du top 10 des plus utilisés au monde ! Les hackers l'essaient en premier. C'est comme laisser ses clés sur la porte d'entrée."
+          },
+          "qwerty": {
+            "title": "⌨️ Pattern de clavier détecté !",
+            "message": "QWERTY/AZERTY sont des séquences de touches trop évidentes ! Les hackers connaissent tous les patterns de clavier. Mélangez lettres, chiffres et symboles au hasard."
+          },
+          "123456": {
+            "title": "🔢 Séquence numérique basique !",
+            "message": "123456 est LE mot de passe le plus utilisé au monde ! Plus de 23 millions de comptes piratés utilisaient ce mot de passe en 2023. Soyez plus créatifs !"
+          },
+          "admin": {
+            "title": "👨‍💻 Mot de passe d'administrateur !",
+            "message": "Admin/Root sont les premiers mots de passe testés par les hackers ! Ces termes techniques sont dans tous les dictionnaires d'attaque. Utilisez quelque chose de personnel mais pas évident."
+          },
+          "matrix": {
+            "title": "🕶️ Neo, c'est toi ?",
+            "message": "Excellent choix de référence ! Matrix nous a appris l'importance de la cybersécurité. Mais même Neo utilisait des mots de passe plus complexes que 'matrix' 😉"
+          },
+          "cyberwarrior": {
+            "title": "🛡️ Cyber-Warrior !",
+            "message": "Excellent ! Ce niveau de complexité vous protège contre 99,9% des attaques automatisées. Un mot de passe de 20+ caractères bien composé peut résister des millions d'années même aux supercalculateurs."
+          }
+        },
+        "crack_time_initial": "Entrez un mot de passe pour voir le temps de crack",
+        "crack_time_prefix": "Temps estimé pour le cracker :",
+        "crack_time_instant": "Instantané ⚡",
+        "crack_time_known_hackers": "⚡ Déjà connu des hackers - Crack immédiat !",
+        "crack_time_millennia": "🏰 Excellent ! Plus de 1000 ans même avec une IA (grâce aux {unknownLength} caractères inconnus)",
+        "crack_time_thousands_years": "🛡️ Très bien ! Des milliers d'années (grâce aux {unknownLength} caractères inconnus)",
+        "crack_time_years_centuries": "⚠️ Quelques années à siècles (segments connus réduisent la sécurité, mais {unknownLength} caractères aident)",
+        "crack_time_hours_days": "🚨 Quelques heures à jours (trop de segments connus, seulement {unknownLength} caractères à deviner)",
+        "crack_time_days_weeks": "⚡ Quelques jours à semaines (segments connus facilitent l'attaque, {unknownLength} caractères restants)",
+        "crack_time_default": "Temps de crack variable selon la complexité",
+        "crack_time_compromised": "⚡ Compromis - Crack rapide possible !",
+        "time": {
+          "instant": "instantané",
+          "seconds": "secondes",
+          "minutes": "minutes", 
+          "hours": "heures",
+          "days": "jours",
+          "years": "ans"
+        },
+        "warning": {
+          "exact_match": "🚨 DANGER CRITIQUE : Mot de passe trouvé dans les bases de données piratées !",
+          "change_immediately": "Changez-le immédiatement si vous l'utilisez ailleurs !"
+        },
         "close": "FERMER"
       }
     },

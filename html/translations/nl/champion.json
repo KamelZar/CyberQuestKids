@@ -15,7 +15,7 @@
         "explanation": "Dat is VALS! Geen enkele AI kan de toekomst met zekerheid voorspellen. Ze kan schattingen maken op basis van gegevens, maar de toekomst blijft onvoorspelbaar!"
       },
       {
-        "question": "Spraakassistenten zoals Siri en Alexa luisteren en nemen permanent alles op wat je thuis zegt",
+        "question": "Spraakassistenten zoals Siri en Alexa luisteren en nemen permanent al op wat je thuis zegt",
         "answer": false,
         "explanation": "Dat is deels VALS! Ze luisteren naar het activatiewoord ('Hey Siri', 'Alexa') maar nemen normaal gezien pas op nadat ze dat woord hebben gehoord. Maar er kunnen bugs zijn..."
       },
@@ -131,7 +131,7 @@
       {
         "question": "Het is veiliger om met je telefoon te betalen (Apple Pay, Google Pay) dan met je echte bankkaart",
         "answer": true,
-        "explanation": "Dat is WAAR! Mobiel betalen gebruikt een tijdelijk virtueel kaartnummer en vereist je vingerafdruk/code. Veiliger dan je echte kaart bovengehaald!"
+        "explanation": "Dat is WAAR! Mobiel betalen gebruikt een tijdelijk virtueel kaartnummer en vereist je vingerafdruk/code. Veiliger dan je echte kaart bovenhalen!"
       },
       {
         "question": "Als je je telefoon verliest, kan iemand makkelijk toegang krijgen tot alle je bankingapps",

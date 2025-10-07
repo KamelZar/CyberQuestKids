@@ -310,6 +310,55 @@
           "special":"Special characters",
           "unknown":"No common words"
         },
+        "easter": {
+          "password123": {
+            "title": "🚨 Password too predictable!",
+            "message": "This password is in the top 10 most used worldwide! Hackers try it first. It's like leaving your keys in the front door."
+          },
+          "qwerty": {
+            "title": "⌨️ Keyboard pattern detected!",
+            "message": "QWERTY/AZERTY are too obvious key sequences! Hackers know all keyboard patterns. Mix letters, numbers and symbols randomly."
+          },
+          "123456": {
+            "title": "🔢 Basic numeric sequence!",
+            "message": "123456 is THE most used password in the world! Over 23 million hacked accounts used this password in 2023. Be more creative!"
+          },
+          "admin": {
+            "title": "👨‍💻 Administrator password!",
+            "message": "Admin/Root are the first passwords tested by hackers! These technical terms are in all attack dictionaries. Use something personal but not obvious."
+          },
+          "matrix": {
+            "title": "🕶️ Neo, is that you?",
+            "message": "Excellent reference choice! Matrix taught us the importance of cybersecurity. But even Neo used more complex passwords than 'matrix' 😉"
+          },
+          "cyberwarrior": {
+            "title": "🛡️ Cyber-Warrior!",
+            "message": "Excellent! This level of complexity protects you against 99.9% of automated attacks. A well-composed 20+ character password can resist millions of years even to supercomputers."
+          }
+        },
+        "crack_time_initial": "Enter a password to see the crack time",
+        "crack_time_prefix": "Estimated time to crack:",
+        "crack_time_instant": "Instant ⚡",
+        "crack_time_known_hackers": "⚡ Already known to hackers - Instant crack!",
+        "crack_time_millennia": "🏰 Excellent! Over 1000 years even with AI (thanks to {unknownLength} unknown characters)",
+        "crack_time_thousands_years": "🛡️ Very good! Thousands of years (thanks to {unknownLength} unknown characters)",
+        "crack_time_years_centuries": "⚠️ Several years to centuries (known segments reduce security, but {unknownLength} characters help)",
+        "crack_time_hours_days": "🚨 Several hours to days (too many known segments, only {unknownLength} characters to guess)",
+        "crack_time_days_weeks": "⚡ Several days to weeks (known segments facilitate attack, {unknownLength} characters remaining)",
+        "crack_time_default": "Variable crack time depending on complexity",
+        "crack_time_compromised": "⚡ Compromised - Fast crack possible!",
+        "time": {
+          "instant": "instant",
+          "seconds": "seconds",
+          "minutes": "minutes", 
+          "hours": "hours",
+          "days": "days",
+          "years": "years"
+        },
+        "warning": {
+          "exact_match": "🚨 CRITICAL DANGER: Password found in hacked databases!",
+          "change_immediately": "Change it immediately if you use it elsewhere!"
+        },
         "close": "CLOSE"
       }
     },

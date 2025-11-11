@@ -113,6 +113,36 @@
             z-index: 1;
         }
 
+        /* Étoile de complétion */
+        .completion-star {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2rem;
+            z-index: 20;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+            animation: starAppear 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        .completion-star.hidden {
+            display: none;
+        }
+
+        @keyframes starAppear {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3) rotate(0deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
         .item-content {
             width: 100%;
             height: 100%;
@@ -1065,6 +1095,7 @@
             <!-- Fantasy Quest -->
             <!-- Confidentialité -->
             <div class="carousel-item active" data-index="0" data-game="confidential">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity1">
                     <h2 traduction="carousel.confidentiality.title"></h2>
                     <p traduction="carousel.confidentiality.subtitle"></p>
@@ -1075,6 +1106,7 @@
 
             <!-- Deepfake -->
             <div class="carousel-item next" data-index="1" data-game="deepfake">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity2">
                     <h2 traduction="carousel.deepfake.title"></h2>
                     <p traduction="carousel.deepfake.subtitle"></p>
@@ -1084,6 +1116,7 @@
 
             <!-- Password Fortress -->
             <div class="carousel-item hidden" data-index="2" data-game="password-fortress">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity3">
                     <h2 traduction="carousel.fortress.title"></h2>
                     <p traduction="carousel.fortress.subtitle"></p>
@@ -1093,6 +1126,7 @@
 
             <!-- Email Piège -->
             <div class="carousel-item hidden" data-index="3" data-game="email-phishing">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity4">
                     <h2 traduction="carousel.spam.title"></h2>
                     <p traduction="carousel.spam.subtitle"></p>
@@ -1102,6 +1136,7 @@
 
             <!-- WiFi Piège -->
             <div class="carousel-item hidden" data-index="4" data-game="wifi-trap">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity5">
                     <h2 traduction="carousel.wifi.title"></h2>
                     <p traduction="carousel.wifi.subtitle"></p>
@@ -1111,6 +1146,7 @@
 
             <!-- Réseaux Sociaux -->
             <div class="carousel-item hidden" data-index="5" data-game="social-media-video">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity6">
                     <h2 traduction="carousel.social.title"></h2>
                     <p traduction="carousel.social.subtitle"></p>
@@ -1120,6 +1156,7 @@
 
             <!-- Quiz Sécurité - ÉVALUATION FINALE -->
             <div class="carousel-item hidden" data-index="6" data-game="quizz">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity7">
                     <h2 traduction="carousel.quiz.title"></h2>
                     <p traduction="carousel.quiz.subtitle"></p>
@@ -1129,6 +1166,7 @@
 
             <!-- Questions pour un champion -->
             <div class="carousel-item hidden" data-index="7" data-game="questions-champion">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity8">
                     <h2 traduction="carousel.champion.title"></h2>
                     <p traduction="carousel.champion.subtitle"></p>
@@ -1138,6 +1176,7 @@
 
             <!-- Site Suspect - Détection de Fraude -->
             <div class="carousel-item hidden" data-index="8" data-game="site-suspect">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity9">
                     <h2 traduction="carousel.promo.title"></h2>
                     <p traduction="carousel.promo.subtitle"></p>
@@ -1147,6 +1186,7 @@
 
             <!-- Fantasy Quest - EASTER EGG UNLOCK -->
             <div class="carousel-item hidden fantasy-quest-locked" data-index="9" data-game="fantasy-quest" style="opacity: 0.3; pointer-events: none;">
+                <div class="completion-star hidden">⭐</div>
                 <div class="item-content activity10">
                     <h2 traduction="carousel.fantasy.title"></h2>
                     <p traduction="carousel.fantasy.locked_subtitle"></p>
@@ -2029,7 +2069,22 @@
                 if (index < 9 && !this.visitedActivities[index]) {
                     this.visitedActivities[index] = true;
                     console.log(`Activité ${index} marquée comme visitée`);
+                    this.updateCompletionStars();
                 }
+            }
+
+            updateCompletionStars() {
+                // Parcourir tous les items du carrousel
+                this.items.forEach((item, index) => {
+                    const star = item.querySelector('.completion-star');
+                    if (star && index < 9) { // Ne pas traiter Fantasy Quest (index 9)
+                        if (this.visitedActivities[index]) {
+                            star.classList.remove('hidden');
+                        } else {
+                            star.classList.add('hidden');
+                        }
+                    }
+                });
             }
 
             checkFantasyQuestUnlock() {
@@ -2041,7 +2096,6 @@
                     if (this.isVideoActivity(i)) {
                         // Pour les vidéos, vérifier qu'elles ont été regardées 1 minute
                         const videoWatched = this.videosWatched.has(i);
-                        // console.log(`Activité ${i} (vidéo): ${videoWatched ? '✅' : '❌'} regardée`);
                         if (!videoWatched) {
                             allActivitiesCompleted = false;
                             break;
@@ -2049,7 +2103,6 @@
                     } else {
                         // Pour les autres activités, vérifier le système classique
                         const activityVisited = this.visitedActivities[i];
-                        console.log(`Activité ${i}: ${activityVisited ? '✅' : '❌'} visitée`);
                         if (!activityVisited) {
                             allActivitiesCompleted = false;
                             break;

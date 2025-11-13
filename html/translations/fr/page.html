@@ -465,9 +465,511 @@
                 align-items: center;
             }
         }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE BASIC (QCM)            */
+        /* ============================================ */
+
+        .quiz-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .quiz-overlay.active {
+            display: flex;
+        }
+
+        .quiz-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease;
+            position: relative;
+        }
+
+        .quiz-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .quiz-close-btn:hover {
+            background: #c0392b;
+            transform: rotate(90deg);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .quiz-question {
+            margin: 30px 0;
+        }
+
+        .quiz-question h3 {
+            color: #3498db;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-option {
+            margin: 15px 0;
+        }
+
+        .quiz-option label {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .quiz-option label:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .quiz-option input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .quiz-option-text {
+            flex: 1;
+            font-size: 1.05rem;
+            color: #2c3e50;
+        }
+
+        .quiz-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .quiz-submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .quiz-result {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            animation: bounceIn 0.6s ease;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.excellent {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 3px solid #28a745;
+        }
+
+        .quiz-result.good {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 3px solid #ffc107;
+        }
+
+        .quiz-result.poor {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 3px solid #dc3545;
+        }
+
+        .quiz-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .quiz-result.excellent .quiz-score {
+            color: #28a745;
+        }
+
+        .quiz-result.good .quiz-score {
+            color: #f39c12;
+        }
+
+        .quiz-result.poor .quiz-score {
+            color: #dc3545;
+        }
+
+        .quiz-feedback {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .quiz-details {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .quiz-details h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .quiz-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-details li {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+        }
+
+        .quiz-details li.correct {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .quiz-details li.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .quiz-details li.missed {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE STANDARD               */
+        /* ============================================ */
+
+        .standard-sidebar {
+            display: none;
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            z-index: 9998;
+            animation: slideInRight 0.5s ease;
+        }
+
+        .standard-sidebar.active {
+            display: block;
+        }
+
+        .standard-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .standard-header h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .standard-progress {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .mission-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .mission-item {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: help;
+        }
+
+        .mission-item.pending {
+            border-left-color: #95a5a6;
+            background: #f8f9fa;
+        }
+
+        .mission-item.found {
+            border-left-color: #28a745;
+            background: #d4edda;
+            animation: missionFound 0.6s ease;
+        }
+
+        .mission-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #2c3e50;
+        }
+
+        .mission-item.found .mission-title::before {
+            content: "✅ ";
+        }
+
+        .mission-item.pending .mission-title::before {
+            content: "🔍 ";
+        }
+
+        @keyframes missionFound {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: #28a745; }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+
+        .standard-complete-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .standard-complete-btn:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .standard-complete-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Highlight des zones cliquables */
+        .clue-highlight {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .clue-highlight:hover::after {
+            content: "👆 Cliquez ici !";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10000;
+        }
+
+        .clue-found {
+            outline: 3px solid #28a745;
+            outline-offset: 3px;
+            animation: pulseGreen 1s ease;
+        }
+
+        @keyframes pulseGreen {
+            0%, 100% { outline-color: #28a745; }
+            50% { outline-color: #20c997; }
+        }
+
+        /* Tooltip d'explication */
+        .clue-tooltip {
+            position: fixed;
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 300px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .clue-tooltip h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .clue-tooltip p {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .clue-tooltip-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .clue-tooltip-close:hover {
+            color: #e74c3c;
+        }
     </style>
 </head>
 <body>
+    <!-- ============================================ -->
+    <!-- MODAL QCM POUR MODE BASIC                   -->
+    <!-- ============================================ -->
+    <div id="quizOverlay" class="quiz-overlay">
+        <div class="quiz-modal">
+            <div id="quizContent">
+                <!-- Contenu généré dynamiquement depuis fake.json -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SIDEBAR POUR MODE STANDARD                  -->
+    <!-- ============================================ -->
+    <div id="standardSidebar" class="standard-sidebar">
+        <div class="standard-header">
+            <h3>🎯 Chasse aux Indices</h3>
+            <div class="standard-progress">
+                <span id="standardFound">0</span>/<span id="standardTotal">7</span>
+            </div>
+        </div>
+        <ul id="standardMissionList" class="mission-list">
+            <!-- Missions générées dynamiquement -->
+        </ul>
+        <button id="standardCompleteBtn" class="standard-complete-btn" disabled>
+            ✅ Mission Terminée
+        </button>
+    </div>
+
     <header class="header">
         <div class="container">
             <nav class="nav">
@@ -712,6 +1214,585 @@
     </div>
 
     <script>
+        // ============================================
+        // SYSTÈME DE DÉTECTION DU NIVEAU DE DIFFICULTÉ
+        // ============================================
+
+        /**
+         * Récupère le niveau de difficulté depuis l'URL
+         * @returns {string} 'basic', 'standard', ou 'advanced'
+         */
+        function getLevelFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const level = urlParams.get('level');
+
+            // Valider le niveau (doit être basic, standard ou advanced)
+            const validLevels = ['basic', 'standard', 'advanced'];
+            if (level && validLevels.includes(level.toLowerCase())) {
+                return level.toLowerCase();
+            }
+
+            // Par défaut : standard
+            return 'standard';
+        }
+
+        // Variable globale pour le niveau actuel
+        const GAME_LEVEL = getLevelFromURL();
+        console.log('🎮 Mode de jeu actif :', GAME_LEVEL);
+
+        // Initialisation selon le niveau
+        document.addEventListener('DOMContentLoaded', function() {
+            initGameByLevel();
+        });
+
+        /**
+         * Initialise le jeu selon le niveau détecté
+         */
+        function initGameByLevel() {
+            console.log(`🎯 Initialisation du mode ${GAME_LEVEL.toUpperCase()}`);
+
+            switch(GAME_LEVEL) {
+                case 'basic':
+                    initBasicMode();
+                    break;
+                case 'standard':
+                    initStandardMode();
+                    break;
+                case 'advanced':
+                    initAdvancedMode();
+                    break;
+                default:
+                    console.warn('⚠️ Niveau inconnu, utilisation du mode standard');
+                    initStandardMode();
+            }
+        }
+
+        // ============================================
+        // CHARGEMENT DES DONNÉES DE JEU
+        // ============================================
+
+        let fakeData = null;
+
+        /**
+         * Charge les données depuis fake.json
+         */
+        async function loadFakeData() {
+            if (fakeData) return fakeData;
+
+            try {
+                const response = await fetch('fake.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                fakeData = await response.json();
+                console.log('✅ Données fake.json chargées');
+                return fakeData;
+            } catch (error) {
+                console.error('❌ Erreur chargement fake.json:', error);
+                return null;
+            }
+        }
+
+        // ============================================
+        // MODE BASIC - QCM
+        // ============================================
+
+        /**
+         * Mode BASIC : QCM simple à la sortie
+         */
+        async function initBasicMode() {
+            console.log('🟢 Mode BASIC activé : QCM de fin');
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.basic_mode) {
+                console.error('❌ Données du mode basic non trouvées');
+                return;
+            }
+
+            // Afficher le QCM après 45 secondes
+            let quizShown = false;
+
+            // Déclenchement après 45 secondes
+            setTimeout(() => {
+                if (!quizShown) {
+                    quizShown = true;
+                    showBasicQuiz(data.basic_mode);
+                }
+            }, 45000); // 45 secondes
+        }
+
+        /**
+         * Ferme le quiz et la fenêtre du navigateur
+         */
+        function closeQuizAndWindow() {
+            // Fermer le modal d'abord
+            const overlay = document.getElementById('quizOverlay');
+            overlay.classList.remove('active');
+
+            // Fermer la fenêtre/onglet
+            window.close();
+
+            // Si window.close() ne fonctionne pas (bloqué par le navigateur),
+            // rediriger vers about:blank
+            setTimeout(() => {
+                window.location.href = 'about:blank';
+            }, 100);
+        }
+
+        /**
+         * Affiche le QCM du mode Basic
+         */
+        function showBasicQuiz(basicData) {
+            const quizData = basicData.quiz;
+            const overlay = document.getElementById('quizOverlay');
+            const content = document.getElementById('quizContent');
+
+            // Générer le HTML du QCM
+            let optionsHTML = '';
+            quizData.options.forEach((option, index) => {
+                optionsHTML += `
+                    <li class="quiz-option">
+                        <label>
+                            <input type="checkbox" name="quiz" value="${option.id}"
+                                   data-correct="${option.correct}" data-index="${index}">
+                            <span class="quiz-option-text">${option.text}</span>
+                        </label>
+                    </li>
+                `;
+            });
+
+            content.innerHTML = `
+                <button id="quizCloseBtn" class="quiz-close-btn" title="Fermer et quitter">✕</button>
+
+                <div class="quiz-header">
+                    <h2>${quizData.title}</h2>
+                    <p>${quizData.subtitle}</p>
+                </div>
+
+                <div class="quiz-question">
+                    <h3>${quizData.question}</h3>
+                    <ul class="quiz-options">
+                        ${optionsHTML}
+                    </ul>
+                </div>
+
+                <button id="quizSubmitBtn" class="quiz-submit-btn">${quizData.submit_button}</button>
+
+                <div id="quizResult" class="quiz-result">
+                    <!-- Résultat sera inséré ici -->
+                </div>
+            `;
+
+            // Afficher l'overlay
+            overlay.classList.add('active');
+
+            // Gérer le bouton de fermeture
+            document.getElementById('quizCloseBtn').addEventListener('click', () => {
+                closeQuizAndWindow();
+            });
+
+            // Gérer la soumission
+            document.getElementById('quizSubmitBtn').addEventListener('click', () => {
+                submitBasicQuiz(quizData, basicData.results, basicData.details);
+            });
+        }
+
+        /**
+         * Soumet et évalue le QCM
+         */
+        function submitBasicQuiz(quizData, resultsData, detailsData) {
+            const checkboxes = document.querySelectorAll('input[name="quiz"]');
+            let correctCount = 0;
+            let incorrectCount = 0;
+            const totalCorrect = quizData.options.filter(opt => opt.correct).length;
+
+            const userAnswers = {
+                correct: [],
+                incorrect: [],
+                missed: []
+            };
+
+            // Évaluer les réponses
+            checkboxes.forEach((checkbox) => {
+                const optionIndex = parseInt(checkbox.dataset.index);
+                const option = quizData.options[optionIndex];
+                const isChecked = checkbox.checked;
+                const shouldBeChecked = option.correct;
+
+                if (isChecked && shouldBeChecked) {
+                    correctCount++;
+                    userAnswers.correct.push(option);
+                } else if (isChecked && !shouldBeChecked) {
+                    incorrectCount++;
+                    userAnswers.incorrect.push(option);
+                } else if (!isChecked && shouldBeChecked) {
+                    userAnswers.missed.push(option);
+                }
+            });
+
+            // Calculer le score en pourcentage
+            const score = Math.round((correctCount / totalCorrect) * 100);
+
+            // Déterminer le niveau de résultat
+            let resultLevel, resultData;
+            if (score >= 85) {
+                resultLevel = 'excellent';
+                resultData = resultsData.excellent;
+            } else if (score >= 60) {
+                resultLevel = 'good';
+                resultData = resultsData.good;
+            } else if (score >= 40) {
+                resultLevel = 'average';
+                resultData = resultsData.average;
+            } else {
+                resultLevel = 'poor';
+                resultData = resultsData.poor;
+            }
+
+            // Afficher les résultats
+            showBasicResults(score, correctCount, totalCorrect, resultLevel, resultData, userAnswers, detailsData);
+        }
+
+        /**
+         * Affiche les résultats du QCM
+         */
+        function showBasicResults(score, correct, total, level, resultData, answers, detailsData) {
+            const resultDiv = document.getElementById('quizResult');
+            const submitBtn = document.getElementById('quizSubmitBtn');
+
+            // Cacher le bouton submit
+            submitBtn.style.display = 'none';
+
+            // Cacher les checkboxes
+            document.querySelectorAll('.quiz-question').forEach(el => el.style.display = 'none');
+
+            // Générer les détails
+            let detailsHTML = '<ul>';
+
+            // Bonnes réponses
+            answers.correct.forEach(option => {
+                detailsHTML += `<li class="correct">✅ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            // Mauvaises réponses
+            answers.incorrect.forEach(option => {
+                detailsHTML += `<li class="incorrect">❌ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            // Réponses manquées
+            answers.missed.forEach(option => {
+                detailsHTML += `<li class="missed">⚠️ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            detailsHTML += '</ul>';
+
+            resultDiv.innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 20px;">${resultData.emoji}</div>
+                <h2>${resultData.title}</h2>
+                <div class="quiz-score">${correct}/${total}</div>
+                <div class="quiz-feedback">
+                    <p><strong>${resultData.message}</strong></p>
+                    <p style="margin-top: 15px;">💡 ${resultData.advice}</p>
+                </div>
+                <div class="quiz-details">
+                    <h4>${detailsData.title}</h4>
+                    ${detailsHTML}
+                </div>
+            `;
+
+            resultDiv.classList.add('show', level);
+        }
+
+        // ============================================
+        // MODE STANDARD - CHASSE AUX INDICES
+        // ============================================
+
+        let standardFoundClues = [];
+        let standardMissions = [];
+
+        /**
+         * Mode STANDARD : Chasse aux indices guidée
+         */
+        async function initStandardMode() {
+            console.log('🟡 Mode STANDARD activé : Chasse aux indices');
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.standard_mode) {
+                console.error('❌ Données du mode standard non trouvées');
+                return;
+            }
+
+            standardMissions = data.standard_mode.missions;
+
+            // Afficher la sidebar
+            showStandardSidebar(data.standard_mode);
+
+            // Rendre les éléments cliquables
+            makeElementsClickable(standardMissions);
+
+            // Désactiver les boutons d'achat
+            disableBuyButtons();
+        }
+
+        /**
+         * Affiche la sidebar avec les missions
+         */
+        function showStandardSidebar(standardData) {
+            const sidebar = document.getElementById('standardSidebar');
+            const missionList = document.getElementById('standardMissionList');
+            const totalSpan = document.getElementById('standardTotal');
+
+            // Mettre à jour le total
+            totalSpan.textContent = standardMissions.length;
+
+            // Générer la liste des missions
+            let missionsHTML = '';
+            standardMissions.forEach((mission, index) => {
+                missionsHTML += `
+                    <li class="mission-item pending" data-mission-id="${mission.id}">
+                        <div class="mission-title">${mission.title}</div>
+                    </li>
+                `;
+            });
+
+            missionList.innerHTML = missionsHTML;
+
+            // Afficher la sidebar
+            sidebar.classList.add('active');
+
+            // Gérer le bouton "Mission Terminée"
+            document.getElementById('standardCompleteBtn').addEventListener('click', () => {
+                showStandardResults(standardData);
+            });
+        }
+
+        /**
+         * Rend les éléments cliquables selon les sélecteurs
+         */
+        function makeElementsClickable(missions) {
+            missions.forEach((mission) => {
+                const selector = mission.selector;
+                const elements = document.querySelectorAll(selector);
+
+                elements.forEach((element) => {
+                    // Ajouter la classe highlight
+                    element.classList.add('clue-highlight');
+                    element.dataset.missionId = mission.id;
+
+                    // Gérer le clic
+                    element.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleClueClick(mission, element);
+                    });
+                });
+            });
+        }
+
+        /**
+         * Gère le clic sur un indice
+         */
+        function handleClueClick(mission, element) {
+            // Vérifier si déjà trouvé
+            if (standardFoundClues.includes(mission.id)) {
+                console.log('Indice déjà trouvé');
+                return;
+            }
+
+            // Ajouter à la liste des indices trouvés
+            standardFoundClues.push(mission.id);
+
+            // Marquer l'élément comme trouvé
+            element.classList.add('clue-found');
+            element.classList.remove('clue-highlight');
+
+            // Mettre à jour la mission dans la sidebar
+            updateMissionStatus(mission.id);
+
+            // Afficher le tooltip d'explication
+            showClueTooltip(mission, element);
+
+            // Mettre à jour le compteur
+            updateProgress();
+
+            // Vérifier si toutes les missions sont complétées
+            checkAllMissionsComplete();
+        }
+
+        /**
+         * Met à jour le statut d'une mission dans la sidebar
+         */
+        function updateMissionStatus(missionId) {
+            const missionItem = document.querySelector(`.mission-item[data-mission-id="${missionId}"]`);
+            if (missionItem) {
+                missionItem.classList.remove('pending');
+                missionItem.classList.add('found');
+            }
+        }
+
+        /**
+         * Affiche un tooltip d'explication
+         */
+        function showClueTooltip(mission, element) {
+            // Supprimer les anciens tooltips
+            document.querySelectorAll('.clue-tooltip').forEach(t => t.remove());
+
+            // Créer le tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'clue-tooltip';
+
+            // Positionner le tooltip près de l'élément cliqué
+            const rect = element.getBoundingClientRect();
+            tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+            tooltip.style.left = `${rect.left + window.scrollX + rect.width + 15}px`;
+
+            tooltip.innerHTML = `
+                <button class="clue-tooltip-close">×</button>
+                <h4>✅ ${mission.title}</h4>
+                <p>${mission.explanation}</p>
+            `;
+
+            document.body.appendChild(tooltip);
+
+            // Gérer la fermeture
+            tooltip.querySelector('.clue-tooltip-close').addEventListener('click', () => {
+                tooltip.remove();
+            });
+
+            // Fermer automatiquement après 5 secondes
+            setTimeout(() => {
+                tooltip.remove();
+            }, 5000);
+        }
+
+        /**
+         * Met à jour le compteur de progression
+         */
+        function updateProgress() {
+            const foundSpan = document.getElementById('standardFound');
+            foundSpan.textContent = standardFoundClues.length;
+        }
+
+        /**
+         * Vérifie si toutes les missions sont complétées
+         */
+        function checkAllMissionsComplete() {
+            const completeBtn = document.getElementById('standardCompleteBtn');
+
+            if (standardFoundClues.length === standardMissions.length) {
+                completeBtn.disabled = false;
+                completeBtn.textContent = '🎉 Toutes les missions complétées !';
+            }
+        }
+
+        /**
+         * Désactive les boutons d'achat en mode Standard
+         */
+        function disableBuyButtons() {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.style.opacity = '0.5';
+                button.style.cursor = 'not-allowed';
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('🔒 Les boutons d\'achat sont désactivés pendant la chasse aux indices.\n\nTrouvez tous les indices de fraude avant de terminer !');
+                });
+            });
+        }
+
+        /**
+         * Affiche les résultats du mode Standard
+         */
+        function showStandardResults(standardData) {
+            const found = standardFoundClues.length;
+            const total = standardMissions.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Déterminer le niveau
+            let level, emoji, title, message;
+            if (percentage === 100) {
+                level = 'excellent';
+                emoji = '🏆';
+                title = 'Expert en Détection !';
+                message = `Bravo ! Vous avez trouvé les ${total} indices de fraude. Vous êtes maintenant un vrai cyber-détective !`;
+            } else if (percentage >= 70) {
+                level = 'good';
+                emoji = '👍';
+                title = 'Bon Détective !';
+                message = `Bien joué ! Vous avez trouvé ${found}/${total} indices. Il vous en reste ${total - found} à découvrir.`;
+            } else {
+                level = 'average';
+                emoji = '🤔';
+                title = 'À Améliorer';
+                message = `Vous avez trouvé ${found}/${total} indices. Continuez à chercher, il y a encore des pièges cachés !`;
+            }
+
+            // Générer la liste des indices manqués
+            let missedHTML = '';
+            const missedMissions = standardMissions.filter(m => !standardFoundClues.includes(m.id));
+            if (missedMissions.length > 0) {
+                missedHTML = `
+                    <div class="quiz-details">
+                        <h4>❌ Indices manqués :</h4>
+                        <ul>
+                            ${missedMissions.map(m => `
+                                <li class="missed">
+                                    ${m.title}<br>
+                                    <small>${m.explanation}</small>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Afficher dans un modal
+            const overlay = document.getElementById('quizOverlay');
+            const content = document.getElementById('quizContent');
+
+            content.innerHTML = `
+                <button id="quizCloseBtn" class="quiz-close-btn" title="Fermer et quitter">✕</button>
+
+                <div class="quiz-header">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${emoji}</div>
+                    <h2>${title}</h2>
+                </div>
+
+                <div class="quiz-result show ${level}">
+                    <div class="quiz-score">${found}/${total}</div>
+                    <div class="quiz-feedback">
+                        <p><strong>${message}</strong></p>
+                    </div>
+                    ${missedHTML}
+                </div>
+            `;
+
+            overlay.classList.add('active');
+
+            // Gérer le bouton de fermeture
+            document.getElementById('quizCloseBtn').addEventListener('click', () => {
+                closeQuizAndWindow();
+            });
+        }
+
+        // ============================================
+        // MODE ADVANCED - PIÈGE ACTIF
+        // ============================================
+
+        /**
+         * Mode ADVANCED : Mode libre avec piège
+         */
+        async function initAdvancedMode() {
+            console.log('🔴 Mode ADVANCED activé : Danger - Piège actif');
+            // TODO: Implémenter le mode avancé avec barreaux de prison
+        }
+
+        // ============================================
+        // CODE ORIGINAL DU FAUX SITE
+        // ============================================
+
         // Faux timer qui se remet à zéro
         let timeLeft = 327; // 5:27 en secondes
 

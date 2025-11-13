@@ -2058,7 +2058,10 @@
                         initQuestionsChampionGame();
                         break;
                     case 'site-suspect':
-                        window.open(getTranslation('carousel.promo.link'), '_blank');
+                        // Récupérer le niveau depuis localStorage (par défaut: standard)
+                        const currentLevel = localStorage.getItem('cyberquest_level') || 'standard';
+                        const promoLink = getTranslation('carousel.promo.link');
+                        window.open(`${promoLink}?level=${currentLevel}`, '_blank');
                         break;
                 }
             }

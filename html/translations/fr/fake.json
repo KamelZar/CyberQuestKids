@@ -1,0 +1,236 @@
+{
+  "basic_mode": {
+    "quiz": {
+      "title": "🕵️ Quiz de Détection de Fraude",
+      "subtitle": "Que penses-tu de ce site web ?",
+      "question": "Sélectionne toutes les affirmations qui sont VRAIES :",
+      "options": [
+        {
+          "id": "trap",
+          "text": "✅ Ça a l'air génial, je peux commander en toute confiance",
+          "correct": false,
+          "explanation": "ATTENTION ! Ce site présente de nombreux signaux d'alarme. Ne jamais se fier aux apparences."
+        },
+        {
+          "id": "ridiculous",
+          "text": "😂 C'est ridicule, les prix sont impossibles",
+          "correct": true,
+          "explanation": "Exactement ! Des réductions de -86% à -92% sont impossibles pour des produits neufs authentiques."
+        },
+        {
+          "id": "https",
+          "text": "🔓 Le site n'utilise pas HTTPS correctement",
+          "correct": true,
+          "explanation": "Bien vu ! Le faux badge SSL et le domaine suspect (.biz) sont des signaux d'alerte."
+        },
+        {
+          "id": "prices",
+          "text": "💰 Les prix sont suspects (réductions de -86% à -92%)",
+          "correct": true,
+          "explanation": "Bravo ! iPhone à 199€, MacBook à 399€, Labubu à 12€... c'est clairement de l'arnaque."
+        },
+        {
+          "id": "scam",
+          "text": "🚨 Cela ressemble à une arnaque",
+          "correct": true,
+          "explanation": "Excellent instinct ! Tous les indices convergent vers une tentative de fraude."
+        },
+        {
+          "id": "reviews",
+          "text": "⭐ Les avis ont l'air faux (Marie D., Jean L., notes parfaites)",
+          "correct": true,
+          "explanation": "Parfait ! Les avis génériques avec notes parfaites sont un signe classique de fraude."
+        },
+        {
+          "id": "timer",
+          "text": "⏰ Le timer et les alertes d'urgence sont louches",
+          "correct": true,
+          "explanation": "Très bien ! L'urgence artificielle est une technique de manipulation pour forcer l'achat impulsif."
+        }
+      ],
+      "submit_button": "✅ Valider mes réponses"
+    },
+    "results": {
+      "excellent": {
+        "title": "🏆 Cyber-Détective Expert !",
+        "emoji": "🎖️",
+        "message": "Félicitations ! Tu as identifié tous les pièges de ce faux site. Tu es maintenant un expert en détection de fraudes en ligne !",
+        "advice": "Continue toujours à vérifier les sites avant d'acheter. En cas de doute, demande à un adulte."
+      },
+      "good": {
+        "title": "👍 Bon Détective !",
+        "emoji": "🔍",
+        "message": "Bien joué ! Tu as repéré la plupart des pièges. Avec un peu plus d'attention, tu seras un expert !",
+        "advice": "Rappelle-toi : si c'est trop beau pour être vrai, c'est probablement une arnaque."
+      },
+      "average": {
+        "title": "📚 En Apprentissage",
+        "emoji": "🤔",
+        "message": "Pas mal, mais il y a encore des pièges que tu n'as pas repérés. Continue de t'entraîner !",
+        "advice": "Prends le temps d'analyser les détails : prix, avis, informations de contact, urgence artificielle..."
+      },
+      "poor": {
+        "title": "⚠️ Attention Danger !",
+        "emoji": "🚨",
+        "message": "Tu es tombé dans le piège ! Ce site est une arnaque. Heureusement, c'était juste un exercice.",
+        "advice": "IMPORTANT : Ne JAMAIS acheter sur un site avec des prix impossibles, des avis suspects, ou sans informations légales claires."
+      }
+    },
+    "details": {
+      "title": "📊 Détails de tes réponses :",
+      "correct_label": "✅ Bonne réponse",
+      "incorrect_label": "❌ Mauvaise réponse",
+      "missed_label": "⚠️ Tu as manqué ceci"
+    }
+  },
+  "standard_mode": {
+    "title": "🎯 Chasse aux Indices",
+    "subtitle": "Trouve les {count} indices de fraude sur cette page",
+    "mission_list": "Liste des missions :",
+    "missions": [
+      {
+        "id": "ssl",
+        "title": "🔒 Trouve le faux badge SSL",
+        "selector": ".fake-ssl",
+        "explanation": "Ce badge 'SSL Sécurisé' dans le header est faux. Un vrai certificat SSL s'affiche dans la barre d'adresse du navigateur."
+      },
+      {
+        "id": "price",
+        "title": "💰 Repère un prix impossible",
+        "selector": ".discount",
+        "explanation": "Une réduction de plus de 80% sur des produits neufs est impossible. C'est un piège classique des sites frauduleux."
+      },
+      {
+        "id": "review",
+        "title": "⭐ Identifie un faux avis",
+        "selector": ".fake-reviews",
+        "explanation": "Les avis avec des noms génériques (Marie D., Jean L.) et des notes parfaites sont suspects."
+      },
+      {
+        "id": "contact",
+        "title": "📞 Trouve l'info de contact suspecte",
+        "selector": ".suspicious-contact",
+        "explanation": "Pas de numéro de téléphone, pas d'adresse physique, SIRET 'en cours'... Un site légal doit avoir ces informations."
+      },
+      {
+        "id": "urgency",
+        "title": "⏰ Détecte l'urgence artificielle",
+        "selector": ".urgency-banner, .countdown",
+        "explanation": "Le timer qui se remet à zéro et les fausses alertes créent une pression pour acheter sans réfléchir."
+      },
+      {
+        "id": "shipping",
+        "title": "📦 Trouve l'expédition suspecte",
+        "selector": ".suspicious-shipping",
+        "explanation": "'Entrepôt européen via Chine' avec délai de 15-30 jours est très suspect pour des produits soi-disant en stock."
+      },
+      {
+        "id": "watermark",
+        "title": "🖼️ Repère les images volées",
+        "selector": ".watermark",
+        "explanation": "Les watermarks Getty Images, Shutterstock prouvent que les images sont volées et non des vraies photos des produits."
+      }
+    ],
+    "progress": "Indices trouvés : {found}/{total}",
+    "hint_button": "💡 Besoin d'un indice ?",
+    "complete_button": "✅ Mission terminée"
+  },
+  "advanced_mode": {
+    "warning": "🔴 MODE DANGER ACTIVÉ",
+    "subtitle": "Les boutons d'achat sont ACTIFS. Un clic = Game Over !",
+    "prison": {
+      "title": "⚠️ ARNAQUÉ !",
+      "subtitle": "MISSION ÉCHOUÉE",
+      "message": "Vous avez cliqué sans vérifier ! Dans la vraie vie, vos données bancaires auraient été volées...",
+      "missed_clues": "Indices que vous avez manqués :",
+      "retry_button": "🔄 Réessayer",
+      "show_all_button": "📚 Voir toutes les erreurs"
+    },
+    "victory": {
+      "title": "🏆 CYBER-DETECTIVE MASTER !",
+      "message": "Félicitations ! Vous avez trouvé {count} indices SANS cliquer sur les pièges.",
+      "rating": {
+        "perfect": "🎖️ Score parfait ! Vous êtes un expert en cybersécurité.",
+        "excellent": "🛡️ Excellent travail ! Vous avez l'œil affûté.",
+        "good": "👍 Bon niveau ! Continuez comme ça."
+      }
+    },
+    "clues": [
+      {
+        "id": "fake-ssl",
+        "title": "Faux badge SSL dans le header",
+        "description": "Le badge 'SSL Sécurisé' est trompeur. Un vrai certificat s'affiche dans l'URL."
+      },
+      {
+        "id": "domain",
+        "title": "Nom de domaine suspect (.biz)",
+        "description": "Les sites frauduleux utilisent souvent des extensions moins connues."
+      },
+      {
+        "id": "price-iphone",
+        "title": "Prix iPhone impossible (-86%)",
+        "description": "199€ pour un iPhone 16 Pro Max à 1449€ ? Impossible pour du neuf."
+      },
+      {
+        "id": "price-macbook",
+        "title": "Prix MacBook impossible (-87%)",
+        "description": "399€ pour un MacBook Pro M4 à 2999€ ? Pure arnaque."
+      },
+      {
+        "id": "price-ps5",
+        "title": "Prix PS5 impossible (-82%)",
+        "description": "99€ pour une PS5 à 549€ ? Trop beau pour être vrai."
+      },
+      {
+        "id": "price-labubu",
+        "title": "Prix Labubu ridicules (-87% à -92%)",
+        "description": "Labubu à 12€ ou 24€ ? Les vrais coûtent 10x plus cher."
+      },
+      {
+        "id": "watermarks",
+        "title": "Watermarks sur les images",
+        "description": "Getty Images, Shutterstock : les photos sont volées."
+      },
+      {
+        "id": "fake-reviews",
+        "title": "Faux avis avec noms génériques",
+        "description": "Marie D., Jean L., Sophie T. avec notes parfaites = fake."
+      },
+      {
+        "id": "perfect-ratings",
+        "title": "Notes parfaites partout (4.8-5.0)",
+        "description": "Aucun produit n'a 100% d'avis 5 étoiles."
+      },
+      {
+        "id": "timer-reset",
+        "title": "Timer qui se remet à zéro",
+        "description": "Le compte à rebours recommence indéfiniment pour créer l'urgence."
+      },
+      {
+        "id": "fake-stock-alerts",
+        "title": "Alertes de stock artificielles",
+        "description": "'Plus que 3 en stock !' est généré aléatoirement."
+      },
+      {
+        "id": "shipping-china",
+        "title": "Expédition 'européenne' via Chine",
+        "description": "'Entrepôt européen* (*via Chine)' avec 15-30 jours."
+      },
+      {
+        "id": "no-phone",
+        "title": "Pas de numéro de téléphone",
+        "description": "Un vrai site e-commerce a toujours un service client joignable."
+      },
+      {
+        "id": "siret-pending",
+        "title": "SIRET 'en cours d'obtention'",
+        "description": "Un site légal a déjà son SIRET avant de vendre."
+      },
+      {
+        "id": "old-bank-logo",
+        "title": "Logo bancaire obsolète",
+        "description": "Le logo de paiement daté trahit un site non professionnel."
+      }
+    ]
+  }
+}

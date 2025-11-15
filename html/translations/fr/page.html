@@ -1280,7 +1280,7 @@
             if (fakeData) return fakeData;
 
             try {
-                const response = await fetch('fake.json');
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${currentLang}/fake.json`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

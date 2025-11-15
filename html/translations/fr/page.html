@@ -938,6 +938,416 @@
         .clue-tooltip-close:hover {
             color: #e74c3c;
         }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE ADVANCED               */
+        /* ============================================ */
+
+        /* Badge flottant avec timer stressant */
+        .advanced-badge {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(231, 76, 60, 0.5);
+            z-index: 9997;
+            min-width: 250px;
+            animation: pulseRed 2s infinite;
+        }
+
+        .advanced-badge.active {
+            display: block;
+        }
+
+        .advanced-badge-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .advanced-timer {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .advanced-timer.warning {
+            color: #f39c12;
+            animation: blinkTimer 0.5s infinite;
+        }
+
+        .advanced-timer.danger {
+            color: #fff;
+            animation: blinkTimer 0.3s infinite;
+        }
+
+        .advanced-progress {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .advanced-clues-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .advanced-clue-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border-left: 3px solid #27ae60;
+            animation: clueSlideIn 0.3s ease;
+        }
+
+        @keyframes clueSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .advanced-finish-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .advanced-finish-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        @keyframes pulseRed {
+            0%, 100% { box-shadow: 0 10px 40px rgba(231, 76, 60, 0.5); }
+            50% { box-shadow: 0 15px 50px rgba(231, 76, 60, 0.8); }
+        }
+
+        @keyframes blinkTimer {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Écran de prison (Game Over) */
+        .prison-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .prison-overlay.active {
+            display: flex;
+        }
+
+        .prison-bars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 40px,
+                #666 40px,
+                #666 50px
+            );
+            opacity: 0.4;
+            pointer-events: none;
+            animation: shakeBars 0.5s ease;
+        }
+
+        @keyframes shakeBars {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .prison-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: prisonAppear 0.6s ease;
+        }
+
+        @keyframes prisonAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .prison-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .prison-title {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .prison-subtitle {
+            font-size: 1.3rem;
+            color: #c0392b;
+            margin-bottom: 30px;
+        }
+
+        .prison-message {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .prison-score {
+            background: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .prison-score h3 {
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+
+        .prison-missed-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .prison-missed-list li {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            text-align: left;
+            color: #2c3e50;
+        }
+
+        .prison-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .prison-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .prison-btn.retry {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .prison-btn.retry:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+        }
+
+        .prison-btn.show-all {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .prison-btn.show-all:hover {
+            background: linear-gradient(135deg, #7f8c8d, #5d6d7e);
+            transform: translateY(-2px);
+        }
+
+        /* Écran de victoire */
+        .victory-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .victory-overlay.active {
+            display: flex;
+        }
+
+        .victory-content {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: victoryAppear 0.8s ease;
+        }
+
+        @keyframes victoryAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-180deg);
+            }
+            70% {
+                transform: scale(1.1) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .victory-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .victory-title {
+            font-size: 2.5rem;
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .victory-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 30px 0;
+        }
+
+        .victory-rating {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 3px solid #28a745;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #155724;
+        }
+
+        .victory-message {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .victory-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .victory-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        /* Notification discrète pour indices trouvés */
+        .clue-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(39, 174, 96, 0.95);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 9998;
+            animation: slideUpNotif 0.5s ease;
+        }
+
+        @keyframes slideUpNotif {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -968,6 +1378,46 @@
         <button id="standardCompleteBtn" class="standard-complete-btn" disabled>
             ✅ Mission Terminée
         </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- BADGE POUR MODE ADVANCED                    -->
+    <!-- ============================================ -->
+    <div id="advancedBadge" class="advanced-badge">
+        <div class="advanced-badge-header">
+            🔴 MODE DANGER
+        </div>
+        <div class="advanced-timer" id="advancedTimer">
+            1:30
+        </div>
+        <div class="advanced-progress">
+            Indices: <span id="advancedFound">0</span>/15
+        </div>
+        <div class="advanced-clues-list" id="advancedCluesList">
+            <!-- Liste des indices trouvés -->
+        </div>
+        <button id="advancedFinishBtn" class="advanced-finish-btn">
+            ✅ Terminer
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ÉCRAN DE PRISON (GAME OVER)                -->
+    <!-- ============================================ -->
+    <div id="prisonOverlay" class="prison-overlay">
+        <div class="prison-bars"></div>
+        <div class="prison-content" id="prisonContent">
+            <!-- Contenu généré dynamiquement -->
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ÉCRAN DE VICTOIRE                           -->
+    <!-- ============================================ -->
+    <div id="victoryOverlay" class="victory-overlay">
+        <div class="victory-content" id="victoryContent">
+            <!-- Contenu généré dynamiquement -->
+        </div>
     </div>
 
     <header class="header">
@@ -1841,12 +2291,421 @@
         // MODE ADVANCED - PIÈGE ACTIF
         // ============================================
 
+        let advancedFoundClues = [];
+        let advancedAllClues = [];
+        let advancedTimeRemaining = 90; // 1m30 en secondes
+        let advancedTimerInterval = null;
+        let advancedGameOver = false;
+
         /**
-         * Mode ADVANCED : Mode libre avec piège
+         * Mode ADVANCED : Mode libre avec piège et timer de 1m30
          */
         async function initAdvancedMode() {
             console.log('🔴 Mode ADVANCED activé : Danger - Piège actif');
-            // TODO: Implémenter le mode avancé avec barreaux de prison
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.advanced_mode) {
+                console.error('❌ Données du mode advanced non trouvées');
+                return;
+            }
+
+            advancedAllClues = data.advanced_mode.clues;
+
+            // Afficher le badge avec timer
+            showAdvancedBadge();
+
+            // Démarrer le timer stressant de 1m30
+            startAdvancedTimer();
+
+            // Configurer le tracking des indices
+            setupAdvancedTracking(advancedAllClues);
+
+            // Piéger les boutons d'achat
+            trapBuyButtons(data.advanced_mode);
+
+            // Gérer le bouton "Terminer"
+            document.getElementById('advancedFinishBtn').addEventListener('click', () => {
+                if (!advancedGameOver) {
+                    showAdvancedVictory(data.advanced_mode);
+                }
+            });
+        }
+
+        /**
+         * Affiche le badge flottant avec timer et compteur
+         */
+        function showAdvancedBadge() {
+            const badge = document.getElementById('advancedBadge');
+            badge.classList.add('active');
+        }
+
+        /**
+         * Démarre le timer de 1m30 avec effet stressant
+         */
+        function startAdvancedTimer() {
+            const timerDisplay = document.getElementById('advancedTimer');
+
+            advancedTimerInterval = setInterval(() => {
+                advancedTimeRemaining--;
+
+                // Formater l'affichage
+                const minutes = Math.floor(advancedTimeRemaining / 60);
+                const seconds = advancedTimeRemaining % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                // Changer le style selon le temps restant
+                if (advancedTimeRemaining <= 30 && advancedTimeRemaining > 10) {
+                    // Warning : orange clignotant
+                    timerDisplay.classList.add('warning');
+                    timerDisplay.classList.remove('danger');
+                } else if (advancedTimeRemaining <= 10) {
+                    // Danger : rouge clignotant rapide
+                    timerDisplay.classList.remove('warning');
+                    timerDisplay.classList.add('danger');
+                }
+
+                // Game Over si temps écoulé
+                if (advancedTimeRemaining <= 0) {
+                    clearInterval(advancedTimerInterval);
+                    showTimeoutScreen();
+                }
+            }, 1000);
+        }
+
+        /**
+         * Configure le tracking invisible des 15 indices
+         */
+        function setupAdvancedTracking(clues) {
+            clues.forEach(clue => {
+                // Mapper chaque indice à un sélecteur CSS
+                let selector = null;
+
+                switch(clue.id) {
+                    case 'fake-ssl':
+                        selector = '.fake-ssl';
+                        break;
+                    case 'domain':
+                        // Pas de sélecteur visuel, se base sur l'URL
+                        break;
+                    case 'price-iphone':
+                    case 'price-macbook':
+                    case 'price-ps5':
+                    case 'price-labubu':
+                        selector = '.discount';
+                        break;
+                    case 'watermarks':
+                        selector = '.watermark';
+                        break;
+                    case 'fake-reviews':
+                        selector = '.fake-reviews';
+                        break;
+                    case 'perfect-ratings':
+                        selector = '.stars';
+                        break;
+                    case 'timer-reset':
+                        selector = '.countdown';
+                        break;
+                    case 'fake-stock-alerts':
+                        selector = '.stock-alert';
+                        break;
+                    case 'shipping-china':
+                        selector = '.suspicious-shipping';
+                        break;
+                    case 'no-phone':
+                    case 'siret-pending':
+                        selector = '.suspicious-contact';
+                        break;
+                    case 'old-bank-logo':
+                        selector = 'img[src*="old_logo"]';
+                        break;
+                }
+
+                if (selector) {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(element => {
+                        // Tracking au survol (hover)
+                        element.addEventListener('mouseenter', () => {
+                            trackClueFound(clue.id);
+                        });
+
+                        // Tracking au clic (double sécurité)
+                        element.addEventListener('click', (e) => {
+                            // Ne pas empêcher le comportement normal pour les éléments non-dangereux
+                            if (!element.classList.contains('buy-button') && !element.classList.contains('cta-button')) {
+                                trackClueFound(clue.id);
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Indice spécial pour le domaine (.biz)
+            trackClueFound('domain');
+        }
+
+        /**
+         * Marque un indice comme trouvé
+         */
+        function trackClueFound(clueId) {
+            if (!advancedFoundClues.includes(clueId) && !advancedGameOver) {
+                advancedFoundClues.push(clueId);
+
+                // Trouver les détails de l'indice
+                const clue = advancedAllClues.find(c => c.id === clueId);
+
+                // Mettre à jour le compteur
+                updateAdvancedProgress();
+
+                // Ajouter l'indice à la liste
+                if (clue) {
+                    addClueToList(clue);
+                }
+
+                // Notification discrète
+                showDiscreteNotification(`✅ Indice découvert ! (${advancedFoundClues.length}/15)`);
+            }
+        }
+
+        /**
+         * Ajoute un indice trouvé à la liste visible
+         */
+        function addClueToList(clue) {
+            const cluesList = document.getElementById('advancedCluesList');
+
+            const clueItem = document.createElement('div');
+            clueItem.className = 'advanced-clue-item';
+            clueItem.textContent = clue.title;
+
+            cluesList.appendChild(clueItem);
+        }
+
+        /**
+         * Met à jour le compteur d'indices trouvés
+         */
+        function updateAdvancedProgress() {
+            const foundSpan = document.getElementById('advancedFound');
+            foundSpan.textContent = advancedFoundClues.length;
+        }
+
+        /**
+         * Affiche une notification discrète en bas de l'écran
+         */
+        function showDiscreteNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'clue-notification';
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Supprimer après 2 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        /**
+         * Piège tous les boutons d'achat
+         */
+        function trapBuyButtons(advancedData) {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Game Over immédiat
+                    advancedGameOver = true;
+                    clearInterval(advancedTimerInterval);
+                    showPrisonScreen(advancedData);
+                });
+            });
+        }
+
+        /**
+         * Affiche l'écran de prison (Game Over)
+         */
+        function showPrisonScreen(advancedData) {
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Liste des indices manqués
+            const missedClues = advancedAllClues.filter(c => !advancedFoundClues.includes(c.id));
+            let missedHTML = missedClues.map(clue =>
+                `<li>❌ ${clue.title} <br><small>${clue.description}</small></li>`
+            ).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">🚨</div>
+                <div class="prison-title">${advancedData.prison.title}</div>
+                <div class="prison-subtitle">${advancedData.prison.subtitle}</div>
+                <div class="prison-message">
+                    ${advancedData.prison.message}
+                </div>
+                <div class="prison-score">
+                    <h3>📊 Votre Score</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;">
+                        ${found}/${total} indices trouvés (${percentage}%)
+                    </p>
+                </div>
+                ${missedHTML ? `
+                    <div class="prison-score">
+                        <h3>${advancedData.prison.missed_clues}</h3>
+                        <ul class="prison-missed-list">
+                            ${missedHTML}
+                        </ul>
+                    </div>
+                ` : ''}
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        ${advancedData.prison.retry_button}
+                    </button>
+                    <button class="prison-btn show-all" onclick="showAllClues()">
+                        ${advancedData.prison.show_all_button}
+                    </button>
+                </div>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Affiche l'écran de timeout (temps écoulé)
+         */
+        function showTimeoutScreen() {
+            advancedGameOver = true;
+
+            const data = fakeData.advanced_mode;
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            const missedClues = advancedAllClues.filter(c => !advancedFoundClues.includes(c.id));
+            let missedHTML = missedClues.map(clue =>
+                `<li>❌ ${clue.title} <br><small>${clue.description}</small></li>`
+            ).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">⏰</div>
+                <div class="prison-title">TEMPS ÉCOULÉ !</div>
+                <div class="prison-subtitle">MISSION ÉCHOUÉE</div>
+                <div class="prison-message">
+                    Le temps est écoulé ! Vous n'avez pas réussi à trouver tous les indices à temps.
+                </div>
+                <div class="prison-score">
+                    <h3>📊 Votre Score Final</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">
+                        ${found}/${total} indices trouvés (${percentage}%)
+                    </p>
+                </div>
+                ${missedHTML ? `
+                    <div class="prison-score">
+                        <h3>❌ Indices que vous avez manqués :</h3>
+                        <ul class="prison-missed-list">
+                            ${missedHTML}
+                        </ul>
+                    </div>
+                ` : ''}
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        🔄 Réessayer
+                    </button>
+                </div>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Affiche l'écran de victoire
+         */
+        function showAdvancedVictory(advancedData) {
+            advancedGameOver = true;
+            clearInterval(advancedTimerInterval);
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Si moins de 70%, afficher l'écran de prison au lieu de victoire
+            if (percentage < 70) {
+                showPrisonScreen(advancedData);
+                return;
+            }
+
+            const overlay = document.getElementById('victoryOverlay');
+            const content = document.getElementById('victoryContent');
+
+            // Déterminer le rating
+            let rating, emoji;
+            if (found === total) {
+                rating = advancedData.victory.rating.perfect;
+                emoji = '🎖️';
+            } else
+                rating = advancedData.victory.rating.excellent;
+                emoji = '🛡️';
+            }
+
+            const message = advancedData.victory.message.replace('{count}', found);
+
+            content.innerHTML = `
+                <div class="victory-icon">${emoji}</div>
+                <div class="victory-title">${advancedData.victory.title}</div>
+                <div class="victory-score">${found}/${total}</div>
+                <div class="victory-rating">
+                    ${rating}
+                </div>
+                <div class="victory-message">
+                    ${message}
+                </div>
+                <button class="victory-btn" onclick="closeQuizAndWindow()">
+                    ✅ Terminer
+                </button>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Fonction globale pour afficher tous les indices (depuis l'écran prison)
+         */
+        function showAllClues() {
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            let allCluesHTML = advancedAllClues.map((clue, index) => {
+                const found = advancedFoundClues.includes(clue.id);
+                return `
+                    <li class="${found ? 'correct' : 'incorrect'}">
+                        ${found ? '✅' : '❌'} <strong>${clue.title}</strong><br>
+                        <small>${clue.description}</small>
+                    </li>
+                `;
+            }).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">📚</div>
+                <div class="prison-title">TOUS LES INDICES</div>
+                <div class="prison-message">
+                    Voici la liste complète des 15 indices de fraude présents sur ce site :
+                </div>
+                <div class="prison-score">
+                    <ul class="prison-missed-list" style="max-height: 400px;">
+                        ${allCluesHTML}
+                    </ul>
+                </div>
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        🔄 Réessayer
+                    </button>
+                </div>
+            `;
         }
 
         // ============================================

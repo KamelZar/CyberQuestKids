@@ -1872,13 +1872,15 @@
 
         setInterval(updateTimer, 1000);
 
-        // Faux comportement de boutons
-        document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('🚨 ATTENTION ! Cette page est un FAUX site de vente créé à des fins éducatives.\n\n🎯 Avez-vous repéré tous les indices de fraude ?\n\n🔓 SÉCURITÉ :\n• HTTP au lieu de HTTPS\n• Faux badges SSL\n\n💰 PRIX SUSPECTS :\n• Réductions impossibles (-86% à -92%)\n• Prix dérisoires (iPhone à 199€, Labubu à 12€)\n• "Mystery Box" à 18€ au lieu de 234€\n\n🧸 PRODUITS TENDANCE LOUCHES :\n• Labubu "authentiques" trop bon marché\n• Éditions "limitées" en stock illimité\n• Certificats d\'authenticité douteux\n• Probabilités de gains "garanties"\n\n🚚 EXPÉDITION SUSPECTE :\n• "Entrepôt européen*" (*via Chine)\n• Délais flous (15-30 jours)\n• Frais de port cachés\n\n🏪 SITE DOUTEUX :\n• Nom de domaine suspect (.biz)\n• Logo bancaire obsolète\n• Images avec watermarks\n• SIRET "en cours"\n\n📞 CONTACT LOUCHE :\n• Pas de téléphone\n• Pas d\'adresse physique\n• Support "sous 72h"\n\n⏰ URGENCE ARTIFICIELLE :\n• Timer qui se remet à zéro\n• Fausses alertes de stock\n• "Plus que 3 en stock !"\n\n⭐ FAUX AVIS :\n• Avis génériques (Marie D., Jean L.)\n• Notes parfaites partout\n• Témoignages suspects\n\n✅ Excellent travail de détective cyber !');
+        // Faux comportement de boutons (UNIQUEMENT pour mode basic et advanced, PAS standard)
+        if (GAME_LEVEL === 'basic') {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('🚨 ATTENTION ! Cette page est un FAUX site de vente créé à des fins éducatives.\n\n🎯 Avez-vous repéré tous les indices de fraude ?\n\n🔓 SÉCURITÉ :\n• HTTP au lieu de HTTPS\n• Faux badges SSL\n\n💰 PRIX SUSPECTS :\n• Réductions impossibles (-86% à -92%)\n• Prix dérisoires (iPhone à 199€, Labubu à 12€)\n• "Mystery Box" à 18€ au lieu de 234€\n\n🧸 PRODUITS TENDANCE LOUCHES :\n• Labubu "authentiques" trop bon marché\n• Éditions "limitées" en stock illimité\n• Certificats d\'authenticité douteux\n• Probabilités de gains "garanties"\n\n🚚 EXPÉDITION SUSPECTE :\n• "Entrepôt européen*" (*via Chine)\n• Délais flous (15-30 jours)\n• Frais de port cachés\n\n🏪 SITE DOUTEUX :\n• Nom de domaine suspect (.biz)\n• Logo bancaire obsolète\n• Images avec watermarks\n• SIRET "en cours"\n\n📞 CONTACT LOUCHE :\n• Pas de téléphone\n• Pas d\'adresse physique\n• Support "sous 72h"\n\n⏰ URGENCE ARTIFICIELLE :\n• Timer qui se remet à zéro\n• Fausses alertes de stock\n• "Plus que 3 en stock !"\n\n⭐ FAUX AVIS :\n• Avis génériques (Marie D., Jean L.)\n• Notes parfaites partout\n• Témoignages suspects\n\n✅ Excellent travail de détective cyber !');
+                });
             });
-        });
+        }
 
         // Fausses alertes de stock avec Labubu
         setInterval(() => {

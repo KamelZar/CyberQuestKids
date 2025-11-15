@@ -1,9 +1,13 @@
 {
   "basic_mode": {
     "quiz": {
-      "title": "🕵️ Quiz de Détection de Fraude",
+      "title": "🕵️ Quizzz de Détection de Fraude",
       "subtitle": "Que penses-tu de ce site web ?",
       "question": "Sélectionne toutes les affirmations qui sont VRAIES :",
+      "close_button_title": "Fermer et quitter",
+      "more_time_button": "⏰ J'ai besoin de 30 secondes de +",
+      "more_time_granted": "+30 secondes accordées !",
+      "more_time_message": "Le quiz réapparaîtra dans {seconds} secondes",
       "options": [
         {
           "id": "trap",
@@ -87,6 +91,29 @@
     "title": "🎯 Chasse aux Indices",
     "subtitle": "Trouve les {count} indices de fraude sur cette page",
     "mission_list": "Liste des missions :",
+    "progress": "{found}/{total}",
+    "complete_button": "✅ Mission Terminée",
+    "complete_button_all_found": "🎉 Toutes les missions complétées !",
+    "buy_button_disabled_alert": "🔒 Les boutons d'achat sont désactivés pendant la chasse aux indices.\n\nTrouvez tous les indices de fraude avant de terminer !",
+    "close_button_title": "Fermer et quitter",
+    "results": {
+      "perfect": {
+        "emoji": "🏆",
+        "title": "Expert en Détection !",
+        "message": "Bravo ! Vous avez trouvé les {total} indices de fraude. Vous êtes maintenant un vrai cyber-détective !"
+      },
+      "good": {
+        "emoji": "👍",
+        "title": "Bon Détective !",
+        "message": "Bien joué ! Vous avez trouvé {found}/{total} indices. Il vous en reste {remaining} à découvrir."
+      },
+      "average": {
+        "emoji": "🤔",
+        "title": "À Améliorer",
+        "message": "Vous avez trouvé {found}/{total} indices. Continuez à chercher, il y a encore des pièges cachés !"
+      }
+    },
+    "missed_clues_label": "❌ Indices manqués :",
     "missions": [
       {
         "id": "ssl",
@@ -130,25 +157,46 @@
         "selector": ".watermark",
         "explanation": "Les watermarks Getty Images, Shutterstock prouvent que les images sont volées et non des vraies photos des produits."
       }
-    ],
-    "progress": "Indices trouvés : {found}/{total}",
-    "hint_button": "💡 Besoin d'un indice ?",
-    "complete_button": "✅ Mission terminée"
+    ]
   },
   "advanced_mode": {
+    "badge": {
+      "header": "🔴 MODE DANGER",
+      "timer_label": "1:30",
+      "progress_label": "Indices:",
+      "finish_button": "✅ Terminer"
+    },
+    "notifications": {
+      "clue_found": "✅ Indice découvert ! ({current}/{total})"
+    },
     "warning": "🔴 MODE DANGER ACTIVÉ",
     "subtitle": "Les boutons d'achat sont ACTIFS. Un clic = Game Over !",
     "prison": {
       "title": "⚠️ ARNAQUÉ !",
       "subtitle": "MISSION ÉCHOUÉE",
       "message": "Vous avez cliqué sans vérifier ! Dans la vraie vie, vos données bancaires auraient été volées...",
+      "score_header": "📊 Votre Score",
+      "score_text": "{found}/{total} indices trouvés ({percentage}%)",
       "missed_clues": "Indices que vous avez manqués :",
       "retry_button": "🔄 Réessayer",
-      "show_all_button": "📚 Voir toutes les erreurs"
+      "show_all_button": "📚 Voir toutes les erreurs",
+      "all_clues_title": "TOUS LES INDICES",
+      "all_clues_message": "Voici la liste complète des 15 indices de fraude présents sur ce site :"
+    },
+    "timeout": {
+      "icon": "⏰",
+      "title": "TEMPS ÉCOULÉ !",
+      "subtitle": "MISSION ÉCHOUÉE",
+      "message": "Le temps est écoulé ! Vous n'avez pas réussi à trouver tous les indices à temps.",
+      "score_header": "📊 Votre Score Final",
+      "score_text": "{found}/{total} indices trouvés ({percentage}%)",
+      "missed_clues": "❌ Indices que vous avez manqués :",
+      "retry_button": "🔄 Réessayer"
     },
     "victory": {
       "title": "🏆 CYBER-DETECTIVE MASTER !",
       "message": "Félicitations ! Vous avez trouvé {count} indices SANS cliquer sur les pièges.",
+      "finish_button": "✅ Terminer",
       "rating": {
         "perfect": "🎖️ Score parfait ! Vous êtes un expert en cybersécurité.",
         "excellent": "🛡️ Excellent travail ! Vous avez l'œil affûté.",

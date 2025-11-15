@@ -1813,7 +1813,7 @@
             });
 
             content.innerHTML = `
-                <button id="quizCloseBtn" class="quiz-close-btn" title="Fermer et quitter">✕</button>
+                <button id="quizCloseBtn" class="quiz-close-btn" title="${quizData.close_button_title}">✕</button>
 
                 <div class="quiz-header">
                     <h2>${quizData.title}</h2>
@@ -1828,7 +1828,7 @@
                 </div>
 
                 <button id="quizMoreTimeBtn" class="quiz-submit-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); margin-bottom: 10px;">
-                    ⏰ J'ai besoin de 30 secondes de +
+                    ${quizData.more_time_button}
                 </button>
 
                 <button id="quizSubmitBtn" class="quiz-submit-btn">${quizData.submit_button}</button>
@@ -1883,10 +1883,11 @@
                 box-shadow: 0 10px 40px rgba(0,0,0,0.3);
                 text-align: center;
             `;
+            const quizData = basicData.quiz;
             notification.innerHTML = `
                 <div style="font-size: 3rem; margin-bottom: 10px;">⏰</div>
-                <div>+30 secondes accordées !</div>
-                <div style="font-size: 1rem; margin-top: 10px; opacity: 0.9;">Le quiz réapparaîtra dans <span id="countdown">30</span> secondes</div>
+                <div>${quizData.more_time_granted}</div>
+                <div style="font-size: 1rem; margin-top: 10px; opacity: 0.9;">${quizData.more_time_message.replace('{seconds}', '<span id="countdown">30</span>')}</div>
             `;
 
             document.body.appendChild(notification);
@@ -2193,7 +2194,7 @@
 
             if (standardFoundClues.length === standardMissions.length) {
                 completeBtn.disabled = false;
-                completeBtn.textContent = '🎉 Toutes les missions complétées !';
+                completeBtn.textContent = fakeData.standard_mode.complete_button_all_found;
             }
         }
 
@@ -2207,7 +2208,7 @@
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    alert('🔒 Les boutons d\'achat sont désactivés pendant la chasse aux indices.\n\nTrouvez tous les indices de fraude avant de terminer !');
+                    alert(fakeData.standard_mode.buy_button_disabled_alert);
                 });
             });
         }
@@ -2221,23 +2222,22 @@
             const percentage = Math.round((found / total) * 100);
 
             // Déterminer le niveau
-            let level, emoji, title, message;
+            let level, resultData;
             if (percentage === 100) {
                 level = 'excellent';
-                emoji = '🏆';
-                title = 'Expert en Détection !';
-                message = `Bravo ! Vous avez trouvé les ${total} indices de fraude. Vous êtes maintenant un vrai cyber-détective !`;
+                resultData = standardData.results.perfect;
             } else if (percentage >= 70) {
                 level = 'good';
-                emoji = '👍';
-                title = 'Bon Détective !';
-                message = `Bien joué ! Vous avez trouvé ${found}/${total} indices. Il vous en reste ${total - found} à découvrir.`;
+                resultData = standardData.results.good;
             } else {
                 level = 'average';
-                emoji = '🤔';
-                title = 'À Améliorer';
-                message = `Vous avez trouvé ${found}/${total} indices. Continuez à chercher, il y a encore des pièges cachés !`;
+                resultData = standardData.results.average;
             }
+
+            const message = resultData.message
+                .replace('{found}', found)
+                .replace('{total}', total)
+                .replace('{remaining}', total - found);
 
             // Générer la liste des indices manqués
             let missedHTML = '';
@@ -2245,7 +2245,7 @@
             if (missedMissions.length > 0) {
                 missedHTML = `
                     <div class="quiz-details">
-                        <h4>❌ Indices manqués :</h4>
+                        <h4>${standardData.missed_clues_label}</h4>
                         <ul>
                             ${missedMissions.map(m => `
                                 <li class="missed">
@@ -2263,11 +2263,11 @@
             const content = document.getElementById('quizContent');
 
             content.innerHTML = `
-                <button id="quizCloseBtn" class="quiz-close-btn" title="Fermer et quitter">✕</button>
+                <button id="quizCloseBtn" class="quiz-close-btn" title="${standardData.close_button_title}">✕</button>
 
                 <div class="quiz-header">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">${emoji}</div>
-                    <h2>${title}</h2>
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${resultData.emoji}</div>
+                    <h2>${resultData.title}</h2>
                 </div>
 
                 <div class="quiz-result show ${level}">
@@ -2337,6 +2337,13 @@
          */
         function showAdvancedBadge() {
             const badge = document.getElementById('advancedBadge');
+            const badgeData = fakeData.advanced_mode.badge;
+
+            // Mettre à jour les textes du badge
+            badge.querySelector('.advanced-badge-header').textContent = badgeData.header;
+            badge.querySelector('#advancedFinishBtn').textContent = badgeData.finish_button;
+            badge.querySelector('.advanced-progress').innerHTML = `${badgeData.progress_label} <span id="advancedFound">0</span>/15`;
+
             badge.classList.add('active');
         }
 
@@ -2463,7 +2470,10 @@
                 }
 
                 // Notification discrète
-                showDiscreteNotification(`✅ Indice découvert ! (${advancedFoundClues.length}/15)`);
+                const notificationText = fakeData.advanced_mode.notifications.clue_found
+                    .replace('{current}', advancedFoundClues.length)
+                    .replace('{total}', advancedAllClues.length);
+                showDiscreteNotification(notificationText);
             }
         }
 
@@ -2546,9 +2556,9 @@
                     ${advancedData.prison.message}
                 </div>
                 <div class="prison-score">
-                    <h3>📊 Votre Score</h3>
+                    <h3>${advancedData.prison.score_header}</h3>
                     <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;">
-                        ${found}/${total} indices trouvés (${percentage}%)
+                        ${advancedData.prison.score_text.replace('{found}', found).replace('{total}', total).replace('{percentage}', percentage)}
                     </p>
                 </div>
                 ${missedHTML ? `
@@ -2592,21 +2602,21 @@
             ).join('');
 
             content.innerHTML = `
-                <div class="prison-icon">⏰</div>
-                <div class="prison-title">TEMPS ÉCOULÉ !</div>
-                <div class="prison-subtitle">MISSION ÉCHOUÉE</div>
+                <div class="prison-icon">${data.timeout.icon}</div>
+                <div class="prison-title">${data.timeout.title}</div>
+                <div class="prison-subtitle">${data.timeout.subtitle}</div>
                 <div class="prison-message">
-                    Le temps est écoulé ! Vous n'avez pas réussi à trouver tous les indices à temps.
+                    ${data.timeout.message}
                 </div>
                 <div class="prison-score">
-                    <h3>📊 Votre Score Final</h3>
+                    <h3>${data.timeout.score_header}</h3>
                     <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">
-                        ${found}/${total} indices trouvés (${percentage}%)
+                        ${data.timeout.score_text.replace('{found}', found).replace('{total}', total).replace('{percentage}', percentage)}
                     </p>
                 </div>
                 ${missedHTML ? `
                     <div class="prison-score">
-                        <h3>❌ Indices que vous avez manqués :</h3>
+                        <h3>${data.timeout.missed_clues}</h3>
                         <ul class="prison-missed-list">
                             ${missedHTML}
                         </ul>
@@ -2614,7 +2624,7 @@
                 ` : ''}
                 <div class="prison-buttons">
                     <button class="prison-btn retry" onclick="location.reload()">
-                        🔄 Réessayer
+                        ${data.timeout.retry_button}
                     </button>
                 </div>
             `;
@@ -2647,9 +2657,12 @@
             if (found === total) {
                 rating = advancedData.victory.rating.perfect;
                 emoji = '🎖️';
-            } else
+            } else if (found >= 10) {
                 rating = advancedData.victory.rating.excellent;
                 emoji = '🛡️';
+            } else {
+                rating = advancedData.victory.rating.good;
+                emoji = '👍';
             }
 
             const message = advancedData.victory.message.replace('{count}', found);
@@ -2665,7 +2678,7 @@
                     ${message}
                 </div>
                 <button class="victory-btn" onclick="closeQuizAndWindow()">
-                    ✅ Terminer
+                    ${advancedData.victory.finish_button}
                 </button>
             `;
 
@@ -2676,6 +2689,7 @@
          * Fonction globale pour afficher tous les indices (depuis l'écran prison)
          */
         function showAllClues() {
+            const data = fakeData.advanced_mode;
             const overlay = document.getElementById('prisonOverlay');
             const content = document.getElementById('prisonContent');
 
@@ -2691,9 +2705,9 @@
 
             content.innerHTML = `
                 <div class="prison-icon">📚</div>
-                <div class="prison-title">TOUS LES INDICES</div>
+                <div class="prison-title">${data.prison.all_clues_title}</div>
                 <div class="prison-message">
-                    Voici la liste complète des 15 indices de fraude présents sur ce site :
+                    ${data.prison.all_clues_message}
                 </div>
                 <div class="prison-score">
                     <ul class="prison-missed-list" style="max-height: 400px;">
@@ -2702,7 +2716,7 @@
                 </div>
                 <div class="prison-buttons">
                     <button class="prison-btn retry" onclick="location.reload()">
-                        🔄 Réessayer
+                        ${data.prison.retry_button}
                     </button>
                 </div>
             `;

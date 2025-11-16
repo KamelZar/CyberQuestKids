@@ -1,8 +1,12 @@
 {
   "welcome": {
-    "title": "Cybersecurity Workshop",
-    "subtitle": "Devoxx4Kids - Leer jezelf te beschermen in de digitale wereld",
-    "instruction": "Kies uw taal voor de start van de lessen ✨"
+    "title": "CyberQuestKids",
+    "subtitle": "Welkom!",
+    "instruction": "Kies uw taal voor de start van de lessen ✨",
+    "nameLabel": "Jouw voornaam:",
+    "namePlaceholder": "Voer je voornaam in",
+    "ageLabel": "Jouw leeftijd:",
+    "startButton": "Beginnen →"
   },
   "conditions": {
     "title": "Algemene Gebruiksvoorwaarden",

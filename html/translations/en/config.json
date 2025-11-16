@@ -1,8 +1,12 @@
 {
   "welcome": {
-    "title": "Cybersecurity Workshop",
-    "subtitle": "Devoxx4Kids - Learn to protect yourself in the digital world",
-    "instruction": "Select language to start ✨"
+    "title": "CyberQuestKids",
+    "subtitle": "Welcome!",
+    "instruction": "Select language to start ✨",
+    "nameLabel": "Your first name:",
+    "namePlaceholder": "Enter your first name",
+    "ageLabel": "Your age:",
+    "startButton": "Start →"
   },
   "conditions": {
     "title": "Terms of Use",

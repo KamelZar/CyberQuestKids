@@ -56,10 +56,82 @@
 
 ---
 
+---
+
+## 🎯 Écran de sélection
+
+### Design (Option B - Un seul écran)
+
+```
+┌─────────────────────────────────────┐
+│        🎮 CyberQuestKids            │
+├─────────────────────────────────────┤
+│                                     │
+│        Bienvenue !                  │
+│                                     │
+│  Ton prénom :                       │
+│  [________________]                 │
+│                                     │
+│  Ton âge :                          │
+│  🎚️ 6────●────────20+               │
+│         12 ans                      │
+│                                     │
+│                                     │
+│         [Commencer →]               │
+│                                     │
+├─────────────────────────────────────┤
+│      Langue : 🇫🇷 🇬🇧 🇳🇱           │
+└─────────────────────────────────────┘
+```
+
+### Logique de sélection automatique (silencieuse)
+
+**Mapping âge → niveau :**
+- **6-9 ans** → BASIC
+- **10-12 ans** → STANDARD
+- **13-20+ ans** → ADVANCED
+
+**Important :** Le niveau n'est PAS affiché à l'utilisateur pour éviter toute frustration.
+
+### Comportement
+
+**Drapeaux (footer) :**
+- Changent la langue du formulaire uniquement
+- **Ne démarrent PAS le site** (modification du comportement actuel)
+
+**Bouton "Commencer" :**
+- Seul déclencheur du démarrage du site
+- Calcule et sauvegarde le niveau automatiquement
+
+### Sauvegarde localStorage
+
+```json
+{
+  "playerName": "Alex",
+  "playerAge": 12,
+  "selectedLevel": "standard",
+  "language": "fr"
+}
+```
+
+### Améliorations futures
+
+- Permettre de modifier le niveau/profil en cours de route
+- Bouton "Changer de profil" dans les paramètres
+- Multi-profils (pour familles/classes)
+
+---
+
 ## 🚀 TODO - Implémentation
 
-- [ ] Créer écran de sélection de niveau (Basic/Standard/Advanced)
+### Écran de sélection
+- [ ] Créer écran de bienvenue avec formulaire (prénom + âge)
+- [ ] Implémenter slider d'âge (6 à 20+)
+- [ ] Ajouter drapeaux en footer (modifier comportement : ne pas démarrer)
+- [ ] Implémenter logique de mapping âge → niveau (silencieux)
+- [ ] Sauvegarder dans localStorage (playerName, playerAge, selectedLevel, language)
+
+### Filtrage du contenu
 - [ ] Implémenter logique de filtrage des carrousels
 - [ ] Adapter "Questions pour un Champion" selon le niveau
 - [ ] Tester les durées estimées pour chaque niveau
-- [ ] Ajouter système de sauvegarde du niveau choisi

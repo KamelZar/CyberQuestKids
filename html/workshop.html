@@ -939,10 +939,85 @@
             animation: fadeInUp 1s ease-out 1s forwards;
         }
 
+        /* Sélecteur d'âge */
+        .age-selector {
+            margin-top: 40px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.5s forwards;
+        }
+
+        .age-label {
+            display: block;
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .age-slider {
+            width: 300px;
+            max-width: 80%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #3498db, #2ecc71, #f39c12);
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .age-slider:hover {
+            opacity: 1;
+        }
+
+        .age-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .age-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .age-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .age-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .age-display {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #fff;
+            margin-top: 15px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
         .language-selector {
             display: flex;
             gap: 80px;
-            margin-top: 300px;
+            margin-top: 50px;
             opacity: 0;
             animation: fadeInUp 1s ease-out 2s forwards;
         }
@@ -1060,10 +1135,14 @@
     <div class="welcome-screen" id="welcomeScreen">
         <h1 class="welcome-title" traduction="welcome.title">🛡️ Cyber security Workshop</h1>
         <p class="welcome-subtitle" traduction="welcome.subtitle"> </p>
-            <div class="lock-container" id="lockContainer">
-                <img src="./png/Locked.png" alt="Workshop verrouillé" class="lock-image locked" id="lockedImage">
-                <img src="./png/Unlocked.png" alt="Workshop déverrouillé" class="lock-image unlocked" id="unlockedImage">
-            </div>
+
+        <!-- Sélecteur d'âge -->
+        <div class="age-selector">
+            <label class="age-label" traduction="welcome.ageLabel">Ton âge :</label>
+            <input type="range" id="ageSlider" class="age-slider" min="6" max="21" value="12" step="1">
+            <div class="age-display" id="ageDisplay">12 ans</div>
+        </div>
+
         <!-- Sélecteur de langue -->
         <div class="language-selector" id="languageSelector">
             <div class="language-flag flag-fr" onclick="selectLanguage('fr')" title="Français">
@@ -1646,33 +1725,18 @@
     </div>
 
     <script>
-        // === GESTION ÉCRAN D'ACCUEIL LOCKED/UNLOCKED ===
+        // === GESTION ÉCRAN D'ACCUEIL ===
         function unlockWorkshop() {
-            const lockedImage = document.getElementById('lockedImage');
-            const unlockedImage = document.getElementById('unlockedImage');
-            const lockContainer = document.getElementById('lockContainer');
             const welcomeScreen = document.getElementById('welcomeScreen');
 
-            // Désactiver le clic pour éviter les doubles clics
-            lockContainer.style.cursor = 'default';
-            lockContainer.onclick = null;
+            // Fade out de l'écran d'accueil
+            welcomeScreen.classList.add('hidden');
 
-            // Crossfade: Locked disparaît, Unlocked apparaît
-            lockedImage.classList.add('hide');
-            unlockedImage.classList.add('show');
-
-            // Après 2.5 secondes avec l'image unlocked, transition vers les CGU
+            // Après la transition, afficher les CGU
             setTimeout(() => {
-                // Fade out de l'écran d'accueil complet
-                welcomeScreen.classList.add('hidden');
-
-                // Après la transition, afficher les CGU
-                setTimeout(() => {
-                    welcomeScreen.style.display = 'none';
-                    showTermsOfService();
-                }, 800); // Durée de l'animation CSS (0.8s)
-
-            }, 2500); // Attendre 2.5 secondes avec l'image unlocked
+                welcomeScreen.style.display = 'none';
+                showTermsOfService();
+            }, 800); // Durée de l'animation CSS (0.8s)
         }
 
         function getCurrentLanguage() {
@@ -1742,17 +1806,23 @@
                 nl: {
                     title: "Cybersecurity Workshop",
                     subtitle: "Devoxx4Kids - Leer jezelf te beschermen in de digitale wereld",
-                    instruction: "Kies uw taal voor de start van de lessen ✨"
+                    instruction: "Kies uw taal voor de start van de lessen ✨",
+                    ageLabel: "Jouw leeftijd:",
+                    ageUnit: "jaar"
                 },
                 fr: {
                     title: "Cybersécurité Workshop",
                     subtitle: "Devoxx4Kids - Apprends à te protéger dans le monde numérique",
-                    instruction: "Sélectionne ta langue pour commencer ✨"
+                    instruction: "Sélectionne ta langue pour commencer ✨",
+                    ageLabel: "Ton âge :",
+                    ageUnit: "ans"
                 },
                 en: {
                     title: "Cybersecurity Workshop",
                     subtitle: "Devoxx4Kids - Learn to protect yourself in the digital world",
-                    instruction: "Select language to start ✨"
+                    instruction: "Select language to start ✨",
+                    ageLabel: "Your age:",
+                    ageUnit: "years old"
                 }
             };
 
@@ -1764,6 +1834,7 @@
             // Initialiser avec la première langue (NL)
             translations.welcome = welcomeTexts[langs[index]];
             applyTranslations();
+            updateAgeDisplay(); // Mettre à jour l'affichage de l'âge
             console.log('✅ Premier affichage (NL)');
 
             // Rotation toutes les 3 secondes (ne s'arrête QUE quand selectLanguage() est appelée)
@@ -1779,6 +1850,7 @@
 
                 // Réappliquer les traductions à l'UI
                 applyTranslations();
+                updateAgeDisplay(); // Mettre à jour l'affichage de l'âge
             }, 3000);
         }
 
@@ -1937,6 +2009,56 @@
             const savedLang = sessionStorage.getItem('workshop-language') || 'fr';
             selectLanguage(savedLang);
         }
+
+        // === GESTION DU SLIDER D'ÂGE ===
+
+        // Mettre à jour l'affichage de l'âge
+        function updateAgeDisplay() {
+            const slider = document.getElementById('ageSlider');
+            const display = document.getElementById('ageDisplay');
+            if (!slider || !display) return;
+
+            const age = parseInt(slider.value);
+
+            // Sauvegarder l'âge dans sessionStorage
+            sessionStorage.setItem('playerAge', age >= 21 ? '20+' : age);
+
+            // Calculer et sauvegarder le niveau
+            const level = getLevelFromAge(age >= 21 ? 20 : age);
+            sessionStorage.setItem('selectedLevel', level);
+
+            // Affichage selon la langue (utilise les traductions)
+            if (age >= 21) {
+                display.textContent = '20+';
+            } else {
+                const ageUnit = getTranslation('welcome.ageUnit') || 'ans';
+                display.textContent = `${age} ${ageUnit}`;
+            }
+        }
+
+        // Calculer le niveau basé sur l'âge
+        function getLevelFromAge(age) {
+            if (age < 10) return 'basic';
+            if (age < 13) return 'standard';
+            return 'advanced';
+        }
+
+        // Initialiser le slider d'âge
+        function initAgeSlider() {
+            const slider = document.getElementById('ageSlider');
+            if (!slider) return;
+
+            // Gérer le changement du slider
+            slider.addEventListener('input', updateAgeDisplay);
+
+            // Initialiser l'affichage
+            updateAgeDisplay();
+        }
+
+        // Initialiser au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            initAgeSlider();
+        });
 
         class CarouselWorkshop {
             constructor() {

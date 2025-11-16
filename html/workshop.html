@@ -1676,7 +1676,7 @@
         }
 
         function getCurrentLanguage() {
-            return localStorage.getItem('workshop-language')|| 'en';
+            return sessionStorage.getItem('workshop-language')|| 'en';
         }
 
         function showTermsOfService() {
@@ -1906,8 +1906,8 @@
             // Arrêter la rotation des textes de bienvenue
             stopWelcomeRotation();
 
-            // Sauvegarder le choix en localStorage
-            localStorage.setItem('workshop-language', lang);
+            // Sauvegarder le choix en sessionStorage
+            sessionStorage.setItem('workshop-language', lang);
 
             // Mettre à jour l'interface visuelle
             document.querySelectorAll('.language-flag').forEach(flag => {
@@ -1934,7 +1934,7 @@
 
         // Initialiser la langue au chargement
         function initializeLanguage() {
-            const savedLang = localStorage.getItem('workshop-language') || 'fr';
+            const savedLang = sessionStorage.getItem('workshop-language') || 'fr';
             selectLanguage(savedLang);
         }
 
@@ -2117,8 +2117,8 @@
                         initQuestionsChampionGame();
                         break;
                     case 'site-suspect':
-                        // Récupérer le niveau depuis localStorage (par défaut: standard)
-                        const currentLevel = localStorage.getItem('cyberquest_level') || 'standard';
+                        // Récupérer le niveau depuis sessionStorage (par défaut: standard)
+                        const currentLevel = sessionStorage.getItem('cyberquest_level') || 'standard';
                         const promoLink = getTranslation('carousel.promo.link');
                         window.open(`${promoLink}?level=${currentLevel}`, '_blank');
                         break;
@@ -3570,8 +3570,8 @@
         }
         
         function simulateDataBreach(data) {
-            // Stocker dans localStorage pour montrer la persistance
-            localStorage.setItem('compromisedData', JSON.stringify(data));
+            // Stocker dans sessionStorage pour montrer la persistance
+            sessionStorage.setItem('compromisedData', JSON.stringify(data));
             
             // Animation du cheval qui galope avec les données
             createGallopingAnimation(data);

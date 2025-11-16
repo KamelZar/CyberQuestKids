@@ -1058,8 +1058,8 @@
 <body>
     <!-- === ÉCRAN D'ACCUEIL LOCKED/UNLOCKED === -->
     <div class="welcome-screen" id="welcomeScreen">
-        <h1 class="welcome-title">🛡️ Cyber security Workshop</h1>
-        <p class="welcome-subtitle"  traduction="welcome.subtitle"> </p>
+        <h1 class="welcome-title" traduction="welcome.title">🛡️ Cyber security Workshop</h1>
+        <p class="welcome-subtitle" traduction="welcome.subtitle"> </p>
             <div class="lock-container" id="lockContainer">
                 <img src="./png/Locked.png" alt="Workshop verrouillé" class="lock-image locked" id="lockedImage">
                 <img src="./png/Unlocked.png" alt="Workshop déverrouillé" class="lock-image unlocked" id="unlockedImage">
@@ -1733,10 +1733,66 @@
             }
         }
 
-        loadTranslations('en').then(() => {
+        // === ROTATION DES TEXTES DE BIENVENUE (MULTILINGUE) ===
+        let welcomeRotationInterval = null; // Variable globale pour pouvoir l'arrêter
+
+        function minimalTranslations() {
+            // Textes hardcodés pour les 3 langues
+            const welcomeTexts = {
+                nl: {
+                    title: "Cybersecurity Workshop",
+                    subtitle: "Devoxx4Kids - Leer jezelf te beschermen in de digitale wereld",
+                    instruction: "Kies uw taal voor de start van de lessen ✨"
+                },
+                fr: {
+                    title: "Cybersécurité Workshop",
+                    subtitle: "Devoxx4Kids - Apprends à te protéger dans le monde numérique",
+                    instruction: "Sélectionne ta langue pour commencer ✨"
+                },
+                en: {
+                    title: "Cybersecurity Workshop",
+                    subtitle: "Devoxx4Kids - Learn to protect yourself in the digital world",
+                    instruction: "Select language to start ✨"
+                }
+            };
+
+            const langs = ['nl', 'fr', 'en'];
+            let index = 0;
+
+            console.log('🔄 Démarrage rotation bienvenue');
+
+            // Initialiser avec la première langue (NL)
+            translations.welcome = welcomeTexts[langs[index]];
             applyTranslations();
-            generateTOSContent();
-        });
+            console.log('✅ Premier affichage (NL)');
+
+            // Rotation toutes les 3 secondes (ne s'arrête QUE quand selectLanguage() est appelée)
+            welcomeRotationInterval = setInterval(() => {
+                // Passer à la langue suivante
+                index = (index + 1) % langs.length;
+                const currentLang = langs[index];
+
+                console.log('🔄 Changement vers:', currentLang);
+
+                // Mettre à jour l'objet translations global
+                translations.welcome = welcomeTexts[currentLang];
+
+                // Réappliquer les traductions à l'UI
+                applyTranslations();
+            }, 3000);
+        }
+
+        // Fonction pour arrêter la rotation (appelée par selectLanguage)
+        function stopWelcomeRotation() {
+            if (welcomeRotationInterval) {
+                console.log('🛑 Rotation arrêtée');
+                clearInterval(welcomeRotationInterval);
+                welcomeRotationInterval = null;
+            }
+        }
+
+        // Lancer la rotation des textes de bienvenue
+        minimalTranslations();
 
         // Fonction pour générer dynamiquement le contenu des CGU
         function generateTOSContent() {
@@ -1847,6 +1903,9 @@
         }
 
         function selectLanguage(lang) {
+            // Arrêter la rotation des textes de bienvenue
+            stopWelcomeRotation();
+
             // Sauvegarder le choix en localStorage
             localStorage.setItem('workshop-language', lang);
 

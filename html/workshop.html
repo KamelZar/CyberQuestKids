@@ -1739,6 +1739,77 @@
 
     <script>
         // === GESTION ÉCRAN D'ACCUEIL ===
+
+        // Variables globales pour le système de niveaux
+        let currentLevelConfig = null;
+        let gameTypeToIndexMap = {}; // Mapping gameType → index réel après filtrage
+
+        async function startWorkshop() {
+            try {
+                console.log('🚀 Démarrage du workshop...');
+
+                // Récupérer le niveau calculé depuis sessionStorage
+                const selectedLevel = sessionStorage.getItem('selectedLevel') || 'standard';
+                console.log(`📊 Niveau sélectionné : ${selectedLevel}`);
+
+                // Charger level.json depuis GitHub
+                const response = await fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/level.json');
+                const levelData = await response.json();
+                currentLevelConfig = levelData[selectedLevel];
+
+                console.log(`✅ Configuration du niveau chargée:`, currentLevelConfig);
+
+                // Filtrer les carrousels : SUPPRIMER du DOM ceux non autorisés
+                filterCarouselsFromDOM();
+
+                // Déverrouiller l'interface
+                unlockWorkshop();
+
+            } catch (error) {
+                console.error('❌ Erreur lors du démarrage:', error);
+                console.log('🛡️ Mode résilient : affichage de tous les carrousels');
+                // En cas d'erreur, mode advanced (tout afficher)
+                currentLevelConfig = { carousels: 'all', questions: 'all' };
+                unlockWorkshop();
+            }
+        }
+
+        function filterCarouselsFromDOM() {
+            const carouselItems = document.querySelectorAll('.carousel-item');
+
+            console.log(`🔍 Filtrage des carrousels (${carouselItems.length} total)`);
+
+            let newIndex = 0;
+            gameTypeToIndexMap = {}; // Reset du mapping
+
+            carouselItems.forEach((item) => {
+                const gameType = item.getAttribute('data-game');
+
+                // Déterminer si ce carrousel doit être visible
+                const shouldBeVisible = currentLevelConfig.carousels === 'all' ||
+                                       currentLevelConfig.carousels.includes(gameType);
+
+                if (shouldBeVisible) {
+                    // Garder cet élément et créer le mapping
+                    gameTypeToIndexMap[gameType] = newIndex;
+                    item.setAttribute('data-filtered-index', newIndex);
+                    console.log(`✅ Carrousel "${gameType}" conservé (index ${newIndex})`);
+                    newIndex++;
+                } else {
+                    // SUPPRIMER cet élément du DOM
+                    console.log(`❌ Carrousel "${gameType}" supprimé`);
+                    item.remove();
+                }
+            });
+
+            console.log(`✅ Filtrage terminé : ${newIndex} carrousels visibles`);
+            console.log(`📋 Mapping gameType → index:`, gameTypeToIndexMap);
+
+            // Créer le CarouselWorkshop APRÈS le filtrage
+            console.log('🎠 Initialisation du carrousel avec les éléments filtrés...');
+            window.carouselWorkshop = new CarouselWorkshop();
+        }
+
         function unlockWorkshop() {
             const welcomeScreen = document.getElementById('welcomeScreen');
 
@@ -2016,8 +2087,8 @@
                 generateTOSContent();
             });
 
-            // Puis déverrouiller le workshop
-            unlockWorkshop();
+            // Puis démarrer le workshop (filtrage + déverrouillage)
+            startWorkshop();
         }
 
         // Initialiser la langue au chargement
@@ -2083,9 +2154,11 @@
                 this.items = document.querySelectorAll('.carousel-item');
                 this.indicators = document.querySelectorAll('.indicator');
                 this.totalItems = this.items.length;
-                
+
                 // Système de tracking pour Fantasy Quest unlock
-                this.visitedActivities = new Array(9).fill(false); // [0-8] activities
+                // Dynamique : nombre de carrousels - 1 (Fantasy Quest est toujours le dernier)
+                this.visitedActivities = new Array(Math.max(0, this.totalItems - 1)).fill(false);
+                console.log(`📊 Tracking initialisé pour ${this.visitedActivities.length} activités (hors Fantasy Quest)`);
                 this.fantasyQuestUnlocked = false;
                 this.fantasyQuestPlayed = false; // Tracking si Fantasy Quest a été joué
                 this.webcamEasterEggActivated = false; // Tracking de l'easter egg webcam
@@ -2265,9 +2338,26 @@
             }
 
             // === SYSTÈME FANTASY QUEST UNLOCK ===
+
+            // Helper pour obtenir l'index réel d'un carrousel par son gameType
+            getIndexByGameType(gameType) {
+                return gameTypeToIndexMap[gameType];
+            }
+
+            // Marquer une activité comme visitée par gameType (plus robuste que par index)
+            markActivityVisitedByType(gameType) {
+                const index = this.getIndexByGameType(gameType);
+                if (index !== undefined && index < this.totalItems - 1 && !this.visitedActivities[index]) {
+                    this.visitedActivities[index] = true;
+                    console.log(`✅ Activité "${gameType}" (index ${index}) marquée comme visitée`);
+                    this.updateCompletionStars();
+                }
+            }
+
+            // Ancienne fonction markActivityVisited (toujours utilisée pour la navigation)
             markActivityVisited(index) {
-                // Ne pas marquer Fantasy Quest lui-même (index 7)
-                if (index < 9 && !this.visitedActivities[index]) {
+                // Ne pas marquer Fantasy Quest (dernier élément)
+                if (index < this.totalItems - 1 && !this.visitedActivities[index]) {
                     this.visitedActivities[index] = true;
                     console.log(`Activité ${index} marquée comme visitée`);
                     this.updateCompletionStars();
@@ -2275,10 +2365,11 @@
             }
 
             updateCompletionStars() {
-                // Parcourir tous les items du carrousel
+                // Parcourir tous les items du carrousel (sauf Fantasy Quest qui est le dernier)
                 this.items.forEach((item, index) => {
                     const star = item.querySelector('.completion-star');
-                    if (star && index < 9) { // Ne pas traiter Fantasy Quest (index 9)
+                    // Ne pas traiter Fantasy Quest (dernier élément)
+                    if (star && index < this.totalItems - 1) {
                         if (this.visitedActivities[index]) {
                             star.classList.remove('hidden');
                         } else {
@@ -2289,11 +2380,14 @@
             }
 
             checkFantasyQuestUnlock() {
-                // Vérifier si toutes les activités 0-8 ont été visitées
+                // Vérifier si toutes les activités visibles (après filtrage) ont été visitées
                 // Pour les vidéos, vérifier aussi le timer de 1 minute
                 let allActivitiesCompleted = true;
 
-                for (let i = 0; i < 9; i++) {
+                // Parcourir tous les carrousels SAUF Fantasy Quest (le dernier)
+                const activitiesCount = this.totalItems - 1;
+
+                for (let i = 0; i < activitiesCount; i++) {
                     if (this.isVideoActivity(i)) {
                         // Pour les vidéos, vérifier qu'elles ont été regardées 1 minute
                         const videoWatched = this.videosWatched.has(i);
@@ -2311,8 +2405,8 @@
                     }
                 }
 
-                // console.log(`🎯 Toutes activités complétées: ${allActivitiesCompleted}`);
-                // console.log(`🔒 Fantasy Quest déjà débloqué: ${this.fantasyQuestUnlocked}`);
+                console.log(`🎯 [${activitiesCount} activités] Toutes complétées: ${allActivitiesCompleted}`);
+                console.log(`🔒 Fantasy Quest déjà débloqué: ${this.fantasyQuestUnlocked}`);
 
                 if (!this.fantasyQuestUnlocked && allActivitiesCompleted) {
                     console.log('🎉 DÉBLOQUAGE DE FANTASY QUEST !');
@@ -2327,7 +2421,8 @@
             }
 
             unlockFantasyQuest() {
-                const fantasyQuestItem = document.querySelector('[data-index="9"]');
+                // Fantasy Quest est toujours le dernier carrousel après filtrage
+                const fantasyQuestItem = this.items[this.totalItems - 1];
                 if (fantasyQuestItem) {
                     // Animation d'unlock
                     fantasyQuestItem.style.transition = 'all 1s ease';
@@ -2647,7 +2742,7 @@
             document.getElementById('passwordOverlay').style.display = 'none';
             // Marquer comme visité seulement si mot de passe valide
             if (isPasswordValid()) {
-                window.carouselWorkshop.markActivityVisited(2); // Password Fortress = index 2
+                window.carouselWorkshop.markActivityVisitedByType('password-fortress');
             }
         }
 
@@ -3067,7 +3162,7 @@
             document.getElementById('emailOverlay').style.display = 'none';
             // Marquer comme visité seulement si toutes les erreurs ont été trouvées
             if (window.currentEmail && window.foundErrors >= window.currentEmail.totalErrors) {
-                window.carouselWorkshop.markActivityVisited(3); // Email Piège = index 3
+                window.carouselWorkshop.markActivityVisitedByType('email-phishing');
             }
         }
 
@@ -3345,7 +3440,7 @@
             document.getElementById('wifiOverlay').style.display = 'none';
             // Marquer comme visité seulement si un WiFi a été sélectionné
             if (isWifiSelected()) {
-                window.carouselWorkshop.markActivityVisited(4); // WiFi Piège = index 4
+                window.carouselWorkshop.markActivityVisitedByType('wifi-trap');
             }
         }
 
@@ -3543,10 +3638,8 @@
             }
         }
 
-        // Initialiser le carrousel
-        document.addEventListener('DOMContentLoaded', () => {
-            window.carouselWorkshop = new CarouselWorkshop();
-        });
+        // Le carrousel sera initialisé après le filtrage des niveaux
+        // (voir filterCarouselsFromDOM)
 
         // === SYSTÈME TERMS OF SERVICE ===
         
@@ -4328,7 +4421,7 @@
             document.getElementById('questionsChampionOverlay').style.display = 'none';
             // Marquer comme visité seulement si 5 questions ont été répondues
             if (questionsAnswered >= 5) {
-                window.carouselWorkshop.markActivityVisited(7); // Questions Champion = index 7
+                window.carouselWorkshop.markActivityVisitedByType('questions-champion');
             }
         }
     </script>

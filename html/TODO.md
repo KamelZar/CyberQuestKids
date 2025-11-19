@@ -134,4 +134,6 @@
 ### Filtrage du contenu
 - [ ] Implémenter logique de filtrage des carrousels
 - [ ] Adapter "Questions pour un Champion" selon le niveau
+- [ ] **CRITIQUE** : Modifier `checkFantasyQuestUnlock()` pour vérifier UNIQUEMENT les carrousels visibles selon le niveau (actuellement hardcodé 0-8)
+- [ ] **CRITIQUE** : S'assurer que la cérémonie (easter egg) se déclenche correctement avec les carrousels filtrés
 - [ ] Tester les durées estimées pour chaque niveau

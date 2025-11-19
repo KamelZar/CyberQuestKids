@@ -1852,7 +1852,7 @@
         async function loadTranslations(lang) {
             try {
                 console.log(`Chargement des traductions ${lang}...`);
-                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${lang}/config.json`);;
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/config.json`);;
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -1873,7 +1873,7 @@
         async function loadPhishingEmails(lang) {
             try {
                 console.log(`Chargement des emails de phishing ${lang}...`);
-                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${lang}/phishing-emails.json`);
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/phishing-emails.json`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -4197,7 +4197,7 @@
 
             const currentLang = getCurrentLanguage();
             try {
-                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/translations/html/translations/${currentLang}/champion.json`);
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${currentLang}/champion.json`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

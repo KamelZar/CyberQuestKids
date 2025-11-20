@@ -13,7 +13,7 @@
 
         body {
             min-height: 100vh;
-            background: url('./png/background.png') center/cover no-repeat;
+            background: url('../../png/background.png') center/cover no-repeat;
             background-attachment: fixed;
             overflow: hidden;
             font-family: 'Georgia', serif;
@@ -932,12 +932,12 @@
                 console.log('Dark mode activated!');
                 
                 // Changer le background
-                document.body.style.backgroundImage = "url('./png/evil.png')";
+                document.body.style.backgroundImage = "url('../../png/evil.png')";
                 
                 // Changer la musique
                 const audio = document.getElementById('backgroundMusic');
                 audio.pause();
-                audio.src = './mp3/vilains.mp3';
+                audio.src = '../../mp3/vilains.mp3';
                 audio.load();
                 
                 // Redémarrer la musique

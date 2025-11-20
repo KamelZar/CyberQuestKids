@@ -21,10 +21,41 @@ This educational project was created for pedagogical purposes to introduce child
 
 ## 🚀 Usage
 
-1. Open the `html/workshop.html` file in a web browser
-2. Navigate through the different activities
-3. Complete all activities to unlock the final quest
-4. Explore and learn!
+### 🌐 Online Access (Recommended)
+
+The workshop is accessible online via GitHub Pages:
+
+**👉 [https://kamelzar.github.io/CyberQuestKids/html/workshop.html](https://kamelzar.github.io/CyberQuestKids/html/workshop.html)**
+
+No installation required! Simply click the link and start exploring cybersecurity concepts.
+
+### 💻 Local Development
+
+For developers who want to run the project locally:
+
+⚠️ **Important**: This project requires an HTTP server to work correctly (YouTube embedded videos don't work with `file:///` protocol).
+
+**Option 1: Python HTTP Server**
+```bash
+cd html
+python3 -m http.server 8000
+```
+Then open: `http://localhost:8000/workshop.html`
+
+**Option 2: VS Code Live Server**
+- Install the "Live Server" extension
+- Right-click on `workshop.html` → "Open with Live Server"
+
+**Option 3: Node.js HTTP Server**
+```bash
+npx http-server html -p 8000
+```
+
+### 🎮 How to Use
+
+1. Navigate through the different activities
+2. Complete all activities to unlock the final quest
+3. Explore and learn!
 
 ## 📚 Project Structure
 

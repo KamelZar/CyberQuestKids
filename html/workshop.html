@@ -2351,7 +2351,7 @@
                         break;
                     case 'site-suspect':
                         // Récupérer le niveau depuis sessionStorage (par défaut: standard)
-                        const currentLevel = sessionStorage.getItem('cyberquest_level') || 'standard';
+                        const currentLevel = sessionStorage.getItem('selectedLevel') || 'standard';
                         const promoLink = getTranslation('carousel.promo.link');
                         window.open(`${promoLink}?level=${currentLevel}`, '_blank');
                         break;

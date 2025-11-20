@@ -4292,12 +4292,54 @@
             }
         }
 
+        // Récupère les catégories disponibles selon le niveau
+        function getAvailableCategories() {
+            if (!currentLevelConfig || !currentLevelConfig.questions) {
+                return ['ai', 'protection', 'mobile', 'passwords', 'anecdotes'];
+            }
+
+            if (currentLevelConfig.questions === 'all') {
+                return ['ai', 'protection', 'mobile', 'passwords', 'anecdotes'];
+            }
+
+            return Object.keys(currentLevelConfig.questions);
+        }
+
+        // Filtre et limite les questions selon le niveau
+        function filterAndLimitQuestionsByLevel() {
+            if (!currentLevelConfig || !currentLevelConfig.questions) return;
+
+            if (currentLevelConfig.questions === 'all') return; // Pas de filtrage pour advanced
+
+            // Pour basic et standard, limiter le nombre de questions par catégorie
+            const questionsConfig = currentLevelConfig.questions;
+
+            Object.keys(questionsConfig).forEach(category => {
+                if (questionsData[category] && questionsData[category].questions) {
+                    const limit = questionsConfig[category];
+                    // Mélanger d'abord pour avoir une sélection aléatoire
+                    questionsData[category].questions = shuffleQuestionsArray(questionsData[category].questions);
+                    // Puis limiter au nombre défini
+                    questionsData[category].questions = questionsData[category].questions.slice(0, limit);
+                    console.log(`🎯 Catégorie "${category}" limitée à ${limit} questions`);
+                }
+            });
+        }
+
         // Initialisation du système de questions depuis le fichier JSON
         async function initQuestionsChampionGame() {
             // Charger les questions depuis le fichier JSON
             await loadQuestionsData();
 
-            questionsCurrentCategory = 'ai';
+            // Filtrer et limiter les questions selon le niveau
+            filterAndLimitQuestionsByLevel();
+
+            // Déterminer les catégories disponibles
+            const availableCategories = getAvailableCategories();
+            console.log(`📚 Catégories disponibles : ${availableCategories.join(', ')}`);
+
+            // Définir la première catégorie active parmi celles disponibles
+            questionsCurrentCategory = availableCategories[0];
             questionsCurrentQuestion = 0;
             questionsCorrectAnswers = 0;
             questionsAnswered = 0;
@@ -4316,20 +4358,31 @@
 
         function updateQuestionsSidebar() {
             // Cette fonction met à jour les titres et icônes de la sidebar depuis les données JSON
-            const categories = ['ai', 'protection', 'mobile', 'passwords', 'anecdotes'];
+            const allCategories = ['ai', 'protection', 'mobile', 'passwords', 'anecdotes'];
+            const availableCategories = getAvailableCategories();
             const menuItems = document.querySelectorAll('.questions-menu-item');
 
-            categories.forEach((category, index) => {
-                if (menuItems[index] && questionsData[category]) {
-                    const data = questionsData[category];
-                    // Sélecteurs corrigés pour la vraie structure HTML
-                    const iconSpan = menuItems[index].querySelector('div > span:first-child');
-                    const titleDiv = menuItems[index].querySelector('div > div:first-child > div:first-child');
-                    const descDiv = menuItems[index].querySelector('div > div:first-child > div:last-child');
+            allCategories.forEach((category, index) => {
+                if (menuItems[index]) {
+                    if (availableCategories.includes(category)) {
+                        // Afficher cette catégorie
+                        menuItems[index].style.display = 'block';
 
-                    if (iconSpan && data.icon) iconSpan.textContent = data.icon;
-                    if (titleDiv && data.title) titleDiv.textContent = data.title;
-                    if (descDiv && data.description) descDiv.textContent = data.description;
+                        if (questionsData[category]) {
+                            const data = questionsData[category];
+                            // Sélecteurs corrigés pour la vraie structure HTML
+                            const iconSpan = menuItems[index].querySelector('div > span:first-child');
+                            const titleDiv = menuItems[index].querySelector('div > div:first-child > div:first-child');
+                            const descDiv = menuItems[index].querySelector('div > div:first-child > div:last-child');
+
+                            if (iconSpan && data.icon) iconSpan.textContent = data.icon;
+                            if (titleDiv && data.title) titleDiv.textContent = data.title;
+                            if (descDiv && data.description) descDiv.textContent = data.description;
+                        }
+                    } else {
+                        // Cacher cette catégorie
+                        menuItems[index].style.display = 'none';
+                    }
                 }
             });
         }

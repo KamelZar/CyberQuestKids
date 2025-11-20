@@ -2167,6 +2167,11 @@
                 this.indicators = document.querySelectorAll('.indicator');
                 this.totalItems = this.items.length;
 
+                // Récupérer le niveau sélectionné et sa configuration
+                this.selectedLevel = sessionStorage.getItem('selectedLevel') || 'standard';
+                this.levelConfig = currentLevelConfig;
+                console.log(`🎯 Niveau actuel : ${this.selectedLevel}`, this.levelConfig);
+
                 // Système de tracking pour Fantasy Quest unlock
                 // Dynamique : nombre de carrousels - 1 (Fantasy Quest est toujours le dernier)
                 this.visitedActivities = new Array(Math.max(0, this.totalItems - 1)).fill(false);
@@ -2174,15 +2179,19 @@
                 this.fantasyQuestUnlocked = false;
                 this.fantasyQuestPlayed = false; // Tracking si Fantasy Quest a été joué
                 this.webcamEasterEggActivated = false; // Tracking de l'easter egg webcam
+                this.ceremonyUnlocked = false; // Tracking si la cérémonie a été débloquée
 
                 // Système de timers pour validation vidéos (1 min minimum)
                 this.videoTimers = {}; // {activityIndex: {startTime, timeoutId}}
                 this.videosWatched = new Set(); // Activités vidéo validées
 
-                // Timer périodique pour vérifier le débloquage Fantasy Quest
+                // Timer périodique pour vérifier le débloquage Fantasy Quest et cérémonie
                 this.unlockCheckInterval = setInterval(() => {
                     if (!this.fantasyQuestUnlocked) {
                         this.checkFantasyQuestUnlock();
+                    }
+                    if (!this.ceremonyUnlocked) {
+                        this.checkCeremonyUnlock();
                     }
                 }, 5000); // Vérification toutes les 5 secondes
 
@@ -2583,8 +2592,19 @@
             }
 
             checkCeremonyUnlock() {
-                // Vérifier si Fantasy Quest a été joué ET l'easter egg webcam activé
-                if (this.fantasyQuestPlayed && this.webcamEasterEggActivated) {
+                if (this.ceremonyUnlocked) return;
+
+                const unlockType = this.levelConfig?.ceremonyUnlock || 'fantasy-quest-and-webcam';
+                let conditionMet = false;
+
+                if (unlockType === 'basic-activities') {
+                    conditionMet = this.fantasyQuestUnlocked;
+                } else {
+                    conditionMet = this.fantasyQuestPlayed && this.webcamEasterEggActivated;
+                }
+
+                if (conditionMet) {
+                    this.ceremonyUnlocked = true;
                     console.log('🎆 All conditions met! Opening ceremony...');
                     
                     // Afficher message de félicitations avec bouton vers la cérémonie

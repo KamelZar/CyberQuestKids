@@ -1760,16 +1760,16 @@
                 return;
             }
 
-            // Afficher le QCM après 45 secondes
+            // Afficher le QCM après 25 secondes
             let quizShown = false;
 
-            // Déclenchement après 45 secondes
+            // Déclenchement après 25 secondes
             setTimeout(() => {
                 if (!quizShown) {
                     quizShown = true;
                     showBasicQuiz(data.basic_mode);
                 }
-            }, 15000); // 45 secondes
+            }, 25000); // 25 secondes
         }
 
         /**

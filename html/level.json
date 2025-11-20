@@ -1,6 +1,7 @@
 {
   "basic": {
     "duration": "~10 min",
+    "ceremonyUnlock": "basic-activities",
     "cgu": {
       "clue": "bold"
     },
@@ -19,6 +20,7 @@
   },
   "standard": {
     "duration": "~20 min",
+    "ceremonyUnlock": "fantasy-quest-and-webcam",
     "cgu": {
       "clue": "standard"
     },
@@ -42,6 +44,7 @@
   },
   "advanced": {
     "duration": "~40 min",
+    "ceremonyUnlock": "fantasy-quest-and-webcam",
     "cgu": {
       "clue": "small"
     },

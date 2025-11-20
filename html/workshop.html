@@ -1748,7 +1748,7 @@
 
         // Variables globales pour le système de niveaux
         let currentLevelConfig = null;
-        let gameTypeToIndexMap = {}; // Mapping gameType → index réel après filtrage
+        window.carouselsConfig = null; // Configuration des carrousels (isVideo, isSpecial, etc.)
 
         async function startWorkshop() {
             try {
@@ -1759,11 +1759,17 @@
                 console.log(`📊 Niveau sélectionné : ${selectedLevel}`);
 
                 // Charger level.json depuis GitHub
-                const response = await fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/level.json');
-                const levelData = await response.json();
+                const levelResponse = await fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/level.json');
+                const levelData = await levelResponse.json();
                 currentLevelConfig = levelData[selectedLevel];
 
                 console.log(`✅ Configuration du niveau chargée:`, currentLevelConfig);
+
+                // Charger carousels-config.json depuis GitHub
+                const carouselsResponse = await fetch('https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/carousels-config.json');
+                window.carouselsConfig = await carouselsResponse.json();
+
+                console.log(`✅ Configuration des carrousels chargée:`, window.carouselsConfig);
 
                 // Filtrer les carrousels : SUPPRIMER du DOM ceux non autorisés
                 filterCarouselsFromDOM();
@@ -1786,7 +1792,7 @@
             console.log(`🔍 Filtrage des carrousels (${carouselItems.length} total)`);
 
             let newIndex = 0;
-            gameTypeToIndexMap = {}; // Reset du mapping
+            window.gameTypeToIndexMap = {}; // Reset du mapping - exposé globalement
 
             carouselItems.forEach((item) => {
                 const gameType = item.getAttribute('data-game');
@@ -1797,7 +1803,7 @@
 
                 if (shouldBeVisible) {
                     // Garder cet élément et créer le mapping
-                    gameTypeToIndexMap[gameType] = newIndex;
+                    window.gameTypeToIndexMap[gameType] = newIndex;
                     item.setAttribute('data-filtered-index', newIndex);
                     console.log(`✅ Carrousel "${gameType}" conservé (index ${newIndex})`);
                     newIndex++;
@@ -1809,7 +1815,7 @@
             });
 
             console.log(`✅ Filtrage terminé : ${newIndex} carrousels visibles`);
-            console.log(`📋 Mapping gameType → index:`, gameTypeToIndexMap);
+            console.log(`📋 Mapping gameType → index:`, window.gameTypeToIndexMap);
 
             // Créer le CarouselWorkshop APRÈS le filtrage
             console.log('🎠 Initialisation du carrousel avec les éléments filtrés...');
@@ -2347,7 +2353,7 @@
 
             // Helper pour obtenir l'index réel d'un carrousel par son gameType
             getIndexByGameType(gameType) {
-                return gameTypeToIndexMap[gameType];
+                return window.gameTypeToIndexMap[gameType];
             }
 
             // Marquer une activité comme visitée par gameType (plus robuste que par index)
@@ -2386,17 +2392,39 @@
             }
 
             checkFantasyQuestUnlock() {
-                // Vérifier si toutes les activités visibles (après filtrage) ont été visitées
+                // Vérifier si toutes les activités (SAUF les spéciales) ont été visitées
                 // Pour les vidéos, vérifier aussi le timer de 1 minute
                 let allActivitiesCompleted = true;
+                let regularActivitiesCount = 0;
 
-                // Parcourir tous les carrousels SAUF Fantasy Quest (le dernier)
-                const activitiesCount = this.totalItems - 1;
+                console.log(`🔍 DEBUG Fantasy Quest unlock:`);
+                console.log(`   Total items: ${this.totalItems}`);
+                console.log(`   visitedActivities:`, this.visitedActivities);
+                console.log(`   videosWatched:`, Array.from(this.videosWatched));
 
-                for (let i = 0; i < activitiesCount; i++) {
+                // Parcourir tous les carrousels
+                for (let i = 0; i < this.totalItems; i++) {
+                    const carouselItem = this.items[i];
+                    if (!carouselItem) continue;
+
+                    const gameType = carouselItem.getAttribute('data-game');
+
+                    // Vérifier si c'est un carrousel spécial (comme Fantasy Quest)
+                    const isSpecial = window.carouselsConfig &&
+                                     window.carouselsConfig[gameType] &&
+                                     window.carouselsConfig[gameType].isSpecial === true;
+
+                    if (isSpecial) {
+                        console.log(`   [${i}] "${gameType}" - Spécial (ignoré)`);
+                        continue; // Ignorer les carrousels spéciaux
+                    }
+
+                    regularActivitiesCount++;
+
                     if (this.isVideoActivity(i)) {
                         // Pour les vidéos, vérifier qu'elles ont été regardées 1 minute
                         const videoWatched = this.videosWatched.has(i);
+                        console.log(`   [${i}] "${gameType}" - Vidéo - Regardée: ${videoWatched}`);
                         if (!videoWatched) {
                             allActivitiesCompleted = false;
                             break;
@@ -2404,6 +2432,7 @@
                     } else {
                         // Pour les autres activités, vérifier le système classique
                         const activityVisited = this.visitedActivities[i];
+                        console.log(`   [${i}] "${gameType}" - Activité - Visitée: ${activityVisited}`);
                         if (!activityVisited) {
                             allActivitiesCompleted = false;
                             break;
@@ -2411,7 +2440,7 @@
                     }
                 }
 
-                console.log(`🎯 [${activitiesCount} activités] Toutes complétées: ${allActivitiesCompleted}`);
+                console.log(`🎯 [${regularActivitiesCount} activités régulières] Toutes complétées: ${allActivitiesCompleted}`);
                 console.log(`🔒 Fantasy Quest déjà débloqué: ${this.fantasyQuestUnlocked}`);
 
                 if (!this.fantasyQuestUnlocked && allActivitiesCompleted) {
@@ -2537,8 +2566,20 @@
             }
 
             isVideoActivity(activityIndex) {
-                // Activités vidéo : Confidentialité (0), Deepfake (1), Réseaux Sociaux (5)
-                return [0, 1, 5].includes(activityIndex);
+                // Récupérer le gameType de l'élément à cet index
+                const carouselItem = this.items[activityIndex];
+                if (!carouselItem) return false;
+
+                const gameType = carouselItem.getAttribute('data-game');
+
+                // Utiliser la configuration dynamique des carrousels
+                if (window.carouselsConfig && window.carouselsConfig[gameType]) {
+                    return window.carouselsConfig[gameType].isVideo === true;
+                }
+
+                // Fallback si la config n'est pas chargée
+                console.warn(`⚠️ Config manquante pour le carrousel "${gameType}"`);
+                return false;
             }
 
             checkCeremonyUnlock() {
@@ -3594,8 +3635,9 @@
         function openSocialMediaVideo() {
             document.getElementById('socialMediaVideo').src = getTranslation('carousel.social.tab.link');
             // Démarrer timer de 1 minute pour validation
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.startVideoTimer(5); // Réseaux Sociaux = index 5
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['social-media-video'];
+                window.carouselWorkshop.startVideoTimer(index);
             }
         }
 
@@ -3603,16 +3645,18 @@
             document.getElementById('socialMediaVideo').src = '';
             document.getElementById('socialMediaOverlay').style.display = 'none';
             // Arrêter le timer vidéo
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.stopVideoTimer(5);
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['social-media-video'];
+                window.carouselWorkshop.stopVideoTimer(index);
             }
         }
 
         function openConfidentialityVideo() {
             document.getElementById('confidentialityVideo').src = getTranslation('carousel.confidentiality.tab.link');
             // Démarrer timer de 1 minute pour validation
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.startVideoTimer(0); // Confidentialité = index 0
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['confidential'];
+                window.carouselWorkshop.startVideoTimer(index);
             }
         }
 
@@ -3620,8 +3664,9 @@
             document.getElementById('confidentialityVideo').src = '';
             document.getElementById('confidentialityOverlay').style.display = 'none';
             // Arrêter le timer vidéo
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.stopVideoTimer(0);
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['confidential'];
+                window.carouselWorkshop.stopVideoTimer(index);
             }
         }
 
@@ -3630,8 +3675,9 @@
             // Utilise la playlist DiepNep avec 4 vidéos d'environ 1min chacune
             document.getElementById('deepfakeVideo').src = getTranslation('carousel.deepfake.tab.link');
             // Démarrer timer de 1 minute pour validation
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.startVideoTimer(1); // Deepfake = index 1
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['deepfake'];
+                window.carouselWorkshop.startVideoTimer(index);
             }
         }
 
@@ -3639,8 +3685,9 @@
             document.getElementById('deepfakeVideo').src = '';
             document.getElementById('deepfakeOverlay').style.display = 'none';
             // Arrêter le timer vidéo
-            if (window.carouselWorkshop) {
-                window.carouselWorkshop.stopVideoTimer(1);
+            if (window.carouselWorkshop && window.gameTypeToIndexMap) {
+                const index = window.gameTypeToIndexMap['deepfake'];
+                window.carouselWorkshop.stopVideoTimer(index);
             }
         }
 

@@ -1,0 +1,53 @@
+{
+  "confidential": {
+    "isVideo": true,
+    "isSpecial": false,
+    "description": "Vidéo sur la confidentialité et la vie privée en ligne"
+  },
+  "deepfake": {
+    "isVideo": true,
+    "isSpecial": false,
+    "description": "Vidéo sur les deepfakes et la désinformation"
+  },
+  "password-fortress": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Jeu interactif sur la création de mots de passe sécurisés"
+  },
+  "email-phishing": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Activité de détection d'emails de phishing"
+  },
+  "wifi-trap": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Sensibilisation aux dangers des WiFi publics"
+  },
+  "social-media-video": {
+    "isVideo": true,
+    "isSpecial": false,
+    "description": "Vidéo sur la sécurité sur les réseaux sociaux"
+  },
+  "quizz": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Quiz de connaissances en cybersécurité"
+  },
+  "questions-champion": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Jeu de questions pour devenir champion de la cybersécurité"
+  },
+  "site-suspect": {
+    "isVideo": false,
+    "isSpecial": false,
+    "description": "Apprendre à identifier les sites web suspects"
+  },
+  "fantasy-quest": {
+    "isVideo": false,
+    "isSpecial": true,
+    "unlockRequirement": "all-activities-completed",
+    "description": "Aventure finale débloquée après avoir complété toutes les activités"
+  }
+}

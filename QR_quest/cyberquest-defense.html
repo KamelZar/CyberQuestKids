@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CyberQuest Defense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ===== VARIABLES ===== */
+:root {
+  --bg:        #06060f;
+  --bg2:       #0c0c1e;
+  --green:     #00ff41;
+  --cyan:      #00e5ff;
+  --magenta:   #ff00cc;
+  --red:       #ff3355;
+  --yellow:    #ffe600;
+  --orange:    #ff8800;
+  --text:      #b8f0b8;
+  --text-dim:  #3a6a3a;
+  --card-bg:   rgba(0,255,65,0.04);
+  --card-border:rgba(0,255,65,0.22);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono','Courier New',monospace;min-height:100vh;overflow-x:hidden;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.12) 3px,rgba(0,0,0,0.12) 4px);pointer-events:none;z-index:9999;}
+#matrix{position:fixed;inset:0;pointer-events:none;opacity:0.12;z-index:0;}
+
+/* ===== SCREENS ===== */
+.screen{display:none;min-height:100vh;position:relative;z-index:1;flex-direction:column;align-items:center;}
+.screen.active{display:flex;}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes shake{0%,100%{transform:translateX(0)rotate(0);}25%{transform:translateX(-5px)rotate(-3deg);}75%{transform:translateX(5px)rotate(3deg);}}
+@keyframes glow{0%,100%{text-shadow:0 0 10px currentColor;}50%{text-shadow:0 0 30px currentColor,0 0 60px currentColor;}}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes badFade{0%{background:rgba(255,51,85,0.3);}100%{background:transparent;}}
+@keyframes goodFade{0%{background:rgba(0,255,65,0.3);}100%{background:transparent;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+/* ===== HP BAR ===== */
+#hp-bar{position:fixed;top:0;left:0;right:0;z-index:200;padding:.5rem 1rem;background:rgba(6,6,15,0.92);border-bottom:1px solid var(--card-border);display:none;align-items:center;gap:.8rem;}
+.hp-label{font-size:.6rem;color:var(--text-dim);letter-spacing:.12em;white-space:nowrap;}
+.hp-bar-outer{flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+.hp-bar-inner{height:100%;border-radius:4px;transition:width .6s ease,background .6s;}
+.hp-value{font-family:'Orbitron',monospace;font-size:.75rem;font-weight:700;min-width:42px;text-align:right;}
+.hp-level-indicator{font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;white-space:nowrap;}
+
+/* ===== LANGUAGE SCREEN ===== */
+#screen-lang{justify-content:center;gap:2.5rem;padding:2rem 1rem;text-align:center;}
+.lang-logo{font-family:'Orbitron',monospace;font-size:clamp(2rem,8vw,4rem);font-weight:900;color:var(--green);letter-spacing:.12em;text-shadow:0 0 20px var(--green),0 0 50px var(--green);}
+.lang-sub{font-size:.7rem;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase;}
+.lang-shield{font-size:5rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px var(--cyan));}
+.lang-desc{font-size:.75rem;color:var(--text-dim);max-width:320px;line-height:1.6;text-align:center;}
+.lang-buttons{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
+.btn-lang{padding:1rem 2rem;font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:.12em;border:2px solid var(--cyan);color:var(--cyan);background:rgba(0,229,255,0.06);border-radius:4px;transition:all .2s;}
+.btn-lang:hover{background:rgba(0,229,255,0.18);box-shadow:0 0 24px var(--cyan);transform:translateY(-2px);}
+
+/* ===== MAP SCREEN ===== */
+#screen-map{padding:4.5rem 1rem 3rem;gap:.5rem;align-items:center;}
+.map-header{text-align:center;margin-bottom:.5rem;}
+.map-title{font-family:'Orbitron',monospace;font-size:clamp(.9rem,3.5vw,1.4rem);font-weight:700;color:var(--green);letter-spacing:.12em;text-shadow:0 0 12px var(--green);}
+.map-sub{font-size:.65rem;color:var(--text-dim);letter-spacing:.18em;margin-top:.3rem;}
+.map-hp-summary{font-size:.7rem;color:var(--cyan);margin-top:.4rem;}
+
+.map-path{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:flex-start;padding:.5rem 1rem;}
+.map-row{display:flex;align-items:center;gap:0;width:100%;}
+.map-node{
+  display:flex;align-items:center;gap:.9rem;padding:.6rem .8rem;cursor:pointer;
+  transition:all .25s;border-radius:8px;flex:1;
+  animation:slideIn .4s ease both;
+}
+.map-node:hover.unlocked{background:rgba(0,229,255,0.06);transform:translateX(4px);}
+.map-node-circle{
+  width:54px;height:54px;border-radius:50%;border:2px solid var(--card-border);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:var(--card-bg);transition:all .35s;flex-shrink:0;
+}
+.map-node.completed .map-node-circle{border-color:var(--green);background:rgba(0,255,65,0.08);box-shadow:0 0 14px rgba(0,255,65,0.5);}
+.map-node.unlocked .map-node-circle{border-color:var(--cyan);background:rgba(0,229,255,0.08);box-shadow:0 0 14px rgba(0,229,255,0.5);animation:pulse 2s infinite;}
+.map-node.locked .map-node-circle{opacity:.35;filter:grayscale(.9);}
+.map-node-info{flex:1;}
+.map-node-name{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:.06em;}
+.map-node.locked .map-node-name{color:var(--text-dim);}
+.map-node.completed .map-node-name{color:var(--green);}
+.map-node.unlocked .map-node-name{color:var(--cyan);}
+.map-node-loc{font-size:.58rem;color:var(--text-dim);margin-top:.2rem;}
+.map-node-badge{display:inline-block;font-size:.58rem;padding:.15rem .45rem;border-radius:3px;margin-top:.3rem;}
+.badge-done{background:rgba(0,255,65,0.1);color:var(--green);border:1px solid rgba(0,255,65,0.4);}
+.badge-play{background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid rgba(0,229,255,0.4);animation:blink 1.5s infinite;}
+.badge-lock{background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid rgba(255,255,255,0.1);}
+.map-connector-v{width:2px;height:20px;background:var(--card-border);margin-left:calc(1rem + 27px - 1px);}
+.map-connector-v.done{background:var(--green);box-shadow:0 0 6px var(--green);}
+
+/* ===== LEVEL SCREEN ===== */
+#screen-level{padding:5rem 1rem 2rem;gap:1rem;max-width:580px;margin:0 auto;width:100%;}
+.level-header{text-align:center;}
+.level-num{font-size:.6rem;color:var(--magenta);letter-spacing:.2em;text-transform:uppercase;}
+.level-title{font-family:'Orbitron',monospace;font-size:clamp(1rem,4vw,1.6rem);font-weight:700;color:var(--cyan);text-shadow:0 0 14px var(--cyan);margin:.3rem 0;}
+.level-loc{font-size:.65rem;color:var(--text-dim);letter-spacing:.1em;}
+.level-scene{background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:1.2rem;animation:slideIn .4s ease;}
+.level-icon{font-size:2.8rem;text-align:center;margin-bottom:.8rem;filter:drop-shadow(0 0 12px var(--cyan));}
+.level-narrative{font-size:.8rem;line-height:1.75;color:var(--text);white-space:pre-line;}
+.level-narrative .hl{color:var(--yellow);}
+.level-narrative .danger{color:var(--red);}
+
+/* State flags */
+.state-flags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.flag-badge{font-size:.58rem;padding:.18rem .45rem;border-radius:3px;display:flex;align-items:center;gap:.25rem;}
+.flag-good{background:rgba(0,255,65,0.08);color:var(--green);border:1px solid rgba(0,255,65,0.3);}
+.flag-bad{background:rgba(255,51,85,0.08);color:var(--red);border:1px solid rgba(255,51,85,0.3);}
+.flag-warn{background:rgba(255,230,0,0.08);color:var(--yellow);border:1px solid rgba(255,230,0,0.3);}
+
+/* Enemy alert */
+.enemy-alert{display:none;align-items:center;gap:1rem;padding:.8rem 1rem;background:rgba(255,51,85,0.08);border:1px solid rgba(255,51,85,0.5);border-radius:6px;animation:slideIn .4s ease;}
+.enemy-alert.visible{display:flex;}
+.enemy-sprite{font-size:2.2rem;animation:shake .6s infinite;}
+.enemy-info-box{flex:1;}
+.enemy-name{font-size:.65rem;color:var(--red);font-family:'Orbitron',monospace;letter-spacing:.1em;}
+.enemy-desc{font-size:.62rem;color:var(--text-dim);margin-top:.2rem;line-height:1.4;}
+
+/* Choices */
+.choices-label{font-size:.6rem;color:var(--text-dim);letter-spacing:.18em;text-transform:uppercase;}
+.choices-grid{display:flex;flex-direction:column;gap:.7rem;}
+.btn-choice{
+  width:100%;padding:.9rem 1.1rem;background:var(--card-bg);
+  border:1px solid var(--card-border);border-radius:6px;text-align:left;
+  transition:all .22s;display:flex;align-items:center;gap:.9rem;
+  animation:slideIn .4s ease both;
+}
+.btn-choice:hover{background:rgba(0,229,255,0.07);border-color:var(--cyan);box-shadow:0 0 14px rgba(0,229,255,0.2);transform:translateX(5px);}
+.choice-icon{font-size:1.6rem;flex-shrink:0;}
+.choice-text{font-size:.78rem;color:var(--text);line-height:1.4;}
+
+/* ===== OUTCOME SCREEN ===== */
+#screen-outcome{justify-content:center;align-items:center;padding:5.5rem 1.5rem 2rem;gap:1.4rem;max-width:580px;margin:0 auto;width:100%;text-align:center;}
+.outcome-icon{font-size:5rem;animation:pulse 1s infinite;}
+.outcome-title{font-family:'Orbitron',monospace;font-size:clamp(.95rem,4vw,1.5rem);font-weight:700;letter-spacing:.1em;}
+.outcome-hp-change{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;animation:glow 1.5s infinite;}
+.outcome-message{font-size:.82rem;line-height:1.7;max-width:420px;}
+.outcome-context{
+  font-size:.72rem;color:var(--text-dim);background:var(--card-bg);
+  border:1px solid var(--card-border);border-radius:6px;padding:1rem;
+  text-align:left;width:100%;max-width:420px;line-height:1.65;
+}
+.outcome-chain{
+  font-size:.7rem;background:rgba(255,51,85,0.06);border:1px solid rgba(255,51,85,0.3);
+  border-radius:6px;padding:.8rem 1rem;text-align:left;width:100%;max-width:420px;line-height:1.6;
+  color:var(--red);display:none;
+}
+.outcome-chain.visible{display:block;}
+.btn-continue{
+  padding:.9rem 3rem;font-family:'Orbitron',monospace;font-weight:700;
+  letter-spacing:.1em;font-size:.88rem;border:2px solid var(--cyan);
+  color:var(--cyan);background:rgba(0,229,255,0.08);border-radius:4px;transition:all .2s;
+}
+.btn-continue:hover{background:rgba(0,229,255,0.22);box-shadow:0 0 22px var(--cyan);}
+
+/* ===== END SCREEN ===== */
+#screen-end{justify-content:center;align-items:center;padding:5rem 1.5rem 3rem;gap:1.4rem;text-align:center;}
+.end-grade{font-family:'Orbitron',monospace;font-size:clamp(4rem,18vw,9rem);font-weight:900;animation:glow 2s infinite;}
+.end-title{font-family:'Orbitron',monospace;font-size:clamp(.9rem,4vw,1.6rem);font-weight:700;letter-spacing:.1em;}
+.end-msg{font-size:.8rem;line-height:1.7;max-width:400px;color:var(--text-dim);}
+.end-report{width:100%;max-width:420px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:1.2rem;}
+.end-report-title{font-family:'Orbitron',monospace;font-size:.62rem;color:var(--text-dim);letter-spacing:.18em;margin-bottom:.8rem;}
+.report-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.7rem;color:var(--text);margin:.35rem 0;line-height:1.4;}
+.ri-icon{flex-shrink:0;margin-top:.05rem;}
+.report-item.good .ri-icon{color:var(--green);}
+.report-item.bad .ri-icon{color:var(--red);}
+.report-item.warn .ri-icon{color:var(--yellow);}
+.btn-replay{
+  padding:.9rem 3rem;font-family:'Orbitron',monospace;font-weight:700;
+  letter-spacing:.1em;font-size:.88rem;border:2px solid var(--green);
+  color:var(--green);background:rgba(0,255,65,0.06);border-radius:4px;transition:all .2s;
+}
+.btn-replay:hover{background:rgba(0,255,65,0.18);box-shadow:0 0 22px var(--green);}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+
+<!-- HP BAR -->
+<div id="hp-bar">
+  <span class="hp-label" id="hp-label-txt">SÉCURITÉ</span>
+  <div class="hp-bar-outer"><div class="hp-bar-inner" id="hp-bar-inner"></div></div>
+  <span class="hp-value" id="hp-value-txt">100</span>
+  <span class="hp-level-indicator" id="hp-level-txt"></span>
+</div>
+
+<!-- SCREEN: LANG -->
+<div class="screen active" id="screen-lang">
+  <div class="lang-logo">CYBERQUEST</div>
+  <div class="lang-sub">DEFENSE // CHOOSE YOUR LANGUAGE</div>
+  <div class="lang-shield">🛡️</div>
+  <p class="lang-desc" id="lang-desc">Apprends à te défendre contre les cyberattaques en faisant les bons choix !</p>
+  <div class="lang-buttons">
+    <button class="btn-lang" onclick="startGame('fr')">🇫🇷 Français</button>
+    <button class="btn-lang" onclick="startGame('nl')">🇧🇪 Nederlands</button>
+    <button class="btn-lang" onclick="startGame('en')">🇬🇧 English</button>
+  </div>
+</div>
+
+<!-- SCREEN: MAP -->
+<div class="screen" id="screen-map">
+  <div class="map-header">
+    <div class="map-title" id="map-title"></div>
+    <div class="map-sub" id="map-sub"></div>
+    <div class="map-hp-summary" id="map-hp-summary"></div>
+  </div>
+  <div class="map-path" id="map-path"></div>
+</div>
+
+<!-- SCREEN: LEVEL -->
+<div class="screen" id="screen-level">
+  <div class="level-header">
+    <div class="level-num" id="level-num"></div>
+    <div class="level-title" id="level-title"></div>
+    <div class="level-loc" id="level-loc"></div>
+  </div>
+  <div class="level-scene">
+    <div class="level-icon" id="level-icon"></div>
+    <div class="level-narrative" id="level-narrative"></div>
+  </div>
+  <div class="enemy-alert" id="enemy-alert">
+    <div class="enemy-sprite" id="enemy-sprite"></div>
+    <div class="enemy-info-box">
+      <div class="enemy-name" id="enemy-name"></div>
+      <div class="enemy-desc" id="enemy-desc"></div>
+    </div>
+  </div>
+  <div class="state-flags" id="state-flags"></div>
+  <div class="choices-label" id="choices-label"></div>
+  <div class="choices-grid" id="choices-grid"></div>
+</div>
+
+<!-- SCREEN: OUTCOME -->
+<div class="screen" id="screen-outcome">
+  <div class="outcome-icon" id="outcome-icon"></div>
+  <div class="outcome-title" id="outcome-title"></div>
+  <div class="outcome-hp-change" id="outcome-hp-change"></div>
+  <div class="outcome-message" id="outcome-message"></div>
+  <div class="outcome-chain" id="outcome-chain"></div>
+  <div class="outcome-context" id="outcome-context"></div>
+  <button class="btn-continue" id="btn-continue" onclick="continueFromOutcome()"></button>
+</div>
+
+<!-- SCREEN: END -->
+<div class="screen" id="screen-end">
+  <div class="end-grade" id="end-grade"></div>
+  <div class="end-title" id="end-title"></div>
+  <div class="end-msg" id="end-msg"></div>
+  <div class="end-report" id="end-report">
+    <div class="end-report-title" id="end-report-title"></div>
+    <div id="report-items"></div>
+  </div>
+  <button class="btn-replay" id="btn-replay" onclick="resetGame()"></button>
+</div>
+
+<script>
+// ===== MATRIX RAIN =====
+(function(){
+  const c=document.getElementById('matrix'),ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const chars='アイウエオカキクサシスセソタチツテトナニヌネノ01';
+  let drops=Array(Math.floor(innerWidth/16)).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(6,6,15,0.05)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#00ff41';ctx.font='14px monospace';
+    drops.forEach((y,i)=>{ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,y*16);if(y*16>c.height&&Math.random()>.975)drops[i]=0;drops[i]++;});
+  },50);
+})();
+
+// ===== GAME STATE =====
+let lang = 'fr';
+let hp = 100;
+let currentLevelIndex = 0;
+let lastChoiceIndex = -1;
+let flags = {
+  phoneUpdated: false,
+  onPublicWifi: false,
+  usingVPN: false,
+  suspiciousApp: false,
+  clickedPhishing: false,
+  allCookiesAccepted: false,
+  weakPassword: false,
+  phoneCompromised: false,
+};
+let choiceHistory = [];
+let levelsDone = 0;
+
+// ===== TRANSLATIONS =====
+const T = {
+  fr: {
+    langDesc: "Apprends à te défendre contre les cyberattaques en faisant les bons choix !",
+    hpLabel: "SÉCURITÉ",
+    mapTitle: "CARTE DES MISSIONS",
+    mapSub: "SÉLECTIONNE TA PROCHAINE MISSION",
+    mapHpSummary: hp => `Niveau de sécurité actuel : ${hp}/100`,
+    choicesLabel: "// CHOISIS TON ACTION :",
+    continueBtn: "CONTINUER →",
+    replayBtn: "↺ REJOUER",
+    reportTitle: "// RAPPORT DE MISSION",
+    statusDone: "✓ FAIT",
+    statusPlay: "▶ JOUER",
+    statusLock: "🔒 VERROUILLÉ",
+    levelOf: (n,t) => `MISSION ${n} / ${t}`,
+    flags: {
+      phoneUpdated:      { label: "📱 Téléphone à jour", type: "good" },
+      onPublicWifi:      { label: "📡 WiFi public", type: "warn" },
+      usingVPN:          { label: "🔐 VPN actif", type: "good" },
+      suspiciousApp:     { label: "☠️ App malveillante", type: "bad" },
+      clickedPhishing:   { label: "🎣 Phishing cliqué", type: "bad" },
+      allCookiesAccepted:{ label: "🍪 Tous cookies acceptés", type: "warn" },
+      weakPassword:      { label: "🔓 Mot de passe faible", type: "bad" },
+      phoneCompromised:  { label: "⚠️ Appareil compromis", type: "bad" },
+    },
+    grades: {
+      S: { emoji:"🏆", title:"EXPERT CYBER",         msg:"Incroyable ! Tu maîtrises la cybersécurité. Tes données sont en sécurité et tu es un exemple pour ton entourage !" },
+      A: { emoji:"🥇", title:"PROTECTEUR DIGITAL",   msg:"Très bien joué ! Tu as fait les bons choix dans la plupart des situations. Continue ainsi !" },
+      B: { emoji:"🥈", title:"APPRENTI CYBER",       msg:"Pas mal ! Tu comprends les enjeux mais quelques mauvaises habitudes persistent. Recommence pour faire mieux !" },
+      C: { emoji:"🥉", title:"UTILISATEUR VULNÉRABLE",msg:"Attention ! Plusieurs de tes choix ont affaibli ta sécurité. Un hacker aurait pu en profiter..." },
+      D: { emoji:"💀", title:"CIBLE FACILE",         msg:"Tes données sont probablement compromises. Un vrai hacker profiterait de chacun de ces mauvais choix. Recommence et apprends !" },
+    },
+    levels: [
+      {
+        id:1, icon:"📱", name:"MISE À JOUR CRITIQUE",
+        loc:"🏠 Ta chambre · 07h30",
+        narrative:"Ton réveil sonne. Tu attrapes ton téléphone et tu vois : <span class='hl'>⚠️ Mise à jour système disponible (correctif de sécurité)</span>.\n\nTu as cours dans 30 minutes. La mise à jour prend environ 10 minutes.",
+        enemy: null,
+        choices:[
+          { icon:"⬆️", text:"Mettre à jour maintenant (10 min)" },
+          { icon:"⏰", text:"Me rappeler dans 1 heure" },
+          { icon:"❌", text:"Ignorer la notification" },
+          { icon:"🚫", text:"Désactiver les mises à jour automatiques" },
+        ],
+        outcomes:[
+          { hpDelta:10, positive:true,  icon:"✅", title:"EXCELLENT CHOIX !", msg:"Ton téléphone est maintenant protégé contre les dernières failles connues.", context:"💡 Les mises à jour corrigent des failles que les hackers exploitent activement. Un appareil à jour est bien plus difficile à pirater.", chain:null, stateChanges:{ phoneUpdated:true } },
+          { hpDelta:-5, positive:false, icon:"⚠️", title:"RISQUE TEMPORAIRE", msg:"Tant que la mise à jour n'est pas installée, ton téléphone reste vulnérable.", context:"💡 'Plus tard' devient souvent 'jamais'. Chaque heure sans mise à jour est une heure d'exposition aux failles connues.", chain:null, stateChanges:{} },
+          { hpDelta:-15,positive:false, icon:"🔓", title:"VULNÉRABILITÉ OUVERTE !", msg:"En ignorant la mise à jour, tu laisses une porte ouverte. La faille reste exploitable.", context:"💡 Les correctifs existent parce que des chercheurs ont trouvé des failles RÉELLES. Les ignorer, c'est prendre un risque volontaire.", chain:null, stateChanges:{} },
+          { hpDelta:-25,positive:false, icon:"☠️", title:"GROSSE ERREUR !", msg:"Sans mises à jour automatiques, ton appareil ne sera jamais corrigé. Tu seras de plus en plus vulnérable.", context:"⚠️ Sans mises à jour, chaque nouvelle faille découverte reste exploitable sur ton appareil pour toujours.", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:2, icon:"📡", name:"WIFI PUBLIC",
+        loc:"☕ Café Pixel · 12h15",
+        narrative:"Tu es au café avec tes amis. Le café propose un WiFi : <span class='hl'>\"Cafe_Pixel_Free\"</span> (pas de cadenas = <span class='danger'>non sécurisé</span>).\n\nTu veux montrer une vidéo à tes amis. Que fais-tu ?",
+        enemy:{ sprite:"👤", name:"ATTAQUE MAN-IN-THE-MIDDLE", desc:"Sur ce réseau, quelqu'un peut intercepter tout ce que tu envoies ou reçois." },
+        choices:[
+          { icon:"📶", text:"Me connecter au WiFi du café directement" },
+          { icon:"📱", text:"Utiliser mes données mobiles (4G/5G)" },
+          { icon:"🔐", text:"Activer mon VPN puis me connecter" },
+          { icon:"❓", text:"Demander un réseau sécurisé avec mot de passe au serveur" },
+        ],
+        outcomes:[
+          {
+            hpDelta: null, positive:false, icon:"⚠️",
+            title: null, msg:null,
+            context:"💡 Sur un WiFi public sans mot de passe, ton trafic non chiffré (HTTP) est lisible par n'importe qui sur le même réseau.",
+            chain:null,
+            stateChanges:{ onPublicWifi:true },
+            dynamic: (flags) => ({
+              hpDelta: flags.phoneUpdated ? -10 : -20,
+              title: flags.phoneUpdated ? "RISQUÉ MAIS LIMITÉ" : "DOUBLE DANGER !",
+              msg: flags.phoneUpdated
+                ? "Tu es sur un réseau public. Quelqu'un peut espionner ton trafic. Évite d'entrer des mots de passe !"
+                : "WiFi public NON sécurisé + téléphone pas à jour = double risque. Les failles non corrigées peuvent être exploitées à distance !",
+              chainMsg: flags.phoneUpdated ? null : "⚠️ Effet cumulé : ton téléphone n'étant pas à jour, les failles restent exploitables même sur ce réseau.",
+              extraFlags: flags.phoneUpdated ? {} : { phoneCompromised:true },
+            })
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"DÉCISION SAGE !", msg:"Les données mobiles (4G/5G) sont chiffrées et sécurisées. Personne autour de toi ne peut intercepter ton trafic.", context:"💡 La connexion mobile passe par un réseau opérateur chiffré. Contrairement au WiFi public, personne ne peut 'écouter' ta connexion.", chain:null, stateChanges:{} },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"PROTECTION MAXIMALE !", msg:"Le VPN chiffre tout ton trafic avant qu'il passe par le WiFi. Même si quelqu'un espionne, il ne voit que du charabia.", context:"💡 VPN = tunnel chiffré entre toi et Internet. C'est la meilleure protection sur un réseau public.", chain:null, stateChanges:{ onPublicWifi:true, usingVPN:true } },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"BONNE IDÉE MAIS...", msg:"Vérifier le vrai réseau est bien (il existe des faux réseaux 'Evil Twin'). Mais même le réseau officiel d'un café n'est pas forcément sécurisé.", context:"💡 Les attaquants créent parfois des réseaux qui copient le nom du café. Toujours vérifier ET utiliser un VPN si possible.", chain:null, stateChanges:{ onPublicWifi:true } },
+        ]
+      },
+      {
+        id:3, icon:"📲", name:"TÉLÉCHARGEMENT SUSPECT",
+        loc:"🏠 Ta chambre · 18h00",
+        narrative:"Ton ami t'envoie un message : <span class='hl'>\"Télécharge ce jeu, c'est incroyable ! C'est un APK direct, pas sur Play Store mais ça marche mieux !\"</span>\n\nLe fichier \"SuperGame_v2.apk\" vient d'un site inconnu.",
+        enemy: null,
+        dynamicEnemy: (flags) => (flags.onPublicWifi && !flags.usingVPN)
+          ? { sprite:"🦠", name:"MALWARE EN TRANSMISSION", desc:"Depuis le WiFi public compromis, le malware peut déjà envoyer tes données à son serveur !" }
+          : null,
+        choices:[
+          { icon:"📥", text:"Télécharger et installer l'APK" },
+          { icon:"🏪", text:"Chercher le jeu sur le Play Store à la place" },
+          { icon:"🔍", text:"Vérifier les permissions demandées avant d'installer" },
+          { icon:"🙅", text:"Refuser et expliquer les risques à mon ami" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"☠️", title:null, msg:null,
+            context:"⚠️ Les APK hors Play Store ne sont pas vérifiés par Google. N'importe qui peut y cacher un malware. C'est l'une des méthodes d'infection les plus courantes.",
+            chain:null,
+            stateChanges:{ suspiciousApp:true },
+            dynamic:(flags) => {
+              let dmg = -20;
+              let extra = "";
+              if (flags.onPublicWifi && !flags.usingVPN) { dmg -= 15; extra += " De plus, le WiFi public compromis permet au malware de transmettre tes données en temps réel !" }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " Et les failles non corrigées de ton téléphone facilitent encore plus l'infection."; }
+              return {
+                hpDelta: dmg,
+                title: dmg <= -35 ? "💀 CATASTROPHE !" : "APP MALVEILLANTE !",
+                msg: "Le fichier APK contenait un malware. Il accède maintenant à tes contacts, photos et messages." + extra,
+                chainMsg: extra ? "⚠️ Tes mauvais choix précédents ont amplifié cette attaque." : null,
+                extraFlags: {},
+              };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"BONNE ALTERNATIVE !", msg:"Le Play Store vérifie les apps avant publication. Si le jeu n'y est pas, c'est souvent un mauvais signe.", context:"💡 Google Play Protect scanne les apps contre les malwares. C'est loin d'être parfait, mais infiniment plus sûr qu'un APK d'origine inconnue.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"PRUDENT MAIS PAS ASSEZ", msg:"Vérifier les permissions est une bonne habitude. Mais un malware peut demander des permissions qui semblent légitimes.", context:"💡 Un vrai jeu n'a pas besoin d'accéder à tes SMS, contacts ou d'être administrateur. Permissions excessives = signal d'alarme. Mais mieux vaut ne pas installer du tout.", chain:null, stateChanges:{} },
+          { hpDelta:15, positive:true,  icon:"🏆", title:"RÉFLEXE EXEMPLAIRE !", msg:"Tu as protégé ton ami ET toi-même. Partager ses connaissances en cybersécurité, c'est aussi se défendre.", context:"💡 La sensibilisation est une arme puissante. Un ami informé = une victime de moins. Continue à partager !", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:4, icon:"📧", name:"EMAIL PIÉGÉ",
+        loc:"🏫 École · 10h00",
+        narrative:"Tu reçois un email : <span class='hl'>\"🎉 FÉLICITATIONS ! Tu as gagné un iPhone 15 Pro ! Clique ICI dans les 10 minutes !\"</span>\n\nL'expéditeur : <span class='danger'>\"Apple-Prizes@win-now-2024.net\"</span>. L'email est plein de fautes.",
+        enemy:null,
+        dynamicEnemy: (flags) => flags.suspiciousApp
+          ? { sprite:"🎣", name:"PHISHING × MALWARE", desc:"L'app malveillante installée + ce lien = attaque combinée. Tes mots de passe sauvegardés sont en danger !" }
+          : null,
+        choices:[
+          { icon:"👆", text:"Cliquer sur le lien pour voir ce que c'est" },
+          { icon:"🗑️", text:"Supprimer l'email sans cliquer" },
+          { icon:"🚨", text:"Signaler comme spam / phishing" },
+          { icon:"📤", text:"Transférer à mes amis pour qu'ils puissent aussi 'gagner'" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"🎣", title:null, msg:null,
+            context:"⚠️ Les signes du phishing : expéditeur bizarre, urgence artificielle, promesse trop belle, lien suspect. Ne JAMAIS cliquer sans vérifier !",
+            chain:null, stateChanges:{ clickedPhishing:true },
+            dynamic:(flags) => {
+              let dmg = -20;
+              let extra = "";
+              if (flags.suspiciousApp) { dmg -= 20; extra += " L'app malveillante a exploité ta visite pour voler tes mots de passe sauvegardés dans le navigateur !"; }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " Les failles non corrigées ont facilité l'exploitation du lien malveillant."; }
+              return {
+                hpDelta: dmg,
+                title: dmg <= -40 ? "💀 ATTAQUE COMBINÉE !" : "PIÈGE À PHISHING !",
+                msg: "C'était un piège ! Le site t'a demandé tes informations personnelles. Tu viens de te faire phisher." + extra,
+                chainMsg: extra ? "⚠️ Tes choix précédents ont transformé cette attaque simple en désastre total." : null,
+                extraFlags: {},
+              };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"BIEN GÉRÉ", msg:"Supprimer sans cliquer est la bonne réaction. Tu n'as pas mordu à l'hameçon.", context:"💡 Règle d'or : si tu n'as rien commandé, si ça semble trop beau, si l'expéditeur est bizarre — supprime directement.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"ACTION EXEMPLAIRE !", msg:"Signaler le phishing protège tout le monde ! Chaque signalement aide les filtres anti-spam.", context:"💡 Gmail et Outlook utilisent tes signalements pour bloquer ces emails chez TOUS les utilisateurs. Un signalement = des milliers de personnes protégées.", chain:null, stateChanges:{} },
+          { hpDelta:-30,positive:false, icon:"💀", title:"CATASTROPHIQUE !", msg:"Tu viens de propager une tentative de phishing à tous tes contacts ! Tes amis reçoivent maintenant ce piège.", context:"⚠️ Ne JAMAIS transférer des emails non vérifiés. Tu deviens involontairement complice de l'attaque et tu mets en danger tous tes contacts.", chain:null, stateChanges:{ clickedPhishing:true } },
+        ]
+      },
+      {
+        id:5, icon:"🍪", name:"LE PIÈGE DES COOKIES",
+        loc:"💻 À la maison · 16h30",
+        narrative:"Tu visites un site de gaming pour voir des scores. Une popup apparaît : <span class='hl'>\"🍪 Nous utilisons des cookies pour améliorer votre expérience !\"</span>\n\nLe bouton \"Tout accepter\" est grand et coloré. \"Refuser\" est petit et gris.",
+        enemy:null,
+        dynamicEnemy: (flags) => (flags.clickedPhishing || flags.suspiciousApp)
+          ? { sprite:"🍪", name:"COOKIE WEAPONISÉ !", desc:"Si un hacker contrôle déjà ton appareil, tes cookies de session lui permettent de se connecter à tes comptes SANS mot de passe !" }
+          : null,
+        choices:[
+          { icon:"✅", text:"Tout accepter (c'est plus rapide)" },
+          { icon:"❌", text:"Tout refuser" },
+          { icon:"⚙️", text:"Personnaliser (accepter seulement l'essentiel)" },
+          { icon:"✖️", text:"Fermer la popup sans choisir" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:null, title:null, msg:null,
+            context:"⚠️ 'Session hijacking' : si ton appareil est compromis, les cookies de session volés permettent à un attaquant de se connecter à tes comptes comme si c'était toi.",
+            chain:null, stateChanges:{ allCookiesAccepted:true },
+            dynamic:(flags) => {
+              let dmg = -10;
+              let extra = "";
+              const danger = flags.clickedPhishing || flags.suspiciousApp || flags.phoneCompromised;
+              if (danger) {
+                dmg -= 20;
+                extra = " PIRE : un hacker accédant à ton appareil peut maintenant utiliser ces cookies pour se connecter à tes comptes sans mot de passe !";
+              }
+              return {
+                hpDelta: dmg,
+                icon: danger ? "💀" : "🍪",
+                title: danger ? "🚨 DANGER CRITIQUE !" : "MAUVAISE HABITUDE",
+                msg: "Tu as accepté des dizaines de traceurs qui vont surveiller tout ce que tu fais en ligne." + extra,
+                chainMsg: danger ? "⚠️ Combiné avec tes problèmes précédents, ces cookies deviennent une porte d'entrée pour les hackers." : null,
+                extraFlags: {},
+              };
+            }
+          },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"PROTECTION ACTIVE !", msg:"Refuser les cookies non essentiels protège ta vie privée. Le site fonctionne encore parfaitement.", context:"💡 Les cookies 'essentiels' (connexion, panier) sont conservés. Seuls les traceurs publicitaires sont bloqués. Aucune perte fonctionnelle.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"CHOIX IDÉAL !", msg:"Personnaliser est la meilleure pratique. Tu gardes ce qui est nécessaire et tu bloques le reste.", context:"💡 Cookies nécessaires = connexion, mémorisation. Cookies analytiques/publicitaires = traceurs qui vendent tes données à des tiers. Seuls les premiers sont utiles.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"PAS IDÉAL", msg:"En fermant sans choisir, beaucoup de sites considèrent que tu as implicitement accepté.", context:"💡 La loi (RGPD) exige un consentement explicite. Prends 10 secondes pour choisir plutôt que d'ignorer.", chain:null, stateChanges:{ allCookiesAccepted:true } },
+        ]
+      },
+      {
+        id:6, icon:"🔒", name:"MOT DE PASSE",
+        loc:"🏠 Ta chambre · 20h00",
+        narrative:"Tu t'inscris sur un nouveau site de gaming. Il faut créer un mot de passe.\n\nTon mot de passe Gmail actuel est <span class='hl'>\"gaming2010\"</span>. Que vas-tu utiliser ?",
+        enemy:null,
+        dynamicEnemy: (flags) => flags.clickedPhishing
+          ? { sprite:"🔓", name:"BRUTE FORCE EN COURS", desc:"Le hacker du phishing teste déjà tes mots de passe connus sur des centaines de sites !" }
+          : null,
+        choices:[
+          { icon:"🔑", text:"Réutiliser \"gaming2010\" (c'est plus pratique)" },
+          { icon:"💪", text:"Créer un mot de passe fort et unique (ex: \"Tr4in!K4t_92#\")" },
+          { icon:"📱", text:"Utiliser un gestionnaire de mots de passe" },
+          { icon:"🎲", text:"Mettre \"123456\" — personne ne va deviner !" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"💀", title:null, msg:null,
+            context:"⚠️ 'Credential stuffing' : les hackers testent automatiquement des millions de combinaisons email/mot de passe. 1 mot de passe réutilisé = tous les comptes en danger.",
+            chain:null, stateChanges:{ weakPassword:true },
+            dynamic:(flags) => {
+              let dmg = -20;
+              let extra = "";
+              if (flags.clickedPhishing) { dmg -= 25; extra += " Et comme le phisher connaît déjà 'gaming2010', il vient d'accéder à ton Gmail et tous tes autres comptes !"; }
+              if (flags.allCookiesAccepted && (flags.suspiciousApp || flags.phoneCompromised)) { dmg -= 10; extra += " Combiné aux cookies acceptés, ton identité complète est maintenant dans les mains d'un attaquant."; }
+              return {
+                hpDelta: dmg,
+                title: dmg <= -40 ? "💀 TOUS TES COMPTES PIRATÉS !" : "CREDENTIAL STUFFING !",
+                msg: "Réutiliser un mot de passe est très dangereux. Si ce site est piraté, ton Gmail est aussi compromis !" + extra,
+                chainMsg: extra ? "⚠️ L'accumulation de tes mauvais choix a rendu cette attaque dévastatrice." : null,
+                extraFlags: {},
+              };
+            }
+          },
+          { hpDelta:15, positive:true,  icon:"✅", title:"MOT DE PASSE FORT !", msg:"Long, unique, avec majuscules/chiffres/symboles = quasi impossible à deviner ou bruteforcer.", context:"💡 Un mot de passe de 15+ caractères mixtes prendrait des millions d'années à craquer. Et comme il est unique, même si ce site est piraté, tes autres comptes sont saufs.", chain:null, stateChanges:{} },
+          { hpDelta:20, positive:true,  icon:"🏆", title:"DÉCISION PARFAITE !", msg:"Un gestionnaire génère des mots de passe ultra-complexes et uniques pour chaque site. Tu n'as à retenir qu'un seul mot de passe maître !", context:"💡 Exemples gratuits : Bitwarden, KeePass. Recommandés par tous les experts. 1 mot de passe par site = les dégâts restent limités si un site est piraté.", chain:null, stateChanges:{} },
+          { hpDelta:-35,positive:false, icon:"☠️", title:"ERREUR CRITIQUE !", msg:"'123456' est le mot de passe le plus utilisé au monde. Il figure dans toutes les listes de hackers. Cracké en moins d'une seconde.", context:"⚠️ Les hackers utilisent des 'dictionnaires' de millions de mots de passe communs. '123456', 'password', 'qwerty' = craqués instantanément. JAMAIS.", chain:null, stateChanges:{ weakPassword:true } },
+        ]
+      },
+    ],
+  },
+  nl: {
+    langDesc: "Leer jezelf te verdedigen tegen cyberaanvallen door de juiste keuzes te maken !",
+    hpLabel: "BEVEILIGING",
+    mapTitle: "MISSIEKAART",
+    mapSub: "KIES JE VOLGENDE MISSIE",
+    mapHpSummary: hp => `Huidig beveiligingsniveau : ${hp}/100`,
+    choicesLabel: "// KIES JE ACTIE :",
+    continueBtn: "DOORGAAN →",
+    replayBtn: "↺ OPNIEUW SPELEN",
+    reportTitle: "// MISSIERAPPORT",
+    statusDone: "✓ KLAAR",
+    statusPlay: "▶ SPELEN",
+    statusLock: "🔒 VERGRENDELD",
+    levelOf: (n,t) => `MISSIE ${n} / ${t}`,
+    flags: {
+      phoneUpdated:      { label: "📱 Telefoon bijgewerkt", type: "good" },
+      onPublicWifi:      { label: "📡 Openbare WiFi", type: "warn" },
+      usingVPN:          { label: "🔐 VPN actief", type: "good" },
+      suspiciousApp:     { label: "☠️ Schadelijke app", type: "bad" },
+      clickedPhishing:   { label: "🎣 Phishing geklikt", type: "bad" },
+      allCookiesAccepted:{ label: "🍪 Alle cookies aanvaard", type: "warn" },
+      weakPassword:      { label: "🔓 Zwak wachtwoord", type: "bad" },
+      phoneCompromised:  { label: "⚠️ Toestel gecompromitteerd", type: "bad" },
+    },
+    grades: {
+      S: { emoji:"🏆", title:"CYBER EXPERT",       msg:"Ongelooflijk! Je beheerst cybersecurity. Je gegevens zijn veilig en je bent een voorbeeld voor anderen !" },
+      A: { emoji:"🥇", title:"DIGITALE BESCHERMER", msg:"Heel goed gedaan! Je maakte de juiste keuzes in de meeste situaties. Blijf zo verder !" },
+      B: { emoji:"🥈", title:"CYBER LEERLING",     msg:"Niet slecht! Je begrijpt de gevaren maar er zijn nog slechte gewoonten. Probeer opnieuw !" },
+      C: { emoji:"🥉", title:"KWETSBARE GEBRUIKER", msg:"Opgelet! Verschillende keuzes hebben je beveiliging verzwakt. Een hacker zou hiervan gebruik kunnen maken..." },
+      D: { emoji:"💀", title:"MAKKELIJK DOELWIT",  msg:"Je gegevens zijn waarschijnlijk gecompromitteerd. Speel opnieuw en leer van je fouten !" },
+    },
+    levels: [
+      {
+        id:1, icon:"📱", name:"KRITIEKE UPDATE",
+        loc:"🏠 Je kamer · 07u30",
+        narrative:"Je wekker gaat af. Je pakt je telefoon en ziet: <span class='hl'>⚠️ Systeemupdate beschikbaar (beveiligingsfix)</span>.\n\nJe hebt over 30 minuten school. De update duurt ongeveer 10 minuten.",
+        enemy:null,
+        choices:[
+          { icon:"⬆️", text:"Nu updaten (10 min)" },
+          { icon:"⏰", text:"Herinnering over 1 uur" },
+          { icon:"❌", text:"Melding negeren" },
+          { icon:"🚫", text:"Automatische updates uitschakelen" },
+        ],
+        outcomes:[
+          { hpDelta:10, positive:true,  icon:"✅", title:"UITSTEKENDE KEUZE!", msg:"Je telefoon is nu beschermd tegen de laatste bekende kwetsbaarheden.", context:"💡 Updates herstellen beveiligingslekken die hackers actief uitbuiten. Een bijgewerkt toestel is veel moeilijker te hacken.", chain:null, stateChanges:{ phoneUpdated:true } },
+          { hpDelta:-5, positive:false, icon:"⚠️", title:"TIJDELIJK RISICO", msg:"Zolang de update niet geïnstalleerd is, blijft je telefoon kwetsbaar.", context:"💡 'Later' wordt vaak 'nooit'. Elk uur zonder update is een uur blootstelling aan bekende kwetsbaarheden.", chain:null, stateChanges:{} },
+          { hpDelta:-15,positive:false, icon:"🔓", title:"OPEN KWETSBAARHEID!", msg:"Door de update te negeren, laat je een deur open voor hackers.", context:"💡 Beveiligingsfixes bestaan omdat onderzoekers ECHTE lekken hebben gevonden. Ze negeren is bewust risico nemen.", chain:null, stateChanges:{} },
+          { hpDelta:-25,positive:false, icon:"☠️", title:"GROTE FOUT!", msg:"Zonder automatische updates wordt je toestel nooit meer hersteld en steeds kwetsbaarder.", context:"⚠️ Zonder updates blijft elke nieuw ontdekte kwetsbaarheid voor altijd uitbuitbaar op je toestel.", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:2, icon:"📡", name:"OPENBAAR WIFI",
+        loc:"☕ Café Pixel · 12u15",
+        narrative:"Je bent in een café met vrienden. Het café biedt WiFi aan: <span class='hl'>\"Cafe_Pixel_Free\"</span> (geen slotje = <span class='danger'>niet beveiligd</span>).\n\nJe wilt een video tonen. Wat doe je?",
+        enemy:{ sprite:"👤", name:"MAN-IN-THE-MIDDLE AANVAL", desc:"Op dit netwerk kan iemand alles onderscheppen wat je verstuurt of ontvangt." },
+        choices:[
+          { icon:"📶", text:"Verbinden met het café-WiFi" },
+          { icon:"📱", text:"Mobiele data gebruiken (4G/5G)" },
+          { icon:"🔐", text:"VPN activeren en dan verbinden" },
+          { icon:"❓", text:"De ober vragen naar een beveiligd netwerk met wachtwoord" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"⚠️", title:null, msg:null,
+            context:"💡 Op openbaar WiFi zonder wachtwoord is je onversleuteld verkeer leesbaar voor iedereen op hetzelfde netwerk.",
+            chain:null, stateChanges:{ onPublicWifi:true },
+            dynamic:(flags) => ({
+              hpDelta: flags.phoneUpdated ? -10 : -20,
+              title: flags.phoneUpdated ? "RISKANT MAAR BEPERKT" : "DUBBEL GEVAAR!",
+              msg: flags.phoneUpdated
+                ? "Je bent op een publiek netwerk. Iemand kan je verkeer bespioneren. Geen wachtwoorden invoeren!"
+                : "Openbaar WiFi + telefoon niet bijgewerkt = dubbel risico. Niet-herstelde lekken kunnen op afstand uitgebuit worden!",
+              chainMsg: flags.phoneUpdated ? null : "⚠️ Gecombineerd effect: je telefoon is niet bijgewerkt, waardoor lekken uitbuitbaar blijven op dit netwerk.",
+              extraFlags: flags.phoneUpdated ? {} : { phoneCompromised:true },
+            })
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"VERSTANDIGE KEUZE!", msg:"Mobiele data (4G/5G) is versleuteld en veilig. Niemand rondom jou kan je verkeer onderscheppen.", context:"💡 Mobiele verbindingen gaan via een versleuteld operatornetwerk. In tegenstelling tot openbaar WiFi kan niemand 'luisteren'.", chain:null, stateChanges:{} },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"MAXIMALE BESCHERMING!", msg:"VPN versleutelt al je verkeer voor het over WiFi gaat. Zelfs als iemand bespionneert, ziet hij alleen onzin.", context:"💡 VPN = versleutelde tunnel tussen jou en het internet. Beste bescherming op openbaar netwerk.", chain:null, stateChanges:{ onPublicWifi:true, usingVPN:true } },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"GOED IDEE MAAR...", msg:"Het echte netwerk controleren is goed (er bestaan valse 'Evil Twin' netwerken). Maar zelfs het officiële café-netwerk is niet per se veilig.", context:"💡 Aanvallers maken soms netwerken die de naam van het café kopiëren. Altijd controleren EN VPN gebruiken indien mogelijk.", chain:null, stateChanges:{ onPublicWifi:true } },
+        ]
+      },
+      {
+        id:3, icon:"📲", name:"VERDACHTE DOWNLOAD",
+        loc:"🏠 Je kamer · 18u00",
+        narrative:"Je vriend stuurt een bericht: <span class='hl'>\"Download dit spel, het is geweldig! Het is een directe APK, niet op de Play Store maar het werkt beter!\"</span>\n\nHet bestand \"SuperGame_v2.apk\" komt van een onbekende site.",
+        enemy:null,
+        dynamicEnemy:(flags) => (flags.onPublicWifi && !flags.usingVPN)
+          ? { sprite:"🦠", name:"MALWARE IN OVERDRACHT", desc:"Via het gecompromitteerde openbare WiFi kan de malware je gegevens al naar de server sturen!" }
+          : null,
+        choices:[
+          { icon:"📥", text:"De APK downloaden en installeren" },
+          { icon:"🏪", text:"Het spel zoeken in de Play Store" },
+          { icon:"🔍", text:"De gevraagde machtigingen controleren voor installatie" },
+          { icon:"🙅", text:"Weigeren en de risico's uitleggen aan mijn vriend" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"☠️", title:null, msg:null,
+            context:"⚠️ APK's buiten de Play Store worden niet door Google gecontroleerd. Iedereen kan er een virus in verstoppen. Dit is een van de meest voorkomende infectiemethoden.",
+            chain:null, stateChanges:{ suspiciousApp:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.onPublicWifi && !flags.usingVPN) { dmg -= 15; extra += " Bovendien kan de malware via het gecompromitteerde openbare WiFi je gegevens in realtime doorsturen!"; }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " En niet-herstelde lekken maken de infectie nog eenvoudiger."; }
+              return { hpDelta:dmg, title:dmg<=-35?"💀 RAMP!":"SCHADELIJKE APP!", msg:"Het APK-bestand bevatte malware. Het heeft nu toegang tot je contacten, foto's en berichten."+extra, chainMsg:extra?"⚠️ Je vorige slechte keuzes hebben deze aanval versterkt.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"GOED ALTERNATIEF!", msg:"De Play Store controleert apps voor publicatie. Als het spel er niet op staat, is dat vaak een slecht teken.", context:"💡 Google Play Protect scant apps op malware. Veel veiliger dan APK's van onbekende bronnen.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"VOORZICHTIG MAAR NIET GENOEG", msg:"Machtigingen controleren is een goede gewoonte. Maar malware kan om schijnbaar legitieme machtigingen vragen.", context:"💡 Een echt spel heeft geen toegang nodig tot je sms'en of contacten. Overdreven machtigingen = alarmsignaal. Maar beter helemaal niet installeren.", chain:null, stateChanges:{} },
+          { hpDelta:15, positive:true,  icon:"🏆", title:"VOORBEELDIGE REACTIE!", msg:"Je hebt jezelf én je vriend beschermd. Beveiligingsbewustzijn delen is ook zichzelf verdedigen.", context:"💡 Bewustwording is een krachtig wapen. Een geïnformeerde vriend = één slachtoffer minder. Blijf delen!", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:4, icon:"📧", name:"VALSE E-MAIL",
+        loc:"🏫 School · 10u00",
+        narrative:"Je ontvangt een e-mail: <span class='hl'>\"🎉 GEFELICITEERD! Je hebt een iPhone 15 Pro gewonnen! Klik HIER binnen 10 minuten!\"</span>\n\nAfzender: <span class='danger'>\"Apple-Prizes@win-now-2024.net\"</span>. Vol spelfouten.",
+        enemy:null,
+        dynamicEnemy:(flags) => flags.suspiciousApp
+          ? { sprite:"🎣", name:"PHISHING × MALWARE", desc:"De geïnstalleerde schadelijke app + deze link = gecombineerde aanval. Je opgeslagen wachtwoorden zijn in gevaar!" }
+          : null,
+        choices:[
+          { icon:"👆", text:"Op de link klikken om te zien wat het is" },
+          { icon:"🗑️", text:"De e-mail verwijderen zonder te klikken" },
+          { icon:"🚨", text:"Als spam / phishing melden" },
+          { icon:"📤", text:"Doorsturen naar vrienden zodat zij ook kunnen 'winnen'" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"🎣", title:null, msg:null,
+            context:"⚠️ Phishing-tekens: vreemde afzender, kunstmatige urgentie, te mooi om waar te zijn, verdachte link. NOOIT klikken zonder verificatie!",
+            chain:null, stateChanges:{ clickedPhishing:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.suspiciousApp) { dmg -= 20; extra += " De schadelijke app heeft de gelegenheid benut om je opgeslagen browserwachtwoorden te stelen!"; }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " Niet-herstelde lekken hebben de exploitatie van de schadelijke link vergemakkelijkt."; }
+              return { hpDelta:dmg, title:dmg<=-40?"💀 GECOMBINEERDE AANVAL!":"PHISHING VAL!", msg:"Het was een val! De site vroeg je persoonlijke gegevens. Je bent gephisht."+extra, chainMsg:extra?"⚠️ Je vorige keuzes hebben van deze eenvoudige aanval een totale ramp gemaakt.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"GOED GEDAAN", msg:"Verwijderen zonder klikken is de juiste reactie. Je hebt de haak niet geslikt.", context:"💡 Gouden regel: als je niets hebt besteld, als het te mooi lijkt, als de afzender raar is — verwijder direct.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"VOORBEELDIGE ACTIE!", msg:"Phishing melden beschermt iedereen! Elk rapport helpt spamfilters te verbeteren.", context:"💡 Gmail en Outlook gebruiken je meldingen om e-mails bij ALLE gebruikers te blokkeren. Één melding = duizenden beschermde personen.", chain:null, stateChanges:{} },
+          { hpDelta:-30,positive:false, icon:"💀", title:"CATASTROFAAL!", msg:"Je hebt een phishingpoging naar al je contacten doorgestuurd! Je vrienden ontvangen nu deze val.", context:"⚠️ Niet-geverifieerde e-mails NOOIT doorsturen. Je wordt onbedoeld medeplichtig aan de aanval.", chain:null, stateChanges:{ clickedPhishing:true } },
+        ]
+      },
+      {
+        id:5, icon:"🍪", name:"DE COOKIE-VAL",
+        loc:"💻 Thuis · 16u30",
+        narrative:"Je bezoekt een gamingsite. Een popup verschijnt: <span class='hl'>\"🍪 We gebruiken cookies om uw ervaring te verbeteren!\"</span>\n\nDe knop \"Alles accepteren\" is groot en kleurrijk. \"Weigeren\" is klein en grijs.",
+        enemy:null,
+        dynamicEnemy:(flags) => (flags.clickedPhishing || flags.suspiciousApp)
+          ? { sprite:"🍪", name:"COOKIE ALS WAPEN!", desc:"Als een hacker al toegang heeft tot je toestel, laten je sessiecookies hem inloggen op je accounts ZONDER wachtwoord!" }
+          : null,
+        choices:[
+          { icon:"✅", text:"Alles accepteren (sneller)" },
+          { icon:"❌", text:"Alles weigeren" },
+          { icon:"⚙️", text:"Aanpassen (alleen essentiële cookies accepteren)" },
+          { icon:"✖️", text:"Popup sluiten zonder te kiezen" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:null, title:null, msg:null,
+            context:"⚠️ 'Session hijacking': als je toestel gecompromitteerd is, laten gestolen sessiecookies een aanvaller inloggen op je accounts alsof hij jou is.",
+            chain:null, stateChanges:{ allCookiesAccepted:true },
+            dynamic:(flags) => {
+              let dmg = -10, extra = "";
+              const danger = flags.clickedPhishing || flags.suspiciousApp || flags.phoneCompromised;
+              if (danger) { dmg -= 20; extra = " ERGER: een hacker met toegang tot je toestel kan deze cookies nu gebruiken om in te loggen op je accounts zonder wachtwoord!"; }
+              return { hpDelta:dmg, icon:danger?"💀":"🍪", title:danger?"🚨 KRITIEK GEVAAR!":"SLECHTE GEWOONTE", msg:"Je hebt tientallen trackers geaccepteerd die alles wat je online doet zullen volgen."+extra, chainMsg:danger?"⚠️ Gecombineerd met je eerdere problemen worden deze cookies een toegangspoort voor hackers.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"ACTIEVE BESCHERMING!", msg:"Niet-essentiële cookies weigeren beschermt je privacy. De site werkt nog perfect.", context:"💡 'Essentiële' cookies (login, winkelwagen) blijven behouden. Alleen advertentietrackers worden geblokkeerd. Geen functieverlies.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"IDEALE KEUZE!", msg:"Aanpassen is de beste praktijk. Je houdt wat nodig is en blokkeert de rest.", context:"💡 Noodzakelijke cookies = login, onthouden. Analytische/advertentiecookies = trackers die je gegevens aan derden verkopen. Alleen de eerste zijn nuttig.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"NIET IDEAAL", msg:"Door te sluiten zonder te kiezen, beschouwen veel sites dit als impliciete toestemming.", context:"💡 De wet (AVG/GDPR) vereist uitdrukkelijke toestemming. Neem 10 seconden om te kiezen in plaats van te negeren.", chain:null, stateChanges:{ allCookiesAccepted:true } },
+        ]
+      },
+      {
+        id:6, icon:"🔒", name:"WACHTWOORD",
+        loc:"🏠 Je kamer · 20u00",
+        narrative:"Je schrijft je in op een nieuwe gamingsite. Je moet een wachtwoord aanmaken.\n\nJe huidige Gmail-wachtwoord is <span class='hl'>\"gaming2010\"</span>. Wat ga je gebruiken?",
+        enemy:null,
+        dynamicEnemy:(flags) => flags.clickedPhishing
+          ? { sprite:"🔓", name:"BRUTE FORCE BEZIG", desc:"De phisher test je bekende wachtwoorden al op honderden sites!" }
+          : null,
+        choices:[
+          { icon:"🔑", text:"\"gaming2010\" hergebruiken (makkelijker)" },
+          { icon:"💪", text:"Een sterk, uniek wachtwoord aanmaken (bv: \"Tr4in!K4t_92#\")" },
+          { icon:"📱", text:"Een wachtwoordmanager gebruiken" },
+          { icon:"🎲", text:"\"123456\" — niemand gaat dat raden!" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"💀", title:null, msg:null,
+            context:"⚠️ 'Credential stuffing': hackers testen automatisch miljoenen e-mail/wachtwoord-combinaties. 1 hergebruikt wachtwoord = alle accounts in gevaar.",
+            chain:null, stateChanges:{ weakPassword:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.clickedPhishing) { dmg -= 25; extra += " En omdat de phisher 'gaming2010' al kent, heeft hij zojuist toegang gekregen tot je Gmail en alle andere accounts!"; }
+              if (flags.allCookiesAccepted && (flags.suspiciousApp || flags.phoneCompromised)) { dmg -= 10; extra += " Gecombineerd met de geaccepteerde cookies is je volledige identiteit nu in handen van een aanvaller."; }
+              return { hpDelta:dmg, title:dmg<=-40?"💀 ALLE ACCOUNTS GEHACKT!":"CREDENTIAL STUFFING!", msg:"Een wachtwoord hergebruiken is zeer gevaarlijk. Als deze site gehackt wordt, is je Gmail ook gecompromitteerd!"+extra, chainMsg:extra?"⚠️ De opeenstapeling van je slechte keuzes heeft deze aanval verwoestend gemaakt.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:15, positive:true,  icon:"✅", title:"STERK WACHTWOORD!", msg:"Lang, uniek, met hoofd-/kleine letters/cijfers/symbolen = quasi onmogelijk te raden of te brute-forcen.", context:"💡 Een wachtwoord van 15+ gemengde tekens zou miljoenen jaren duren om te kraken. En omdat het uniek is, zijn je andere accounts veilig als deze site gehackt wordt.", chain:null, stateChanges:{} },
+          { hpDelta:20, positive:true,  icon:"🏆", title:"PERFECTE KEUZE!", msg:"Een wachtwoordmanager genereert ultra-complexe, unieke wachtwoorden per site. Je moet slechts één hoofdwachtwoord onthouden!", context:"💡 Gratis voorbeelden: Bitwarden, KeePass. Aanbevolen door alle experts. 1 wachtwoord per site = beperkte schade als een site gehackt wordt.", chain:null, stateChanges:{} },
+          { hpDelta:-35,positive:false, icon:"☠️", title:"KRITIEKE FOUT!", msg:"'123456' is het meest gebruikte wachtwoord ter wereld. Het staat op elke hackerlijst. Gekraakt in minder dan een seconde.", context:"⚠️ Hackers gebruiken 'woordenboeken' met miljoenen veelgebruikte wachtwoorden. '123456', 'password', 'qwerty' = direct gekraakt. NOOIT.", chain:null, stateChanges:{ weakPassword:true } },
+        ]
+      },
+    ],
+  },
+  en: {
+    langDesc: "Learn to defend yourself against cyberattacks by making the right choices!",
+    hpLabel: "SECURITY",
+    mapTitle: "MISSION MAP",
+    mapSub: "SELECT YOUR NEXT MISSION",
+    mapHpSummary: hp => `Current security level : ${hp}/100`,
+    choicesLabel: "// CHOOSE YOUR ACTION :",
+    continueBtn: "CONTINUE →",
+    replayBtn: "↺ PLAY AGAIN",
+    reportTitle: "// MISSION REPORT",
+    statusDone: "✓ DONE",
+    statusPlay: "▶ PLAY",
+    statusLock: "🔒 LOCKED",
+    levelOf: (n,t) => `MISSION ${n} / ${t}`,
+    flags: {
+      phoneUpdated:      { label: "📱 Phone updated", type: "good" },
+      onPublicWifi:      { label: "📡 Public WiFi", type: "warn" },
+      usingVPN:          { label: "🔐 VPN active", type: "good" },
+      suspiciousApp:     { label: "☠️ Malicious app", type: "bad" },
+      clickedPhishing:   { label: "🎣 Phishing clicked", type: "bad" },
+      allCookiesAccepted:{ label: "🍪 All cookies accepted", type: "warn" },
+      weakPassword:      { label: "🔓 Weak password", type: "bad" },
+      phoneCompromised:  { label: "⚠️ Device compromised", type: "bad" },
+    },
+    grades: {
+      S: { emoji:"🏆", title:"CYBER EXPERT",        msg:"Incredible! You master cybersecurity. Your data is safe and you're a role model for others!" },
+      A: { emoji:"🥇", title:"DIGITAL DEFENDER",    msg:"Well done! You made the right choices in most situations. Keep it up!" },
+      B: { emoji:"🥈", title:"CYBER APPRENTICE",    msg:"Not bad! You understand the dangers but some bad habits remain. Try again to do better!" },
+      C: { emoji:"🥉", title:"VULNERABLE USER",     msg:"Warning! Several of your choices weakened your security. A hacker could have taken advantage..." },
+      D: { emoji:"💀", title:"EASY TARGET",         msg:"Your data is probably compromised. A real hacker would exploit each of these bad choices. Play again and learn!" },
+    },
+    levels: [
+      {
+        id:1, icon:"📱", name:"CRITICAL UPDATE",
+        loc:"🏠 Your room · 7:30 AM",
+        narrative:"Your alarm goes off. You grab your phone and see: <span class='hl'>⚠️ System update available (security patch)</span>.\n\nYou have class in 30 minutes. The update takes about 10 minutes.",
+        enemy:null,
+        choices:[
+          { icon:"⬆️", text:"Update now (10 min)" },
+          { icon:"⏰", text:"Remind me in 1 hour" },
+          { icon:"❌", text:"Ignore the notification" },
+          { icon:"🚫", text:"Disable automatic updates" },
+        ],
+        outcomes:[
+          { hpDelta:10, positive:true,  icon:"✅", title:"EXCELLENT CHOICE!", msg:"Your phone is now protected against the latest known vulnerabilities.", context:"💡 Updates fix security holes that hackers are actively exploiting. An updated device is much harder to hack.", chain:null, stateChanges:{ phoneUpdated:true } },
+          { hpDelta:-5, positive:false, icon:"⚠️", title:"TEMPORARY RISK", msg:"Until the update is installed, your phone remains vulnerable to recent attacks.", context:"💡 'Later' often becomes 'never'. Every hour without an update is an hour of exposure to known vulnerabilities.", chain:null, stateChanges:{} },
+          { hpDelta:-15,positive:false, icon:"🔓", title:"OPEN VULNERABILITY!", msg:"By ignoring the update, you leave a door open for hackers. The security flaw remains active.", context:"💡 Security patches exist because researchers found REAL vulnerabilities. Ignoring them means taking a calculated risk — for the hackers.", chain:null, stateChanges:{} },
+          { hpDelta:-25,positive:false, icon:"☠️", title:"BIG MISTAKE!", msg:"Without automatic updates, your device will never be patched and will become an increasingly easy target.", context:"⚠️ Without updates, every newly discovered vulnerability stays exploitable on your device forever.", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:2, icon:"📡", name:"PUBLIC WIFI",
+        loc:"☕ Pixel Café · 12:15 PM",
+        narrative:"You're at a café with friends. The café offers WiFi: <span class='hl'>\"Cafe_Pixel_Free\"</span> (no padlock = <span class='danger'>unsecured</span>).\n\nYou want to show a video to your friends. What do you do?",
+        enemy:{ sprite:"👤", name:"MAN-IN-THE-MIDDLE ATTACK", desc:"On this network, someone can intercept everything you send or receive." },
+        choices:[
+          { icon:"📶", text:"Connect to the café WiFi directly" },
+          { icon:"📱", text:"Use mobile data (4G/5G)" },
+          { icon:"🔐", text:"Activate VPN then connect" },
+          { icon:"❓", text:"Ask staff for a secure password-protected network" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"⚠️", title:null, msg:null,
+            context:"💡 On public WiFi without a password, your unencrypted traffic (HTTP) is readable by anyone on the same network.",
+            chain:null, stateChanges:{ onPublicWifi:true },
+            dynamic:(flags) => ({
+              hpDelta: flags.phoneUpdated ? -10 : -20,
+              title: flags.phoneUpdated ? "RISKY BUT LIMITED" : "DOUBLE DANGER!",
+              msg: flags.phoneUpdated
+                ? "You're on a public network. Someone could spy on your traffic. Avoid entering passwords!"
+                : "Public WiFi + phone not updated = double risk. Unpatched vulnerabilities can be exploited remotely!",
+              chainMsg: flags.phoneUpdated ? null : "⚠️ Combined effect: your phone being unpatched means vulnerabilities remain exploitable on this network.",
+              extraFlags: flags.phoneUpdated ? {} : { phoneCompromised:true },
+            })
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"WISE DECISION!", msg:"Mobile data (4G/5G) is encrypted and secure. Nobody around you can intercept your traffic.", context:"💡 Mobile connections go through an encrypted carrier network. Unlike public WiFi, nobody can 'listen in' on your connection.", chain:null, stateChanges:{} },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"MAXIMUM PROTECTION!", msg:"VPN encrypts all your traffic before it goes over WiFi. Even if someone spies, they only see gibberish.", context:"💡 VPN = encrypted tunnel between you and the internet. Best protection on a public network.", chain:null, stateChanges:{ onPublicWifi:true, usingVPN:true } },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"GOOD IDEA BUT...", msg:"Checking the real network is smart (fake 'Evil Twin' networks exist). But even the official café network isn't necessarily secure.", context:"💡 Attackers sometimes create networks copying the café's name. Always verify AND use a VPN if possible.", chain:null, stateChanges:{ onPublicWifi:true } },
+        ]
+      },
+      {
+        id:3, icon:"📲", name:"SUSPICIOUS DOWNLOAD",
+        loc:"🏠 Your room · 6:00 PM",
+        narrative:"Your friend sends a message: <span class='hl'>\"Download this game, it's amazing! It's a direct APK, not on the Play Store but it works better!\"</span>\n\nThe file \"SuperGame_v2.apk\" comes from an unknown site.",
+        enemy:null,
+        dynamicEnemy:(flags) => (flags.onPublicWifi && !flags.usingVPN)
+          ? { sprite:"🦠", name:"MALWARE IN TRANSIT", desc:"Through the compromised public WiFi, the malware can already send your data to its server!" }
+          : null,
+        choices:[
+          { icon:"📥", text:"Download and install the APK" },
+          { icon:"🏪", text:"Search for the game on the Play Store instead" },
+          { icon:"🔍", text:"Check the permissions requested before installing" },
+          { icon:"🙅", text:"Refuse and explain the risks to my friend" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"☠️", title:null, msg:null,
+            context:"⚠️ APKs outside the Play Store are not verified by Google. Anyone can hide a virus in them. This is one of the most common infection methods.",
+            chain:null, stateChanges:{ suspiciousApp:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.onPublicWifi && !flags.usingVPN) { dmg -= 15; extra += " Plus, the compromised public WiFi allows the malware to transmit your data in real time!"; }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " And unpatched vulnerabilities make the infection even easier."; }
+              return { hpDelta:dmg, title:dmg<=-35?"💀 CATASTROPHIC!":"MALICIOUS APP!", msg:"The APK file contained malware. It now has access to your contacts, photos and messages."+extra, chainMsg:extra?"⚠️ Your previous bad choices amplified this attack.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"GOOD ALTERNATIVE!", msg:"The Play Store verifies apps before publishing. If the game isn't there, that's often a bad sign.", context:"💡 Google Play Protect scans apps for malware. Far from perfect, but infinitely safer than APKs from unknown sources.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"CAUTIOUS BUT NOT ENOUGH", msg:"Checking permissions is a good habit. But malware can request permissions that seem legitimate.", context:"💡 A real game doesn't need access to your SMS or contacts. Excessive permissions = red flag. But better to not install it at all.", chain:null, stateChanges:{} },
+          { hpDelta:15, positive:true,  icon:"🏆", title:"EXEMPLARY REFLEX!", msg:"You protected yourself AND your friend. Sharing cybersecurity knowledge is also defending yourself.", context:"💡 Awareness is a powerful weapon. An informed friend = one less victim. Keep sharing!", chain:null, stateChanges:{} },
+        ]
+      },
+      {
+        id:4, icon:"📧", name:"PHISHING EMAIL",
+        loc:"🏫 School · 10:00 AM",
+        narrative:"You receive an email: <span class='hl'>\"🎉 CONGRATULATIONS! You won an iPhone 15 Pro! Click HERE within 10 minutes!\"</span>\n\nSender: <span class='danger'>\"Apple-Prizes@win-now-2024.net\"</span>. Full of typos.",
+        enemy:null,
+        dynamicEnemy:(flags) => flags.suspiciousApp
+          ? { sprite:"🎣", name:"PHISHING × MALWARE", desc:"The installed malicious app + this link = combined attack. Your saved passwords are in danger!" }
+          : null,
+        choices:[
+          { icon:"👆", text:"Click the link to see what it is" },
+          { icon:"🗑️", text:"Delete the email without clicking" },
+          { icon:"🚨", text:"Report as spam / phishing" },
+          { icon:"📤", text:"Forward to friends so they can 'win' too" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"🎣", title:null, msg:null,
+            context:"⚠️ Phishing signs: strange sender, artificial urgency, too good to be true, suspicious link. NEVER click without verifying!",
+            chain:null, stateChanges:{ clickedPhishing:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.suspiciousApp) { dmg -= 20; extra += " The malicious app exploited your visit to steal your browser-saved passwords!"; }
+              if (!flags.phoneUpdated) { dmg -= 10; extra += " Unpatched vulnerabilities made it easier to exploit the malicious link."; }
+              return { hpDelta:dmg, title:dmg<=-40?"💀 COMBINED ATTACK!":"PHISHING TRAP!", msg:"It was a trap! The site asked for your personal information. You just got phished."+extra, chainMsg:extra?"⚠️ Your previous choices turned this simple attack into a total disaster.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:0,  positive:true,  icon:"✅", title:"WELL HANDLED", msg:"Deleting without clicking is the right reaction. You didn't take the bait.", context:"💡 Golden rule: if you didn't order anything, if it seems too good to be true, if the sender looks weird — delete immediately.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"EXEMPLARY ACTION!", msg:"Reporting phishing protects everyone! Each report helps spam filters improve.", context:"💡 Gmail and Outlook use your reports to block these emails for ALL users. One report = thousands of protected people.", chain:null, stateChanges:{} },
+          { hpDelta:-30,positive:false, icon:"💀", title:"CATASTROPHIC!", msg:"You just spread a phishing attempt to all your contacts! Your friends now receive this trap.", context:"⚠️ NEVER forward unverified emails. You become an unwilling accomplice to the attack and endanger all your contacts.", chain:null, stateChanges:{ clickedPhishing:true } },
+        ]
+      },
+      {
+        id:5, icon:"🍪", name:"THE COOKIE TRAP",
+        loc:"💻 At home · 4:30 PM",
+        narrative:"You visit a gaming site to check scores. A popup appears: <span class='hl'>\"🍪 We use cookies to improve your experience!\"</span>\n\nThe \"Accept all\" button is big and colorful. \"Decline\" is small and gray.",
+        enemy:null,
+        dynamicEnemy:(flags) => (flags.clickedPhishing || flags.suspiciousApp)
+          ? { sprite:"🍪", name:"WEAPONIZED COOKIE!", desc:"If a hacker already controls your device, your session cookies let them log into your accounts WITHOUT a password!" }
+          : null,
+        choices:[
+          { icon:"✅", text:"Accept all cookies (faster)" },
+          { icon:"❌", text:"Decline all cookies" },
+          { icon:"⚙️", text:"Customize (accept only essential cookies)" },
+          { icon:"✖️", text:"Close the popup without choosing" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:null, title:null, msg:null,
+            context:"⚠️ 'Session hijacking': if your device is compromised, stolen session cookies let an attacker log into your accounts as if they were you.",
+            chain:null, stateChanges:{ allCookiesAccepted:true },
+            dynamic:(flags) => {
+              let dmg = -10, extra = "";
+              const danger = flags.clickedPhishing || flags.suspiciousApp || flags.phoneCompromised;
+              if (danger) { dmg -= 20; extra = " WORSE: a hacker with access to your device can now use these cookies to log into your accounts without a password!"; }
+              return { hpDelta:dmg, icon:danger?"💀":"🍪", title:danger?"🚨 CRITICAL DANGER!":"BAD HABIT", msg:"You've accepted dozens of trackers that will monitor everything you do online."+extra, chainMsg:danger?"⚠️ Combined with your previous problems, these cookies become a gateway for hackers.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:5,  positive:true,  icon:"🛡️", title:"ACTIVE PROTECTION!", msg:"Declining non-essential cookies protects your privacy. The site still works perfectly.", context:"💡 'Essential' cookies (login, cart) are kept. Only advertising trackers are blocked. No loss of functionality.", chain:null, stateChanges:{} },
+          { hpDelta:10, positive:true,  icon:"🏆", title:"IDEAL CHOICE!", msg:"Customizing is the best practice. You keep what's necessary and block the rest.", context:"💡 Necessary cookies = login, remembering preferences. Analytics/advertising cookies = trackers that sell your data to third parties. Only the first are useful.", chain:null, stateChanges:{} },
+          { hpDelta:-5, positive:false, icon:"🤔", title:"NOT IDEAL", msg:"By closing without choosing, many sites consider you've implicitly accepted.", context:"💡 EU law (GDPR) requires explicit consent. Take 10 seconds to choose rather than ignoring.", chain:null, stateChanges:{ allCookiesAccepted:true } },
+        ]
+      },
+      {
+        id:6, icon:"🔒", name:"PASSWORD",
+        loc:"🏠 Your room · 8:00 PM",
+        narrative:"You're signing up on a new gaming site. You need to create a password.\n\nYour current Gmail password is <span class='hl'>\"gaming2010\"</span>. What will you use?",
+        enemy:null,
+        dynamicEnemy:(flags) => flags.clickedPhishing
+          ? { sprite:"🔓", name:"BRUTE FORCE RUNNING", desc:"The phisher is already testing your known passwords on hundreds of sites!" }
+          : null,
+        choices:[
+          { icon:"🔑", text:"Reuse \"gaming2010\" (it's easier)" },
+          { icon:"💪", text:"Create a strong, unique password (e.g.: \"Tr4in!K4t_92#\")" },
+          { icon:"📱", text:"Use a password manager" },
+          { icon:"🎲", text:"\"123456\" — nobody's going to guess that!" },
+        ],
+        outcomes:[
+          {
+            hpDelta:null, positive:false, icon:"💀", title:null, msg:null,
+            context:"⚠️ 'Credential stuffing': hackers automatically test millions of email/password combinations. 1 reused password = all accounts in danger.",
+            chain:null, stateChanges:{ weakPassword:true },
+            dynamic:(flags) => {
+              let dmg = -20, extra = "";
+              if (flags.clickedPhishing) { dmg -= 25; extra += " And since the phisher already knows 'gaming2010', they just gained access to your Gmail and all your other accounts!"; }
+              if (flags.allCookiesAccepted && (flags.suspiciousApp || flags.phoneCompromised)) { dmg -= 10; extra += " Combined with the accepted cookies, your complete identity is now in an attacker's hands."; }
+              return { hpDelta:dmg, title:dmg<=-40?"💀 ALL ACCOUNTS HACKED!":"CREDENTIAL STUFFING!", msg:"Reusing a password is very dangerous. If this site is hacked, your Gmail is also compromised!"+extra, chainMsg:extra?"⚠️ The accumulation of your bad choices has made this attack devastating.":null, extraFlags:{} };
+            }
+          },
+          { hpDelta:15, positive:true,  icon:"✅", title:"STRONG PASSWORD!", msg:"Long, unique, with uppercase/numbers/symbols = nearly impossible to guess or brute-force.", context:"💡 A 15+ character mixed password would take millions of years to crack. And since it's unique, even if this site is hacked, your other accounts are safe.", chain:null, stateChanges:{} },
+          { hpDelta:20, positive:true,  icon:"🏆", title:"PERFECT DECISION!", msg:"A password manager generates ultra-complex, unique passwords for each site. You only need to remember one master password!", context:"💡 Free examples: Bitwarden, KeePass. Recommended by all security experts. 1 password per site = limited damage if a site is hacked.", chain:null, stateChanges:{} },
+          { hpDelta:-35,positive:false, icon:"☠️", title:"CRITICAL ERROR!", msg:"'123456' is the most used password in the world. It's on every hacker list. Cracked in under a second.", context:"⚠️ Hackers use 'dictionaries' containing millions of common passwords. '123456', 'password', 'qwerty' = cracked instantly. NEVER.", chain:null, stateChanges:{ weakPassword:true } },
+        ]
+      },
+    ],
+  },
+};
+
+// ===== GAME ENGINE =====
+function getLang(){ return T[lang]; }
+
+function startGame(l){
+  lang = l;
+  hp = 100;
+  currentLevelIndex = 0;
+  lastChoiceIndex = -1;
+  levelsDone = 0;
+  flags = { phoneUpdated:false, onPublicWifi:false, usingVPN:false, suspiciousApp:false, clickedPhishing:false, allCookiesAccepted:false, weakPassword:false, phoneCompromised:false };
+  choiceHistory = [];
+  document.getElementById('hp-bar').style.display = 'flex';
+  updateHPBar();
+  showMap();
+}
+
+function updateHPBar(){
+  hp = Math.max(0, Math.min(100, hp));
+  const bar = document.getElementById('hp-bar-inner');
+  const val = document.getElementById('hp-value-txt');
+  const lbl = document.getElementById('hp-label-txt');
+  const lvl = document.getElementById('hp-level-txt');
+  const L = getLang();
+  lbl.textContent = L.hpLabel;
+  bar.style.width = hp + '%';
+  val.textContent = hp;
+  if(hp >= 70){ bar.style.background='var(--green)'; val.style.color='var(--green)'; }
+  else if(hp >= 40){ bar.style.background='var(--yellow)'; val.style.color='var(--yellow)'; }
+  else { bar.style.background='var(--red)'; val.style.color='var(--red)'; }
+  const missionNum = Math.min(levelsDone + 1, L.levels.length);
+  lvl.textContent = L.levelOf(missionNum, L.levels.length);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== MAP =====
+function showMap(){
+  const L = getLang();
+  document.getElementById('map-title').textContent = L.mapTitle;
+  document.getElementById('map-sub').textContent = L.mapSub;
+  document.getElementById('map-hp-summary').textContent = L.mapHpSummary(hp);
+
+  const path = document.getElementById('map-path');
+  path.innerHTML = '';
+
+  L.levels.forEach((lv, i) => {
+    const isDone = i < levelsDone;
+    const isUnlocked = i === levelsDone;
+    const isLocked = i > levelsDone;
+    const state = isLocked ? 'locked' : (isDone ? 'completed' : 'unlocked');
+
+    // Connector above (except first)
+    if(i > 0){
+      const conn = document.createElement('div');
+      conn.className = 'map-connector-v' + (i <= levelsDone ? ' done' : '');
+      path.appendChild(conn);
+    }
+
+    const row = document.createElement('div');
+    row.className = 'map-row';
+
+    const node = document.createElement('div');
+    node.className = `map-node ${state}`;
+    node.style.animationDelay = (i * 0.08) + 's';
+    if(!isLocked) node.onclick = () => startLevel(i);
+
+    const badgeText = isDone ? L.statusDone : (isUnlocked ? L.statusPlay : L.statusLock);
+    const badgeClass = isDone ? 'badge-done' : (isUnlocked ? 'badge-play' : 'badge-lock');
+
+    node.innerHTML = `
+      <div class="map-node-circle">${lv.icon}</div>
+      <div class="map-node-info">
+        <div class="map-node-name">${lv.name}</div>
+        <div class="map-node-loc">${lv.loc}</div>
+        <span class="map-node-badge ${badgeClass}">${badgeText}</span>
+      </div>`;
+    row.appendChild(node);
+    path.appendChild(row);
+  });
+
+  showScreen('map');
+}
+
+// ===== LEVEL =====
+function startLevel(idx){
+  currentLevelIndex = idx;
+  const L = getLang();
+  const lv = L.levels[idx];
+
+  document.getElementById('level-num').textContent = L.levelOf(idx+1, L.levels.length);
+  document.getElementById('level-title').textContent = lv.name;
+  document.getElementById('level-loc').textContent = lv.loc;
+  document.getElementById('level-icon').textContent = lv.icon;
+  document.getElementById('level-narrative').innerHTML = lv.narrative.replace(/\n/g,'<br>');
+  document.getElementById('choices-label').textContent = L.choicesLabel;
+
+  // Enemy
+  const enemyEl = document.getElementById('enemy-alert');
+  let enemy = null;
+  if(typeof lv.dynamicEnemy === 'function') enemy = lv.dynamicEnemy(flags);
+  else if(lv.enemy) enemy = lv.enemy;
+
+  if(enemy){
+    document.getElementById('enemy-sprite').textContent = enemy.sprite;
+    document.getElementById('enemy-name').textContent = enemy.name;
+    document.getElementById('enemy-desc').textContent = enemy.desc;
+    enemyEl.classList.add('visible');
+  } else {
+    enemyEl.classList.remove('visible');
+  }
+
+  // State flags
+  renderFlags();
+
+  // Choices
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  lv.choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.style.animationDelay = (i * 0.1) + 's';
+    btn.innerHTML = `<span class="choice-icon">${ch.icon}</span><span class="choice-text">${ch.text}</span>`;
+    btn.onclick = () => makeChoice(i);
+    grid.appendChild(btn);
+  });
+
+  showScreen('level');
+}
+
+function renderFlags(){
+  const L = getLang();
+  const container = document.getElementById('state-flags');
+  container.innerHTML = '';
+  Object.entries(flags).forEach(([key, val]) => {
+    if(!val) return;
+    const def = L.flags[key];
+    if(!def) return;
+    const badge = document.createElement('span');
+    badge.className = `flag-badge flag-${def.type}`;
+    badge.textContent = def.label;
+    container.appendChild(badge);
+  });
+}
+
+// ===== CHOICE =====
+function makeChoice(choiceIdx){
+  const L = getLang();
+  const lv = L.levels[currentLevelIndex];
+  let outcome = lv.outcomes[choiceIdx];
+
+  // Resolve dynamic outcome if present
+  let hpDelta = outcome.hpDelta;
+  let title = outcome.title;
+  let msg = outcome.msg;
+  let chainMsg = outcome.chain;
+  let icon = outcome.icon;
+  let extraFlags = {};
+  let positive = outcome.positive;
+
+  if(typeof outcome.dynamic === 'function'){
+    const dyn = outcome.dynamic(flags);
+    hpDelta = dyn.hpDelta;
+    title = dyn.title;
+    msg = dyn.msg;
+    chainMsg = dyn.chainMsg || null;
+    if(dyn.icon) icon = dyn.icon;
+    extraFlags = dyn.extraFlags || {};
+    positive = hpDelta >= 0;
+  }
+
+  // Apply state changes
+  Object.assign(flags, outcome.stateChanges || {}, extraFlags);
+
+  // Apply HP
+  hp += hpDelta;
+  hp = Math.max(0, Math.min(100, hp));
+  updateHPBar();
+  levelsDone = Math.max(levelsDone, currentLevelIndex + 1);
+  choiceHistory.push({ level: currentLevelIndex, choice: choiceIdx, hpDelta });
+
+  // Show outcome
+  const isPos = positive !== undefined ? positive : hpDelta >= 0;
+  document.getElementById('outcome-icon').textContent = icon || (isPos ? '✅' : '❌');
+  document.getElementById('outcome-icon').style.color = isPos ? 'var(--green)' : 'var(--red)';
+  document.getElementById('outcome-title').textContent = title || '';
+  document.getElementById('outcome-title').style.color = isPos ? 'var(--green)' : 'var(--red)';
+
+  const hpEl = document.getElementById('outcome-hp-change');
+  hpEl.textContent = hpDelta > 0 ? `+${hpDelta} HP` : (hpDelta < 0 ? `${hpDelta} HP` : '±0 HP');
+  hpEl.style.color = hpDelta > 0 ? 'var(--green)' : (hpDelta < 0 ? 'var(--red)' : 'var(--cyan)');
+
+  document.getElementById('outcome-message').textContent = msg || '';
+
+  const chainEl = document.getElementById('outcome-chain');
+  if(chainMsg){ chainEl.textContent = chainMsg; chainEl.classList.add('visible'); }
+  else { chainEl.classList.remove('visible'); }
+
+  const ctxEl = document.getElementById('outcome-context');
+  ctxEl.textContent = outcome.context || '';
+  ctxEl.style.display = outcome.context ? 'block' : 'none';
+
+  document.getElementById('btn-continue').textContent = L.continueBtn;
+
+  // Body flash
+  document.body.style.animation = 'none';
+  document.body.offsetHeight; // reflow
+  document.body.style.animation = isPos ? 'goodFade 0.8s ease' : 'badFade 0.8s ease';
+
+  showScreen('outcome');
+}
+
+function continueFromOutcome(){
+  const L = getLang();
+  if(levelsDone >= L.levels.length){
+    showEndScreen();
+  } else {
+    showMap();
+  }
+}
+
+// ===== END SCREEN =====
+function showEndScreen(){
+  const L = getLang();
+
+  let grade, gradeColor;
+  if(hp >= 90)      { grade='S'; gradeColor='var(--green)'; }
+  else if(hp >= 70) { grade='A'; gradeColor='var(--cyan)'; }
+  else if(hp >= 50) { grade='B'; gradeColor='var(--yellow)'; }
+  else if(hp >= 30) { grade='C'; gradeColor='var(--orange)'; }
+  else              { grade='D'; gradeColor='var(--red)'; }
+
+  const gradeInfo = L.grades[grade];
+  document.getElementById('end-grade').textContent = gradeInfo.emoji;
+  document.getElementById('end-grade').style.color = gradeColor;
+  document.getElementById('end-title').textContent = gradeInfo.title;
+  document.getElementById('end-title').style.color = gradeColor;
+  document.getElementById('end-msg').textContent = gradeInfo.msg;
+  document.getElementById('end-report-title').textContent = L.reportTitle;
+
+  // Report items
+  const items = document.getElementById('report-items');
+  items.innerHTML = '';
+
+  const reportDefs = [
+    { flag:'phoneUpdated',       good:true,  textGood:{ fr:'📱 Téléphone mis à jour ✔', nl:'📱 Telefoon bijgewerkt ✔', en:'📱 Phone updated ✔' }, textBad:{ fr:'📱 Téléphone non mis à jour ✘', nl:'📱 Telefoon niet bijgewerkt ✘', en:'📱 Phone not updated ✘' } },
+    { flag:'onPublicWifi',       good:false, textBad:{ fr:'📡 Connexion sur WiFi public', nl:'📡 Verbonden op openbaar WiFi', en:'📡 Connected to public WiFi' }, textGood:{ fr:'📡 WiFi public évité ✔', nl:'📡 Openbaar WiFi vermeden ✔', en:'📡 Avoided public WiFi ✔' } },
+    { flag:'usingVPN',           good:true,  textGood:{ fr:'🔐 VPN utilisé ✔', nl:'🔐 VPN gebruikt ✔', en:'🔐 VPN used ✔' }, textBad:null },
+    { flag:'suspiciousApp',      good:false, textBad:{ fr:'☠️ App malveillante installée ✘', nl:'☠️ Schadelijke app geïnstalleerd ✘', en:'☠️ Malicious app installed ✘' }, textGood:null },
+    { flag:'clickedPhishing',    good:false, textBad:{ fr:'🎣 Lien de phishing cliqué ✘', nl:'🎣 Phishing-link geklikt ✘', en:'🎣 Clicked a phishing link ✘' }, textGood:null },
+    { flag:'allCookiesAccepted', good:false, textBad:{ fr:'🍪 Tous les cookies acceptés', nl:'🍪 Alle cookies aanvaard', en:'🍪 Accepted all cookies' }, textGood:null },
+    { flag:'weakPassword',       good:false, textBad:{ fr:'🔓 Mot de passe faible/réutilisé ✘', nl:'🔓 Zwak/hergebruikt wachtwoord ✘', en:'🔓 Weak/reused password ✘' }, textGood:null },
+    { flag:'phoneCompromised',   good:false, textBad:{ fr:'⚠️ Appareil compromis ✘', nl:'⚠️ Toestel gecompromitteerd ✘', en:'⚠️ Device compromised ✘' }, textGood:null },
+  ];
+
+  reportDefs.forEach(def => {
+    const val = flags[def.flag];
+    let text = null, type = 'warn';
+    if(val && !def.good){
+      text = def.textBad ? def.textBad[lang] : null;
+      type = 'bad';
+    } else if(!val && def.good){
+      text = def.textBad ? def.textBad[lang] : null;
+      type = 'bad';
+    } else if(val && def.good){
+      text = def.textGood ? def.textGood[lang] : null;
+      type = 'good';
+    }
+    if(!text) return;
+    const div = document.createElement('div');
+    div.className = `report-item ${type}`;
+    div.innerHTML = `<span class="ri-icon">${type==='good'?'✓':type==='bad'?'✗':'⚠'}</span><span>${text}</span>`;
+    items.appendChild(div);
+  });
+
+  document.getElementById('btn-replay').textContent = L.replayBtn;
+  document.getElementById('hp-bar').style.display = 'none';
+  showScreen('end');
+}
+
+function resetGame(){
+  document.getElementById('hp-bar').style.display = 'none';
+  showScreen('lang');
+}
+</script>
+</body>
+</html>

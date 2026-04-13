@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<!--
+  CyberQuest — Affiche d'initialisation
+  ─────────────────────────────────────
+  À ouvrir dans un navigateur (avec internet) pour générer les QR codes,
+  puis imprimer via Ctrl+P (ou Cmd+P).
+
+  Les QR codes sont générés côté client par qrcode.js (CDN).
+  Une fois générés, vous pouvez aussi faire "Enregistrer sous" puis
+  partager le fichier HTML sans connexion.
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberQuest — Affiche d'initialisation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg:     #0a0c10;
+      --card:   #111520;
+      --border: #1e2535;
+      --accent: #00ffd0;
+      --yellow: #ffcc00;
+      --red:    #ff3b6b;
+      --text:   #e8eaf2;
+      --muted:  #5a6580;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    /* ── Controls (screen only, hidden on print) ── */
+    .controls {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+      margin-bottom: 20px; padding: 16px;
+      background: var(--card); border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .ctrl-group { display: flex; flex-direction: column; gap: 4px; }
+    .ctrl-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .ctrl-input {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 7px 12px; border-radius: 6px; font-size: 14px;
+      font-family: 'Courier New', monospace; min-width: 220px;
+    }
+    .ctrl-input:focus { outline: none; border-color: var(--accent); }
+    .btn-gen {
+      background: var(--accent); color: #0a0c10; border: none;
+      padding: 10px 20px; border-radius: 8px; font-weight: 700;
+      font-size: 14px; cursor: pointer; align-self: flex-end;
+    }
+    .btn-gen:hover { opacity: 0.85; }
+    .btn-print {
+      background: transparent; color: var(--yellow);
+      border: 1px solid var(--yellow); padding: 10px 20px;
+      border-radius: 8px; font-weight: 600; font-size: 14px;
+      cursor: pointer; align-self: flex-end;
+    }
+    .btn-print:hover { background: rgba(255,204,0,0.1); }
+
+    /* ── Poster ── */
+    #poster {
+      max-width: 794px; /* A4 width at 96dpi */
+      margin: 0 auto;
+      background: #0f1218;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .poster-header {
+      background: linear-gradient(135deg, #0d1a15, #0a0c10);
+      border-bottom: 3px solid var(--accent);
+      padding: 32px 40px 28px;
+      text-align: center;
+      position: relative;
+    }
+    .poster-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.02) 2px, rgba(0,255,208,0.02) 4px
+      );
+      pointer-events: none;
+    }
+
+    .poster-logo { font-size: 56px; display: block; margin-bottom: 10px; }
+    .poster-title {
+      font-size: 40px; font-weight: 900; color: var(--accent);
+      letter-spacing: -1px; text-shadow: 0 0 30px rgba(0,255,208,0.4);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .poster-tagline {
+      font-size: 14px; color: var(--muted); letter-spacing: 3px;
+      text-transform: uppercase; margin-top: 6px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .poster-body {
+      padding: 32px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* QR blocks */
+    .qr-block {
+      background: #13192a; border-radius: 14px;
+      padding: 24px 20px; text-align: center;
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .qr-block.wifi-block  { border-color: var(--accent); }
+    .qr-block.init-block  { border-color: var(--yellow); }
+
+    .qr-block-icon { font-size: 32px; }
+    .qr-block-step {
+      font-size: 11px; font-family: 'Courier New', monospace;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+    }
+    .qr-block-title {
+      font-size: 18px; font-weight: 700;
+    }
+    .wifi-block .qr-block-title { color: var(--accent); }
+    .init-block .qr-block-title { color: var(--yellow); }
+
+    .qr-canvas-wrap {
+      background: #fff; padding: 12px; border-radius: 10px;
+      display: inline-block;
+    }
+    .qr-canvas-wrap canvas,
+    .qr-canvas-wrap img { display: block; }
+
+    .qr-block-creds {
+      font-family: 'Courier New', monospace; font-size: 13px;
+      text-align: left; width: 100%;
+      background: var(--bg); border-radius: 8px;
+      padding: 10px 14px; line-height: 2;
+      border: 1px solid var(--border);
+    }
+    .cred-key { color: var(--muted); }
+    .cred-val { color: var(--accent); font-weight: bold; }
+    .cred-val.pass { color: var(--yellow); }
+
+    .qr-block-url {
+      font-family: 'Courier New', monospace; font-size: 12px;
+      color: var(--yellow); word-break: break-all;
+      background: var(--bg); border-radius: 8px;
+      padding: 8px 12px; width: 100%; text-align: center;
+      border: 1px solid rgba(255,204,0,0.3);
+    }
+
+    /* Steps section */
+    .steps-section {
+      grid-column: 1 / -1;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    .step-item {
+      background: #13192a; border-radius: 10px; padding: 14px;
+      text-align: center; border: 1px solid var(--border);
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); color: #0a0c10;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px; font-family: 'Courier New', monospace;
+    }
+    .step-text { font-size: 12px; color: var(--text); line-height: 1.5; }
+
+    /* Fragments reminder */
+    .frags-section {
+      grid-column: 1 / -1;
+      background: #0d1a15; border: 1px solid var(--accent);
+      border-radius: 12px; padding: 18px 24px;
+    }
+    .frags-title {
+      font-size: 13px; font-family: 'Courier New', monospace;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .frags-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .frag-item {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border-radius: 8px; padding: 8px 12px;
+      border: 1px solid var(--border);
+    }
+    .frag-icon { font-size: 18px; }
+    .frag-info { display: flex; flex-direction: column; }
+    .frag-name { font-size: 11px; color: var(--muted); }
+    .frag-code { font-family: 'Courier New', monospace; font-size: 14px; color: var(--accent); font-weight: bold; }
+
+    .poster-footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 40px; text-align: center;
+      font-size: 11px; color: var(--muted);
+      font-family: 'Courier New', monospace; letter-spacing: 1px;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .controls { display: none !important; }
+      #poster {
+        border: none; border-radius: 0;
+        max-width: 100%; margin: 0;
+        background: #fff;
+        color: #000;
+      }
+      .poster-header { background: #f0f8ff; border-bottom: 3px solid #00aaaa; }
+      .poster-title   { color: #007777; text-shadow: none; }
+      .poster-tagline { color: #666; }
+      .qr-block { background: #f9f9f9; border: 2px solid #ccc; }
+      .qr-block.wifi-block { border-color: #00aaaa; }
+      .qr-block.init-block { border-color: #cc9900; }
+      .qr-block-title { }
+      .wifi-block .qr-block-title { color: #007777; }
+      .init-block .qr-block-title { color: #cc9900; }
+      .qr-block-creds { background: #f5f5f5; border: 1px solid #ddd; }
+      .cred-key { color: #666; }
+      .cred-val { color: #007777; }
+      .cred-val.pass { color: #cc9900; }
+      .qr-block-url { background: #fffbe6; color: #cc9900; border-color: #cc9900; }
+      .step-item { background: #f9f9f9; border: 1px solid #ddd; }
+      .step-num  { background: #007777; color: #fff; }
+      .step-text { color: #333; }
+      .frags-section { background: #f0fff8; border-color: #00aaaa; }
+      .frags-title { color: #666; }
+      .frag-item { background: #f9f9f9; border: 1px solid #ddd; }
+      .frag-name { color: #666; }
+      .frag-code { color: #007777; }
+      .poster-footer { color: #999; border-top: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls (screen only) -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <label class="ctrl-label" id="lbl-ssid">SSID WiFi</label>
+      <input class="ctrl-input" id="cfg-ssid" value="CyberQuestWifi" />
+    </div>
+    <div class="ctrl-group">
+      <label class="ctrl-label" id="lbl-pass">Mot de passe WiFi</label>
+      <input class="ctrl-input" id="cfg-pass" value="Password1234" />
+    </div>
+    <div class="ctrl-group">
+      <label class="ctrl-label" id="lbl-url">URL serveur</label>
+      <input class="ctrl-input" id="cfg-url" value="http://192.168.0.45:8080/init" />
+    </div>
+    <div class="ctrl-group">
+      <label class="ctrl-label" id="lbl-lang">Langue poster</label>
+      <select class="ctrl-input" id="cfg-lang" onchange="generate()" style="min-width:120px;">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="nl">🇧🇪 Nederlands</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+    <button class="btn-gen" id="btn-gen" onclick="generate()">⚙️ Générer</button>
+    <button class="btn-print" id="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+  </div>
+
+  <!-- Poster -->
+  <div id="poster">
+    <div class="poster-header">
+      <span class="poster-logo">🛡️</span>
+      <div class="poster-title">CyberQuest</div>
+      <div class="poster-tagline" id="p-tagline"></div>
+    </div>
+
+    <div class="poster-body">
+
+      <!-- QR WiFi -->
+      <div class="qr-block wifi-block">
+        <div class="qr-block-icon">📶</div>
+        <div class="qr-block-step" id="p-step1-label">Étape 1</div>
+        <div class="qr-block-title" id="p-wifi-title">Connecte-toi au WiFi</div>
+        <div class="qr-canvas-wrap">
+          <div id="qr-wifi"></div>
+        </div>
+        <div class="qr-block-creds">
+          <div><span class="cred-key">SSID&nbsp;&nbsp;&nbsp;&nbsp;: </span><span class="cred-val" id="p-ssid">—</span></div>
+          <div><span class="cred-key">Password: </span><span class="cred-val pass" id="p-pass">—</span></div>
+        </div>
+        <div class="qr-block-step" id="p-wifi-hint"></div>
+      </div>
+
+      <!-- QR Init -->
+      <div class="qr-block init-block">
+        <div class="qr-block-icon">🚀</div>
+        <div class="qr-block-step" id="p-step2-label">Étape 2</div>
+        <div class="qr-block-title" id="p-init-title">Lance l'aventure</div>
+        <div class="qr-canvas-wrap">
+          <div id="qr-init"></div>
+        </div>
+        <div class="qr-block-url" id="p-url">—</div>
+        <div class="qr-block-step" id="p-init-hint"></div>
+      </div>
+
+      <!-- Steps -->
+      <div class="steps-section" id="steps-section"></div>
+
+      <!-- Fragments -->
+      <div class="frags-section">
+        <div class="frags-title" id="p-frags-title">— Fragments à collecter —</div>
+        <div class="frags-grid">
+          <div class="frag-item"><span class="frag-icon">🪤</span><div class="frag-info"><span class="frag-name">mirror.html</span><span class="frag-code">CYB-A3</span></div></div>
+          <div class="frag-item"><span class="frag-icon">🎭</span><div class="frag-info"><span class="frag-name">phishing.html</span><span class="frag-code">CYB-B7</span></div></div>
+          <div class="frag-item"><span class="frag-icon">🔓</span><div class="frag-info"><span class="frag-name" id="p-lock-name">Salle lockpicking</span><span class="frag-code">CYB-C1</span></div></div>
+        </div>
+      </div>
+
+    </div><!-- /poster-body -->
+
+    <div class="poster-footer" id="p-footer"></div>
+  </div><!-- /poster -->
+
+  <script>
+    var T = {
+      fr: {
+        /* UI contrôles */
+        uiSsid:     "SSID WiFi",
+        uiPass:     "Mot de passe WiFi",
+        uiUrl:      "URL serveur",
+        uiLang:     "Langue poster",
+        uiGenerate: "⚙️ Générer",
+        uiPrint:    "🖨️ Imprimer",
+        /* Contenu poster */
+        tagline:    "Workshop Cybersécurité — Jeu de Pistes",
+        step1:      "ÉTAPE 1 SUR 2",
+        wifiTitle:  "Connecte-toi au WiFi",
+        wifiHint:   "Scanne pour te connecter automatiquement",
+        step2:      "ÉTAPE 2 SUR 2",
+        initTitle:  "Lance la chasse au trésor",
+        initHint:   "Scanne une fois connecté(e) au WiFi",
+        steps: [
+          { icon: "📶", text: "Scanne le QR WiFi pour rejoindre le réseau" },
+          { icon: "🚀", text: "Scanne le QR Init pour obtenir ton numéro d'équipe" },
+          { icon: "🗺️", text: "Pars à la chasse ! Scanne les QR codes dans la salle" },
+          { icon: "🏆", text: "Collecte les 3 fragments et forme le code final" },
+        ],
+        fragsTitle: "— Fragments à collecter —",
+        lockName:   "Salle lockpicking",
+        footer:     "Bonne chance — méfiez-vous des QR codes pièges !",
+      },
+      nl: {
+        /* UI contrôles */
+        uiSsid:     "WiFi SSID",
+        uiPass:     "WiFi-wachtwoord",
+        uiUrl:      "Server URL",
+        uiLang:     "Postertaal",
+        uiGenerate: "⚙️ Genereren",
+        uiPrint:    "🖨️ Afdrukken",
+        /* Posterinhoud */
+        tagline:    "Cybersecurity Workshop — Schattenjacht",
+        step1:      "STAP 1 VAN 2",
+        wifiTitle:  "Verbind je met WiFi",
+        wifiHint:   "Scan om automatisch te verbinden",
+        step2:      "STAP 2 VAN 2",
+        initTitle:  "Start de schattenjacht",
+        initHint:   "Scan zodra je verbonden bent met WiFi",
+        steps: [
+          { icon: "📶", text: "Scan de WiFi-QR om het netwerk te betreden" },
+          { icon: "🚀", text: "Scan de Init-QR om je team-ID te ontvangen" },
+          { icon: "🗺️", text: "Start de jacht! Scan de QR-codes in de ruimte" },
+          { icon: "🏆", text: "Verzamel 3 fragmenten en vorm de eindcode" },
+        ],
+        fragsTitle: "— Te verzamelen fragmenten —",
+        lockName:   "Lockpick-zaal",
+        footer:     "Veel succes — let op voor QR-val-codes!",
+      },
+      en: {
+        /* UI controls */
+        uiSsid:     "WiFi SSID",
+        uiPass:     "WiFi password",
+        uiUrl:      "Server URL",
+        uiLang:     "Poster language",
+        uiGenerate: "⚙️ Generate",
+        uiPrint:    "🖨️ Print",
+        /* Poster content */
+        tagline:    "Cybersecurity Workshop — Treasure Hunt",
+        step1:      "STEP 1 OF 2",
+        wifiTitle:  "Connect to WiFi",
+        wifiHint:   "Scan to connect automatically",
+        step2:      "STEP 2 OF 2",
+        initTitle:  "Start the treasure hunt",
+        initHint:   "Scan once connected to WiFi",
+        steps: [
+          { icon: "📶", text: "Scan the WiFi QR to join the network" },
+          { icon: "🚀", text: "Scan the Init QR to get your team number" },
+          { icon: "🗺️", text: "Start the hunt! Scan QR codes around the room" },
+          { icon: "🏆", text: "Collect 3 fragments and form the final code" },
+        ],
+        fragsTitle: "— Fragments to collect —",
+        lockName:   "Lockpicking room",
+        footer:     "Good luck — watch out for trap QR codes!",
+      }
+    };
+
+    var qrWifi = null;
+    var qrInit = null;
+
+    function generate() {
+      var ssid  = document.getElementById('cfg-ssid').value.trim();
+      var pass  = document.getElementById('cfg-pass').value.trim();
+      var url   = document.getElementById('cfg-url').value.trim();
+      var lang  = document.getElementById('cfg-lang').value;
+      var t     = T[lang];
+
+      /* UI contrôles */
+      document.getElementById('lbl-ssid').textContent  = t.uiSsid;
+      document.getElementById('lbl-pass').textContent  = t.uiPass;
+      document.getElementById('lbl-url').textContent   = t.uiUrl;
+      document.getElementById('lbl-lang').textContent  = t.uiLang;
+      document.getElementById('btn-gen').textContent   = t.uiGenerate;
+      document.getElementById('btn-print').textContent = t.uiPrint;
+
+      /* Contenu poster */
+      document.getElementById('p-tagline').textContent    = t.tagline;
+      document.getElementById('p-step1-label').textContent = t.step1;
+      document.getElementById('p-wifi-title').textContent  = t.wifiTitle;
+      document.getElementById('p-wifi-hint').textContent   = t.wifiHint;
+      document.getElementById('p-step2-label').textContent = t.step2;
+      document.getElementById('p-init-title').textContent  = t.initTitle;
+      document.getElementById('p-init-hint').textContent   = t.initHint;
+      document.getElementById('p-ssid').textContent        = ssid;
+      document.getElementById('p-pass').textContent        = pass;
+      document.getElementById('p-url').textContent         = url;
+      document.getElementById('p-frags-title').textContent = t.fragsTitle;
+      document.getElementById('p-lock-name').textContent   = t.lockName;
+      document.getElementById('p-footer').textContent      = t.footer;
+
+      /* Steps */
+      var stepHtml = '';
+      t.steps.forEach(function(s, i) {
+        stepHtml += '<div class="step-item">'
+          + '<div class="step-num">' + (i+1) + '</div>'
+          + '<div class="step-text">' + s.icon + ' ' + s.text + '</div>'
+          + '</div>';
+      });
+      document.getElementById('steps-section').innerHTML = stepHtml;
+
+      /* QR WiFi : format standard WIFI */
+      var wifiStr = 'WIFI:T:WPA;S:' + ssid + ';P:' + pass + ';;';
+      renderQR('qr-wifi', wifiStr, 180);
+
+      /* QR Init : URL */
+      renderQR('qr-init', url, 180);
+    }
+
+    function renderQR(containerId, text, size) {
+      var el = document.getElementById(containerId);
+      el.innerHTML = '';
+      try {
+        new QRCode(el, {
+          text:          text,
+          width:         size,
+          height:        size,
+          colorDark:     '#000000',
+          colorLight:    '#ffffff',
+          correctLevel:  QRCode.CorrectLevel.M
+        });
+      } catch(e) {
+        el.innerHTML = '<div style="width:' + size + 'px;height:' + size + 'px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;">QR non disponible</div>';
+      }
+    }
+
+    /* Auto-generate on load */
+    window.addEventListener('load', function() {
+      generate();
+    });
+  </script>
+</body>
+</html>

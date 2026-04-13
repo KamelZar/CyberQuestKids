@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DO NOT PRESS — CyberQuest</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #020a02;
+  --green:    #00ff41;
+  --g2:       #00cc33;
+  --gdim:     rgba(0,255,65,0.18);
+  --gdark:    #001a08;
+  --red:      #ff2222;
+  --yellow:   #ffe600;
+  --magenta:  #ff00cc;
+  --cyan:     #00e5ff;
+  --orange:   #ff8800;
+  --text:     #b8f0b8;
+  --textdim:  #3a6a3a;
+  --card:     rgba(0,255,65,0.04);
+  --cardb:    rgba(0,255,65,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{
+  background:var(--bg);
+  font-family:'Share Tech Mono',monospace;
+  color:var(--text);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.1) 3px,rgba(0,0,0,0.1) 4px);pointer-events:none;z-index:9999;}
+#matrix{position:fixed;inset:0;pointer-events:none;opacity:0.08;z-index:0;}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+@keyframes glow{0%,100%{text-shadow:0 0 10px currentColor;}50%{text-shadow:0 0 30px currentColor,0 0 60px currentColor;}}
+@keyframes shake{0%,100%{transform:translate(0,0)}10%{transform:translate(-5px,3px)}20%{transform:translate(5px,-3px)}30%{transform:translate(-4px,5px)}40%{transform:translate(4px,-5px)}50%{transform:translate(-5px,2px)}60%{transform:translate(5px,-2px)}70%{transform:translate(-3px,5px)}80%{transform:translate(3px,-5px)}90%{transform:translate(-4px,3px)}}
+@keyframes pop{from{opacity:0;transform:scale(.5)translateY(20px)}to{opacity:1;transform:scale(1)translateY(0)}}
+@keyframes slideup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flash-g{0%{opacity:.7}100%{opacity:0}}
+@keyframes flash-r{0%{opacity:.6}100%{opacity:0}}
+@keyframes inv-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,204,0)}50%{box-shadow:0 0 40px 8px rgba(255,0,204,0.25)}}
+@keyframes btn-breathe{0%,100%{box-shadow:0 0 0 4px #001a08,0 0 0 7px rgba(0,255,65,0.2),0 0 30px 6px rgba(0,255,65,0.2),inset 0 -8px 20px rgba(0,0,0,.6)}50%{box-shadow:0 0 0 4px #001a08,0 0 0 7px rgba(0,255,65,0.5),0 0 55px 14px rgba(0,255,65,0.35),inset 0 -8px 20px rgba(0,0,0,.6)}}
+@keyframes context-in{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== LANG BAR ===== */
+.lang-bar{position:fixed;top:.8rem;right:.8rem;z-index:500;display:flex;gap:.4rem;}
+.lbtn{padding:.28rem .65rem;font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.1em;border:1px solid rgba(0,255,65,0.25);color:rgba(0,255,65,0.5);background:rgba(0,255,65,0.03);border-radius:3px;cursor:pointer;transition:all .2s;}
+.lbtn:hover,.lbtn.on{border-color:var(--green);color:var(--green);background:rgba(0,255,65,0.08);}
+
+/* ===== LEVEL COUNTER ===== */
+.lvl-bar{position:fixed;top:.8rem;left:.8rem;z-index:500;font-family:'Orbitron',monospace;font-size:.6rem;color:var(--textdim);letter-spacing:.1em;}
+.lvl-bar span{color:var(--green);}
+
+/* ===== INVERSE BADGE ===== */
+#inv-badge{
+  position:fixed;top:2.8rem;left:50%;transform:translateX(-50%);
+  z-index:500;display:none;
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;
+  background:rgba(255,0,204,0.12);border:1px solid rgba(255,0,204,0.5);
+  color:var(--magenta);padding:.3rem 1rem;border-radius:3px;
+  animation:blink 1s infinite;
+}
+#inv-badge.show{display:block;}
+#mash-badge{
+  position:fixed;top:2.8rem;left:50%;transform:translateX(-50%);
+  z-index:500;display:none;
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;
+  background:rgba(255,136,0,0.12);border:1px solid rgba(255,136,0,0.6);
+  color:var(--orange);padding:.3rem 1rem;border-radius:3px;
+  animation:mash-bounce .6s infinite;
+}
+#mash-badge.show{display:block;}
+#mash-info{display:none;flex-direction:column;align-items:center;gap:.2rem;margin-top:-.3rem;}
+#mash-target-lbl{font-size:.65rem;letter-spacing:.12em;color:var(--orange);text-align:center;}
+
+/* ===== MAIN LAYOUT ===== */
+#game{
+  position:relative;z-index:10;
+  width:100%;max-width:540px;
+  display:flex;flex-direction:column;
+  align-items:center;
+  gap:clamp(.8rem,2.5vh,1.5rem);
+  padding:clamp(3.5rem,8vh,5rem) 1.2rem clamp(1rem,3vh,2rem);
+}
+
+/* ===== CONTEXT BOX ===== */
+#context-box{
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--cardb);
+  border-radius:8px;
+  padding:clamp(.9rem,2.5vw,1.4rem);
+  min-height:clamp(80px,18vh,130px);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  transition:border-color .4s,background .4s;
+}
+#context-box.inv{border-color:rgba(255,0,204,0.4);background:rgba(255,0,204,0.04);}
+#context-txt{
+  font-size:clamp(.78rem,2.2vw,1rem);
+  line-height:1.7;
+  color:var(--text);
+  animation:context-in .35s ease both;
+  white-space:pre-line;
+}
+#context-txt .hl{color:var(--yellow);}
+#context-txt .red{color:var(--red);}
+#context-txt .inv-tag{color:var(--magenta);font-weight:bold;}
+
+/* ===== BUTTON AREA ===== */
+.btn-area{
+  position:relative;
+  width:clamp(200px,42vw,300px);
+  height:clamp(200px,42vw,300px);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.outer-glow{position:absolute;inset:-6px;border-radius:50%;pointer-events:none;transition:box-shadow .4s;}
+.outer-glow.normal{box-shadow:0 0 40px 6px rgba(0,255,65,0.1);}
+.outer-glow.inv{box-shadow:0 0 40px 10px rgba(255,0,204,0.15);}
+.outer-glow.mash{box-shadow:0 0 40px 10px rgba(255,136,0,0.25);}
+@keyframes mash-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes orange-breathe{0%,100%{box-shadow:0 0 0 4px #1a0800,0 0 0 7px rgba(255,136,0,0.25),0 0 35px 8px rgba(255,136,0,0.2),inset 0 -8px 20px rgba(0,0,0,.6)}50%{box-shadow:0 0 0 4px #1a0800,0 0 0 7px rgba(255,136,0,0.55),0 0 55px 14px rgba(255,136,0,0.38),inset 0 -8px 20px rgba(0,0,0,.6)}}
+#ring-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* Main button */
+#the-btn{
+  position:relative;
+  width:60%;height:60%;
+  border-radius:50%;
+  border:none;cursor:pointer;outline:none;
+  background:radial-gradient(circle at 35% 35%, #1a3a1a, #0a1a0a 60%, var(--bg));
+  transition:transform .12s,filter .3s,background .4s;
+  animation:btn-breathe 2.8s ease-in-out infinite;
+}
+#the-btn.inv{
+  background:radial-gradient(circle at 35% 35%, #3a0a30, #1a0514 60%, var(--bg));
+  animation:inv-pulse 2s ease-in-out infinite;
+}
+#the-btn.mash{
+  background:radial-gradient(circle at 35% 35%, #3a1800, #1a0a00 60%, var(--bg));
+  animation:orange-breathe 1.2s ease-in-out infinite;
+}
+#the-btn:active{transform:scale(.93);}
+#the-btn::after{content:'';position:absolute;top:12%;left:18%;width:36%;height:22%;background:radial-gradient(ellipse,rgba(255,255,255,0.07),transparent);border-radius:50%;transform:rotate(-20deg);pointer-events:none;}
+.btn-inner{position:absolute;inset:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25rem;padding:.8rem;}
+#btn-txt{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(.55rem,2.2vw,.82rem);
+  font-weight:700;
+  letter-spacing:.06em;
+  text-align:center;
+  line-height:1.3;
+  color:var(--green);
+  text-shadow:0 0 12px var(--green),0 0 25px rgba(0,255,65,0.3);
+  transition:color .3s,text-shadow .3s;
+  word-break:break-word;
+}
+#btn-txt.inv{color:var(--magenta);text-shadow:0 0 12px var(--magenta),0 0 25px rgba(255,0,204,0.3);}
+#btn-txt.mash{color:var(--orange);text-shadow:0 0 12px var(--orange),0 0 25px rgba(255,136,0,0.4);font-size:clamp(.8rem,3vw,1.3rem);}
+
+/* ===== TIMER ===== */
+#timer-wrap{display:flex;flex-direction:column;align-items:center;gap:.15rem;}
+#timer-val{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,4vw,1.9rem);font-weight:700;letter-spacing:.1em;color:var(--green);text-shadow:0 0 10px var(--green);transition:color .3s,text-shadow .3s;}
+#timer-val.warn{color:var(--yellow);text-shadow:0 0 10px var(--yellow);}
+#timer-val.danger{color:var(--red);text-shadow:0 0 12px var(--red);animation:blink .4s infinite;}
+#timer-lbl{font-size:.58rem;letter-spacing:.2em;color:var(--textdim);text-transform:uppercase;}
+
+/* ===== OVERLAYS ===== */
+#flash{position:fixed;inset:0;z-index:800;pointer-events:none;opacity:0;}
+#flash.go-g{animation:flash-g .45s ease-out forwards;background:rgba(0,255,65,0.45);}
+#flash.go-r{animation:flash-r .45s ease-out forwards;background:rgba(255,30,30,0.55);}
+
+/* ===== GAME OVER ===== */
+#over-screen{
+  position:fixed;inset:0;z-index:600;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1.2rem;text-align:center;padding:1.5rem;
+  background:radial-gradient(circle at 50% 40%,rgba(60,0,0,.75),rgba(2,10,2,.97));
+}
+#over-screen.show{display:flex;}
+.over-icon{font-size:clamp(3.5rem,12vw,6rem);animation:pop .4s cubic-bezier(.3,1.6,.5,1) both;}
+.over-lvl{font-family:'Orbitron',monospace;font-size:.65rem;color:rgba(255,34,34,0.7);letter-spacing:.2em;animation:slideup .4s .05s both;}
+.over-title{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--red);animation:pop .45s .1s cubic-bezier(.3,1.6,.5,1) both;}
+.over-why{
+  font-size:clamp(.72rem,2.2vw,.88rem);line-height:1.75;max-width:440px;
+  background:rgba(255,34,34,0.07);border:1px solid rgba(255,34,34,0.25);
+  border-radius:6px;padding:1rem 1.2rem;color:#f0b8b8;
+  animation:slideup .4s .2s both;
+}
+.over-tip{font-size:clamp(.65rem,2vw,.78rem);max-width:400px;color:var(--textdim);line-height:1.65;animation:slideup .4s .3s both;}
+.btn-action{padding:.8rem 2.5rem;font-family:'Orbitron',monospace;font-weight:700;letter-spacing:.12em;font-size:.82rem;border-radius:4px;cursor:pointer;transition:all .2s;animation:slideup .4s .4s both;}
+.btn-red{border:2px solid var(--red);color:var(--red);background:rgba(255,34,34,0.06);}
+.btn-red:hover{background:rgba(255,34,34,0.2);box-shadow:0 0 20px var(--red);}
+
+/* ===== VICTORY ===== */
+#win-screen{
+  position:fixed;inset:0;z-index:600;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1rem;text-align:center;padding:1.5rem;
+  background:radial-gradient(circle at 50% 40%,rgba(0,50,15,.7),rgba(2,10,2,.97));
+  overflow-y:auto;
+}
+#win-screen.show{display:flex;}
+.win-icon{font-size:clamp(3rem,10vw,5rem);animation:pop .5s cubic-bezier(.3,1.6,.5,1) both;}
+.win-title{font-family:'Orbitron',monospace;font-size:clamp(1rem,4vw,1.8rem);font-weight:900;color:var(--green);animation:glow 2s infinite;letter-spacing:.1em;}
+.win-msg{font-size:clamp(.72rem,2vw,.88rem);max-width:420px;color:var(--textdim);line-height:1.7;}
+.lessons{width:100%;max-width:440px;background:var(--card);border:1px solid var(--cardb);border-radius:8px;padding:1rem 1.2rem;text-align:left;}
+.lessons-title{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--textdim);letter-spacing:.18em;margin-bottom:.7rem;}
+.lesson-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.68rem;line-height:1.5;margin:.3rem 0;color:var(--text);}
+.lesson-item.good .li{color:var(--green);}
+.lesson-item.bad .li{color:var(--red);}
+.win-time{font-family:'Orbitron',monospace;font-size:clamp(.85rem,3vw,1.3rem);font-weight:700;color:var(--cyan);letter-spacing:.1em;text-shadow:0 0 12px var(--cyan);animation:glow 2s infinite;}
+.btn-green{border:2px solid var(--green);color:var(--green);background:rgba(0,255,65,0.06);}
+.btn-green:hover{background:rgba(0,255,65,0.18);box-shadow:0 0 20px var(--green);}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div id="flash"></div>
+
+<div class="lang-bar">
+  <button class="lbtn on" id="lb-fr" onclick="setLang('fr')">FR</button>
+  <button class="lbtn"    id="lb-nl" onclick="setLang('nl')">NL</button>
+  <button class="lbtn"    id="lb-en" onclick="setLang('en')">EN</button>
+</div>
+<div class="lvl-bar" id="lvl-bar"></div>
+<div id="inv-badge"></div>
+<div id="mash-badge"></div>
+
+<!-- GAME -->
+<div id="game">
+  <div id="context-box"><div id="context-txt"></div></div>
+  <div class="btn-area">
+    <div class="outer-glow normal" id="outer-glow"></div>
+    <canvas id="ring-canvas"></canvas>
+    <button id="the-btn" onclick="onPress()">
+      <div class="btn-inner"><div id="btn-txt"></div></div>
+    </button>
+  </div>
+  <div id="timer-wrap">
+    <div id="timer-val">-</div>
+    <div id="timer-lbl"></div>
+  </div>
+  <div id="mash-info">
+    <div id="mash-target-lbl"></div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="over-screen">
+  <div class="over-icon">💀</div>
+  <div class="over-lvl" id="over-lvl"></div>
+  <div class="over-title" id="over-title"></div>
+  <div class="over-why" id="over-why"></div>
+  <div class="over-tip" id="over-tip"></div>
+  <button class="btn-action btn-red" id="btn-retry" onclick="resetGame()"></button>
+</div>
+
+<!-- VICTORY -->
+<div id="win-screen">
+  <div class="win-icon">🏆</div>
+  <div class="win-title" id="win-title"></div>
+  <div class="win-msg" id="win-msg"></div>
+  <div class="win-time" id="win-time"></div>
+  <div class="lessons" id="lessons">
+    <div class="lessons-title" id="lessons-title"></div>
+    <div id="lessons-list"></div>
+  </div>
+  <button class="btn-action btn-green" id="btn-replay" onclick="resetGame()"></button>
+</div>
+
+<script>
+// ===== MATRIX =====
+(function(){
+  const c=document.getElementById('matrix'),ctx=c.getContext('2d');
+  function r(){c.width=innerWidth;c.height=innerHeight;}r();
+  window.addEventListener('resize',r);
+  const ch='アイウエオカキクサシスセソタチツテトナニヌネノ01';
+  let d=Array(Math.floor(innerWidth/16)).fill(1);
+  setInterval(()=>{ctx.fillStyle='rgba(2,10,2,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#00ff41';ctx.font='13px monospace';d.forEach((y,i)=>{ctx.fillText(ch[Math.floor(Math.random()*ch.length)],i*16,y*16);if(y*16>c.height&&Math.random()>.975)d[i]=0;d[i]++;});},60);
+})();
+
+// ===== LEVELS =====
+const LEVELS = {
+fr:[
+  {
+    ctx:"Pourras-tu faire le meilleur score\nle plus vite possible ?",
+    btn:"N'appuie pas",
+    press:false, timer:5, inv:false,
+    why:"Le bouton indiquait clairement 'N'appuie pas'. La première règle de la cybersécurité : lire avant d'agir !",
+    tip:"💡 En cybersécurité, l'impulsivité est ton pire ennemi."
+  },
+  {
+    ctx:"Tu viens d'acheter un nouvel iPhone.",
+    btn:"Mettre à jour iOS",
+    press:true, timer:14, inv:false,
+    why:"Mettre à jour son appareil dès l'achat est la première chose à faire pour combler les failles de sécurité.",
+    tip:"💡 Un appareil à jour est beaucoup plus difficile à pirater."
+  },
+  {
+    ctx:'Tu reçois ce SMS d\'un numéro inconnu :\n"Votre colis est bloqué. Cliquez ici pour le débloquer : bit.ly/colisFR47"',
+    btn:"Cliquer sur le lien du SMS",
+    press:false, timer:14, inv:false,
+    why:"C'est du phishing classique (smishing). Les vrais transporteurs n'envoient jamais de lien pour débloquer un colis. Vérifie toujours sur le site officiel.",
+    tip:"💡 Règle d'or : ne clique JAMAIS sur un lien reçu par SMS d'un inconnu."
+  },
+  {
+    ctx:"📺 INFO AU JT\n\nUne vague de phishing mondial cible les grandes banques. Des milliers de personnes reçoivent de faux emails et SMS bancaires urgents.",
+    btn:"Appuyer sur le bouton",
+    press:true, timer:10, inv:false,
+    why:"Tu viens d'être prévenu d'une vague de phishing bancaire. Garde cette information en tête pour la suite !",
+    tip:"💡 De nos jours, toute information doit être utilisée."
+  },
+  {
+    ctx:"Ton iPhone t'affiche une notification officielle :\n✅ Mise à jour iOS 17.6 disponible (correctif de sécurité)",
+    btn:"Installer la mise à jour",
+    press:true, timer:14, inv:false,
+    why:"Une notification officielle iOS dans les paramètres = source de confiance. Il faut toujours installer les mises à jour de sécurité.",
+    tip:"💡 Les mises à jour officielles arrivent via les Réglages, jamais via un popup ou un SMS."
+  },
+  {
+    ctx:'Une alerte pop-up apparaît sur ton écran :\n⚠️ "ANDROID a détecté une faille critique sur VOTRE appareil ! Action requise immédiatement !"',
+    btn:"Télécharger le patch de sécurité",
+    press:false, timer:13, inv:false,
+    why:"Tu es sur iPhone, pas Android ! Cette alerte est du 'scareware' — une fausse alerte pour te faire paniquer et télécharger un malware.",
+    tip:"💡 Ton téléphone ne s'appelle pas lui-même avec une marque concurrente. Scareware = piège."
+  },
+  {
+    ctx:"🚨 SPAM ATTACK !\n\nTa boîte mail reçoit 500 spams à la seconde !\nClique le plus vite possible pour tous les supprimer !",
+    btn:"SUPPRIMER !",
+    type:'mash', timer:8, target:8, inv:false,
+    why:"Trop lent ! Face à une vraie attaque, la réactivité est essentielle.",
+    tip:"💡 En cybersécurité, il faut aussi savoir AGIR vite — pas seulement ne pas cliquer."
+  },
+  {
+    ctx:'Tu reçois un email de "apple-security@icloud-verify.net" :\n"Votre identifiant Apple ID est compromis. Vérifiez maintenant."',
+    btn:"Cliquer sur le lien dans l'email",
+    press:false, timer:13, inv:false,
+    why:"L'adresse '@icloud-verify.net' n'appartient pas à Apple (@apple.com). Si ton compte est vraiment compromis, rends-toi directement sur appleid.apple.com — jamais via un lien d'email.",
+    tip:"💡 Vérifie TOUJOURS le domaine de l'expéditeur. Un seul caractère de différence = faux site."
+  },
+  {
+    ctx:'Nouveau message reçu :\n"Banque of China : Une activité suspecte a été détectée. Activez votre MFA de toute urgence pour protéger votre compte."',
+    btn:"Configurer le MFA maintenant",
+    press:false, timer:13, inv:false,
+    why:"Tu n'as pas de compte à la Banque of China ! De plus, le JT venait de te prévenir d'une vague de phishing bancaire mondial. C'est exactement ce type d'attaque.",
+    tip:"💡 Si tu ne reconnais pas l'expéditeur ou la banque — c'est un piège. Le JT t'avait prévenu !"
+  },
+  {
+    ctx:"À l'aéroport, tu vois le réseau WiFi :\n📶 \"FREE_AIRPORT_WIFI\" — Connexion ouverte, aucun mot de passe",
+    btn:"Se connecter sans VPN",
+    press:false, timer:13, inv:false,
+    why:"Les réseaux WiFi ouverts peuvent être contrôlés par des hackers (attaque 'Man-in-the-Middle'). Sans VPN, tout ton trafic est lisible.",
+    tip:"💡 Utilise toujours un VPN sur un WiFi public, ou utilise tes données mobiles."
+  },
+  {
+    ctx:"Tu réalises que ton mot de passe principal est\n\"azerty123\"\net que tu l'utilises sur 14 sites différents depuis 5 ans.",
+    btn:"Changer le mot de passe via les Paramètres",
+    press:true, timer:13, inv:false,
+    why:"Changer un mot de passe faible et réutilisé est essentiel. Et le faire via les Paramètres officiels est la bonne méthode — jamais via un lien externe.",
+    tip:"💡 1 site = 1 mot de passe unique. Utilise un gestionnaire comme Bitwarden."
+  },
+  {
+    ctx:"⚠️  ATTENTION  ⚠️\n\nPour les 3 prochains niveaux, tu dois faire\nL'INVERSE de ce qui est correct en cybersécurité.\n\nProuve que tu comprends POURQUOI ces règles existent !",
+    btn:"J'ai compris — lancer le mode inverse",
+    press:true, timer:17, inv:false, isAnnounce:true,
+    why:"",tip:""
+  },
+  {
+    ctx:"[MODE INVERSE]\n\nUne mise à jour de sécurité officielle est disponible sur ton iPhone.",
+    btn:"Mettre à jour maintenant",
+    press:false, timer:13, inv:true,
+    why:"MODE INVERSE : Il faudrait normalement APPUYER (mettre à jour = bonne pratique). En mode inverse, ne pas appuyer prouve que tu sais que la mise à jour est la bonne action.",
+    tip:"💡 Rappel : en dehors du mode inverse, mets TOUJOURS à jour tes appareils !"
+  },
+  {
+    ctx:"[MODE INVERSE]\n\nUn inconnu t'envoie un email en te demandant\nton mot de passe de messagerie.",
+    btn:"Donner mon mot de passe par email",
+    press:true, timer:13, inv:true,
+    why:"MODE INVERSE : Il ne faudrait JAMAIS donner son mot de passe. En mode inverse, appuyer prouve que tu sais que c'est totalement interdit.",
+    tip:"💡 Rappel : aucun service légitime ne te demandera jamais ton mot de passe par email."
+  },
+  {
+    ctx:"[MODE INVERSE]\n\nTu reçois un email avec ce lien :\n\"bit.ly/PRIZE-iPhone-2024-WIN-NOW\"",
+    btn:"Cliquer sur le lien suspect",
+    press:true, timer:12, inv:true,
+    why:"MODE INVERSE : Il ne faudrait JAMAIS cliquer sur ce type de lien. En mode inverse, appuyer prouve que tu reconnais le danger de ce lien.",
+    tip:"💡 Rappel : les vrais prix ne s'annoncent pas par des liens raccourcis dans des emails."
+  },
+  {
+    ctx:"🔥 RANSOMWARE DÉTECTÉ !\n\nUn ransomware tente de chiffrer tous tes fichiers !\nClique le plus vite possible pour bloquer l'attaque !",
+    btn:"BLOQUER !",
+    type:'mash', timer:7, target:10, inv:false,
+    why:"Trop lent ! Le ransomware a eu le temps de chiffrer tes fichiers.",
+    tip:"💡 Face à une vraie cyberattaque, chaque seconde compte. La vitesse de réaction est cruciale."
+  },
+  {
+    ctx:"🎉 FÉLICITATIONS !\n\nVous avez été sélectionné parmi 1 000 000 d'utilisateurs !\nPartagez ce message avec 10 amis pour recevoir votre cadeau !",
+    btn:"Partager avec mes amis",
+    press:false, timer:12, inv:false,
+    why:"C'est une arnaque de type 'chaîne virale'. Aucune entreprise sérieuse ne distribue de cadeaux de cette façon. Tu allais propager cette arnaque à toute ta liste de contacts.",
+    tip:"💡 Si c'est trop beau pour être vrai — c'est que c'est faux."
+  },
+  {
+    ctx:"La sauvegarde automatique de ton téléphone\nest désactivée depuis 3 semaines.",
+    btn:"Activer la sauvegarde maintenant",
+    press:true, timer:12, inv:false,
+    why:"Toujours activer la sauvegarde automatique. En cas de vol, panne ou ransomware, sans sauvegarde tu perds tout définitivement.",
+    tip:"💡 Règle 3-2-1 : 3 copies, sur 2 supports différents, dont 1 hors site."
+  },
+  {
+    ctx:"Tu crées un compte sur un nouveau site de jeux.\nTon mot de passe Gmail est \"Gaming2010!\"",
+    btn:"Utiliser le même mot de passe que Gmail",
+    press:false, timer:11.5, inv:false,
+    why:"Réutiliser un mot de passe signifie que si ce site de jeux est piraté, ton Gmail l'est aussi. C'est le 'credential stuffing' — l'attaque la plus répandue au monde.",
+    tip:"💡 1 site = 1 mot de passe unique. Un gestionnaire de mots de passe change la vie !"
+  },
+],
+
+nl:[
+  {
+    ctx:"Kun jij de beste score halen\nzo snel mogelijk?",
+    btn:"Niet indrukken",
+    press:false, timer:5, inv:false,
+    why:"De knop zei duidelijk 'Niet indrukken'. De eerste regel van cybersecurity: lees voor je handelt!",
+    tip:"💡 In cybersecurity is impulsiviteit je ergste vijand."
+  },
+  {
+    ctx:"Je hebt net een nieuwe iPhone gekocht.",
+    btn:"iOS bijwerken",
+    press:true, timer:14, inv:false,
+    why:"Je toestel updaten bij aankoop is het eerste wat je moet doen om beveiligingslekken te dichten.",
+    tip:"💡 Een bijgewerkt toestel is veel moeilijker te hacken."
+  },
+  {
+    ctx:'Je ontvangt dit SMS van een onbekend nummer:\n"Uw pakket is geblokkeerd. Klik hier om het vrij te geven: bit.ly/pakketBE47"',
+    btn:"Klikken op de link in het SMS",
+    press:false, timer:14, inv:false,
+    why:"Dit is klassieke phishing (smishing). Echte transportbedrijven sturen nooit een link om een pakket vrij te geven. Controleer altijd via de officiële website.",
+    tip:"💡 Gouden regel: klik NOOIT op een link die je via SMS van een onbekende ontvangt."
+  },
+  {
+    ctx:"📺 NIEUWS OP TV\n\nEen wereldwijde phishing-golf richt zich op grote banken. Duizenden mensen ontvangen valse urgente bank-emails en -sms'en.",
+    btn:"Druk op de knop",
+    press:true, timer:15, inv:false,
+    why:"Je bent net gewaarschuwd voor een golf van bankphishing. Onthoud deze informatie voor de volgende niveaus!",
+    tip:"💡 Hackers profiteren van groot nieuws om gerichte aanvallen te lanceren."
+  },
+  {
+    ctx:"Je iPhone toont een officiële melding:\n✅ iOS 17.6 update beschikbaar (beveiligingspatch)",
+    btn:"Update installeren",
+    press:true, timer:14, inv:false,
+    why:"Een officiële iOS-melding in de Instellingen is betrouwbaar. Beveiligingsupdates moeten altijd worden geïnstalleerd.",
+    tip:"💡 Officiële updates komen via Instellingen, nooit via een pop-up of SMS."
+  },
+  {
+    ctx:'Er verschijnt een pop-up op je scherm:\n⚠️ "ANDROID heeft een kritiek lek op UW toestel gedetecteerd! Onmiddellijk actie vereist!"',
+    btn:"Beveiligingspatch downloaden",
+    press:false, timer:13, inv:false,
+    why:"Je bent op iPhone, niet Android! Dit is 'scareware' — een valse waarschuwing om je in paniek te brengen zodat je malware downloadt.",
+    tip:"💡 Je telefoon noemt zichzelf nooit een concurrerend merk. Scareware = val."
+  },
+  {
+    ctx:"🚨 SPAMAANVAL !\n\nJe mailbox ontvangt 500 spams per seconde !\nKlik zo snel mogelijk om ze allemaal te verwijderen !",
+    btn:"VERWIJDEREN !",
+    type:'mash', timer:8, target:8, inv:false,
+    why:"Te traag! Bij een echte aanval is snelle reactie essentieel.",
+    tip:"💡 In cybersecurity moet je ook snel kunnen HANDELEN — niet alleen niet klikken."
+  },
+  {
+    ctx:'Je ontvangt een email van "apple-security@icloud-verify.net":\n"Uw Apple ID is gecompromitteerd. Verifieer nu."',
+    btn:"Klikken op de link in de email",
+    press:false, timer:13, inv:false,
+    why:"Het adres '@icloud-verify.net' is niet van Apple (@apple.com). Als je account echt gevaar loopt, ga dan rechtstreeks naar appleid.apple.com — nooit via een link in een email.",
+    tip:"💡 Controleer ALTIJD het domein van de afzender. Één verkeerd teken = valse site."
+  },
+  {
+    ctx:'Nieuw bericht ontvangen:\n"Bank of China: Verdachte activiteit gedetecteerd. Activeer uw MFA dringend om uw rekening te beschermen."',
+    btn:"MFA nu configureren",
+    press:false, timer:13, inv:false,
+    why:"Je hebt geen rekening bij de Bank of China! Bovendien had het nieuws je net gewaarschuwd voor een golf van bankphishing. Dit is precies dat soort aanval.",
+    tip:"💡 Als je de afzender of de bank niet herkent — het is een val. Het nieuws had je gewaarschuwd!"
+  },
+  {
+    ctx:"Op het vliegveld zie je het WiFi-netwerk:\n📶 \"FREE_AIRPORT_WIFI\" — Open verbinding, geen wachtwoord",
+    btn:"Verbinden zonder VPN",
+    press:false, timer:13, inv:false,
+    why:"Openbare WiFi-netwerken kunnen worden gecontroleerd door hackers (Man-in-the-Middle). Zonder VPN is al je verkeer leesbaar.",
+    tip:"💡 Gebruik altijd een VPN op openbaar WiFi, of gebruik je mobiele data."
+  },
+  {
+    ctx:"Je realiseert je dat je hoofdwachtwoord\n\"azerty123\"\nis en dat je het op 14 verschillende sites gebruikt al 5 jaar.",
+    btn:"Wachtwoord wijzigen via Instellingen",
+    press:true, timer:13, inv:false,
+    why:"Een zwak en hergebruikt wachtwoord wijzigen is essentieel. En dit via de officiële Instellingen doen is de juiste methode — nooit via een externe link.",
+    tip:"💡 1 site = 1 uniek wachtwoord. Gebruik een wachtwoordbeheerder zoals Bitwarden."
+  },
+  {
+    ctx:"⚠️  LET OP  ⚠️\n\nVoor de volgende 3 niveaus moet je het\nOMGEKEERDE doen van wat correct is in cybersecurity.\n\nBewijs dat je BEGRIJPT waarom deze regels bestaan!",
+    btn:"Begrepen — omgekeerde modus starten",
+    press:true, timer:17, inv:false, isAnnounce:true,
+    why:"",tip:""
+  },
+  {
+    ctx:"[OMGEKEERDE MODUS]\n\nEen officiële beveiligingsupdate is beschikbaar op je iPhone.",
+    btn:"Nu updaten",
+    press:false, timer:13, inv:true,
+    why:"OMGEKEERDE MODUS: Normaal moet je DRUKKEN (updaten = goede gewoonte). In omgekeerde modus bewijst niet drukken dat je weet dat updaten de juiste actie is.",
+    tip:"💡 Herinnering: buiten de omgekeerde modus, update je toestellen ALTIJD!"
+  },
+  {
+    ctx:"[OMGEKEERDE MODUS]\n\nEen onbekende stuurt je een email\nmet de vraag om je e-mailwachtwoord.",
+    btn:"Mijn wachtwoord per email geven",
+    press:true, timer:13, inv:true,
+    why:"OMGEKEERDE MODUS: Je mag je wachtwoord NOOIT geven. Drukken bewijst dat je weet dat dit totaal verboden is.",
+    tip:"💡 Herinnering: geen enkele legitieme dienst zal ooit je wachtwoord per email vragen."
+  },
+  {
+    ctx:"[OMGEKEERDE MODUS]\n\nJe ontvangt een email met deze link:\n\"bit.ly/PRIZE-iPhone-2024-WIN-NOW\"",
+    btn:"Op de verdachte link klikken",
+    press:true, timer:12, inv:true,
+    why:"OMGEKEERDE MODUS: Je moet NOOIT op dit soort link klikken. Drukken bewijst dat je het gevaar van deze link herkent.",
+    tip:"💡 Herinnering: echte prijzen worden niet aangekondigd via verkorte links in emails."
+  },
+  {
+    ctx:"🔥 RANSOMWARE GEDETECTEERD !\n\nEen ransomware probeert al je bestanden te versleutelen !\nKlik zo snel mogelijk om de aanval te stoppen !",
+    btn:"BLOKKEREN !",
+    type:'mash', timer:7, target:10, inv:false,
+    why:"Te traag! De ransomware had tijd om je bestanden te versleutelen.",
+    tip:"💡 Bij een echte cyberaanval telt elke seconde. Snelle reactie is cruciaal."
+  },
+  {
+    ctx:"🎉 GEFELICITEERD!\n\nJe bent geselecteerd uit 1.000.000 gebruikers!\nDeel dit bericht met 10 vrienden om je cadeau te ontvangen!",
+    btn:"Delen met mijn vrienden",
+    press:false, timer:12, inv:false,
+    why:"Dit is een klassieke 'virale keten'-oplichting. Geen serieus bedrijf verdeelt cadeaus op deze manier. Je stond op het punt deze oplichting naar al je contacten te sturen.",
+    tip:"💡 Als het te mooi is om waar te zijn — dan is het dat."
+  },
+  {
+    ctx:"De automatische back-up van je telefoon\nis al 3 weken uitgeschakeld.",
+    btn:"Back-up nu activeren",
+    press:true, timer:12, inv:false,
+    why:"Activeer altijd automatische back-up. Bij diefstal, panne of ransomware verlies je zonder back-up alles voorgoed.",
+    tip:"💡 Regel 3-2-1: 3 kopieën, op 2 verschillende media, waarvan 1 buiten de locatie."
+  },
+  {
+    ctx:"Je maakt een account aan op een nieuwe gamingsite.\nJe Gmail-wachtwoord is \"Gaming2010!\"",
+    btn:"Hetzelfde wachtwoord als Gmail gebruiken",
+    press:false, timer:11.5, inv:false,
+    why:"Een wachtwoord hergebruiken betekent dat als deze gamingsite wordt gehackt, je Gmail dat ook is. Dit is 'credential stuffing' — de meest voorkomende aanval ter wereld.",
+    tip:"💡 1 site = 1 uniek wachtwoord. Een wachtwoordbeheerder maakt je leven veel makkelijker!"
+  },
+],
+
+en:[
+  {
+    ctx:"Can you get the best score\nas fast as possible?",
+    btn:"Do not press",
+    press:false, timer:5, inv:false,
+    why:"The button clearly said 'Do not press'. The first rule of cybersecurity: read before you act!",
+    tip:"💡 In cybersecurity, impulsiveness is your worst enemy."
+  },
+  {
+    ctx:"You just bought a brand new iPhone.",
+    btn:"Update iOS",
+    press:true, timer:14, inv:false,
+    why:"Updating your device immediately after purchase is the first thing to do to patch security vulnerabilities.",
+    tip:"💡 An updated device is much harder to hack."
+  },
+  {
+    ctx:'You receive this text from an unknown number:\n"Your parcel is blocked. Click here to release it: bit.ly/parcelUK47"',
+    btn:"Click the link in the text",
+    press:false, timer:14, inv:false,
+    why:"This is classic phishing (smishing). Real couriers never send a link to release a parcel. Always check directly on the official website.",
+    tip:"💡 Golden rule: NEVER click on a link received by text from an unknown sender."
+  },
+  {
+    ctx:"📺 BREAKING NEWS\n\nA global phishing wave is targeting major banks. Thousands of people are receiving fake urgent banking emails and texts.",
+    btn:"Press the button",
+    press:false, timer:15, inv:false,
+    why:"You've just been warned about a wave of banking phishing. Remember this information for the levels ahead!",
+    tip:"💡 Hackers exploit major news events to launch targeted attack waves."
+  },
+  {
+    ctx:"Your iPhone shows an official notification:\n✅ iOS 17.6 update available (security patch)",
+    btn:"Install the update",
+    press:true, timer:14, inv:false,
+    why:"An official iOS notification in Settings is a trusted source. Security updates must always be installed.",
+    tip:"💡 Official updates come through Settings, never via a pop-up or text message."
+  },
+  {
+    ctx:'A pop-up appears on your screen:\n⚠️ "ANDROID has detected a critical vulnerability on YOUR device! Immediate action required!"',
+    btn:"Download the security patch",
+    press:false, timer:13, inv:false,
+    why:"You're on iPhone, not Android! This is 'scareware' — a fake alert designed to panic you into downloading malware.",
+    tip:"💡 Your phone would never refer to itself using a competitor's brand name. Scareware = trap."
+  },
+  {
+    ctx:"🚨 SPAM ATTACK!\n\nYour inbox is receiving 500 spam messages per second!\nClick as fast as possible to delete them all!",
+    btn:"DELETE!",
+    type:'mash', timer:8, target:8, inv:false,
+    why:"Not fast enough! In a real attack, reaction speed is essential.",
+    tip:"💡 In cybersecurity, you also need to know when to ACT fast — not just when not to click."
+  },
+  {
+    ctx:'You receive an email from "apple-security@icloud-verify.net":\n"Your Apple ID has been compromised. Verify now."',
+    btn:"Click the link in the email",
+    press:false, timer:13, inv:false,
+    why:"The address '@icloud-verify.net' does not belong to Apple (@apple.com). If your account is really at risk, go directly to appleid.apple.com — never via a link in an email.",
+    tip:"💡 ALWAYS check the sender's domain. One wrong character = fake site."
+  },
+  {
+    ctx:'New message received:\n"Bank of China: Suspicious activity detected. Activate your MFA urgently to protect your account."',
+    btn:"Set up MFA now",
+    press:false, timer:13, inv:false,
+    why:"You don't have an account at Bank of China! Plus, the news just warned you about a global banking phishing wave. This is exactly that type of attack.",
+    tip:"💡 If you don't recognise the sender or the bank — it's a trap. The news had warned you!"
+  },
+  {
+    ctx:"At the airport, you spot the WiFi network:\n📶 \"FREE_AIRPORT_WIFI\" — Open connection, no password",
+    btn:"Connect without VPN",
+    press:false, timer:13, inv:false,
+    why:"Public WiFi networks can be controlled by hackers (Man-in-the-Middle attack). Without a VPN, all your traffic is readable.",
+    tip:"💡 Always use a VPN on public WiFi, or use your mobile data instead."
+  },
+  {
+    ctx:"You realise your main password is\n\"azerty123\"\nand you've been using it on 14 different sites for 5 years.",
+    btn:"Change password via Settings",
+    press:true, timer:13, inv:false,
+    why:"Changing a weak and reused password is essential. And doing it through the official Settings is the right method — never through an external link.",
+    tip:"💡 1 site = 1 unique password. Use a password manager like Bitwarden."
+  },
+  {
+    ctx:"⚠️  ATTENTION  ⚠️\n\nFor the next 3 levels, you must do the\nOPPOSITE of what is correct in cybersecurity.\n\nProve that you understand WHY these rules exist!",
+    btn:"Got it — start reverse mode",
+    press:true, timer:17, inv:false, isAnnounce:true,
+    why:"",tip:""
+  },
+  {
+    ctx:"[REVERSE MODE]\n\nAn official security update is available on your iPhone.",
+    btn:"Update now",
+    press:false, timer:13, inv:true,
+    why:"REVERSE MODE: You should normally PRESS (updating = good practice). In reverse mode, not pressing proves you know that updating is the right action.",
+    tip:"💡 Reminder: outside reverse mode, ALWAYS update your devices!"
+  },
+  {
+    ctx:"[REVERSE MODE]\n\nA stranger sends you an email\nasking for your email password.",
+    btn:"Give my password by email",
+    press:true, timer:13, inv:true,
+    why:"REVERSE MODE: You should NEVER give your password. Pressing proves you know this is completely forbidden.",
+    tip:"💡 Reminder: no legitimate service will ever ask for your password by email."
+  },
+  {
+    ctx:"[REVERSE MODE]\n\nYou receive an email with this link:\n\"bit.ly/PRIZE-iPhone-2024-WIN-NOW\"",
+    btn:"Click the suspicious link",
+    press:true, timer:12, inv:true,
+    why:"REVERSE MODE: You should NEVER click this type of link. Pressing proves you recognise the danger of this link.",
+    tip:"💡 Reminder: real prizes are not announced through shortened links in emails."
+  },
+  {
+    ctx:"🔥 RANSOMWARE DETECTED!\n\nA ransomware is trying to encrypt all your files!\nClick as fast as possible to stop the attack!",
+    btn:"BLOCK IT!",
+    type:'mash', timer:7, target:10, inv:false,
+    why:"Too slow! The ransomware had time to encrypt your files.",
+    tip:"💡 In a real cyberattack, every second counts. Fast reaction time is crucial."
+  },
+  {
+    ctx:"🎉 CONGRATULATIONS!\n\nYou have been selected from 1,000,000 users!\nShare this message with 10 friends to receive your gift!",
+    btn:"Share with my friends",
+    press:false, timer:12, inv:false,
+    why:"This is a classic 'viral chain' scam. No serious company distributes gifts this way. You were about to spread this scam to all your contacts.",
+    tip:"💡 If it's too good to be true — it is."
+  },
+  {
+    ctx:"Your phone's automatic backup\nhas been disabled for 3 weeks.",
+    btn:"Activate backup now",
+    press:true, timer:12, inv:false,
+    why:"Always enable automatic backup. In case of theft, failure or ransomware, without a backup you lose everything permanently.",
+    tip:"💡 3-2-1 rule: 3 copies, on 2 different media, with 1 offsite."
+  },
+  {
+    ctx:"You're creating an account on a new gaming site.\nYour Gmail password is \"Gaming2010!\"",
+    btn:"Use the same password as Gmail",
+    press:false, timer:11.5, inv:false,
+    why:"Reusing a password means that if this gaming site is hacked, your Gmail is too. This is 'credential stuffing' — the most widespread attack in the world.",
+    tip:"💡 1 site = 1 unique password. A password manager will change your life!"
+  },
+],
+};
+
+const UI = {
+  fr:{timerLbl:"SECONDES",lvlOf:(a,b)=>`NIVEAU ${a} / ${b}`,invBadge:"⚠ MODE INVERSE",mashBadge:"⚡ MODE MASH",mashLbl:(t,s)=>`Objectif : ${t} clics en ${s}s`,overLvl:(n)=>`ÉLIMINÉ AU NIVEAU ${n}`,overTitle:"MAUVAISE DÉCISION !",overRetry:"↺ RECOMMENCER",winTitle:"FÉLICITATIONS !",winMsg:"Tu as survécu aux 19 niveaux ! Tu es prêt à affronter les vraies cybermenaces.",winTime:(s)=>`⏱ Terminé en ${s} secondes`,lessonsTitle:"// CE QUE TU AS APPRIS",winReplay:"▶ REJOUER"},
+  nl:{timerLbl:"SECONDEN",lvlOf:(a,b)=>`NIVEAU ${a} / ${b}`,invBadge:"⚠ OMGEKEERDE MODUS",mashBadge:"⚡ MASH MODUS",mashLbl:(t,s)=>`Doel : ${t} klikken in ${s}s`,overLvl:(n)=>`UITGESCHAKELD OP NIVEAU ${n}`,overTitle:"VERKEERDE BESLISSING!",overRetry:"↺ OPNIEUW STARTEN",winTitle:"GEFELICITEERD!",winMsg:"Je hebt alle 19 niveaus overleefd! Je bent klaar voor echte cyberdreigingen.",winTime:(s)=>`⏱ Voltooid in ${s} seconden`,lessonsTitle:"// WAT JE GELEERD HEBT",winReplay:"▶ OPNIEUW SPELEN"},
+  en:{timerLbl:"SECONDS",lvlOf:(a,b)=>`LEVEL ${a} / ${b}`,invBadge:"⚠ REVERSE MODE",mashBadge:"⚡ MASH MODE",mashLbl:(t,s)=>`Target: ${t} clicks in ${s}s`,overLvl:(n)=>`ELIMINATED AT LEVEL ${n}`,overTitle:"WRONG DECISION!",overRetry:"↺ TRY AGAIN",winTitle:"CONGRATULATIONS!",winMsg:"You survived all 19 levels! You're ready to face real cyber threats.",winTime:(s)=>`⏱ Completed in ${s} seconds`,lessonsTitle:"// WHAT YOU LEARNED",winReplay:"▶ PLAY AGAIN"},
+};
+
+// ===== STATE =====
+let lang='fr', lvlIdx=0, timeLeft=0, interval=null, done=false;
+let startTime=null, mashClicks=0;
+
+// ===== LED RING =====
+const rc=document.getElementById('ring-canvas');
+const rctx=rc.getContext('2d');
+let rsz=0;
+function resizeRing(){
+  const a=document.querySelector('.btn-area');
+  if(!a)return;
+  const s=a.offsetWidth;
+  rc.width=s*devicePixelRatio; rc.height=s*devicePixelRatio;
+  rctx.scale(devicePixelRatio,devicePixelRatio);
+  rsz=s; drawRing(timeLeft/(LEVELS[lang][lvlIdx]?.timer||5),LEVELS[lang][lvlIdx]?.inv);
+}
+function drawRing(frac,isInv){
+  if(!rsz)return;
+  const s=rsz,cx=s/2,cy=s/2,N=36,gap=0.042;
+  const ir=s*0.325,or=s*0.485;
+  const active=Math.round(frac*N);
+  rctx.clearRect(0,0,s,s);
+  let col,dim;
+  if(isInv){col='#ff00cc';dim='rgba(80,0,50,0.4)';}
+  else if(frac>0.5){col='#00ff41';dim='rgba(0,60,15,0.4)';}
+  else if(frac>0.25){col='#ffe600';dim='rgba(70,55,0,0.4)';}
+  else{col='#ff2222';dim='rgba(70,5,5,0.4)';}
+  for(let i=0;i<N;i++){
+    const sa=(i/N)*Math.PI*2-Math.PI/2+gap;
+    const ea=((i+1)/N)*Math.PI*2-Math.PI/2-gap;
+    rctx.beginPath();
+    rctx.arc(cx,cy,or,sa,ea);
+    rctx.arc(cx,cy,ir,ea,sa,true);
+    rctx.closePath();
+    rctx.fillStyle=i<active?col:dim;
+    if(i<active){rctx.shadowColor=col;rctx.shadowBlur=7;}
+    rctx.fill();
+    rctx.shadowBlur=0;
+  }
+}
+window.addEventListener('resize',resizeRing);
+
+// ===== LANG =====
+function setLang(l){
+  lang=l;
+  ['fr','nl','en'].forEach(x=>document.getElementById('lb-'+x).classList.toggle('on',x===l));
+  resetGame();
+}
+
+// ===== LOAD LEVEL =====
+function loadLevel(){
+  const lv=LEVELS[lang][lvlIdx];
+  const ui=UI[lang];
+  done=false;
+
+  // Level bar
+  document.getElementById('lvl-bar').innerHTML=`${ui.lvlOf(lvlIdx+1,LEVELS[lang].length)}`;
+
+  // Context
+  const cb=document.getElementById('context-box');
+  const ct=document.getElementById('context-txt');
+  cb.className='context-box'+(lv.inv?' inv':'');
+  // re-trigger animation
+  ct.style.animation='none';
+  void ct.offsetWidth;
+  ct.style.animation='context-in .35s ease both';
+  ct.innerHTML=formatCtx(lv.ctx);
+
+  // Button
+  const btn=document.getElementById('the-btn');
+  const btxt=document.getElementById('btn-txt');
+  const isMash=lv.type==='mash';
+  btn.className=isMash?'mash':(lv.inv?'inv':'');
+  btxt.className=isMash?'mash':(lv.inv?'inv':'');
+  btxt.textContent=lv.btn;
+
+  // Glow
+  document.getElementById('outer-glow').className='outer-glow '+(isMash?'mash':(lv.inv?'inv':'normal'));
+
+  // Badges
+  const ib=document.getElementById('inv-badge');
+  ib.textContent=UI[lang].invBadge;
+  ib.className=lv.inv?'show':'';
+  const mb=document.getElementById('mash-badge');
+  mb.textContent=UI[lang].mashBadge;
+  mb.className=isMash?'show':'';
+
+  // Mash info
+  const mi=document.getElementById('mash-info');
+  if(isMash){
+    mashClicks=0;
+    document.getElementById('mash-target-lbl').textContent=UI[lang].mashLbl(lv.target,lv.timer);
+    mi.style.display='flex';
+  } else {
+    mi.style.display='none';
+  }
+
+  // Start global timer on first level
+  if(startTime===null) startTime=Date.now();
+
+  // Timer
+  timeLeft=lv.timer;
+  updateTimerDisplay();
+  drawRing(1,lv.inv);
+
+  clearInterval(interval);
+  interval=setInterval(tick,1000);
+}
+
+function formatCtx(txt){
+  return txt
+    .replace(/\n/g,'<br>')
+    .replace(/⚠️/g,'<span style="color:var(--yellow)">⚠️</span>')
+    .replace(/📺/g,'<span style="color:var(--cyan)">📺</span>')
+    .replace(/✅/g,'<span style="color:var(--green)">✅</span>')
+    .replace(/🎉/g,'<span style="color:var(--yellow)">🎉</span>')
+    .replace(/\[MODE INVERSE\]/g,'<span class="inv-tag">[MODE INVERSE]</span>')
+    .replace(/\[OMGEKEERDE MODUS\]/g,'<span class="inv-tag">[OMGEKEERDE MODUS]</span>')
+    .replace(/\[REVERSE MODE\]/g,'<span class="inv-tag">[REVERSE MODE]</span>');
+}
+
+// ===== TICK =====
+function tick(){
+  if(done)return;
+  timeLeft=Math.max(0,timeLeft-1);
+  updateTimerDisplay();
+  const lv=LEVELS[lang][lvlIdx];
+  drawRing(timeLeft/lv.timer,lv.inv);
+  // Temptation: button grows slightly as time runs out
+  if(timeLeft<=5&&timeLeft>0){
+    const scale=1+(1-timeLeft/5)*0.07;
+    document.getElementById('the-btn').style.transform=`scale(${scale})`;
+  }
+  if(timeLeft===0){
+    clearInterval(interval);
+    if(lv.type==='mash'){
+      if(mashClicks>=lv.target){lvlIdx++;if(lvlIdx>=LEVELS[lang].length)showVictory();else loadLevel();}
+      else showGameOver(lvlIdx+1,lv);
+      return;
+    }
+    // Timer ran out = player chose NOT to press
+    evaluate(false);
+  }
+}
+
+function updateTimerDisplay(){
+  const el=document.getElementById('timer-val');
+  const lbl=document.getElementById('timer-lbl');
+  el.textContent=timeLeft;
+  lbl.textContent=UI[lang].timerLbl;
+  el.className='';
+  if(timeLeft<=5&&timeLeft>3)el.classList.add('warn');
+  else if(timeLeft<=3)el.classList.add('danger');
+}
+
+// ===== PRESS =====
+function onPress(){
+  if(done)return;
+  const lv=LEVELS[lang][lvlIdx];
+  if(lv.type==='mash'){
+    mashClicks++;
+    const btxt=document.getElementById('btn-txt');
+    btxt.textContent=mashClicks+' / '+lv.target;
+    const btn=document.getElementById('the-btn');
+    btn.style.transform='scale(1.1)';
+    setTimeout(()=>{btn.style.transform='';},80);
+    const fl=document.getElementById('flash');
+    fl.className='';void fl.offsetWidth;fl.className='go-g';
+    if(mashClicks>=lv.target){
+      done=true;
+      clearInterval(interval);
+      setTimeout(()=>{lvlIdx++;if(lvlIdx>=LEVELS[lang].length)showVictory();else loadLevel();},350);
+    }
+    return;
+  }
+  done=true;
+  clearInterval(interval);
+  document.getElementById('the-btn').style.transform='scale(0.93)';
+  setTimeout(()=>{document.getElementById('the-btn').style.transform='';},150);
+  evaluate(true);
+}
+
+// ===== EVALUATE =====
+function evaluate(pressed){
+  done=true;
+  const lv=LEVELS[lang][lvlIdx];
+  const correct=(pressed===lv.press);
+
+  // Flash
+  const fl=document.getElementById('flash');
+  fl.className='';void fl.offsetWidth;
+  fl.className=correct?'go-g':'go-r';
+
+  if(!correct){
+    setTimeout(()=>showGameOver(lvlIdx+1,lv),500);
+    return;
+  }
+  // Correct — next level
+  lvlIdx++;
+  if(lvlIdx>=LEVELS[lang].length){
+    setTimeout(showVictory,400);
+  } else {
+    setTimeout(()=>{
+      document.getElementById('the-btn').style.transform='';
+      loadLevel();
+    },350);
+  }
+}
+
+// ===== GAME OVER =====
+function showGameOver(num,lv){
+  document.body.style.animation='shake .55s ease';
+  setTimeout(()=>{document.body.style.animation='';},550);
+  const ui=UI[lang];
+  document.getElementById('over-lvl').textContent=ui.overLvl(num);
+  document.getElementById('over-title').textContent=ui.overTitle;
+  document.getElementById('over-why').textContent=lv.why;
+  document.getElementById('over-tip').textContent=lv.tip;
+  document.getElementById('btn-retry').textContent=ui.overRetry;
+  document.getElementById('over-screen').classList.add('show');
+}
+
+// ===== VICTORY =====
+function showVictory(){
+  const ui=UI[lang];
+  const lvs=LEVELS[lang];
+  const elapsed=Math.round((Date.now()-(startTime||Date.now()))/1000);
+  document.getElementById('win-title').textContent=ui.winTitle;
+  document.getElementById('win-msg').textContent=ui.winMsg;
+  document.getElementById('win-time').textContent=ui.winTime(elapsed);
+  document.getElementById('lessons-title').textContent=ui.lessonsTitle;
+  const list=document.getElementById('lessons-list');
+  list.innerHTML='';
+  // Show key lessons (good choices)
+  lvs.filter(l=>!l.isAnnounce&&!l.inv).forEach(l=>{
+    const d=document.createElement('div');
+    d.className='lesson-item '+(l.press?'good':'bad');
+    d.innerHTML=`<span class="li">${l.press?'✓':'✗'}</span><span>${l.tip}</span>`;
+    list.appendChild(d);
+  });
+  document.getElementById('btn-replay').textContent=ui.winReplay;
+  document.getElementById('win-screen').classList.add('show');
+}
+
+// ===== RESET =====
+function resetGame(){
+  clearInterval(interval);
+  lvlIdx=0;
+  startTime=null;
+  mashClicks=0;
+  document.getElementById('over-screen').classList.remove('show');
+  document.getElementById('win-screen').classList.remove('show');
+  document.getElementById('the-btn').style.transform='';
+  document.getElementById('flash').className='';
+  setTimeout(()=>{resizeRing();loadLevel();},60);
+}
+
+// ===== INIT =====
+setTimeout(()=>{resizeRing();loadLevel();},120);
+</script>
+</body>
+</html>

@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>CyberQuest Invaders</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  font-family:'Courier New',monospace;
+  overflow:hidden;
+  touch-action:none;
+}
+#wrapper {
+  position:relative;
+  display:inline-block;
+}
+#gameCanvas {
+  display:block;
+  border:2px solid #1a1a2e;
+  image-rendering:pixelated;
+}
+#langSelect {
+  position:absolute;
+  top:8px; right:8px;
+  background:#111;
+  border:1px solid #0f0;
+  color:#0f0;
+  font-family:'Courier New',monospace;
+  font-size:12px;
+  padding:3px 6px;
+  cursor:pointer;
+  z-index:100;
+}
+/* Status bar */
+#statusBar {
+  position:absolute;
+  top:8px; left:8px;
+  color:#0f0;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  pointer-events:none;
+}
+#hpBar {
+  width:80px; height:10px;
+  border:1px solid #0f0;
+  display:inline-block;
+}
+#hpFill { height:100%; background:#0f0; transition:width .15s; }
+#livesLabel { color:#f66; letter-spacing:1px; }
+#actLabel {
+  position:absolute;
+  top:8px; left:50%;
+  transform:translateX(-50%);
+  color:#0ff;
+  font-size:11px;
+  pointer-events:none;
+}
+#scoreLabel {
+  position:absolute;
+  top:8px; right:60px;
+  color:#ff0;
+  font-size:11px;
+  pointer-events:none;
+}
+#powerupsBar {
+  position:absolute;
+  top:26px; left:8px;
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap;
+  pointer-events:none;
+  max-width:280px;
+}
+.puTag {
+  background:rgba(0,255,136,.12);
+  border:1px solid #0f8;
+  color:#0f8;
+  font-size:9px;
+  padding:1px 4px;
+  border-radius:2px;
+}
+.puTag.bad { background:rgba(255,60,60,.12); border-color:#f44; color:#f44; }
+/* Notification */
+#notif {
+  position:absolute;
+  top:55px; left:50%;
+  transform:translateX(-50%);
+  color:#0ff;
+  font-size:13px;
+  font-weight:bold;
+  text-align:center;
+  pointer-events:none;
+  white-space:nowrap;
+  text-shadow:0 0 8px #0ff;
+  opacity:0;
+  transition:opacity .3s;
+}
+/* Overlay banner */
+#banner {
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,10,.92);
+  border:2px solid #0f0;
+  color:#0f0;
+  padding:22px 36px;
+  text-align:center;
+  max-width:90%;
+  display:none;
+  z-index:200;
+}
+#banner h2 { font-size:20px; margin-bottom:10px; color:#ff0; text-shadow:0 0 10px #ff0; }
+#banner p { font-size:12px; line-height:1.7; max-width:320px; color:#aff; }
+#bannerBtn {
+  margin-top:16px;
+  background:#0f0;
+  color:#000;
+  border:none;
+  padding:7px 22px;
+  font-family:'Courier New',monospace;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
+  display:block;
+  width:100%;
+}
+#bannerBtn:hover { background:#0c0; }
+/* Touch controls */
+#touchControls {
+  position:absolute;
+  bottom:10px;
+  width:100%;
+  display:none;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 12px;
+  pointer-events:none;
+}
+.tBtn {
+  width:60px; height:60px;
+  background:rgba(0,255,0,.15);
+  border:2px solid rgba(0,255,0,.4);
+  border-radius:50%;
+  color:#0f0;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:all;
+  user-select:none;
+  -webkit-user-select:none;
+  cursor:pointer;
+}
+.tBtn:active { background:rgba(0,255,0,.35); }
+@media (max-width:600px) {
+  #touchControls { display:flex; }
+}
+</style>
+</head>
+<body>
+<div id="wrapper">
+  <canvas id="gameCanvas"></canvas>
+
+  <select id="langSelect" onchange="setLang(this.value)">
+    <option value="fr">FR</option>
+    <option value="nl">NL</option>
+    <option value="en">EN</option>
+  </select>
+
+  <div id="statusBar">
+    <span id="hpLabel">HP</span>
+    <div id="hpBar"><div id="hpFill"></div></div>
+    <span id="livesLabel"></span>
+  </div>
+  <div id="powerupsBar"></div>
+  <div id="actLabel"></div>
+  <div id="scoreLabel"></div>
+  <div id="notif"></div>
+
+  <div id="banner">
+    <h2 id="bTitle"></h2>
+    <p id="bText"></p>
+    <button id="bannerBtn" onclick="hideBanner()">→</button>
+  </div>
+
+  <div id="touchControls">
+    <div class="tBtn" id="tLeft">◀</div>
+    <div class="tBtn" id="tFire">🔫</div>
+    <div class="tBtn" id="tRight">▶</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════
+const T = {
+  fr:{
+    acts:[
+      { title:"ACTE 1 — Connexion", sub:"Tout semble calme sur votre réseau... Quelques cookies traînent. Défendez-vous !" },
+      { title:"ACTE 2 — Fuite de données !", sub:"Une compagnie aérienne vient d'être piratée. Vos données sont en vente sur le dark web. La menace monte !" },
+      { title:"ACTE 3 — Défense active", sub:"Utilisez vos outils de cybersécurité ! Bonuses et pièges tombent en même temps — choisissez bien !" },
+      { title:"ACTE 4 — VAGUE BOSS 💀", sub:"LE HACKER VOUS ATTAQUE DIRECTEMENT. Il envoie virus et rançongiciels en rafale. Survivez !" },
+      { title:"ACTE 5 — VICTOIRE ! 🎉", sub:"Vous avez neutralisé le hacker. Votre espace numérique est protégé. Bien joué !" },
+    ],
+    bonuses:{
+      VPN:"🛡 VPN activé — bouclier ON",
+      MFA:"🔐 Double tir (authentification MFA)",
+      COOKIE_CLEAN:"🍪 Cookies nettoyés — vitesse restaurée",
+      PASSWORD:"🔑 Mot de passe fort — invincible 6s",
+      FORMATION:"📚 Formation cybersécurité — tir rapide 12s",
+      ANTIVIRUS:"🦠 Antivirus — détruit tous les virus",
+      UPDATE:"⬆️ Mise à jour — moins de virus 20s",
+      FIREWALL:"🧱 Firewall déployé — mur de protection !",
+    },
+    debuffs:{
+      UNVERIFIED_APP:"⚠️ App non vérifiée — 2 virus invoqués !",
+      COOKIES:"🍪 Cookies acceptés — ralenti 12s !",
+      CGU:"📜 CGU ignorées — bouclier perdu !",
+    },
+    dataLeak:"💥 Fuite de données ! Vos défenses s'affaiblissent et les attaques doublent !",
+    firewallDestroyed:"🔥 Firewall détruit !",
+    neutralItems:{
+      FAKE_UPDATE:   { label:"Mise à jour disponible",  good:false, msg:"⚠️ Fausse mise à jour — c'était un malware !",        ignoredMsg:"✅ Sage ! Cette mise à jour inconnue était un piège."        },
+      REAL_UPDATE:   { label:"Mise à jour disponible",  good:true,  msg:"✅ Vraie mise à jour — système renforcé !",            ignoredMsg:"ℹ️ C'était une vraie MAJ — mais la prudence était la bonne réflexe." },
+      PROMO_TRAP:    { label:"Offre exclusive !",        good:false, msg:"⚠️ Arnaque publicitaire — ralentissement activé !",   ignoredMsg:"✅ Bien joué ! Les offres inconnues sont souvent des pièges."  },
+      FREE_GIFT:     { label:"Cadeau gratuit",           good:false, msg:"⚠️ Cadeau piégé — 2 virus invoqués !",               ignoredMsg:"✅ Prudent ! Les cadeaux gratuits cachent souvent un virus."   },
+      SECURE_LINK:   { label:"Connexion sécurisée",      good:true,  msg:"✅ Lien vérifié — bouclier VPN offert !",             ignoredMsg:"ℹ️ Lien sûr ignoré — difficile à savoir sans vérifier !"      },
+      FAKE_ANTIVIRUS:{ label:"Alerte sécurité !",        good:false, msg:"⚠️ Faux antivirus — CGU ignorées, bouclier perdu !",  ignoredMsg:"✅ Correct ! Les fausses alertes sécurité sont très courantes."},
+      PATCH_REAL:    { label:"Correctif de sécurité",    good:true,  msg:"✅ Correctif authentique — +1 HP récupéré !",         ignoredMsg:"ℹ️ Patch réel ignoré — vérifier la source reste le bon réflexe."},
+    },
+    victory:"🏆 VICTOIRE !",
+    victoryMsg:"Votre espace numérique est sécurisé !",
+    defeat:"💀 GAME OVER",
+    defeatMsg:"Votre système est compromis. Chaque erreur est une leçon !",
+    score:"SCORE",
+    lives:"VIES",
+    continueBtn:"CONTINUER →",
+    playAgain:"REJOUER",
+    actLbl:"ACTE",
+    bossName:"LE HACKER",
+    shieldAbsorbed:"🛡 VPN a absorbé un tir !",
+    bossEnrage:"⚠️ BOSS ENRAGÉ !",
+    elapsed:"Temps",
+  },
+  nl:{
+    acts:[
+      { title:"ACT 1 — Verbinding", sub:"Uw netwerk lijkt rustig... Maar er zijn al cookies. Verdedig u!" },
+      { title:"ACT 2 — Datalek !", sub:"Een luchtvaartmaatschappij werd gehackt. Uw gegevens staan te koop op het dark web. De dreiging neemt toe!" },
+      { title:"ACT 3 — Actieve verdediging", sub:"Gebruik uw cyberbeveiligingstools! Bonussen en vallen vallen tegelijk — kies verstandig!" },
+      { title:"ACT 4 — BAAS GOLF 💀", sub:"DE HACKER VALT U DIRECT AAN. Hij stuurt virussen en ransomware in golven. Overleven!" },
+      { title:"ACT 5 — OVERWINNING ! 🎉", sub:"U heeft de hacker uitgeschakeld. Uw digitale ruimte is beschermd. Goed gedaan!" },
+    ],
+    bonuses:{
+      VPN:"🛡 VPN actief — schild AAN",
+      MFA:"🔐 Dubbel schot (MFA)",
+      COOKIE_CLEAN:"🍪 Cookies gewist — snelheid hersteld",
+      PASSWORD:"🔑 Sterk wachtwoord — onkwetsbaar 6s",
+      FORMATION:"📚 Cyberveiligheidsoplei­ding — snel schieten 12s",
+      ANTIVIRUS:"🦠 Antivirus — vernietig alle virussen",
+      UPDATE:"⬆️ Software-update — minder virussen 20s",
+      FIREWALL:"🧱 Firewall ingezet — beschermingsmuur!",
+    },
+    debuffs:{
+      UNVERIFIED_APP:"⚠️ Niet-geverifieerde app — 2 virussen gespawnd!",
+      COOKIES:"🍪 Cookies geaccepteerd — vertraagd 12s!",
+      CGU:"📜 AVG genegeerd — schild verloren!",
+    },
+    dataLeak:"💥 Datalek! Uw verdediging verzwakt en aanvallen verdubbelen!",
+    firewallDestroyed:"🔥 Firewall vernietigd!",
+    neutralItems:{
+      FAKE_UPDATE:   { label:"Update beschikbaar",    good:false, msg:"⚠️ Nep-update — het was malware!",              ignoredMsg:"✅ Slim! Deze onbekende update was een val."              },
+      REAL_UPDATE:   { label:"Update beschikbaar",    good:true,  msg:"✅ Echte update — systeem versterkt!",           ignoredMsg:"ℹ️ Echte update gemist — maar voorzichtigheid loont."     },
+      PROMO_TRAP:    { label:"Exclusief aanbod!",      good:false, msg:"⚠️ Reclame-oplichting — vertraging actief!",    ignoredMsg:"✅ Goed gedaan! Onbekende aanbiedingen zijn vaak vallen."  },
+      FREE_GIFT:     { label:"Gratis cadeau",          good:false, msg:"⚠️ Valstrik — 2 virussen verschenen!",         ignoredMsg:"✅ Verstandig! Gratis cadeaus verbergen vaak virussen."    },
+      SECURE_LINK:   { label:"Beveiligde verbinding",  good:true,  msg:"✅ Geverifieerde link — VPN-schild gekregen!",  ignoredMsg:"ℹ️ Veilige link gemist — moeilijk te weten zonder controle."},
+      FAKE_ANTIVIRUS:{ label:"Beveiligingsalarm!",     good:false, msg:"⚠️ Nep-antivirus — schild verloren!",          ignoredMsg:"✅ Correct! Valse beveiligingswaarschuwingen komen veel voor."},
+      PATCH_REAL:    { label:"Beveiligingspatch",      good:true,  msg:"✅ Echte patch — +1 HP hersteld!",              ignoredMsg:"ℹ️ Echte patch gemist — bron controleren blijft het beste." },
+    },
+    victory:"🏆 OVERWINNING!",
+    victoryMsg:"Uw digitale ruimte is beveiligd!",
+    defeat:"💀 GAME OVER",
+    defeatMsg:"Uw systeem is gecompromitteerd. Elke fout is een les!",
+    score:"SCORE",
+    lives:"LEVENS",
+    continueBtn:"DOORGAAN →",
+    playAgain:"OPNIEUW SPELEN",
+    actLbl:"ACT",
+    bossName:"DE HACKER",
+    shieldAbsorbed:"🛡 VPN absorbeerde een schot!",
+    bossEnrage:"⚠️ BAAS WOEDEND!",
+    elapsed:"Tijd",
+  },
+  en:{
+    acts:[
+      { title:"ACT 1 — Connection", sub:"Your network looks calm... just a few cookies around. Defend yourself!" },
+      { title:"ACT 2 — Data Breach !", sub:"An airline has been hacked. Your data is for sale on the dark web. The threat is rising!" },
+      { title:"ACT 3 — Active Defense", sub:"Use your cybersecurity tools! Bonuses and traps fall simultaneously — choose carefully!" },
+      { title:"ACT 4 — BOSS WAVE 💀", sub:"THE HACKER IS ATTACKING YOU DIRECTLY. Waves of viruses and ransomware incoming. Survive!" },
+      { title:"ACT 5 — VICTORY ! 🎉", sub:"You've neutralized the hacker. Your digital space is protected. Well done!" },
+    ],
+    bonuses:{
+      VPN:"🛡 VPN activated — shield ON",
+      MFA:"🔐 Double shot (MFA auth)",
+      COOKIE_CLEAN:"🍪 Cookies cleaned — speed restored",
+      PASSWORD:"🔑 Strong password — invincible 6s",
+      FORMATION:"📚 Cybersecurity training — rapid fire 12s",
+      ANTIVIRUS:"🦠 Antivirus — destroys all viruses",
+      UPDATE:"⬆️ Software updated — fewer viruses 20s",
+      FIREWALL:"🧱 Firewall deployed — protection wall!",
+    },
+    debuffs:{
+      UNVERIFIED_APP:"⚠️ Unverified app — 2 viruses spawned!",
+      COOKIES:"🍪 Cookies accepted — slowed 12s!",
+      CGU:"📜 T&C ignored — shield lost!",
+    },
+    dataLeak:"💥 Data breach! Your defences weaken and attacks double!",
+    firewallDestroyed:"🔥 Firewall destroyed!",
+    neutralItems:{
+      FAKE_UPDATE:   { label:"Update available",      good:false, msg:"⚠️ Fake update — it was malware!",               ignoredMsg:"✅ Smart! That unknown update was a trap."               },
+      REAL_UPDATE:   { label:"Update available",      good:true,  msg:"✅ Real update — system hardened!",              ignoredMsg:"ℹ️ Real update missed — but caution was the right reflex."},
+      PROMO_TRAP:    { label:"Exclusive offer!",       good:false, msg:"⚠️ Ad scam — slowdown activated!",              ignoredMsg:"✅ Good call! Unknown offers are often traps."           },
+      FREE_GIFT:     { label:"Free gift",              good:false, msg:"⚠️ Booby trap — 2 viruses spawned!",            ignoredMsg:"✅ Wise! Free gifts often hide malware."                 },
+      SECURE_LINK:   { label:"Secure connection",      good:true,  msg:"✅ Verified link — VPN shield granted!",        ignoredMsg:"ℹ️ Safe link missed — hard to know without checking!"   },
+      FAKE_ANTIVIRUS:{ label:"Security alert!",        good:false, msg:"⚠️ Fake antivirus — shield lost!",             ignoredMsg:"✅ Correct! Fake security alerts are very common."       },
+      PATCH_REAL:    { label:"Security patch",         good:true,  msg:"✅ Genuine patch — +1 HP restored!",            ignoredMsg:"ℹ️ Real patch missed — verifying the source is best."   },
+    },
+    victory:"🏆 VICTORY!",
+    victoryMsg:"Your digital space is secured!",
+    defeat:"💀 GAME OVER",
+    defeatMsg:"Your system is compromised. Every mistake is a lesson!",
+    score:"SCORE",
+    lives:"LIVES",
+    continueBtn:"CONTINUE →",
+    playAgain:"PLAY AGAIN",
+    actLbl:"ACT",
+    bossName:"THE HACKER",
+    shieldAbsorbed:"🛡 VPN absorbed a shot!",
+    bossEnrage:"⚠️ BOSS ENRAGED!",
+    elapsed:"Time",
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// CANVAS SETUP
+// ═══════════════════════════════════════════════════════════
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+const BW = 480, BH = 640;
+canvas.width  = BW;
+canvas.height = BH;
+
+function resize(){
+  const s = Math.min((window.innerWidth-10)/BW, (window.innerHeight-10)/BH, 1);
+  canvas.style.width  = (BW*s)+'px';
+  canvas.style.height = (BH*s)+'px';
+  const w = document.getElementById('wrapper');
+  w.style.width  = (BW*s)+'px';
+  w.style.height = (BH*s)+'px';
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ═══════════════════════════════════════════════════════════
+// PIXEL ART SPRITES  (each cell = 3×3 canvas px)
+// ═══════════════════════════════════════════════════════════
+const PS = 3; // pixel scale
+
+function drawSprite(grid, x, y, pal){
+  grid.forEach((row,ry)=>{
+    row.forEach((c,rx)=>{
+      if(c && pal[c]){
+        ctx.fillStyle = pal[c];
+        ctx.fillRect(x+rx*PS, y+ry*PS, PS, PS);
+      }
+    });
+  });
+}
+
+// Player ship  12×10 → 36×30 px
+const SP_PLAYER = [
+  [0,0,0,0,0,1,0,0,0,0,0,0],
+  [0,0,0,0,1,1,1,0,0,0,0,0],
+  [0,0,0,0,1,2,1,0,0,0,0,0],
+  [0,0,1,1,1,2,1,1,1,0,0,0],
+  [0,1,1,1,1,2,2,1,1,1,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,0],
+  [1,1,0,1,1,2,2,1,1,0,1,1],
+  [1,1,0,0,2,2,2,2,0,0,1,1],
+  [0,0,0,0,3,0,0,3,0,0,0,0],
+  [0,0,0,0,1,0,0,1,0,0,0,0],
+];
+const PAL_PLAYER = { 1:'#00ff88', 2:'#00aaff', 3:'#ff6600', 0:null };
+
+// Cookie  10×8 → 30×24 px
+const SP_COOKIE = [
+  [0,1,1,1,1,1,1,1,0,0],
+  [1,1,2,1,1,2,1,1,1,0],
+  [1,1,1,1,1,1,1,1,1,0],
+  [1,2,1,1,1,1,2,1,1,0],
+  [1,1,1,2,1,1,1,1,1,0],
+  [1,1,1,1,1,1,2,1,1,0],
+  [0,1,1,1,1,1,1,1,0,0],
+  [0,0,1,1,1,1,1,0,0,0],
+];
+const PAL_COOKIE = { 1:'#cc8833', 2:'#442200', 0:null };
+
+// Spam  10×8 → 30×24 px
+const SP_SPAM = [
+  [0,1,1,1,1,1,1,1,1,0],
+  [1,1,2,2,2,2,2,2,1,1],
+  [1,2,1,1,1,1,1,1,2,1],
+  [1,1,1,2,2,2,2,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1],
+  [1,2,1,1,1,1,1,1,2,1],
+  [0,1,1,1,1,1,1,1,1,0],
+  [0,0,1,1,0,0,1,1,0,0],
+];
+const PAL_SPAM = { 1:'#ffcc00', 2:'#ff6600', 0:null };
+
+// Phishing  10×9 → 30×27 px
+const SP_PHISHING = [
+  [0,0,1,1,1,1,1,1,0,0],
+  [0,1,1,2,1,1,2,1,1,0],
+  [1,1,1,1,1,1,1,1,1,1],
+  [1,1,2,1,1,1,1,2,1,1],
+  [1,1,1,1,1,1,1,1,1,1],
+  [0,1,1,1,1,1,1,1,1,0],
+  [0,0,0,1,1,1,1,0,0,0],
+  [0,0,0,0,1,1,0,0,0,0],
+  [0,0,0,1,1,1,1,0,0,0],
+];
+const PAL_PHISHING = { 1:'#ff3333', 2:'#ffffff', 0:null };
+
+// Virus  10×10 → 30×30 px
+const SP_VIRUS = [
+  [0,0,1,0,0,0,0,1,0,0],
+  [0,1,2,1,0,0,1,2,1,0],
+  [1,2,1,2,1,1,2,1,2,1],
+  [0,1,2,1,1,1,1,2,1,0],
+  [0,0,1,1,1,1,1,1,0,0],
+  [0,0,1,1,1,1,1,1,0,0],
+  [0,1,2,1,1,1,1,2,1,0],
+  [1,2,1,2,1,1,2,1,2,1],
+  [0,1,2,1,0,0,1,2,1,0],
+  [0,0,1,0,0,0,0,1,0,0],
+];
+const PAL_VIRUS = { 1:'#aa00ff', 2:'#ff00ff', 0:null };
+
+// Ransomware  12×10 → 36×30 px  (lock icon)
+const SP_RANSOM = [
+  [0,0,0,1,1,1,1,1,1,0,0,0],
+  [0,0,1,1,0,0,0,0,1,1,0,0],
+  [0,0,1,1,0,0,0,0,1,1,0,0],
+  [0,1,1,1,1,1,1,1,1,1,1,0],
+  [1,1,1,2,1,1,1,1,2,1,1,1],
+  [1,1,1,1,1,2,2,1,1,1,1,1],
+  [1,1,1,1,1,2,2,1,1,1,1,1],
+  [1,1,1,2,1,1,1,1,2,1,1,1],
+  [0,1,1,1,1,1,1,1,1,1,1,0],
+  [0,0,1,1,1,1,1,1,1,1,0,0],
+];
+const PAL_RANSOM = { 1:'#cc0000', 2:'#ffff00', 0:null };
+
+// Boss Hacker  16×14 → 48×42 px
+const SP_BOSS = [
+  [0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0],
+  [0,0,1,2,1,1,1,1,1,1,1,1,2,1,0,0],
+  [0,1,1,1,1,3,3,1,1,3,3,1,1,1,1,0],
+  [0,1,1,2,1,1,1,1,1,1,1,1,2,1,1,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,3,3,1,1,3,3,1,1,1,1,1],
+  [1,1,1,1,1,3,3,1,1,3,3,1,1,1,1,1],
+  [1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [0,1,1,1,2,1,1,1,1,1,1,2,1,1,1,0],
+  [0,1,1,1,1,2,2,2,2,2,2,1,1,1,1,0],
+  [0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+  [0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0],
+  [0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0],
+];
+const PAL_BOSS = { 1:'#00ff00', 2:'#ff2222', 3:'#0088ff', 0:null };
+
+// Generic bonus sprite  8×8
+const SP_BONUS = [
+  [0,1,1,1,1,1,1,0],
+  [1,1,1,2,2,1,1,1],
+  [1,1,1,2,2,1,1,1],
+  [1,2,2,2,2,2,2,1],
+  [1,2,2,2,2,2,2,1],
+  [1,1,1,2,2,1,1,1],
+  [0,1,1,2,2,1,1,0],
+  [0,0,1,1,1,1,0,0],
+];
+const PAL_BONUS = { 1:'#00cc44', 2:'#ffffff', 0:null };
+
+// Generic debuff sprite  8×8
+const SP_DEBUFF = [
+  [1,1,0,0,0,0,1,1],
+  [1,1,1,0,0,1,1,1],
+  [0,1,1,1,1,1,1,0],
+  [0,0,1,2,2,1,0,0],
+  [0,0,1,2,2,1,0,0],
+  [0,1,1,1,1,1,1,0],
+  [1,1,1,0,0,1,1,1],
+  [1,1,0,0,0,0,1,1],
+];
+const PAL_DEBUFF = { 1:'#cc2222', 2:'#ff6666', 0:null };
+
+// Neutral / suspicious pickup sprite  8×8
+// Looks like a sealed envelope — harmless OR dangerous, impossible to tell
+const SP_NEUTRAL = [
+  [0,1,1,1,1,1,1,0],
+  [1,1,2,1,1,2,1,1],
+  [1,2,1,2,2,1,2,1],
+  [1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1],
+  [0,1,1,1,1,1,1,0],
+  [0,0,1,1,1,1,0,0],
+];
+const PAL_NEUTRAL = { 1:'#888899', 2:'#ccccdd', 0:null };
+
+// ═══════════════════════════════════════════════════════════
+// STARS (static positions, slight parallax layer)
+// ═══════════════════════════════════════════════════════════
+const STARS = Array.from({length:80},(_,i)=>({
+  x:(i*97+37)%BW,
+  y:(i*143+11)%BH,
+  s:i%3===0?2:1,
+  sp:0.05+((i*31)%10)*0.015,
+}));
+
+// ═══════════════════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════════════════
+let lang = 'fr';
+let gState = 'BANNER'; // BANNER PLAYING VICTORY DEFEAT
+let act = 1;
+let score = 0;
+let startTime = 0;
+let lastTs = 0;
+let raf = null;
+
+// Player object
+let P = newPlayer();
+function newPlayer(){
+  return {
+    x: BW/2-18, y: BH-65,
+    w:36, h:30,
+    hp:5, maxHp:5, lives:3,
+    speed:3,
+    shield:false,
+    doubleFire:false,    dfTimer:0,
+    invincible:false,    invTimer:0,
+    slowed:false,        slowTimer:0,
+    formation:false,     fmTimer:0,   // Formation cybersec
+    antivirus:false,     avTimer:0,
+    update:false,        upTimer:0,
+    flash:0,
+    lastShot:0, cooldown:380,
+  };
+}
+
+let bullets      = [];
+let eBullets     = [];
+let enemies      = [];
+let pickups      = [];
+let particles    = [];
+let boss         = null;
+let formGrid     = [];   // enemies in grid formation
+let fDir         = 1;    // formation direction
+let fSpeed       = 0.5;
+
+let actTimer      = 0;
+let pickTimer     = 0;
+let waveNum       = 0;
+let transitioning = false;
+let firewall      = null;
+let threatLevel   = 1;
+const THREAT = [0, 1, 2.8, 5, 8];
+
+// Kill-counter bonus system
+let killCount     = 0;
+let nextBonusKill = 10 + Math.floor(Math.random()*6); // random 10–15
+
+// Wave-shoot timer: bottom row fires in sync every 8s
+let waveShootTimer = 0;
+const WAVE_SHOOT_INTERVAL = 8000;
+
+// Debuff → enemy boost linkage
+let debuffBoost = { COOKIE:1, SPAM:1, PHISHING:1, VIRUS:1, RANSOMWARE:1 };
+
+// Rare fallback bonus timer (30s safety net)
+const PICK_FALLBACK = 30000;
+
+// Input
+const keys = {};
+let tLeft=false, tRight=false, tFire=false;
+document.addEventListener('keydown', e=>{ keys[e.code]=true; if(e.code==='Space') e.preventDefault(); });
+document.addEventListener('keyup',   e=>{ keys[e.code]=false; });
+
+['touchstart','mousedown'].forEach(ev=>{
+  document.getElementById('tLeft') .addEventListener(ev, e=>{ tLeft =true; e.preventDefault(); },{passive:false});
+  document.getElementById('tRight').addEventListener(ev, e=>{ tRight=true; e.preventDefault(); },{passive:false});
+  document.getElementById('tFire') .addEventListener(ev, e=>{ tFire =true; e.preventDefault(); },{passive:false});
+});
+['touchend','mouseup'].forEach(ev=>{
+  document.getElementById('tLeft') .addEventListener(ev, e=>{ tLeft =false; e.preventDefault(); });
+  document.getElementById('tRight').addEventListener(ev, e=>{ tRight=false; e.preventDefault(); });
+  document.getElementById('tFire') .addEventListener(ev, e=>{ tFire =false; e.preventDefault(); });
+});
+
+// ═══════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════
+let notifTimer = 0;
+function notif(txt, dur=2200){
+  const el = document.getElementById('notif');
+  el.textContent = txt;
+  el.style.opacity = '1';
+  notifTimer = dur;
+}
+
+// ═══════════════════════════════════════════════════════════
+// UI UPDATE
+// ═══════════════════════════════════════════════════════════
+function setLang(l){ lang=l; updateUI(); }
+
+function updateUI(){
+  const t = T[lang];
+  const pct = (P.hp/P.maxHp*100)+'%';
+  document.getElementById('hpFill').style.width = pct;
+  document.getElementById('hpFill').style.background = P.hp<=1?'#f00': P.hp<=2?'#fa0':'#0f0';
+  document.getElementById('livesLabel').textContent = '♥'.repeat(P.lives);
+  const wLabel = (act>=1&&act<=3 && MAX_WAVES[act]>1) ? ' — '+(waveNum+1)+'/'+MAX_WAVES[act] : '';
+  document.getElementById('actLabel').textContent   = t.actLbl+' '+act+wLabel;
+  document.getElementById('scoreLabel').textContent = t.score+': '+score;
+
+  let tags = '';
+  if(P.shield)      tags += '<span class="puTag">🛡 VPN</span>';
+  if(P.doubleFire)  tags += '<span class="puTag">🔐 MFA</span>';
+  if(P.invincible)  tags += '<span class="puTag">🔑 GOD</span>';
+  if(P.formation)   tags += '<span class="puTag">📚 TRAIN</span>';
+  if(P.antivirus)   tags += '<span class="puTag">🦠 AV</span>';
+  if(P.update)      tags += '<span class="puTag">⬆️ UPD</span>';
+  if(P.slowed)      tags += '<span class="puTag bad">🍪 SLOW</span>';
+  if(firewall)      tags += '<span class="puTag" style="border-color:#0ff;color:#0ff">🧱 FW '+firewall.hp+'/'+firewall.maxHp+'</span>';
+  document.getElementById('powerupsBar').innerHTML = tags;
+}
+
+// ═══════════════════════════════════════════════════════════
+// BANNER
+// ═══════════════════════════════════════════════════════════
+function showBanner(n){
+  const t = T[lang];
+  const a = t.acts[n-1];
+  document.getElementById('bTitle').textContent = a.title;
+  document.getElementById('bText').textContent  = a.sub;
+  document.getElementById('bannerBtn').textContent = n===5 ? t.playAgain : t.continueBtn;
+  document.getElementById('banner').style.display = 'block';
+  gState = 'BANNER';
+}
+
+function hideBanner(){
+  document.getElementById('banner').style.display = 'none';
+  if(act===5){
+    endGame(true);
+    return;
+  }
+  gState = 'PLAYING';
+  setupAct(act);
+}
+
+function endGame(win){
+  const t = T[lang];
+  const elapsed = Math.round((Date.now()-startTime)/1000);
+  document.getElementById('bTitle').textContent = win ? t.victory : t.defeat;
+  document.getElementById('bText').innerHTML =
+    (win ? t.victoryMsg : t.defeatMsg) +
+    '<br><br>'+t.score+': <b>'+score+'</b><br>⏱ '+t.elapsed+': '+elapsed+'s';
+  document.getElementById('bannerBtn').textContent = t.playAgain;
+  document.getElementById('bannerBtn').onclick = startGame;
+  document.getElementById('banner').style.display = 'block';
+  gState = win ? 'VICTORY' : 'DEFEAT';
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENEMY FACTORY
+// ═══════════════════════════════════════════════════════════
+const ECFG = {
+  COOKIE:    { w:30, h:24, hp:1, sc:10,  sp:0.8,  shot:0.0004, sprite:SP_COOKIE,   pal:PAL_COOKIE  },
+  SPAM:      { w:30, h:24, hp:1, sc:15,  sp:1.1,  shot:0.0018, sprite:SP_SPAM,     pal:PAL_SPAM    },
+  PHISHING:  { w:30, h:27, hp:2, sc:25,  sp:0.9,  shot:0.0045, sprite:SP_PHISHING, pal:PAL_PHISHING},
+  VIRUS:     { w:30, h:30, hp:1, sc:20,  sp:1.6,  shot:0.0030, sprite:SP_VIRUS,    pal:PAL_VIRUS   },
+  RANSOMWARE:{ w:36, h:30, hp:3, sc:50,  sp:0.65, shot:0.0040, sprite:SP_RANSOM,   pal:PAL_RANSOM  },
+};
+
+function makeEnemy(type, x, y){
+  const c = ECFG[type];
+  return {
+    type, x, y, w:c.w, h:c.h,
+    hp:c.hp, maxHp:c.hp,
+    vx:c.sp*(Math.random()>.5?1:-1), vy:0.25,
+    sc:c.sc, shot:c.shot,
+    sprite:c.sprite, pal:c.pal,
+    grid:false, flash:0,
+  };
+}
+
+// Grid formation
+function spawnGrid(types, rows, cols, startX, startY, gapX, gapY){
+  formGrid = [];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const type = types[r%types.length];
+      const e = makeEnemy(type, startX+c*gapX, startY+r*gapY);
+      e.vx=0; e.vy=0; e.grid=true;
+      formGrid.push(e);
+      enemies.push(e);
+    }
+  }
+  fDir=1;
+  fSpeed = 0.38 + act*0.12;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PICKUP FACTORY
+// ═══════════════════════════════════════════════════════════
+function makePickup(x, y, type, bad){
+  return {
+    x, y, w:24, h:24,
+    type, bad,
+    vy:1.4,
+    sprite: bad?SP_DEBUFF:SP_BONUS,
+    pal:    bad?PAL_DEBUFF:PAL_BONUS,
+    done:false,
+  };
+}
+
+const BONUS_POOL_1 = ['VPN','MFA','FORMATION','UPDATE','FIREWALL'];
+const BONUS_POOL_3 = ['VPN','MFA','COOKIE_CLEAN','PASSWORD','FORMATION','ANTIVIRUS','UPDATE','FIREWALL'];
+const DEBUFF_POOL  = ['COOKIES','UNVERIFIED_APP','CGU'];
+
+// Neutral items pool — same label, same sprite, good OR bad revealed on pickup
+// Ratio: 3 bad vs 2 good → realistic tension (more traps than gifts in the wild)
+const NEUTRAL_POOL = ['FAKE_UPDATE','REAL_UPDATE','PROMO_TRAP','FREE_GIFT','SECURE_LINK','FAKE_ANTIVIRUS','PATCH_REAL'];
+
+function makeNeutralPickup(x, y){
+  const key = NEUTRAL_POOL[Math.floor(Math.random()*NEUTRAL_POOL.length)];
+  return {
+    x, y, w:24, h:24,
+    type: key,
+    bad: false,   // revealed on pickup
+    neutral: true,
+    vy: 1.4,
+    sprite: SP_NEUTRAL,
+    pal:    PAL_NEUTRAL,
+    done: false,
+  };
+}
+
+function randPick(){
+  const x = 28 + Math.random()*(BW-56);
+  if(act<=2){
+    const t = BONUS_POOL_1[Math.floor(Math.random()*BONUS_POOL_1.length)];
+    return makePickup(x, -24, t, false);
+  }
+  if(act===3){
+    if(Math.random()<.55){
+      const t = BONUS_POOL_3[Math.floor(Math.random()*BONUS_POOL_3.length)];
+      return makePickup(x, -24, t, false);
+    }
+    const t = DEBUFF_POOL[Math.floor(Math.random()*DEBUFF_POOL.length)];
+    return makePickup(x, -24, t, true);
+  }
+  // act 4
+  if(Math.random()<.68){
+    const t = ['VPN','MFA','PASSWORD','ANTIVIRUS','FORMATION'][Math.floor(Math.random()*5)];
+    return makePickup(x, -24, t, false);
+  }
+  const t = ['COOKIES','CGU'][Math.floor(Math.random()*2)];
+  return makePickup(x, -24, t, true);
+}
+
+// ═══════════════════════════════════════════════════════════
+// WAVE CONFIGS  (per act, indexed 0…n)
+// Each wave: { types, rows, cols, sx, sy, gX, gY, extras? }
+// extras: array of { type, count } spawned as free enemies
+// ═══════════════════════════════════════════════════════════
+const WAVES = {
+  1:[
+    { types:['COOKIE','SPAM'],              rows:3, cols:6, sx:20, sy:62, gX:72, gY:38 },
+    { types:['SPAM','COOKIE'],              rows:4, cols:6, sx:20, sy:55, gX:72, gY:36 },
+    { types:['COOKIE','SPAM','PHISHING'],   rows:3, cols:7, sx:8,  sy:58, gX:65, gY:38,
+      extras:[{type:'SPAM',n:4}] },
+  ],
+  2:[
+    { types:['SPAM','PHISHING'],            rows:3, cols:6, sx:20, sy:58, gX:72, gY:40 },
+    { types:['COOKIE','PHISHING','SPAM'],   rows:4, cols:6, sx:20, sy:52, gX:72, gY:38 },
+    { types:['PHISHING','VIRUS'],           rows:3, cols:6, sx:20, sy:55, gX:72, gY:40,
+      extras:[{type:'VIRUS',n:3}] },
+    { types:['PHISHING','VIRUS','SPAM'],    rows:4, cols:6, sx:20, sy:50, gX:72, gY:38 },
+  ],
+  3:[
+    { types:['PHISHING','VIRUS','RANSOMWARE'], rows:3, cols:5, sx:28, sy:48, gX:86, gY:42 },
+    { types:['VIRUS','RANSOMWARE'],            rows:4, cols:5, sx:28, sy:45, gX:86, gY:40,
+      extras:[{type:'VIRUS',n:4}] },
+    { types:['RANSOMWARE','VIRUS'],            rows:3, cols:6, sx:20, sy:48, gX:72, gY:42,
+      extras:[{type:'VIRUS',n:6}] },
+    { types:['RANSOMWARE'],                    rows:4, cols:5, sx:28, sy:45, gX:86, gY:40,
+      extras:[{type:'VIRUS',n:5},{type:'PHISHING',n:3}] },
+  ],
+};
+const MAX_WAVES = { 1:3, 2:4, 3:4, 4:0 };
+
+function spawnWave(n, wn){
+  const w = (WAVES[n]||[])[wn];
+  if(!w) return;
+  // clear existing grid (keep free enemies alive for continuity)
+  formGrid=[];
+  spawnGrid(w.types, w.rows, w.cols, w.sx, w.sy, w.gX, w.gY);
+  if(w.extras) w.extras.forEach(ex=>{
+    for(let i=0;i<ex.n;i++){
+      enemies.push(makeEnemy(ex.type, 40+Math.random()*(BW-80), 30+Math.random()*80));
+    }
+  });
+  waveNum=wn;
+  transitioning=false;
+}
+
+function waveLabel(n){ return (n===0)?'':' — VAGUE '+(n+1)+'/'+MAX_WAVES[act]; }
+
+// ═══════════════════════════════════════════════════════════
+// ACT SETUP
+// ═══════════════════════════════════════════════════════════
+function spawnFirewall(){
+  // Wall sits ~90px above the player
+  firewall = { x:18, y:P.y-95, w:BW-36, h:9, hp:14, maxHp:14 };
+}
+
+function setupAct(n){
+  actTimer=0; pickTimer=0; waveNum=0; transitioning=false;
+  formGrid=[]; boss=null; firewall=null;
+  enemies=[]; pickups=[]; eBullets=[];
+  killCount=0; nextBonusKill=10+Math.floor(Math.random()*6);
+  waveShootTimer=0;
+  debuffBoost={ COOKIE:1, SPAM:1, PHISHING:1, VIRUS:1, RANSOMWARE:1 };
+  threatLevel = THREAT[n] || 1;
+
+  if(n>=1 && n<=3){
+    spawnWave(n, 0);
+    if(n===2){
+      // Data breach narrative: strip shield + HP penalty + notify
+      if(P.shield) P.shield=false;
+      P.hp = Math.max(1, P.hp-1);
+      setTimeout(()=>notif(T[lang].dataLeak, 3500), 400);
+      // Drop a Firewall bonus early to help the player rebuild
+      setTimeout(()=>{ if(act===2) pickups.push(makePickup(BW/2-12,-24,'FIREWALL',false)); }, 3500);
+      setTimeout(()=>{ if(act===2) pickups.push(makePickup(BW/4,-24,'VPN',false)); }, 7000);
+    }
+    if(n===3){
+      // Act 3: automatic firewall appears as a narrative "defense layer"
+      setTimeout(()=>{ if(act===3) spawnFirewall(); }, 1000);
+    }
+  } else if(n===4){
+    boss = makeBoss();
+  }
+  updateUI();
+}
+
+// ═══════════════════════════════════════════════════════════
+// BOSS
+// ═══════════════════════════════════════════════════════════
+function makeBoss(){
+  return {
+    x:BW/2-24, y:55,
+    w:48, h:42,
+    hp:30, maxHp:30,
+    vx:1, vy:0,
+    phase:1,
+    shotTimer:0, shotInterval:2000,
+    flash:0,
+    sprite:SP_BOSS, pal:PAL_BOSS,
+    sc:500,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// PARTICLES
+// ═══════════════════════════════════════════════════════════
+function explode(x, y, col, n=8){
+  for(let i=0;i<n;i++){
+    const a = (Math.PI*2*i/n)+Math.random()*.6;
+    const s = 1.2+Math.random()*2.2;
+    particles.push({ x,y, vx:Math.cos(a)*s, vy:Math.sin(a)*s,
+      life:28+Math.random()*22, maxLife:50, col, sz:1.5+Math.random()*2 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// APPLY PICKUP EFFECT
+// ═══════════════════════════════════════════════════════════
+function applyPickup(pk){
+  const t = T[lang];
+
+  // ── Neutral / ambiguous items ──
+  if(pk.neutral){
+    const info = t.neutralItems[pk.type];
+    notif(info.msg, 3000);
+    if(info.good){
+      switch(pk.type){
+        case 'REAL_UPDATE':  P.update=true; P.upTimer=20000; break;
+        case 'SECURE_LINK':  P.shield=true; break;
+        case 'PATCH_REAL':   P.hp=Math.min(P.maxHp, P.hp+1); break;
+      }
+      explode(pk.x+pk.w/2, pk.y+pk.h/2, '#00ff88', 8);
+    } else {
+      switch(pk.type){
+        case 'FAKE_UPDATE':
+          debuffBoost.VIRUS=2; setTimeout(()=>{ debuffBoost.VIRUS=1; },12000);
+          for(let i=0;i<2;i++) enemies.push(makeEnemy('VIRUS',60+Math.random()*(BW-120),40+Math.random()*80));
+          break;
+        case 'PROMO_TRAP':
+          P.slowed=true; P.slowTimer=10000; P.speed=1.5;
+          debuffBoost.SPAM=2; setTimeout(()=>{ debuffBoost.SPAM=1; },10000);
+          break;
+        case 'FREE_GIFT':
+          for(let i=0;i<2;i++) enemies.push(makeEnemy('VIRUS',60+Math.random()*(BW-120),40+Math.random()*80));
+          break;
+        case 'FAKE_ANTIVIRUS':
+          P.shield=false;
+          debuffBoost.RANSOMWARE=2; setTimeout(()=>{ debuffBoost.RANSOMWARE=1; },12000);
+          break;
+      }
+      explode(pk.x+pk.w/2, pk.y+pk.h/2, '#ff4400', 8);
+    }
+    updateUI();
+    return;
+  }
+
+  if(pk.bad){
+    switch(pk.type){
+      case 'COOKIES':
+        P.slowed=true; P.slowTimer=12000; P.speed=1.5;
+        // Cookies accepted → Phishing gets +2.5× fire rate
+        debuffBoost.PHISHING=2.5;
+        setTimeout(()=>{ debuffBoost.PHISHING=1; }, 12000);
+        notif(t.debuffs.COOKIES); break;
+      case 'UNVERIFIED_APP':
+        // App vérolée → 3 virus + leur tir doublé
+        for(let i=0;i<3;i++){
+          const e=makeEnemy('VIRUS',60+Math.random()*(BW-120),40+Math.random()*100);
+          enemies.push(e);
+        }
+        debuffBoost.VIRUS=2.5;
+        setTimeout(()=>{ debuffBoost.VIRUS=1; }, 15000);
+        notif(t.debuffs.UNVERIFIED_APP); break;
+      case 'CGU':
+        P.shield=false;
+        // CGU ignorées → Ransomware blindé (+1 HP à chaque ransomware actif) + tir x2
+        enemies.forEach(e=>{ if(e.type==='RANSOMWARE') e.hp++; });
+        debuffBoost.RANSOMWARE=2.5;
+        setTimeout(()=>{ debuffBoost.RANSOMWARE=1; }, 18000);
+        notif(t.debuffs.CGU); break;
+    }
+  } else {
+    switch(pk.type){
+      case 'VPN':
+        P.shield=true;
+        notif(t.bonuses.VPN); break;
+      case 'MFA':
+        P.doubleFire=true; P.dfTimer=15000;
+        notif(t.bonuses.MFA); break;
+      case 'COOKIE_CLEAN':
+        P.slowed=false; P.speed=3;
+        notif(t.bonuses.COOKIE_CLEAN); break;
+      case 'PASSWORD':
+        P.invincible=true; P.invTimer=6000;
+        notif(t.bonuses.PASSWORD); break;
+      case 'FORMATION':
+        P.formation=true; P.fmTimer=12000; P.cooldown=180;
+        notif(t.bonuses.FORMATION); break;
+      case 'ANTIVIRUS':
+        P.antivirus=true; P.avTimer=15000;
+        // Immediately destroy all viruses on screen
+        enemies = enemies.filter(e=>{
+          if(e.type==='VIRUS'){
+            explode(e.x+e.w/2, e.y+e.h/2,'#aa00ff',6);
+            score+=20; return false;
+          }
+          return true;
+        });
+        formGrid = formGrid.filter(e=>e.type!=='VIRUS');
+        notif(t.bonuses.ANTIVIRUS); break;
+      case 'UPDATE':
+        P.update=true; P.upTimer=20000;
+        notif(t.bonuses.UPDATE); break;
+      case 'FIREWALL':
+        spawnFirewall();
+        notif(t.bonuses.FIREWALL); break;
+    }
+  }
+  updateUI();
+}
+
+// ═══════════════════════════════════════════════════════════
+// COLLISION
+// ═══════════════════════════════════════════════════════════
+function overlap(a,b){
+  return a.x<b.x+b.w && a.x+a.w>b.x &&
+         a.y<b.y+b.h && a.y+a.h>b.y;
+}
+
+// ═══════════════════════════════════════════════════════════
+// HIT PLAYER
+// ═══════════════════════════════════════════════════════════
+function hitPlayer(dmg){
+  if(P.invincible) return;
+  if(P.shield){ P.shield=false; notif(T[lang].shieldAbsorbed); updateUI(); return; }
+  P.hp -= dmg;
+  P.flash = 500;
+  updateUI();
+  if(P.hp<=0){
+    P.lives--;
+    if(P.lives<=0){ endGame(false); return; }
+    P.hp = P.maxHp;
+    P.invincible=true; P.invTimer=3000;
+    updateUI();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPDATE
+// ═══════════════════════════════════════════════════════════
+function update(dt){
+  if(gState!=='PLAYING') return;
+
+  actTimer  += dt;
+  pickTimer += dt;
+
+  // Timed powerup decay
+  function tick(flag,timerKey,speedKey,reset){
+    if(P[timerKey]>0){
+      P[timerKey]-=dt;
+      if(P[timerKey]<=0){ P[flag]=false; if(speedKey) P[speedKey]=reset||3; updateUI(); }
+    }
+  }
+  tick('doubleFire','dfTimer');
+  tick('invincible','invTimer');
+  tick('slowed','slowTimer','speed',3);
+  tick('antivirus','avTimer');
+  tick('update','upTimer');
+  if(P.fmTimer>0){ P.fmTimer-=dt; if(P.fmTimer<=0){ P.formation=false; P.cooldown=380; updateUI(); } }
+  if(P.flash>0) P.flash-=dt;
+
+  // ── Player movement ──
+  const spd = P.slowed ? P.speed : P.speed;
+  if((keys['ArrowLeft']||keys['KeyA']||tLeft)  && P.x>0)        P.x-=spd;
+  if((keys['ArrowRight']||keys['KeyD']||tRight) && P.x+P.w<BW)  P.x+=spd;
+
+  // ── Shoot ──
+  const now = Date.now();
+  if((keys['Space']||keys['ArrowUp']||tFire) && now-P.lastShot>P.cooldown){
+    P.lastShot=now;
+    bullets.push({x:P.x+P.w/2-2,y:P.y,w:4,h:10,vy:-7,col:'#00ff88'});
+    if(P.doubleFire){
+      bullets.push({x:P.x+5,      y:P.y+6,w:3,h:8,vy:-6,col:'#ffff00'});
+      bullets.push({x:P.x+P.w-8,  y:P.y+6,w:3,h:8,vy:-6,col:'#ffff00'});
+    }
+    if(P.formation){
+      // Extra side shots from formation bonus
+      bullets.push({x:P.x+P.w/2-2,y:P.y+8,w:3,h:7,vy:-5.5,vx:-0.8,col:'#ffaaff'});
+      bullets.push({x:P.x+P.w/2-2,y:P.y+8,w:3,h:7,vy:-5.5,vx:+0.8,col:'#ffaaff'});
+    }
+  }
+
+  // ── Update bullets ──
+  bullets = bullets.filter(b=>{
+    b.x += b.vx||0;
+    b.y += b.vy;
+    return b.y>-b.h;
+  });
+
+  eBullets = eBullets.filter(b=>{
+    b.x += b.vx||0;
+    b.y += b.vy;
+
+    // ── BOMB: explodes when it reaches player's altitude ──
+    if(!b.hit && b.isBomb && b.y+b.h >= P.y-b.radius){
+      b.hit=true;
+      explode(b.x, b.y, '#ff6600', 16);
+      // AoE: damage player if within radius
+      const dist=Math.hypot(b.x-(P.x+P.w/2), b.y-(P.y+P.h/2));
+      if(dist<b.radius) hitPlayer(1);
+      // AoE: heavily damage firewall
+      if(firewall && Math.abs(b.y-firewall.y)<b.radius){
+        firewall.hp-=3;
+        if(firewall.hp<=0){
+          explode(firewall.x+firewall.w/2, firewall.y, '#ff6600', 12);
+          firewall=null; notif(T[lang].firewallDestroyed,2500); updateUI();
+        }
+      }
+    }
+
+    // ── Normal bullet: firewall blocks ──
+    if(!b.hit && !b.isBomb && firewall && overlap(b,firewall)){
+      b.hit=true;
+      firewall.hp--;
+      explode(b.x, b.y, '#00ff88', 3);
+      if(firewall.hp<=0){
+        explode(firewall.x+firewall.w/2, firewall.y, '#ff6600', 12);
+        firewall=null; notif(T[lang].firewallDestroyed,2500); updateUI();
+      }
+    }
+    if(!b.hit && overlap(b,P)){
+      b.hit=true;
+      hitPlayer(1);
+    }
+    return b.y<BH+b.h && !b.hit;
+  });
+
+  // ── Grid formation move ──
+  if(formGrid.length>0){
+    let hitEdge=false;
+    formGrid.forEach(e=>{ e.x+=fSpeed*fDir; if(e.x<=2||e.x+e.w>=BW-2) hitEdge=true; });
+    if(hitEdge){
+      fDir*=-1;
+      formGrid.forEach(e=>{ e.y+=14; });
+    }
+    formGrid.forEach(e=>{
+      if(e.y+e.h>=P.y-4){ hitPlayer(1); enemies=enemies.filter(x=>x!==e); formGrid=formGrid.filter(x=>x!==e); }
+    });
+  }
+
+  // ── Helper: fire one shot from enemy e ──
+  function enemyFire(e){
+    const cx=e.x+e.w/2, cy=e.y+e.h;
+    const dx=(P.x+P.w/2)-cx, dy=P.y-cy;
+    const d=Math.sqrt(dx*dx+dy*dy)||1;
+    const base=1.8+threatLevel*0.25;
+    switch(e.type){
+      case 'COOKIE':
+        // Slow, random-ish arc — not very aimed
+        eBullets.push({x:cx-2,y:cy,w:4,h:6,vx:(Math.random()-.5)*2,vy:base*0.7,col:'#cc8833'});
+        break;
+      case 'SPAM':
+        // Slightly aimed
+        eBullets.push({x:cx-2,y:cy,w:4,h:8,vx:dx/d*base*0.8,vy:dy/d*base*0.8+1.2,col:'#ffcc00'});
+        break;
+      case 'PHISHING':
+        // Precisely aimed, faster
+        eBullets.push({x:cx-2,y:cy,w:4,h:9,vx:dx/d*(base+1),vy:dy/d*(base+1)+0.5,col:'#ff3333'});
+        break;
+      case 'VIRUS':
+        // Burst of 2 in a spread
+        eBullets.push({x:cx-4,y:cy,w:3,h:7,vx:dx/d*base-0.6,vy:dy/d*base+1,col:'#dd00ff'});
+        eBullets.push({x:cx+1, y:cy,w:3,h:7,vx:dx/d*base+0.6,vy:dy/d*base+1,col:'#dd00ff'});
+        break;
+      case 'RANSOMWARE':
+        // 50% normal shot, 50% BOMB (AoE)
+        if(Math.random()<.5){
+          eBullets.push({x:cx-7,y:cy,w:14,h:14,vx:dx/d*0.4,vy:1.5,
+            col:'#ff6600',isBomb:true,radius:38});
+        } else {
+          eBullets.push({x:cx-2,y:cy,w:6,h:10,vx:dx/d*base*0.6,vy:dy/d*base*0.6+1,col:'#cc0000'});
+        }
+        break;
+    }
+  }
+
+  // ── Free enemies move & shoot ──
+  enemies.filter(e=>!e.grid).forEach(e=>{
+    e.x+=e.vx; e.y+=e.vy;
+    if(e.x<=0||e.x+e.w>=BW) e.vx*=-1;
+    if(e.y>BH+40){ e.hp=0; return; }
+    if(e.flash>0) e.flash-=dt;
+    if(P.antivirus && e.type==='VIRUS'){ explode(e.x+e.w/2,e.y+e.h/2,'#aa00ff',5); score+=20; e.hp=0; return; }
+    if(P.update && e.type==='VIRUS') e.vx*=0.996;
+    const boost=debuffBoost[e.type]||1;
+    if(Math.random()<e.shot*threatLevel*boost) enemyFire(e);
+  });
+
+  // ── Grid enemies: individual shooting ──
+  formGrid.forEach(e=>{
+    if(e.flash>0) e.flash-=dt;
+    const boost=debuffBoost[e.type]||1;
+    if(Math.random()<e.shot*threatLevel*boost) enemyFire(e);
+  });
+
+  // ── Wave shoot: every WAVE_SHOOT_INTERVAL, bottom row fires in sync ──
+  waveShootTimer+=dt;
+  if(waveShootTimer>=WAVE_SHOOT_INTERVAL && formGrid.length>0){
+    waveShootTimer=0;
+    // Find the lowest enemy in each x-column (by x bucket)
+    const cols={};
+    formGrid.forEach(e=>{
+      const bucket=Math.round(e.x/50);
+      if(!cols[bucket]||e.y>cols[bucket].y) cols[bucket]=e;
+    });
+    Object.values(cols).forEach(e=>{
+      e.flash=200; // visual cue: flash before shooting
+      setTimeout(()=>{ if(gState==='PLAYING') enemyFire(e); },150);
+    });
+  }
+
+  // ── Bullet → enemy collision ──
+  bullets = bullets.filter(b=>{
+    let hit=false;
+    for(let i=enemies.length-1;i>=0;i--){
+      const e=enemies[i];
+      if(overlap(b,e)){
+        hit=true;
+        e.hp--; e.flash=110;
+        explode(b.x,b.y,'#ffff00',4);
+        break;
+      }
+    }
+    if(!hit && boss && overlap(b,boss)){
+      hit=true;
+      boss.hp--; boss.flash=80; score+=5;
+      explode(b.x,b.y,'#ffff00',4);
+      if(boss.hp<=boss.maxHp*.5 && boss.phase===1){
+        boss.phase=2; boss.shotInterval=1100;
+        notif(T[lang].bossEnrage);
+      }
+      if(boss.hp<=0){
+        explode(boss.x+boss.w/2, boss.y+boss.h/2,'#00ff00',20);
+        score+=boss.sc;
+        boss=null;
+        act=5;
+        setTimeout(()=>showBanner(5),600);
+      }
+    }
+    return !hit;
+  });
+
+  // ── Remove dead enemies + kill-counter bonus drops ──
+  enemies = enemies.filter(e=>{
+    if(e.hp<=0){
+      explode(e.x+e.w/2, e.y+e.h/2, e.pal[1]||'#fff', 7);
+      score+=e.sc;
+      formGrid=formGrid.filter(x=>x!==e);
+      killCount++;
+      if(killCount>=nextBonusKill){
+        killCount=0;
+        nextBonusKill=10+Math.floor(Math.random()*6);
+        // Drop 1 known bonus at the kill position
+        const pool=act<=2?BONUS_POOL_1:BONUS_POOL_3;
+        pickups.push(makePickup(e.x+e.w/2, e.y, pool[Math.floor(Math.random()*pool.length)], false));
+        // From act 2 onwards: also drop 1 neutral (ambiguous) item nearby
+        if(act>=2){
+          const ox=Math.max(20, Math.min(BW-44, e.x+e.w/2+(Math.random()>.5?40:-40)));
+          pickups.push(makeNeutralPickup(ox, e.y));
+        }
+      }
+      return false;
+    }
+    return true;
+  });
+
+  // ── Boss movement & shoot ──
+  if(boss){
+    boss.x+=boss.vx*(boss.phase===2?1.8:1);
+    if(boss.x<=0||boss.x+boss.w>=BW) boss.vx*=-1;
+    if(boss.flash>0) boss.flash-=dt;
+    boss.shotTimer+=dt;
+    if(boss.shotTimer>=boss.shotInterval){
+      boss.shotTimer=0;
+      const nb=boss.phase===2?5:3;
+      // Mixed attack: normal spray + 1 bomb
+      for(let i=0;i<nb;i++){
+        const a=(Math.PI/(nb+1))*(i+1);
+        eBullets.push({x:boss.x+boss.w/2,y:boss.y+boss.h,w:6,h:6,
+          vx:Math.cos(a-Math.PI/2)*3, vy:Math.sin(a-Math.PI/2)*3+1.8, col:'#ff2200'});
+      }
+      // Always drop 1 bomb straight down
+      eBullets.push({x:boss.x+boss.w/2-7,y:boss.y+boss.h,w:14,h:14,
+        vx:0,vy:1.8,col:'#ff6600',isBomb:true,radius:42});
+      if(Math.random()<(P.update?.15:.35)){
+        const tp=Math.random()<.5?'VIRUS':'SPAM';
+        enemies.push(makeEnemy(tp, boss.x+boss.w/2-15, boss.y+boss.h+5));
+      }
+    }
+  }
+
+  // ── Pickups: rare fallback timer (30s) — main source is kill counter ──
+  if(pickTimer >= PICK_FALLBACK){
+    pickTimer=0;
+    pickups.push(randPick());
+  }
+  pickups.forEach(pk=>{
+    pk.y+=pk.vy;
+    if(!pk.done && overlap(pk,P)){
+      pk.done=true;
+      applyPickup(pk);
+      explode(pk.x+pk.w/2, pk.y+pk.h/2, pk.bad?'#ff2200':'#00ff88', 6);
+    }
+  });
+  pickups=pickups.filter(pk=>{
+    if((pk.y>=BH+pk.h) && !pk.done){
+      // Neutral item exited without being collected → show feedback
+      if(pk.neutral){
+        const info=T[lang].neutralItems[pk.type];
+        notif(info.ignoredMsg, 2800);
+      }
+      return false;
+    }
+    return !pk.done;
+  });
+
+  // ── Particles ──
+  particles.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.08; p.life--; });
+  particles=particles.filter(p=>p.life>0);
+
+  // ── Notif fade ──
+  if(notifTimer>0){ notifTimer-=dt; if(notifTimer<=0) document.getElementById('notif').style.opacity='0'; }
+
+  // ── Star scroll ──
+  STARS.forEach(s=>{ s.y=(s.y+s.sp)%BH; });
+
+  // ── Wave / Act transition ──
+  // Triggers as soon as the battlefield is empty (no timer gate)
+  if(act<4 && !boss && gState==='PLAYING' && !transitioning
+     && enemies.length===0 && formGrid.length===0){
+    transitioning=true;
+    const nextWave = waveNum+1;
+    if(nextWave < MAX_WAVES[act]){
+      // Spawn next wave after a short dramatic pause
+      setTimeout(()=>{ if(gState==='PLAYING' && act<=3) spawnWave(act, nextWave); }, 900);
+    } else {
+      // All waves cleared → advance act
+      setTimeout(()=>{
+        if(gState==='PLAYING'){
+          act++;
+          showBanner(act);
+        }
+      }, 800);
+    }
+  }
+
+  updateUI();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){
+  // Space background
+  ctx.fillStyle='#00000f';
+  ctx.fillRect(0,0,BW,BH);
+
+  // Stars
+  STARS.forEach(s=>{
+    ctx.fillStyle=s.s===2?'rgba(255,255,255,.7)':'rgba(255,255,255,.4)';
+    ctx.fillRect(s.x,s.y,s.s,s.s);
+  });
+
+  // Grid line (subtle)
+  ctx.strokeStyle='rgba(0,255,0,.04)';
+  ctx.lineWidth=1;
+  for(let gx=0;gx<BW;gx+=40){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,BH); ctx.stroke(); }
+  for(let gy=0;gy<BH;gy+=40){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(BW,gy); ctx.stroke(); }
+
+  // Player
+  if(!(P.flash>0 && Math.floor(P.flash/80)%2===0)){
+    drawSprite(SP_PLAYER, Math.floor(P.x), Math.floor(P.y), PAL_PLAYER);
+  }
+  if(P.shield){
+    ctx.strokeStyle='rgba(0,136,255,.7)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(P.x+P.w/2, P.y+P.h/2, P.w/2+5, 0, Math.PI*2);
+    ctx.stroke();
+  }
+  if(P.invincible){
+    const a=.4+.3*Math.sin(Date.now()/120);
+    ctx.strokeStyle=`rgba(255,215,0,${a})`;
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.arc(P.x+P.w/2, P.y+P.h/2, P.w/2+9, 0, Math.PI*2);
+    ctx.stroke();
+  }
+
+  // ── Firewall ──
+  if(firewall){
+    const fp = firewall.hp/firewall.maxHp;
+    const fw_col = fp>.6?'#00ffcc': fp>.3?'#ffaa00':'#ff4400';
+    const segW = firewall.w/firewall.maxHp;
+    // Background bar
+    ctx.fillStyle='rgba(0,30,30,.5)';
+    ctx.fillRect(firewall.x, firewall.y, firewall.w, firewall.h);
+    // HP segments — each block = 1 HP
+    for(let i=0;i<firewall.maxHp;i++){
+      if(i<firewall.hp){
+        ctx.fillStyle = i<firewall.hp*0.4 ? '#ff4400' : i<firewall.hp*0.65 ? '#ffaa00' : '#00ffcc';
+        ctx.fillRect(firewall.x+i*segW+1, firewall.y+1, segW-2, firewall.h-2);
+      }
+    }
+    // Outer glow border
+    const glow=.4+.3*Math.sin(Date.now()/300);
+    ctx.shadowColor=fw_col; ctx.shadowBlur=10*glow;
+    ctx.strokeStyle=fw_col; ctx.lineWidth=1.5;
+    ctx.strokeRect(firewall.x, firewall.y, firewall.w, firewall.h);
+    ctx.shadowBlur=0;
+    // Label
+    ctx.fillStyle=fw_col;
+    ctx.font='bold 8px Courier New'; ctx.textAlign='center';
+    ctx.fillText('🧱 FIREWALL  '+firewall.hp+'/'+firewall.maxHp, firewall.x+firewall.w/2, firewall.y-3);
+  }
+
+  // Player bullets
+  bullets.forEach(b=>{
+    ctx.shadowColor=b.col; ctx.shadowBlur=6;
+    ctx.fillStyle=b.col;
+    ctx.fillRect(Math.floor(b.x),Math.floor(b.y),b.w,b.h);
+    ctx.shadowBlur=0;
+  });
+
+  // Enemy bullets + bombs
+  eBullets.forEach(b=>{
+    if(b.isBomb){
+      // Bomb: pulsing orange circle
+      const pulse=.6+.4*Math.sin(Date.now()/80);
+      ctx.shadowColor='#ff6600'; ctx.shadowBlur=14*pulse;
+      ctx.beginPath();
+      ctx.arc(Math.floor(b.x),Math.floor(b.y),b.w/2,0,Math.PI*2);
+      ctx.fillStyle='#ff4400';
+      ctx.fill();
+      ctx.strokeStyle='#ffaa00'; ctx.lineWidth=2;
+      ctx.stroke();
+      // Danger radius preview (faint)
+      ctx.beginPath();
+      ctx.arc(Math.floor(b.x),Math.floor(b.y),b.radius,0,Math.PI*2);
+      ctx.strokeStyle='rgba(255,100,0,.18)'; ctx.lineWidth=1;
+      ctx.stroke();
+      ctx.shadowBlur=0;
+    } else {
+      ctx.fillStyle=b.col;
+      ctx.fillRect(Math.floor(b.x),Math.floor(b.y),b.w,b.h);
+    }
+  });
+
+  // Enemies
+  enemies.forEach(e=>{
+    const ex=Math.floor(e.x), ey=Math.floor(e.y);
+    if(e.flash>50){
+      ctx.fillStyle='rgba(255,255,255,.85)';
+      ctx.fillRect(ex,ey,e.w,e.h);
+    } else {
+      drawSprite(e.sprite,ex,ey,e.pal);
+    }
+    if(e.maxHp>1){
+      const bw=e.w, bp=e.hp/e.maxHp;
+      ctx.fillStyle='#222'; ctx.fillRect(ex,ey-5,bw,3);
+      ctx.fillStyle=bp>.5?'#0f0':bp>.25?'#fa0':'#f00';
+      ctx.fillRect(ex,ey-5,Math.floor(bw*bp),3);
+    }
+  });
+
+  // Boss
+  if(boss){
+    const bx=Math.floor(boss.x), by=Math.floor(boss.y);
+    if(boss.flash>40){
+      ctx.fillStyle='rgba(255,255,255,.9)';
+      ctx.fillRect(bx,by,boss.w,boss.h);
+    } else {
+      drawSprite(boss.sprite,bx,by,boss.pal);
+    }
+    // Boss name label
+    ctx.fillStyle='#f66';
+    ctx.font='bold 9px Courier New';
+    ctx.textAlign='center';
+    ctx.fillText(T[lang].bossName, bx+boss.w/2, by-7);
+    // Boss HP bar at bottom
+    const bpct=boss.hp/boss.maxHp;
+    const barW=BW-40;
+    ctx.fillStyle='#1a0000'; ctx.fillRect(20,BH-22,barW,10);
+    ctx.fillStyle=bpct>.5?'#f40':'#f00';
+    ctx.fillRect(20,BH-22,Math.floor(barW*bpct),10);
+    ctx.strokeStyle='#f66'; ctx.lineWidth=1;
+    ctx.strokeRect(20,BH-22,barW,10);
+    ctx.fillStyle='#f88';
+    ctx.font='9px Courier New'; ctx.textAlign='center';
+    ctx.fillText(T[lang].bossName+' — '+boss.hp+'/'+boss.maxHp, BW/2, BH-25);
+  }
+
+  // Pickups
+  pickups.forEach(pk=>{
+    const px=Math.floor(pk.x), py=Math.floor(pk.y);
+    if(pk.neutral){
+      // Neutral: grey glow, no colour hint — slow pulse to look enticing but ambiguous
+      const pulse=.4+.4*Math.sin(Date.now()/400);
+      ctx.shadowColor='#aaaacc'; ctx.shadowBlur=6*pulse;
+      drawSprite(pk.sprite, px, py, pk.pal);
+      ctx.shadowBlur=0;
+      // Show label in neutral grey — same text for good AND bad items
+      const info=T[lang].neutralItems[pk.type];
+      ctx.fillStyle='#bbbbcc';
+      ctx.font='7px Courier New'; ctx.textAlign='center';
+      ctx.fillText(info.label, px+pk.w/2, py+pk.h+9);
+      // Small "?" above the sprite
+      ctx.fillStyle='#ddddee';
+      ctx.font='bold 10px Courier New';
+      ctx.fillText('?', px+pk.w/2, py-2);
+    } else {
+      const pulse=.5+.5*Math.sin(Date.now()/180);
+      ctx.shadowColor=pk.bad?'#f00':'#0f0';
+      ctx.shadowBlur=7*pulse;
+      drawSprite(pk.sprite,px,py,pk.pal);
+      ctx.shadowBlur=0;
+      ctx.fillStyle=pk.bad?'#f88':'#8f8';
+      ctx.font='8px Courier New'; ctx.textAlign='center';
+      ctx.fillText(pk.type.substring(0,7), px+pk.w/2, py+pk.h+9);
+    }
+  });
+
+  // Particles
+  particles.forEach(p=>{
+    ctx.globalAlpha=p.life/p.maxLife;
+    ctx.fillStyle=p.col;
+    ctx.fillRect(Math.floor(p.x),Math.floor(p.y),p.sz,p.sz);
+  });
+  ctx.globalAlpha=1;
+
+  // Act label overlay (top center - handled by CSS element)
+}
+
+// ═══════════════════════════════════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════════════════════════════════
+function loop(ts){
+  const dt = Math.min(ts-lastTs, 50);
+  lastTs=ts;
+  update(dt);
+  render();
+  raf=requestAnimationFrame(loop);
+}
+
+// ═══════════════════════════════════════════════════════════
+// START / RESTART
+// ═══════════════════════════════════════════════════════════
+function startGame(){
+  document.getElementById('bannerBtn').onclick = hideBanner;
+  P = newPlayer();
+  bullets=[]; eBullets=[]; enemies=[]; pickups=[]; particles=[];
+  formGrid=[]; boss=null; firewall=null;
+  act=1; score=0; threatLevel=1;
+  actTimer=0; pickTimer=0; waveNum=0; transitioning=false;
+  killCount=0; nextBonusKill=10+Math.floor(Math.random()*6);
+  waveShootTimer=0;
+  debuffBoost={ COOKIE:1, SPAM:1, PHISHING:1, VIRUS:1, RANSOMWARE:1 };
+  startTime=Date.now();
+  if(raf) cancelAnimationFrame(raf);
+  gState='PLAYING';
+  showBanner(1);
+  lastTs=performance.now();
+  raf=requestAnimationFrame(loop);
+}
+
+// ═══════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════
+updateUI();
+startGame();
+</script>
+</body>
+</html>

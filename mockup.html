@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CyberQuestKids — Mockup</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background:#07090f;
+  color:#aabbff;
+  font-family:'Courier New',Courier,monospace;
+  display:flex; flex-direction:column; align-items:center;
+  height:100svh; overflow:hidden;
+  user-select:none;
+  transition: background .8s;
+}
+
+/* ── HUD ───────────────────────────────────── */
+#hud {
+  width:100%; max-width:520px;
+  background:rgba(0,0,0,.35);
+  border-bottom:2px solid #1a2860;
+  padding:5px 12px;
+  display:flex; justify-content:space-between; align-items:center;
+  flex-shrink:0;
+  backdrop-filter: blur(4px);
+  transition: border-color .8s;
+}
+.hb { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.hl { font-size:7px; letter-spacing:1px; text-transform:uppercase; opacity:.55; }
+.hv { font-size:15px; font-weight:bold; letter-spacing:1px; }
+.hpw { width:64px; height:7px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.2); margin-top:2px; border-radius:2px; }
+.hpf { height:100%; border-radius:2px; transition: width .4s, background .8s; }
+
+.langrow { display:flex; gap:3px; }
+.lb { font:8px monospace; padding:2px 5px; border:1px solid rgba(255,255,255,.2); background:rgba(0,0,0,.3); color:#aaa; cursor:pointer; border-radius:1px; }
+.lb.on { background:rgba(100,150,255,.3); color:#fff; }
+
+/* ── DEMO SLIDER ───────────────────────────── */
+#demo-bar {
+  width:100%; max-width:520px;
+  background:rgba(0,0,0,.25);
+  padding:5px 14px 6px;
+  display:flex; align-items:center; gap:10px;
+  flex-shrink:0;
+  backdrop-filter:blur(4px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+#demo-bar label { font-size:9px; opacity:.5; white-space:nowrap; letter-spacing:1px; }
+#hpslider {
+  flex:1; -webkit-appearance:none; appearance:none;
+  height:4px; background:rgba(255,255,255,.15); border-radius:2px; outline:none; cursor:pointer;
+}
+#hpslider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px;
+  border-radius:50%; background:#fff; border:2px solid rgba(0,0,0,.3);
+  cursor:pointer;
+}
+#hpnum { font-size:11px; font-weight:bold; min-width:36px; text-align:right; }
+
+/* ── CANVAS WRAP ───────────────────────────── */
+#wrap {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  width:100%; max-width:520px;
+  position:relative; overflow:hidden;
+}
+#c { image-rendering:pixelated; image-rendering:crisp-edges; display:block; }
+
+/* ── WAVE BANNER ───────────────────────────── */
+#wavebanner {
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  background:rgba(180,30,30,.9); border:2px solid #ff3333;
+  color:#fff; padding:5px 18px; font-size:11px; letter-spacing:2px;
+  font-weight:bold; white-space:nowrap; pointer-events:none;
+  animation:blink 1s infinite;
+  display:none;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+/* ── CHOICE OVERLAY ────────────────────────── */
+#choice {
+  position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+  background:rgba(6,8,18,.97); border:2px solid #ff8800;
+  padding:10px 12px; width:92%; max-width:310px;
+  font-family:monospace; text-align:center; z-index:5;
+  display:none;
+}
+.ctit { font-size:11px; color:#ff8800; font-weight:bold; letter-spacing:1px; margin-bottom:4px; }
+.cdesc{ font-size:9px; opacity:.75; margin-bottom:8px; line-height:1.5; }
+.crow { display:flex; gap:8px; }
+.copt {
+  flex:1; background:#0e0a00; border:1px solid #cc6600;
+  padding:7px 4px; cursor:pointer; font-size:9px;
+  font-family:monospace; color:#ffcc88; line-height:1.6; border-radius:1px;
+}
+.copt b { display:block; font-size:10px; color:#ffaa44; }
+.copt small { color:#776; font-size:8px; }
+
+/* ── DEFENSE PANEL ─────────────────────────── */
+#panel {
+  width:100%; max-width:520px;
+  background:rgba(0,0,0,.3);
+  border-top:2px solid rgba(255,255,255,.08);
+  padding:5px 8px 8px; flex-shrink:0;
+  backdrop-filter:blur(4px);
+  transition: border-color .8s;
+}
+.plbl { font-size:7px; letter-spacing:1px; text-transform:uppercase; opacity:.3; text-align:center; margin-bottom:5px; }
+.pbtns { display:flex; gap:6px; justify-content:center; }
+.pbtn {
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:rgba(0,0,0,.35); border:2px solid rgba(255,255,255,.12);
+  padding:5px 8px; cursor:pointer; min-width:58px; border-radius:2px;
+  transition: border-color .5s, background .5s;
+}
+.pbtn.sel { border-color:#ffdd44; background:rgba(255,220,0,.08); }
+.pi { font-size:17px; }
+.pn { font-size:7px; color:#8899bb; }
+.pc { font-size:9px; color:#ffdd44; }
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="langrow">
+    <button class="lb on">FR</button>
+    <button class="lb">NL</button>
+    <button class="lb">EN</button>
+  </div>
+  <div class="hb">
+    <div class="hl">Base HP</div>
+    <div class="hpw"><div class="hpf" id="hpfill"></div></div>
+    <div class="hv" id="hpval">95%</div>
+  </div>
+  <div class="hb">
+    <div class="hl">Vague</div>
+    <div class="hv" id="wavenum" style="color:#44aaff">01</div>
+  </div>
+  <div class="hb">
+    <div class="hl">Points</div>
+    <div class="hv" style="color:#ffdd44">320 🔐</div>
+  </div>
+  <div class="hb">
+    <div class="hl">Survie</div>
+    <div class="hv" id="timer" style="color:#ff5544">0:00</div>
+  </div>
+</div>
+
+<!-- Demo slider -->
+<div id="demo-bar">
+  <label>HP BASE :</label>
+  <input type="range" id="hpslider" min="0" max="100" value="95">
+  <span id="hpnum" style="color:#44ff88">95%</span>
+</div>
+
+<!-- Canvas -->
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="wavebanner">⚠ VAGUE 4 EN APPROCHE !</div>
+  <div id="choice">
+    <div class="ctit">⚠️ CHOIX STRATÉGIQUE</div>
+    <div class="cdesc">Accumulation critique de cookies détectée !<br>Tes données commencent à fuiter…</div>
+    <div class="crow">
+      <div class="copt"><b>🍪 Nettoyer<br>les cookies</b>Supprime les données accumulées<small>(-50🔐 · curatif)</small></div>
+      <div class="copt"><b>🔒 Installer<br>un VPN</b>Chiffre tout le trafic entrant<small>(-80🔐 · préventif)</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- Defense panel -->
+<div id="panel">
+  <div class="plbl">Sélectionner une défense à placer</div>
+  <div class="pbtns">
+    <div class="pbtn sel"><div class="pi">🧱</div><div class="pn">Firewall</div><div class="pc">40🔐</div></div>
+    <div class="pbtn"><div class="pi">🔫</div><div class="pn">Antivirus</div><div class="pc">80🔐</div></div>
+    <div class="pbtn"><div class="pi">💾</div><div class="pn">Backup</div><div class="pc">120🔐</div></div>
+    <div class="pbtn"><div class="pi">⬆️</div><div class="pn">Update</div><div class="pc">30🔐</div></div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const wrap   = document.getElementById('wrap');
+const COLS=13, ROWS=13;
+
+// ── Responsive ───────────────────────────────────────────────
+function resize() {
+  const aw=wrap.clientWidth-4, ah=wrap.clientHeight-4;
+  const cs=Math.floor(Math.min(aw,ah)/COLS);
+  canvas.width=canvas.height=cs*COLS;
+}
+resize();
+window.addEventListener('resize',resize);
+function S(){ return canvas.width/COLS; }
+
+// ── HP & Theme ───────────────────────────────────────────────
+let hp = 95;  // 0–100
+
+const slider  = document.getElementById('hpslider');
+const hpnum   = document.getElementById('hpnum');
+const hpval   = document.getElementById('hpval');
+const hpfill  = document.getElementById('hpfill');
+const wavenum = document.getElementById('wavenum');
+
+// Theme keyframes by HP level
+//  hp=100 → sunny field
+//  hp=80  → late afternoon
+//  hp=60  → overcast
+//  hp=40  → dark / night falling
+//  hp=0   → full cyber-dark
+const THEMES = [
+  { hp:100, bg:'#b8e068',  cell0:'#a8d458', cell1:'#b0dc60',  grid:'rgba(80,140,20,.25)',
+    hudBorder:'#6aaa20',  panelBorder:'#6aaa20',
+    hpColor:'#44dd44',   waveColor:'#228822',  timerColor:'#558822' },
+
+  { hp:80,  bg:'#d4b840',  cell0:'#c8aa30', cell1:'#d0b438',  grid:'rgba(140,100,10,.3)',
+    hudBorder:'#aa8810',  panelBorder:'#aa8810',
+    hpColor:'#eecc22',   waveColor:'#886600',  timerColor:'#aa8820' },
+
+  { hp:60,  bg:'#7a8c6a',  cell0:'#6a7c5a', cell1:'#728464',  grid:'rgba(40,60,30,.35)',
+    hudBorder:'#445530',  panelBorder:'#445530',
+    hpColor:'#aacc66',   waveColor:'#556644',  timerColor:'#778855' },
+
+  { hp:40,  bg:'#2a3a3a',  cell0:'#22302e', cell1:'#263434',  grid:'rgba(20,50,40,.4)',
+    hudBorder:'#1a3030',  panelBorder:'#1a3030',
+    hpColor:'#44ccaa',   waveColor:'#2288aa',  timerColor:'#cc8844' },
+
+  { hp:20,  bg:'#111a28',  cell0:'#0f1520', cell1:'#121824',  grid:'rgba(20,40,80,.4)',
+    hudBorder:'#1a2860',  panelBorder:'#1a2860',
+    hpColor:'#ff8844',   waveColor:'#4466cc',  timerColor:'#ff6633' },
+
+  { hp:0,   bg:'#070910',  cell0:'#09090f', cell1:'#0c0d18',  grid:'rgba(180,20,20,.25)',
+    hudBorder:'#660a0a',  panelBorder:'#660a0a',
+    hpColor:'#ff3333',   waveColor:'#ff2222',  timerColor:'#ff2222' },
+];
+
+// Lerp helpers
+function lerp(a,b,t){ return a+(b-a)*t; }
+function hexToRgb(h){
+  const r=parseInt(h.slice(1,3),16), g=parseInt(h.slice(3,5),16), b=parseInt(h.slice(5,7),16);
+  return [r,g,b];
+}
+function lerpHex(h1,h2,t){
+  const [r1,g1,b1]=hexToRgb(h1), [r2,g2,b2]=hexToRgb(h2);
+  return `rgb(${Math.round(lerp(r1,r2,t))},${Math.round(lerp(g1,g2,t))},${Math.round(lerp(b1,b2,t))})`;
+}
+
+function getTheme(hpPct){
+  // Find surrounding keyframes
+  let lo=THEMES[THEMES.length-1], hi=THEMES[0];
+  for(let i=0;i<THEMES.length-1;i++){
+    if(hpPct<=THEMES[i].hp && hpPct>=THEMES[i+1].hp){
+      hi=THEMES[i]; lo=THEMES[i+1]; break;
+    }
+  }
+  if(hpPct>=100) return THEMES[0];
+  if(hpPct<=0)   return THEMES[THEMES.length-1];
+  const range=hi.hp-lo.hp;
+  const t = range===0 ? 0 : (hpPct-lo.hp)/range;
+  return {
+    bg:         lerpHex(lo.bg,      hi.bg,      t),
+    cell0:      lerpHex(lo.cell0,   hi.cell0,   t),
+    cell1:      lerpHex(lo.cell1,   hi.cell1,   t),
+    grid:       hi.grid,  // not interpolated, close enough
+    hudBorder:  lerpHex(lo.hudBorder, hi.hudBorder, t),
+    panelBorder:lerpHex(lo.panelBorder,hi.panelBorder,t),
+    hpColor:    lerpHex(lo.hpColor, hi.hpColor, t),
+    waveColor:  lerpHex(lo.waveColor, hi.waveColor, t),
+    timerColor: lerpHex(lo.timerColor,hi.timerColor,t),
+  };
+}
+
+// Flower defs for sunny cells (col,row offsets in empty zone)
+const FLOWERS = [
+  {c:0,r:0},{c:1,r:1},{c:2,r:0},{c:0,r:2},{c:2,r:2},
+  {c:11,r:0},{c:12,r:1},{c:11,r:2},{c:12,r:0},
+  {c:0,r:10},{c:1,r:11},{c:0,r:12},{c:2,r:11},
+  {c:10,r:10},{c:11,r:11},{c:12,r:10},{c:12,r:12},
+  {c:1,r:5},{c:1,r:7},{c:11,r:5},{c:11,r:7},
+  {c:5,r:1},{c:6,r:0},{c:7,r:1},{c:6,r:11},{c:7,r:12},{c:5,r:12},
+];
+const FLOWER_COLORS=['#ffee44','#ff88cc','#ffffff','#ffaa44','#ccff88','#ff6699'];
+
+function drawFlower(x,y,s,seed,alpha){
+  if(alpha<=0) return;
+  const sway = Math.sin(tick*.03+seed)*.04;
+  const cx=x+s*.5+sway*s, cy=y+s*.5;
+  const pr=Math.max(1,Math.floor(s/8));
+  const col=FLOWER_COLORS[seed%FLOWER_COLORS.length];
+  const a=Math.min(1,alpha);
+
+  // petals (4-way cross, pixelated)
+  ctx.globalAlpha=a*.9;
+  ctx.fillStyle=col;
+  ctx.fillRect(cx-pr*2.5, cy-pr*.5, pr*2, pr);    // left
+  ctx.fillRect(cx+pr*.5,   cy-pr*.5, pr*2, pr);    // right
+  ctx.fillRect(cx-pr*.5,   cy-pr*2.5,pr,  pr*2);   // top
+  ctx.fillRect(cx-pr*.5,   cy+pr*.5, pr,  pr*2);   // bottom
+  // center dot
+  ctx.fillStyle='#ffdd44';
+  ctx.fillRect(cx-pr*.5, cy-pr*.5, pr, pr);
+
+  // tiny stem
+  ctx.fillStyle='#44aa22';
+  ctx.globalAlpha=a*.7;
+  ctx.fillRect(cx-pr*.5, cy+pr*1.5, pr, pr*2);
+  ctx.globalAlpha=1;
+}
+
+// Simple grass blades for mid-range HP cells
+function drawGrass(x,y,s,seed,alpha){
+  if(alpha<=0) return;
+  ctx.globalAlpha=alpha*.5;
+  ctx.fillStyle='#5ab040';
+  const pr=Math.max(1,Math.floor(s/10));
+  const sway=Math.sin(tick*.025+seed)*.03*s;
+  // 3 blades
+  for(let i=0;i<3;i++){
+    const bx=x+s*(.25+i*.25)+sway;
+    ctx.fillRect(bx, y+s*.5, pr, s*.5);
+    ctx.fillRect(bx+pr*.5*(i%2?1:-1), y+s*.25, pr, s*.28);
+  }
+  ctx.globalAlpha=1;
+}
+
+// ── Grid ─────────────────────────────────────────────────────
+const GRID=[
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,'F','F','F','F','F','F','F',0,0,0],
+  [0,0,0,'F',0,0,0,0,0,'F',0,0,0],
+  [0,0,0,'F',0,'H','H','H',0,'F',0,0,0],
+  [0,0,0,'F',0,'H','H','H',0,'F',0,0,0],
+  [0,0,0,'F',0,'H','H','H',0,'F',0,0,0],
+  [0,0,0,'F',0,0,'B',0,0,'F',0,0,0],
+  [0,0,0,'F','F',0,'F','F','F','F',0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+
+const TURRETS=[
+  {col:4,row:4,a:2.3},
+  {col:8,row:8,a:3.9},
+  {col:3,row:7,a:4.6},
+  {col:9,row:2,a:2.8},
+];
+
+const WDMG={'4,3':0.38,'5,3':0.72,'6,3':0.55,'7,3':0.30};
+
+const ENM=[
+  {t:'cookie',x:2.0,y:0.4,tx:5,ty:3,sp:0.0025},
+  {t:'cookie',x:5.5,y:0.8,tx:5,ty:3,sp:0.0030},
+  {t:'cookie',x:8.8,y:0.3,tx:7,ty:3,sp:0.0022},
+  {t:'virus', x:12.5,y:3.8,tx:9,ty:5,sp:0.0038},
+  {t:'virus', x:12.4,y:7.2,tx:9,ty:6,sp:0.0033},
+  {t:'hacker',x:0.3,y:10.8,tx:5,ty:9,sp:0.0026},
+  {t:'ddos',  x:5.8,y:12.8,tx:5,ty:9,sp:0.0055},
+  {t:'ddos',  x:7.0,y:12.5,tx:6,ty:9,sp:0.0062},
+  {t:'ddos',  x:4.8,y:13.0,tx:4,ty:9,sp:0.0048},
+];
+
+let tick=0;
+
+// ── Sprites ──────────────────────────────────────────────────
+
+function drawFW(x,y,s,dmg,th){
+  const pw=Math.max(1,Math.round(s/10));
+  // In sunny mode, wall looks more like a wooden fence
+  const isSunny = hp > 70;
+  const fwA = isSunny ? '#8B6914' : (dmg>.55?'#4a180a':'#b03a12');
+  const fwB = isSunny ? '#a07c22' : '#d85022';
+  const fwC = isSunny ? '#6a500e' : '#8a2a0a';
+
+  ctx.fillStyle=fwA; ctx.fillRect(x,y,s,s);
+  const bH=s/4;
+  for(let r=0;r<4;r++){
+    const off=(r%2===0)?0:s*.25;
+    for(let b=-1;b<3;b++){
+      const bx=x+b*(s*.5)+off, by=y+r*bH;
+      const cx2=Math.max(bx+pw,x), cw=Math.min(bx+s*.5-pw,x+s)-cx2;
+      if(cw>0){ ctx.fillStyle=r%2===0?fwB:fwC; ctx.fillRect(cx2,by+pw,cw,bH-pw*2); }
+    }
+  }
+  if(dmg>0){
+    ctx.fillStyle=`rgba(0,0,0,${dmg*.6})`; ctx.fillRect(x,y,s,s*dmg);
+    if(dmg>.25){
+      ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(x+s*.3,y+2); ctx.lineTo(x+s*.52,y+s*dmg*.85);
+      ctx.moveTo(x+s*.62,y+s*.08); ctx.lineTo(x+s*.44,y+s*dmg*.7);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawHouse(x,y,s,hr,hc){
+  const hvA = hp>60 ? '#2a4a22' : '#1e3420';
+  const hvB = hp>60 ? '#1e3c18' : '#162818';
+  const winAlpha = hp>60 ? .5+.3*Math.sin(tick*.04+hc) : .55+.45*Math.sin(tick*.04+hc);
+
+  if(hr===0){
+    ctx.fillStyle=hvB; ctx.fillRect(x,y,s,s);
+    const tw=Math.max(2,Math.floor(s/5));
+    ctx.fillStyle=hvA;
+    for(let i=0;i<s;i+=tw*2) ctx.fillRect(x+i,y+s*.25,tw,s*.75);
+    if(hc===2){ctx.fillStyle='#5a3520';ctx.fillRect(x+s*.65,y,s*.14,s*.46);}
+  }else if(hr===1){
+    ctx.fillStyle=hvA; ctx.fillRect(x,y,s,s);
+    if(hc!==1){
+      ctx.fillStyle=`rgba(68,238,136,${winAlpha})`;
+      ctx.fillRect(x+s*.24,y+s*.18,s*.52,s*.48);
+      ctx.fillStyle='#081408';
+      ctx.fillRect(x+s*.49,y+s*.18,s*.04,s*.48);
+      ctx.fillRect(x+s*.24,y+s*.4,s*.52,s*.04);
+    }else{
+      ctx.fillStyle=`rgba(68,238,136,${.35+.35*Math.sin(tick*.05)})`;
+      ctx.fillRect(x+s*.32,y+s*.22,s*.36,s*.55);
+    }
+  }else{
+    ctx.fillStyle=hvA; ctx.fillRect(x,y,s,s*.88);
+    ctx.fillStyle= hp>60 ? '#2a5028' : '#1a3a1a';
+    ctx.fillRect(x,y+s*.88,s,s*.12);
+    if(hc===1){
+      ctx.fillStyle='#281408'; ctx.fillRect(x+s*.3,y+s*.28,s*.4,s*.6);
+      ctx.fillStyle='#ffcc44'; ctx.fillRect(x+s*.61,y+s*.52,s*.06,s*.06);
+    }
+  }
+}
+
+function drawBackup(x,y,s){
+  ctx.fillStyle='#2a0e46'; ctx.fillRect(x+s*.07,y+s*.04,s*.86,s*.92);
+  ctx.fillStyle='#441870'; ctx.fillRect(x+s*.12,y+s*.08,s*.76,s*.8);
+  for(let i=0;i<3;i++){
+    const dy=y+s*(.12+i*.24);
+    ctx.fillStyle='#04050c'; ctx.fillRect(x+s*.17,dy,s*.66,s*.2);
+    ctx.fillStyle= i===0?`rgba(51,221,136,${.55+.45*Math.sin(tick*.08+i*1.5)})`:i===1?'#aa44dd':'#333';
+    ctx.fillRect(x+s*.67,dy+s*.05,s*.09,s*.1);
+    ctx.fillStyle='#181828'; ctx.fillRect(x+s*.19,dy+s*.04,s*.42,s*.12);
+  }
+  ctx.fillStyle='#33dd88';
+  ctx.font=`bold ${Math.max(5,Math.floor(s*.14))}px monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('BKP',x+s*.5,y+s*.96);
+}
+
+function drawAV(x,y,s,angle){
+  const cx=x+s/2, cy=y+s/2;
+  ctx.fillStyle='#0e2e60'; ctx.fillRect(x+s*.16,y+s*.52,s*.68,s*.44);
+  ctx.fillStyle='#1a4888'; ctx.fillRect(x+s*.2,y+s*.55,s*.6,s*.32);
+  ctx.fillStyle='#1a4888';
+  ctx.beginPath(); ctx.arc(cx,cy,s*.36,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#2860a0';
+  ctx.beginPath(); ctx.arc(cx-s*.06,cy-s*.06,s*.25,0,Math.PI*2); ctx.fill();
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+  ctx.fillStyle='#3080be'; ctx.fillRect(s*.04,-s*.055,s*.46,s*.11);
+  ctx.fillStyle='#40d8ff'; ctx.fillRect(s*.4,-s*.04,s*.12,s*.08);
+  ctx.restore();
+  ctx.fillStyle=`rgba(64,216,255,${.55+.45*Math.sin(tick*.1+x)})`;
+  ctx.beginPath(); ctx.arc(cx,cy,s*.1,0,Math.PI*2); ctx.fill();
+}
+
+function drawCookieE(x,y,s,seed){
+  const bob=Math.sin(tick*.06+seed)*s*.06;
+  const cx=x+s/2, cy=y+s/2+bob, r=s*.35;
+  ctx.fillStyle='#7a3e10';
+  ctx.beginPath(); ctx.arc(cx+1,cy+1,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#b86820';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#3a1a06';
+  [[.26,.3],[.6,.46],[.2,.64],[.56,.2],[.42,.66]].forEach(([fx,fy])=>{
+    ctx.fillRect(cx-r+fx*r*2-s*.05,cy-r+fy*r*2-s*.05,s*.1,s*.08);
+  });
+  ctx.fillStyle='#ff1100';
+  ctx.fillRect(cx-r*.38,cy-r*.14,s*.1,s*.09);
+  ctx.fillRect(cx+r*.12,cy-r*.14,s*.1,s*.09);
+  ctx.fillStyle='#000';
+  ctx.fillRect(cx-r*.3,cy-r*.08,s*.05,s*.05);
+  ctx.fillRect(cx+r*.2,cy-r*.08,s*.05,s*.05);
+}
+
+function drawVirusE(x,y,s,seed){
+  const p=.9+.1*Math.sin(tick*.08+seed);
+  const cx=x+s/2, cy=y+s/2, r=s*.3*p;
+  ctx.fillStyle='#b81a00';
+  for(let i=0;i<8;i++){
+    const a=(i/8)*Math.PI*2+tick*.015;
+    const sl=s*.13;
+    ctx.save();
+    ctx.translate(cx+Math.cos(a)*r*.88,cy+Math.sin(a)*r*.88);
+    ctx.rotate(a); ctx.fillRect(-sl*.2,-sl,sl*.4,sl); ctx.restore();
+  }
+  ctx.fillStyle='#b81a00';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ff3a1a';
+  ctx.beginPath(); ctx.arc(cx-r*.18,cy-r*.18,r*.72,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ffee00';
+  ctx.beginPath(); ctx.arc(cx,cy,r*.34,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.arc(cx+r*.12,cy,r*.15,0,Math.PI*2); ctx.fill();
+}
+
+function drawHackerE(x,y,s,seed){
+  const bob=Math.sin(tick*.05+seed)*s*.04;
+  const cx=x+s/2, fy=y+s*.95+bob;
+  ctx.fillStyle='#06061a'; ctx.fillRect(cx-s*.2,fy-s*.22,s*.15,s*.22); ctx.fillRect(cx+s*.05,fy-s*.22,s*.15,s*.22);
+  ctx.fillStyle='#101030'; ctx.fillRect(cx-s*.22,fy-s*.56,s*.44,s*.36);
+  ctx.fillStyle=`rgba(0,255,136,${.45+.45*Math.sin(tick*.12+seed)})`;
+  ctx.fillRect(cx-s*.13,fy-s*.5,s*.26,s*.15);
+  ctx.fillStyle='#181840'; ctx.fillRect(cx-s*.15,fy-s*.78,s*.3,s*.24);
+  ctx.fillStyle='#08081e';
+  ctx.fillRect(cx-s*.22,fy-s*.84,s*.44,s*.12);
+  ctx.fillRect(cx-s*.22,fy-s*.72,s*.06,s*.26);
+  ctx.fillRect(cx+s*.16,fy-s*.72,s*.06,s*.26);
+}
+
+function drawDDoSE(x,y,s,seed){
+  const bob=Math.sin(tick*.1+seed)*s*.07;
+  const cx=x+s/2, cy=y+s/2+bob;
+  ctx.fillStyle='#550028'; ctx.fillRect(cx-s*.28,cy-s*.28,s*.56,s*.56);
+  ctx.fillStyle='#880044'; ctx.fillRect(cx-s*.22,cy-s*.3,s*.44,s*.46);
+  ctx.fillStyle='#cc0066';
+  ctx.fillRect(cx-s*.13,cy-s*.24,s*.26,s*.1);
+  ctx.fillRect(cx-s*.13,cy+s*.08,s*.26,s*.1);
+  ctx.fillRect(cx+s*.07,cy-s*.14,s*.1,s*.22);
+  ctx.fillStyle=`rgba(255,80,150,${.25+.25*Math.sin(tick*.14+seed)})`;
+  ctx.fillRect(cx-s*.22,cy-s*.22,s*.44,s*.44);
+}
+
+// ── Draw ─────────────────────────────────────────────────────
+function draw(){
+  const s=S();
+  const th=getTheme(hp);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // How "alive" is the nature theme (0=cyber, 1=sunny)
+  const nature = Math.max(0, Math.min(1, (hp-20)/80));
+  const flowerAlpha = Math.max(0, (hp-60)/40);   // 0 below 60%, 1 at 100%
+  const grassAlpha  = Math.max(0, (hp-30)/50);   // 0 below 30%, 1 at 80%
+
+  // ── Background grid ──────────────────────────────────────
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      ctx.fillStyle=(r+c)%2===0 ? th.cell0 : th.cell1;
+      ctx.fillRect(c*s,r*s,s,s);
+    }
+  }
+
+  // ── Nature layer (flowers & grass in empty cells) ────────
+  if(nature>0){
+    FLOWERS.forEach((f,i)=>{
+      // Only draw on empty cells
+      if(f.r<ROWS && f.c<COLS && GRID[f.r][f.c]===0){
+        if(flowerAlpha>0) drawFlower(f.c*s, f.r*s, s, i, flowerAlpha);
+        else if(grassAlpha>0) drawGrass(f.c*s, f.r*s, s, i, grassAlpha);
+      }
+    });
+  }
+
+  // ── Static entities ──────────────────────────────────────
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const cell=GRID[r][c], x=c*s, y=r*s;
+      if(cell==='F') drawFW(x,y,s, WDMG[`${c},${r}`]||0, th);
+      else if(cell==='H') drawHouse(x,y,s, r-5, c-5);
+      else if(cell==='B') drawBackup(x,y,s);
+    }
+  }
+
+  // ── Cookie stains on wall ────────────────────────────────
+  Object.entries(WDMG).forEach(([key,dmg])=>{
+    const [c,r]=key.split(',').map(Number);
+    const x=c*s, y=r*s;
+    ctx.fillStyle=`rgba(150,70,20,${dmg*.55})`; ctx.fillRect(x,y,s,s);
+    const cr=s*.2, cx2=x+s*.5, cy2=y+s*.18+dmg*s*.3;
+    ctx.fillStyle='#b86820';
+    ctx.beginPath(); ctx.arc(cx2,cy2,cr,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#3a1a06';
+    ctx.fillRect(cx2-cr*.3,cy2-cr*.2,cr*.35,cr*.25);
+    ctx.fillRect(cx2+cr*.05,cy2+cr*.1,cr*.35,cr*.25);
+  });
+
+  // ── Turrets ──────────────────────────────────────────────
+  TURRETS.forEach(t=>drawAV(t.col*s,t.row*s,s,t.a));
+
+  // ── Laser beams ──────────────────────────────────────────
+  TURRETS.forEach(t=>{
+    const rng=5;
+    const near=ENM.filter(e=>Math.hypot(e.x-t.col,e.y-t.row)<rng)
+      .sort((a,b)=>Math.hypot(a.x-t.col,a.y-t.row)-Math.hypot(b.x-t.col,b.y-t.row))[0];
+    if(near && Math.sin(tick*.18+t.col*.7)>0.15){
+      const x1=(t.col+.5)*s, y1=(t.row+.5)*s, x2=near.x*s, y2=near.y*s;
+      ctx.strokeStyle='rgba(68,255,238,.22)'; ctx.lineWidth=6;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.strokeStyle='#44ffee'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.fillStyle=`rgba(64,255,238,${.5+.5*Math.sin(tick*.3)})`;
+      ctx.beginPath(); ctx.arc(x2,y2,s*.12,0,Math.PI*2); ctx.fill();
+    }
+  });
+
+  // ── Enemies ──────────────────────────────────────────────
+  ENM.forEach((e,i)=>{
+    const x=e.x*s, y=e.y*s;
+    switch(e.t){
+      case'cookie': drawCookieE(x-s/2,y-s/2,s,i*3.7); break;
+      case'virus':  drawVirusE (x-s/2,y-s/2,s,i*2.9); break;
+      case'hacker': drawHackerE(x-s/2,y-s/2,s,i*1.5); break;
+      case'ddos':   drawDDoSE  (x-s/2,y-s/2,s,i*4.1); break;
+    }
+    const hpFrac=e.t==='hacker'?.55:e.t==='virus'?.7:.85;
+    const col=e.t==='hacker'?'#ff4422':'#44ff88';
+    ctx.fillStyle='rgba(0,0,0,.55)';
+    ctx.fillRect(x-s*.4,y-s*.58,s*.8,s*.09);
+    ctx.fillStyle=col;
+    ctx.fillRect(x-s*.4,y-s*.58,s*.8*hpFrac,s*.09);
+  });
+
+  // ── Breach flash ─────────────────────────────────────────
+  const bx=5*s, by=9*s;
+  ctx.fillStyle=`rgba(255,40,40,${.2+.2*Math.sin(tick*.12)})`;
+  ctx.fillRect(bx,by,s,s);
+  ctx.strokeStyle=`rgba(255,40,40,${.6+.4*Math.sin(tick*.12)})`;
+  ctx.lineWidth=2; ctx.strokeRect(bx+1,by+1,s-2,s-2);
+  ctx.fillStyle='#ff3333';
+  ctx.font=`bold ${Math.max(8,Math.floor(s*.28))}px monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('!',bx+s*.5,by+s*.72);
+
+  // ── Sky gradient overlay (nature only) ───────────────────
+  if(nature>0){
+    const sky=ctx.createLinearGradient(0,0,0,canvas.height*.3);
+    sky.addColorStop(0,`rgba(135,206,235,${nature*.18})`);
+    sky.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=sky; ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  // ── Dark vignette (cyber) ────────────────────────────────
+  if(nature<1){
+    const vg=ctx.createRadialGradient(
+      canvas.width*.5,canvas.height*.5,canvas.width*.22,
+      canvas.width*.5,canvas.height*.5,canvas.width*.7
+    );
+    vg.addColorStop(0,'rgba(0,0,0,0)');
+    vg.addColorStop(1,`rgba(0,0,0,${(1-nature)*.5})`);
+    ctx.fillStyle=vg; ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+// ── Update ───────────────────────────────────────────────────
+function updateThemeUI(){
+  const th=getTheme(hp);
+  document.body.style.background=th.bg;
+  document.getElementById('hud').style.borderBottomColor=th.hudBorder;
+  document.getElementById('panel').style.borderTopColor=th.panelBorder;
+  hpfill.style.background=hp>60?`linear-gradient(90deg,${th.hpColor},${th.hpColor})`:
+    hp>30?'linear-gradient(90deg,#cc8800,#ffbb00)':
+    'linear-gradient(90deg,#aa1100,#ff3300)';
+  hpfill.style.width=hp+'%';
+  hpval.style.color=th.hpColor;
+  hpval.textContent=hp+'%';
+  hpnum.textContent=hp+'%';
+  hpnum.style.color=th.hpColor;
+  wavenum.style.color=th.waveColor;
+  wavenum.textContent=hp>70?'01':hp>50?'02':hp>30?'04':'06';
+  document.getElementById('wavebanner').style.display=hp<40?'block':'none';
+  document.getElementById('choice').style.display=hp<75?'flex':'none';
+  document.getElementById('choice').style.flexDirection='column';
+}
+
+slider.addEventListener('input',()=>{
+  hp=parseInt(slider.value);
+  updateThemeUI();
+});
+
+function update(){
+  ENM.forEach(e=>{
+    const dx=e.tx-e.x, dy=e.ty-e.y, d=Math.hypot(dx,dy);
+    if(d>0.06){e.x+=dx/d*e.sp;e.y+=dy/d*e.sp;}
+  });
+  TURRETS.forEach(t=>{
+    let best=null, bd=Infinity;
+    ENM.forEach(e=>{const d=Math.hypot(e.x-t.col,e.y-t.row);if(d<bd){bd=d;best=e;}});
+    if(best){
+      const ta=Math.atan2(best.y-t.row,best.x-t.col);
+      let da=ta-t.a;
+      while(da>Math.PI)da-=Math.PI*2; while(da<-Math.PI)da+=Math.PI*2;
+      t.a+=da*.03;
+    }
+  });
+}
+
+// Timer
+let seconds=0;
+setInterval(()=>{
+  seconds++;
+  const m=Math.floor(seconds/60),s2=seconds%60;
+  document.getElementById('timer').textContent=`${m}:${String(s2).padStart(2,'0')}`;
+},1000);
+
+updateThemeUI();
+
+// ── Loop ─────────────────────────────────────────────────────
+function loop(){
+  tick++; update(); draw();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

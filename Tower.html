@@ -789,15 +789,26 @@ for (let r = BASE_ROW; r < BASE_ROW + 3; r++)
 
 /* ── État global ── */
 const G = {
-  hp: 100,       // 0–100
-  points: 0,
+  hp: 100,
+  points: 800,   // points de départ
   wave: 0,
   tick: 0,
   selectedDef: 'firewall',
   running: false,
   paused: false,
   startTime: null,
+  pointsFlash: 0, // compteur de frames pour flash rouge
 };
+
+/* ── Défenses posées sur la grille ── */
+// Clé : "col,row" → { type, level, hp, maxHp }
+const defenses = {};
+function defKey(c, r) { return `${c},${r}`; }
+
+/* ── Coûts & HP ── */
+const DEFENSE_COSTS = { firewall: 40, antivirus: 80, backup: 120, update: 30 };
+const FIREWALL_HP   = [0, 60, 120, 220];  // index = niveau (1/2/3)
+const FIREWALL_UPGRADE_COST = 30;
 
 /* ═══════════════════════════════════════════════════════
    GAME — THÈMES DYNAMIQUES (prairie → cyber-dark)
@@ -976,6 +987,180 @@ function drawBase(col, row, s, theme) {
 }
 
 /* ═══════════════════════════════════════════════════════
+   GAME — RENDU DES DÉFENSES
+═══════════════════════════════════════════════════════ */
+
+// Couleurs firewall par niveau
+const FW_COLORS = [
+  null,
+  { base:'#b07830', brick:'#d49840', dark:'#8a5a20', mortar:'#e8c060' }, // niv.1 — brun pâle
+  { base:'#cc5500', brick:'#ee7722', dark:'#993300', mortar:'#ffaa44' }, // niv.2 — orange vif
+  { base:'#880000', brick:'#bb2200', dark:'#550000', mortar:'#ff4400' }, // niv.3 — rouge intense
+];
+
+function drawFirewall(x, y, s, level, hpRatio) {
+  const fc = FW_COLORS[level];
+  const brickH = Math.max(3, Math.floor(s / 4));
+  const rows   = level;           // 1 rangée niv.1, 2 niv.2, 3 niv.3
+  const startY = y + s - rows * brickH;
+
+  // Fond de la cellule (partie visible au-dessus des briques)
+  gctx.fillStyle = fc.dark;
+  gctx.fillRect(x, startY, s, rows * brickH);
+
+  // Rangées de briques
+  for (let row = 0; row < rows; row++) {
+    const by = startY + row * brickH;
+    const offset = (row % 2) * Math.floor(s / 4);
+    const brickW = Math.floor(s / 2);
+    for (let bx = x - offset; bx < x + s; bx += brickW) {
+      const clipX = Math.max(bx, x);
+      const clipW = Math.min(bx + brickW - 2, x + s - 1) - clipX;
+      if (clipW <= 0) continue;
+      gctx.fillStyle = fc.brick;
+      gctx.fillRect(clipX, by + 1, clipW, brickH - 2);
+      // ligne de mortier
+      gctx.fillStyle = fc.mortar;
+      gctx.fillRect(clipX, by, clipW, 1);
+    }
+  }
+
+  // Dégâts (overlay sombre proportionnel aux HP perdus)
+  if (hpRatio < 1) {
+    gctx.fillStyle = `rgba(0,0,0,${(1 - hpRatio) * .6})`;
+    gctx.fillRect(x, startY, s, rows * brickH);
+    // Craquelures si > 30% dégâts
+    if (hpRatio < .7) {
+      gctx.strokeStyle = 'rgba(0,0,0,.7)'; gctx.lineWidth = 1;
+      gctx.beginPath();
+      gctx.moveTo(x + s*.3, startY + 1);
+      gctx.lineTo(x + s*.5, startY + brickH * rows * .8);
+      gctx.stroke();
+    }
+  }
+
+  // Indicateur de niveau (petit chiffre en bas à droite)
+  const pr = Math.max(5, Math.floor(s * .22));
+  gctx.fillStyle = fc.mortar;
+  gctx.font = `bold ${pr}px monospace`;
+  gctx.textAlign = 'right';
+  gctx.fillText(level, x + s - 2, y + s - 2);
+  gctx.textAlign = 'left';
+}
+
+function drawAntivirus(x, y, s) {
+  const cx = x + s / 2, cy = y + s / 2;
+  const r  = s * .3;
+  // Base circulaire
+  gctx.fillStyle = '#1a3a1a';
+  gctx.beginPath(); gctx.arc(cx, cy + s*.1, r, 0, Math.PI*2); gctx.fill();
+  // Canon
+  gctx.fillStyle = '#44aa44';
+  const angle = -Math.PI / 2; // pointe vers le haut
+  const len = s * .38;
+  const barrelW = Math.max(2, s * .08);
+  gctx.save();
+  gctx.translate(cx, cy + s*.1);
+  gctx.rotate(angle);
+  gctx.fillRect(-barrelW/2, -len, barrelW, len);
+  gctx.restore();
+  // Dôme
+  gctx.fillStyle = '#22cc22';
+  gctx.beginPath(); gctx.arc(cx, cy + s*.1, r * .7, 0, Math.PI*2); gctx.fill();
+  // Croix rouge au centre
+  gctx.fillStyle = '#ff4444';
+  gctx.fillRect(cx - s*.04, cy + s*.1 - s*.14, s*.08, s*.28);
+  gctx.fillRect(cx - s*.14, cy + s*.1 - s*.04, s*.28, s*.08);
+}
+
+function drawBackup(x, y, s) {
+  // Disque dur / serveur
+  const bx = x + s*.15, by = y + s*.2, bw = s*.7, bh = s*.6;
+  gctx.fillStyle = '#1a2a4a';
+  gctx.fillRect(bx, by, bw, bh);
+  gctx.strokeStyle = '#3355aa'; gctx.lineWidth = 1.5;
+  gctx.strokeRect(bx, by, bw, bh);
+  // Rayures serveur
+  for (let i = 0; i < 3; i++) {
+    const ly = by + bh * (.2 + i * .25);
+    gctx.fillStyle = i === 0 ? '#44aaff' : '#223366';
+    gctx.fillRect(bx + 3, ly, bw - 6, Math.max(2, s*.08));
+  }
+  // LED verte
+  gctx.fillStyle = '#44ff44';
+  gctx.beginPath(); gctx.arc(bx + bw - s*.1, by + bh*.5, s*.05, 0, Math.PI*2); gctx.fill();
+  // Icône 💾 simplifiée — label
+  gctx.fillStyle = '#3366aa';
+  gctx.font = `${Math.max(8, s*.25)}px monospace`;
+  gctx.textAlign = 'center';
+  gctx.fillText('BAK', x + s/2, by + bh*.65);
+  gctx.textAlign = 'left';
+}
+
+function drawDefense(x, y, s, def) {
+  switch (def.type) {
+    case 'firewall': drawFirewall(x, y, s, def.level, def.hp / def.maxHp); break;
+    case 'antivirus': drawAntivirus(x, y, s); break;
+    case 'backup':    drawBackup(x, y, s);    break;
+  }
+}
+
+/* ── HUD points ── */
+function updatePointsHUD() {
+  document.getElementById('g-points').textContent = G.points + ' 🔐';
+}
+
+function flashPoints() {
+  G.pointsFlash = 20; // 20 frames de flash rouge
+}
+
+/* ── Placement / upgrade ── */
+function tryPlace(c, r) {
+  if (!G.running) return;
+  const key = defKey(c, r);
+  const existing = defenses[key];
+  const sel = G.selectedDef;
+
+  // ── UPDATE : améliore la défense ciblée ──
+  if (sel === 'update') {
+    if (!existing) return;
+    if (existing.type !== 'firewall' && existing.type !== 'antivirus') return;
+    if (existing.level >= 3) return;
+    if (G.points < FIREWALL_UPGRADE_COST) { flashPoints(); return; }
+    existing.level++;
+    existing.maxHp = FIREWALL_HP[existing.level];
+    existing.hp    = existing.maxHp;
+    G.points -= FIREWALL_UPGRADE_COST;
+    updatePointsHUD();
+    return;
+  }
+
+  // ── FIREWALL sur firewall existant → upgrade ──
+  if (sel === 'firewall' && existing && existing.type === 'firewall') {
+    if (existing.level >= 3) return;
+    if (G.points < FIREWALL_UPGRADE_COST) { flashPoints(); return; }
+    existing.level++;
+    existing.maxHp = FIREWALL_HP[existing.level];
+    existing.hp    = existing.maxHp;
+    G.points -= FIREWALL_UPGRADE_COST;
+    updatePointsHUD();
+    return;
+  }
+
+  // ── Cellule déjà occupée ──
+  if (existing) return;
+
+  // ── Placement d'une nouvelle défense ──
+  const cost = DEFENSE_COSTS[sel];
+  if (G.points < cost) { flashPoints(); return; }
+
+  const hp = sel === 'firewall' ? FIREWALL_HP[1] : (sel === 'antivirus' ? 80 : 150);
+  defenses[key] = { type: sel, level: 1, hp, maxHp: hp };
+  G.points -= cost;
+  updatePointsHUD();
+}
+
+/* ═══════════════════════════════════════════════════════
    GAME — BOUCLE DE RENDU
 ═══════════════════════════════════════════════════════ */
 function renderGame() {
@@ -1018,6 +1203,12 @@ function renderGame() {
   // Base 3×3 au centre
   drawBase(BASE_COL, BASE_ROW, s, th);
 
+  // Défenses posées
+  for (const [key, def] of Object.entries(defenses)) {
+    const [dc, dr] = key.split(',').map(Number);
+    drawDefense(dc * s, dr * s, s, def);
+  }
+
   // Lignes de grille
   gctx.strokeStyle = th.grid;
   gctx.lineWidth = 1;
@@ -1026,14 +1217,23 @@ function renderGame() {
     gctx.beginPath(); gctx.moveTo(0, i*s); gctx.lineTo(gc.width, i*s); gctx.stroke();
   }
 
-  // Surbrillance de la cellule sélectionnée au clic
+  // Surbrillance hover
   if (G.hoverCell) {
     const { c, r } = G.hoverCell;
-    gctx.fillStyle = 'rgba(255,220,0,.18)';
+    const canPlace = !defenses[defKey(c,r)] || G.selectedDef === 'update' || G.selectedDef === 'firewall';
+    gctx.fillStyle = canPlace ? 'rgba(255,220,0,.18)' : 'rgba(255,60,60,.12)';
     gctx.fillRect(c*s, r*s, s, s);
-    gctx.strokeStyle = '#ffdd44';
+    gctx.strokeStyle = canPlace ? '#ffdd44' : '#ff4444';
     gctx.lineWidth = 2;
     gctx.strokeRect(c*s+1, r*s+1, s-2, s-2);
+  }
+
+  // Flash rouge sur le compteur de points
+  if (G.pointsFlash > 0) {
+    const el = document.getElementById('g-points');
+    el.style.color = G.pointsFlash % 4 < 2 ? '#ff2222' : '#ffdd44';
+    G.pointsFlash--;
+    if (G.pointsFlash === 0) el.style.color = '#ffdd44';
   }
 
   // HUD dynamique
@@ -1076,15 +1276,14 @@ gc.addEventListener('pointermove', e => {
 gc.addEventListener('pointerleave', () => { G.hoverCell = null; });
 
 gc.addEventListener('pointerdown', e => {
+  if (G.paused) return;
   const rect = gc.getBoundingClientRect();
   const s = S();
   const c = Math.floor((e.clientX - rect.left) / s);
   const r = Math.floor((e.clientY - rect.top)  / s);
   if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
-  const cell = grid[r][c];
-  if (cell === 'H') return; // base intouchable
-  // Placement d'une défense (coût vérifié dans les prochaines étapes)
-  console.log(`Clic cellule [${c},${r}] — défense sélectionnée : ${G.selectedDef}`);
+  if (grid[r][c] === 'H') return;
+  tryPlace(c, r);
 });
 
 /* ── OVERLAY (pause + défenses / quiz) ── */
@@ -1108,10 +1307,197 @@ const DEF_HTML = `
   </div>
 </div>`;
 
-const QUIZ_HTML = `
-<div style="text-align:center;color:#667;font-size:11px;padding:12px 0;letter-spacing:1px">
-  🪙 Quiz disponible à la vague 1 🪙
-</div>`;
+/* ═══════════════════════════════════════════════════════
+   QUIZ — 15 questions Vrai/Faux (FR / NL / EN)
+═══════════════════════════════════════════════════════ */
+const QUESTIONS = {
+  FR: [
+    { q: 'Un mot de passe comme "123456" est sécurisé.', a: false,
+      e: '"123456" est l\'un des mots de passe les plus piratés au monde. Utilise une combinaison de lettres, chiffres et symboles !' },
+    { q: 'Mettre à jour ses applications protège contre les virus.', a: true,
+      e: 'Les mises à jour corrigent des failles de sécurité. Ne les ignore jamais !' },
+    { q: 'Un antivirus seul suffit pour être totalement protégé.', a: false,
+      e: 'Aucun outil seul ne garantit une protection totale. Il faut combiner antivirus, mises à jour et bons réflexes.' },
+    { q: 'Les cookies peuvent tracer tes activités en ligne.', a: true,
+      e: 'Les cookies enregistrent ton comportement sur les sites web. Tu peux les supprimer dans ton navigateur.' },
+    { q: 'Il est sûr d\'ouvrir tous les emails que tu reçois.', a: false,
+      e: 'Les emails de phishing imitent de vraies entreprises pour voler tes informations. Vérifie toujours l\'expéditeur !' },
+    { q: 'Faire des sauvegardes régulières protège contre le ransomware.', a: true,
+      e: 'Avec une sauvegarde récente, tu peux restaurer tes données sans payer de rançon.' },
+    { q: 'Tous les hackers ont de mauvaises intentions.', a: false,
+      e: 'Les "white hat hackers" cherchent des failles pour aider les entreprises à se protéger. Ils sont légaux !' },
+    { q: 'Le Wi-Fi public est aussi sécurisé que ton réseau à la maison.', a: false,
+      e: 'Sur un Wi-Fi public, d\'autres peuvent intercepter tes données. Utilise un VPN ou évite les sites sensibles.' },
+    { q: 'L\'authentification à deux facteurs (2FA) renforce la sécurité.', a: true,
+      e: 'Même si quelqu\'un connaît ton mot de passe, le 2FA exige une deuxième vérification.' },
+    { q: 'Un ransomware chiffre tes fichiers et demande une rançon.', a: true,
+      e: 'C\'est exactement ce que fait un ransomware. Payer ne garantit pas de récupérer ses fichiers !' },
+    { q: 'Partager son mot de passe avec un ami de confiance est sans risque.', a: false,
+      e: 'Même une personne de confiance peut se faire pirater. Ne partage jamais ton mot de passe !' },
+    { q: 'Un Zero-day est une faille déjà connue et corrigée.', a: false,
+      e: 'Un Zero-day est une faille inconnue du fabricant, sans correction disponible — très dangereuse.' },
+    { q: 'Les réseaux sociaux peuvent collecter et utiliser tes données personnelles.', a: true,
+      e: 'Beaucoup de services "gratuits" se financent en monétisant tes données. Lis les conditions d\'utilisation !' },
+    { q: 'Télécharger un logiciel depuis n\'importe quel site est risqué.', a: true,
+      e: 'Les sites non officiels peuvent distribuer des logiciels modifiés contenant des virus.' },
+    { q: 'Une attaque DDoS peut rendre un site web inaccessible.', a: true,
+      e: 'Un DDoS envoie des millions de requêtes pour saturer et faire tomber un serveur.' },
+  ],
+  NL: [
+    { q: 'Een wachtwoord zoals "123456" is veilig.', a: false,
+      e: '"123456" is een van de meest gehackte wachtwoorden ter wereld. Gebruik een combinatie van letters, cijfers en symbolen!' },
+    { q: 'Je apps updaten beschermt tegen virussen.', a: true,
+      e: 'Updates herstellen beveiligingslekken. Sla ze nooit over!' },
+    { q: 'Eén antivirusprogramma is voldoende voor volledige bescherming.', a: false,
+      e: 'Geen enkel hulpmiddel alleen garandeert volledige bescherming. Combineer antivirus, updates en goed gedrag.' },
+    { q: 'Cookies kunnen je online activiteiten bijhouden.', a: true,
+      e: 'Cookies registreren je gedrag op websites. Je kunt ze verwijderen via je browser.' },
+    { q: 'Het is veilig om alle e-mails die je ontvangt te openen.', a: false,
+      e: 'Phishing-e-mails imiteren echte bedrijven om je gegevens te stelen. Controleer altijd de afzender!' },
+    { q: 'Regelmatige back-ups beschermen tegen ransomware.', a: true,
+      e: 'Met een recente back-up kun je je gegevens herstellen zonder losgeld te betalen.' },
+    { q: 'Alle hackers hebben slechte bedoelingen.', a: false,
+      e: '"White hat hackers" zoeken naar lekken om bedrijven te helpen zichzelf te beschermen. Dat is legaal!' },
+    { q: 'Openbare Wi-Fi is even veilig als je thuisnetwerk.', a: false,
+      e: 'Op openbare Wi-Fi kunnen anderen je gegevens onderscheppen. Gebruik een VPN!' },
+    { q: 'Tweefactorauthenticatie (2FA) verhoogt de beveiliging.', a: true,
+      e: 'Zelfs als iemand je wachtwoord kent, vereist 2FA een tweede verificatie.' },
+    { q: 'Ransomware versleutelt je bestanden en eist losgeld.', a: true,
+      e: 'Dat is precies wat ransomware doet. Betalen garandeert niet dat je je bestanden terugkrijgt!' },
+    { q: 'Je wachtwoord delen met een vertrouwde vriend is veilig.', a: false,
+      e: 'Zelfs een vertrouwde vriend kan gehackt worden. Deel nooit je wachtwoord!' },
+    { q: 'Een zero-day is een al bekende en opgeloste kwetsbaarheid.', a: false,
+      e: 'Een zero-day is een lek dat de fabrikant nog niet kent — er is nog geen oplossing beschikbaar.' },
+    { q: 'Sociale media kunnen je persoonlijke gegevens verzamelen en gebruiken.', a: true,
+      e: 'Veel "gratis" diensten financieren zichzelf door je gegevens te vermarkten.' },
+    { q: 'Software downloaden van willekeurige websites is riskant.', a: true,
+      e: 'Niet-officiële sites kunnen aangepaste software verspreiden die virussen bevat.' },
+    { q: 'Een DDoS-aanval kan een website ontoegankelijk maken.', a: true,
+      e: 'Een DDoS stuurt miljoenen verzoeken om een server te overbelasten en neer te halen.' },
+  ],
+  EN: [
+    { q: 'A password like "123456" is secure.', a: false,
+      e: '"123456" is one of the most hacked passwords in the world. Use a mix of letters, numbers and symbols!' },
+    { q: 'Updating your apps helps protect against viruses.', a: true,
+      e: 'Updates patch security vulnerabilities. Never skip them!' },
+    { q: 'One antivirus program is enough for complete protection.', a: false,
+      e: 'No single tool guarantees total protection. Combine antivirus, updates and good habits.' },
+    { q: 'Cookies can track your online activities.', a: true,
+      e: 'Cookies record your behaviour on websites. You can delete them in your browser settings.' },
+    { q: 'It is safe to open every email you receive.', a: false,
+      e: 'Phishing emails mimic real companies to steal your information. Always check the sender!' },
+    { q: 'Regular backups protect against ransomware.', a: true,
+      e: 'With a recent backup, you can restore your data without paying a ransom.' },
+    { q: 'All hackers have bad intentions.', a: false,
+      e: '"White hat hackers" find vulnerabilities to help companies protect themselves. It\'s legal!' },
+    { q: 'Public Wi-Fi is as secure as your home network.', a: false,
+      e: 'On public Wi-Fi, others can intercept your data. Use a VPN or avoid sensitive sites.' },
+    { q: 'Two-factor authentication (2FA) improves security.', a: true,
+      e: 'Even if someone knows your password, 2FA requires a second verification step.' },
+    { q: 'Ransomware encrypts your files and demands a ransom.', a: true,
+      e: 'That is exactly what ransomware does. Paying does not guarantee you\'ll get your files back!' },
+    { q: 'Sharing your password with a trusted friend is harmless.', a: false,
+      e: 'Even a trusted friend can be hacked. Never share your password!' },
+    { q: 'A zero-day is a known and already fixed vulnerability.', a: false,
+      e: 'A zero-day is a flaw unknown to the manufacturer — no fix is available yet, very dangerous.' },
+    { q: 'Social media can collect and use your personal data.', a: true,
+      e: 'Many "free" services fund themselves by monetising your data. Read the terms of use!' },
+    { q: 'Downloading software from any website is risky.', a: true,
+      e: 'Unofficial sites may distribute modified software containing viruses.' },
+    { q: 'A DDoS attack can make a website unavailable.', a: true,
+      e: 'A DDoS sends millions of requests to overwhelm and take down a server.' },
+  ],
+};
+
+/* ── État quiz ── */
+let quizQueue = [];
+let quizCurrent = null;
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function nextQuestion() {
+  if (quizQueue.length === 0) quizQueue = shuffleArray(QUESTIONS[currentLang]);
+  quizCurrent = quizQueue.shift();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const UI = {
+    FR: { vrai:'✓ VRAI', faux:'✗ FAUX', correct:'Bonne réponse !', wrong:'Pas tout à fait…', next:'Question suivante →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
+    NL: { vrai:'✓ WAAR', faux:'✗ VALS', correct:'Goed gedaan !', wrong:'Niet helemaal…', next:'Volgende vraag →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
+    EN: { vrai:'✓ TRUE', faux:'✗ FALSE', correct:'Correct !', wrong:'Not quite…', next:'Next question →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
+  }[currentLang];
+
+  ovContent.innerHTML = `
+    <div id="quiz-q" style="
+      font-size:13px; color:#ccddff; text-align:center;
+      line-height:1.6; margin-bottom:16px; min-height:48px;
+    ">${quizCurrent.q}</div>
+    <div style="display:flex; gap:10px;">
+      <button id="qbtn-true" style="
+        flex:1; padding:12px 4px; font:bold 12px monospace;
+        letter-spacing:1px; background:rgba(0,180,60,.15);
+        border:2px solid #22aa44; color:#44ff88;
+        border-radius:4px; cursor:pointer; transition:background .15s;
+      ">${UI.vrai}</button>
+      <button id="qbtn-false" style="
+        flex:1; padding:12px 4px; font:bold 12px monospace;
+        letter-spacing:1px; background:rgba(180,30,30,.15);
+        border:2px solid #aa2222; color:#ff6666;
+        border-radius:4px; cursor:pointer; transition:background .15s;
+      ">${UI.faux}</button>
+    </div>
+    <div id="quiz-feedback" style="margin-top:12px; min-height:40px;"></div>
+  `;
+
+  document.getElementById('qbtn-true').addEventListener('click',  () => answerQuiz(true));
+  document.getElementById('qbtn-false').addEventListener('click', () => answerQuiz(false));
+}
+
+function answerQuiz(answer) {
+  const correct = answer === quizCurrent.a;
+  const gain    = correct ? 30 : 5;
+  G.points += gain;
+  updatePointsHUD();
+
+  const UI = {
+    FR: { correct:'✅ Bonne réponse !', wrong:'❌ Pas tout à fait…', next:'Question suivante →', reward:'+30 🔐', consolation:'+5 🔐' },
+    NL: { correct:'✅ Goed gedaan !',   wrong:'❌ Niet helemaal…',   next:'Volgende vraag →',    reward:'+30 🔐', consolation:'+5 🔐' },
+    EN: { correct:'✅ Correct !',        wrong:'❌ Not quite…',       next:'Next question →',     reward:'+30 🔐', consolation:'+5 🔐' },
+  }[currentLang];
+
+  // Désactiver les boutons
+  ['qbtn-true','qbtn-false'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.disabled = true; b.style.opacity = '.4'; }
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.innerHTML = `
+    <div style="text-align:center;">
+      <div style="font:bold 13px monospace; color:${correct?'#44ff88':'#ff6644'}; margin-bottom:6px;">
+        ${correct ? UI.correct : UI.wrong}
+        <span style="color:#ffdd44; margin-left:8px;">${correct ? UI.reward : UI.consolation}</span>
+      </div>
+      <div style="font-size:11px; color:#889; line-height:1.5; margin-bottom:10px;">
+        ${quizCurrent.e}
+      </div>
+      <button id="quiz-next" style="
+        font:bold 10px monospace; letter-spacing:1px;
+        background:rgba(100,150,255,.15); border:1px solid #3355aa;
+        color:#aabbff; padding:7px 16px; border-radius:3px; cursor:pointer;
+      ">${UI.next}</button>
+    </div>`;
+
+  document.getElementById('quiz-next').addEventListener('click', nextQuestion);
+}
 
 function openOverlay(type) {
   G.paused = true;
@@ -1129,8 +1515,9 @@ function openOverlay(type) {
       });
     });
   } else {
-    ovTitle.innerHTML   = '🪙 <span data-ui="btn-quiz">Gagner des points</span>';
-    ovContent.innerHTML = QUIZ_HTML;
+    ovTitle.innerHTML = '🪙 <span data-ui="btn-quiz">Gagner des points</span>';
+    ovContent.innerHTML = '';
+    nextQuestion();
   }
   overlay.classList.add('open');
 }
@@ -1171,6 +1558,7 @@ function startGame() {
   resizeGame();
   G.running = true;
   G.startTime = Date.now();
+  updatePointsHUD();
   // Synchro langue dans le HUD
   document.querySelectorAll('.g-lb').forEach(b => {
     b.classList.toggle('on', b.dataset.glang === currentLang);

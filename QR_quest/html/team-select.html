@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<!--
+  CyberQuest — Sélection du nom d'équipe
+  ──────────────────────────────────────
+  Étape 3 du flux captive portal.
+  Reçoit ?lang=fr|nl|en (sinon détecte depuis le navigateur).
+  Polling /teams/available toutes les secondes.
+  POST /teams/register pour confirmer le choix.
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CyberQuest — Choix d'équipe</title>
+  <style>
+    :root {
+      --bg:      #0a0c10;
+      --card:    #111520;
+      --card2:   #13192a;
+      --border:  #1e2535;
+      --accent:  #00ffd0;
+      --yellow:  #ffcc00;
+      --red:     #ff3b6b;
+      --text:    #e8eaf2;
+      --muted:   #5a6580;
+      --success: #00e896;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      user-select: none;
+    }
+
+    /* ── Scanlines ── */
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.012) 2px, rgba(0,255,208,0.012) 4px);
+    }
+
+    /* ── Layout ── */
+    .page {
+      height: 100vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px;
+      background: #0d1117;
+      border-bottom: 2px solid var(--accent);
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; }
+    .logo { font-size: 24px; }
+    .brand { font-size: 18px; font-weight: 900; color: var(--accent);
+      text-shadow: 0 0 16px rgba(0,255,208,0.4); }
+    .step-badge {
+      font-size: 10px; color: var(--muted);
+      font-family: 'Courier New', monospace;
+      background: var(--card2); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 20px; letter-spacing: 1px;
+    }
+
+    /* ── Instruction ── */
+    .instruction {
+      flex-shrink: 0;
+      text-align: center; padding: 14px 20px 8px;
+    }
+    .instruction h2 {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .instruction p {
+      font-size: 13px; color: var(--muted);
+    }
+
+    /* ── Carousel wrapper ── */
+    .carousel-area {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+      padding: 0 10px;
+    }
+
+    /* Track */
+    .carousel-track-wrap {
+      width: 100%; overflow: hidden; position: relative;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform;
+    }
+
+    /* ── Card ── */
+    .team-card {
+      flex-shrink: 0;
+      width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 40px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card-inner {
+      width: 100%; max-width: 340px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      transition: border-color .2s, box-shadow .2s, opacity .2s;
+      position: relative; overflow: hidden;
+    }
+    .card-inner:hover:not(.taken) { border-color: var(--accent); }
+    .card-inner.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(0,255,208,0.25);
+    }
+    .card-inner.taken {
+      opacity: 0.45; cursor: not-allowed;
+    }
+
+    /* Avatar image */
+    .avatar-wrap {
+      width: 160px; height: 160px; border-radius: 50%;
+      border: 3px solid var(--border);
+      overflow: hidden; background: var(--card2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; flex-shrink: 0;
+      transition: border-color .2s;
+    }
+    .card-inner.selected .avatar-wrap { border-color: var(--accent); }
+    .avatar-wrap img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top center;
+      display: block;
+    }
+    .avatar-placeholder {
+      font-size: 64px; line-height: 1;
+    }
+
+    /* Taken overlay */
+    .taken-overlay {
+      display: none; position: absolute; inset: 0;
+      background: rgba(10,12,16,0.7);
+      border-radius: 50%;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 4px;
+    }
+    .card-inner.taken .taken-overlay { display: flex; }
+    .taken-lock { font-size: 28px; }
+    .taken-label {
+      font-size: 10px; color: var(--muted);
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* Card text */
+    .card-name {
+      font-size: 20px; font-weight: 900; color: var(--accent);
+      text-align: center; letter-spacing: -0.5px;
+    }
+    .card-inner.taken .card-name { color: var(--muted); }
+
+    .card-tag {
+      font-size: 10px; font-family: 'Courier New', monospace;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+      background: var(--card2); padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .card-bio {
+      font-size: 13px; color: #a0a8c0; text-align: center;
+      line-height: 1.6; min-height: 60px;
+    }
+
+    /* Selected checkmark */
+    .selected-check {
+      display: none; position: absolute; top: 12px; right: 12px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); color: #0a0c10;
+      font-size: 16px; font-weight: 900;
+      align-items: center; justify-content: center;
+    }
+    .card-inner.selected .selected-check { display: flex; }
+
+    /* ── Camera card ── */
+    .camera-trigger {
+      width: 160px; height: 160px; border-radius: 50%;
+      border: 3px dashed var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; transition: border-color .2s;
+      background: var(--card2);
+      flex-shrink: 0;
+    }
+    .camera-trigger:hover { border-color: var(--yellow); }
+    .camera-trigger .cam-icon { font-size: 40px; }
+    .camera-trigger .cam-label {
+      font-size: 11px; color: var(--muted);
+      font-family: 'Courier New', monospace; letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .camera-preview {
+      width: 160px; height: 160px; border-radius: 50%;
+      object-fit: cover; border: 3px solid var(--yellow);
+      display: none;
+    }
+    .retake-btn {
+      font-size: 11px; color: var(--yellow);
+      background: transparent; border: 1px solid var(--yellow);
+      padding: 4px 12px; border-radius: 20px; cursor: pointer;
+      font-family: 'Courier New', monospace;
+    }
+    .retake-btn:hover { background: rgba(255,204,0,0.1); }
+
+    /* ── Arrows ── */
+    .arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; z-index: 10;
+      transition: border-color .15s, opacity .15s;
+      color: var(--text);
+    }
+    .arrow:hover { border-color: var(--accent); }
+    .arrow.disabled { opacity: 0.2; pointer-events: none; }
+    .arrow-prev { left: 6px; }
+    .arrow-next { right: 6px; }
+
+    /* ── Dots ── */
+    .dots {
+      display: flex; gap: 6px; align-items: center;
+      margin-top: 12px; flex-wrap: wrap; justify-content: center;
+      max-width: 320px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); cursor: pointer;
+      transition: background .2s, transform .2s;
+      flex-shrink: 0;
+    }
+    .dot.active { background: var(--accent); transform: scale(1.3); }
+    .dot.taken-dot { background: #2a1a2a; }
+
+    /* ── Footer / Confirm ── */
+    footer {
+      flex-shrink: 0;
+      padding: 12px 20px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .confirm-btn {
+      width: 100%; max-width: 340px;
+      padding: 14px; border-radius: 12px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      border: none; transition: opacity .15s, transform .1s;
+      background: var(--accent); color: #0a0c10;
+      letter-spacing: 0.5px;
+    }
+    .confirm-btn:disabled {
+      background: var(--border); color: var(--muted); cursor: not-allowed;
+    }
+    .confirm-btn:not(:disabled):active { transform: scale(0.97); }
+    .confirm-hint {
+      font-size: 11px; color: var(--muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── Camera modal ── */
+    .cam-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92); z-index: 500;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; padding: 20px;
+    }
+    .cam-modal.show { display: flex; }
+    .cam-video {
+      width: 100%; max-width: 320px; border-radius: 50%;
+      aspect-ratio: 1; object-fit: cover;
+      border: 3px solid var(--yellow);
+    }
+    .cam-canvas { display: none; }
+    .cam-actions { display: flex; gap: 12px; }
+    .cam-shoot {
+      padding: 12px 28px; border-radius: 30px;
+      background: var(--yellow); color: #0a0c10;
+      font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+    }
+    .cam-cancel {
+      padding: 12px 20px; border-radius: 30px;
+      background: transparent; color: var(--text);
+      font-size: 15px; border: 1px solid var(--border); cursor: pointer;
+    }
+    .cam-label-text {
+      font-size: 13px; color: var(--muted); text-align: center;
+    }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none; position: fixed; inset: 0;
+      background: var(--bg); z-index: 600;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; text-align: center; padding: 20px;
+    }
+    .success-overlay.show { display: flex; }
+    .success-icon { font-size: 72px; animation: popIn .4s ease; }
+    @keyframes popIn {
+      0%   { transform: scale(0); opacity: 0; }
+      70%  { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-title {
+      font-size: 26px; font-weight: 900; color: var(--accent);
+    }
+    .success-team {
+      font-size: 20px; font-weight: 700; color: var(--yellow);
+    }
+    .success-msg {
+      font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 300px;
+    }
+    .success-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      object-fit: cover; border: 3px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-wrap">
+      <span class="logo">🛡️</span>
+      <span class="brand">CyberQuest</span>
+    </div>
+    <span class="step-badge" id="step-label">ÉTAPE 3 / 3</span>
+  </header>
+
+  <!-- Instruction -->
+  <div class="instruction">
+    <h2 id="instr-title">Choisis ton équipe</h2>
+    <p id="instr-sub">Swipe pour naviguer · Appuie pour sélectionner</p>
+  </div>
+
+  <!-- Carousel -->
+  <div class="carousel-area">
+    <div class="carousel-track-wrap" id="track-wrap">
+      <div class="carousel-track" id="carousel-track">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+
+    <button class="arrow arrow-prev" id="arrow-prev" onclick="navigate(-1)">‹</button>
+    <button class="arrow arrow-next" id="arrow-next" onclick="navigate(1)">›</button>
+
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <button class="confirm-btn" id="confirm-btn" disabled onclick="confirmSelection()">
+      <span id="confirm-label">Sélectionne une équipe</span>
+    </button>
+    <span class="confirm-hint" id="confirm-hint">1 appareil par équipe</span>
+  </footer>
+
+</div>
+
+<!-- Camera modal -->
+<div class="cam-modal" id="cam-modal">
+  <div class="cam-label-text" id="cam-instruction">Centre ton visage et appuie sur 📸</div>
+  <video class="cam-video" id="cam-video" autoplay playsinline muted></video>
+  <canvas class="cam-canvas" id="cam-canvas"></canvas>
+  <div class="cam-actions">
+    <button class="cam-shoot" id="cam-shoot" onclick="shootPhoto()">📸</button>
+    <button class="cam-cancel" onclick="closeCamera()">✕</button>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-icon">🎉</div>
+  <div class="success-title" id="suc-title">Équipe enregistrée !</div>
+  <img class="success-avatar" id="suc-avatar" src="" alt="" />
+  <div class="success-team" id="suc-team">—</div>
+  <div class="success-msg" id="suc-msg">Le workshop va bientôt commencer. Restez prêts !</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   i18n
+══════════════════════════════════════════════════════════ */
+var I18N = {
+  fr: {
+    stepLabel:   "ÉTAPE 3 / 3",
+    instrTitle:  "Choisis ton équipe",
+    instrSub:    "Swipe pour naviguer · Appuie pour sélectionner",
+    takenLabel:  "Prise",
+    confirmReady:"Choisir cette équipe →",
+    confirmWait: "Sélectionne une équipe",
+    confirmHint: "1 appareil par équipe",
+    camInstruct: "Centre ton visage et appuie sur 📸",
+    retake:      "Reprendre",
+    sucTitle:    "Équipe enregistrée !",
+    sucMsg:      "Le workshop va bientôt commencer. Restez prêts !",
+    camLabel:    "SELFIE",
+    vousName:    "Vous",
+    vousTag:     "Notre équipe",
+    vousBio:     "Prenez un selfie pour représenter votre équipe !",
+    waitMsg:     "En attente du démarrage du workshop…",
+  },
+  nl: {
+    stepLabel:   "STAP 3 / 3",
+    instrTitle:  "Kies je team",
+    instrSub:    "Swipe om te navigeren · Tik om te selecteren",
+    takenLabel:  "Bezet",
+    confirmReady:"Dit team kiezen →",
+    confirmWait: "Kies een team",
+    confirmHint: "1 apparaat per team",
+    camInstruct: "Centreer je gezicht en druk op 📸",
+    retake:      "Opnieuw",
+    sucTitle:    "Team geregistreerd!",
+    sucMsg:      "De workshop begint binnenkort. Blijf klaar!",
+    camLabel:    "SELFIE",
+    vousName:    "Jullie",
+    vousTag:     "Ons team",
+    vousBio:     "Maak een selfie om jullie team te vertegenwoordigen!",
+    waitMsg:     "Wachten op de start van de workshop…",
+  },
+  en: {
+    stepLabel:   "STEP 3 / 3",
+    instrTitle:  "Choose your team",
+    instrSub:    "Swipe to navigate · Tap to select",
+    takenLabel:  "Taken",
+    confirmReady:"Choose this team →",
+    confirmWait: "Select a team",
+    confirmHint: "1 device per team",
+    camInstruct: "Center your face and press 📸",
+    retake:      "Retake",
+    sucTitle:    "Team registered!",
+    sucMsg:      "The workshop will start soon. Stay ready!",
+    camLabel:    "SELFIE",
+    vousName:    "You",
+    vousTag:     "Our team",
+    vousBio:     "Take a selfie to represent your team!",
+    waitMsg:     "Waiting for the workshop to start…",
+  }
+};
+
+/* ══════════════════════════════════════════════════════════
+   Team data
+══════════════════════════════════════════════════════════ */
+var TEAMS = [
+  {
+    id: 'mitnick',
+    name: 'Kevin Mitnick',
+    image: '../images/avatar/mitnick_manga.png',
+    tag: { fr: 'Hacker légendaire', nl: 'Legendarische hacker', en: 'Legendary hacker' },
+    bio: {
+      fr: "Le hacker le plus recherché des années 90. A piraté le Pentagone et infiltré des dizaines de multinationales.",
+      nl: "De meest gezochte hacker van de jaren 90. Hackte het Pentagon en infiltreerde tientallen multinationals.",
+      en: "The most wanted hacker of the 90s. Hacked the Pentagon and infiltrated dozens of multinationals."
+    }
+  },
+  {
+    id: 'james',
+    name: 'Jonathan James',
+    image: '../images/avatar/James_manga.png',
+    tag: { fr: 'Génie précoce', nl: 'Vroeg genie', en: 'Early genius' },
+    bio: {
+      fr: "Premier mineur emprisonné pour cybercriminalité aux USA. A piraté la NASA à seulement 15 ans.",
+      nl: "Eerste minderjarige gevangengezet voor cybercriminaliteit in de VS. Hackte NASA op slechts 15-jarige leeftijd.",
+      en: "First minor imprisoned for cybercrime in the USA. Hacked NASA at just 15 years old."
+    }
+  },
+  {
+    id: 'mckinnon',
+    name: 'Gary McKinnon',
+    image: '../images/avatar/Gary_Mckinnon.jpg',
+    tag: { fr: 'chasseur d\'OVNIs', nl: 'UFO-jager', en: 'UFO hunter' },
+    bio: {
+      fr: "A infiltré 97 systèmes militaires américains depuis son salon à Glasgow... à la recherche de preuves d'OVNIs.",
+      nl: "Infiltreerde 97 Amerikaanse militaire systemen vanuit zijn woonkamer in Glasgow… op zoek naar UFO-bewijs.",
+      en: "Infiltrated 97 US military systems from his living room in Glasgow… searching for UFO evidence."
+    }
+  },
+  {
+    id: 'berners-lee',
+    name: 'Tim Berners-Lee',
+    image: '../images/avatar/TimBerners-Lee_manga.png',
+    tag: { fr: 'Inventeur du Web', nl: 'Uitvinder van het web', en: 'Inventor of the Web' },
+    bio: {
+      fr: "A inventé le World Wide Web en 1989. Sans lui, pas d'internet tel qu'on le connaît aujourd'hui.",
+      nl: "Uitvinder van het World Wide Web in 1989. Zonder hem geen internet zoals we het vandaag kennen.",
+      en: "Invented the World Wide Web in 1989. Without him, no internet as we know it today."
+    }
+  },
+  {
+    id: 'torvalds',
+    name: 'Linus Torvalds',
+    image: '../images/avatar/Linus_manga.png',
+    tag: { fr: 'Père de Linux', nl: 'Vader van Linux', en: 'Father of Linux' },
+    bio: {
+      fr: "A créé Linux à 21 ans. Ce système fait tourner 96% des serveurs du monde entier.",
+      nl: "Maakte Linux op 21-jarige leeftijd. Dit systeem drijft 96% van de servers wereldwijd aan.",
+      en: "Created Linux at age 21. This system runs 96% of the world's servers."
+    }
+  },
+  {
+    id: 'snowden',
+    name: 'Edward Snowden',
+    image: '../images/avatar/snowden_manga.png',
+    tag: { fr: 'Lanceur d\'alerte', nl: 'Klokkenluider', en: 'Whistleblower' },
+    bio: {
+      fr: "A révélé que la NSA espionnait des millions de personnes dans le monde. Vit en exil depuis 2013.",
+      nl: "Onthulde dat de NSA miljoenen mensen wereldwijd bespioneerde. Leeft in ballingschap sinds 2013.",
+      en: "Revealed the NSA was spying on millions of people worldwide. Has lived in exile since 2013."
+    }
+  },
+  {
+    id: 'hopper',
+    name: 'Grace Hopper',
+    image: '../images/avatar/Hopper_manga.png',
+    tag: { fr: 'Pionnière', nl: 'Pionier', en: 'Pioneer' },
+    bio: {
+      fr: "A inventé le premier compilateur et popularisé le terme 'bug'. Amiral de la marine américaine.",
+      nl: "Uitvinder van de eerste compiler en populariseerde de term 'bug'. Admiraal van de Amerikaanse marine.",
+      en: "Invented the first compiler and popularized the term 'bug'. Admiral in the US Navy."
+    }
+  },
+  {
+    id: 'murati',
+    name: 'Mira Murati',
+    image: '../images/avatar/Murati_manga.png',
+    tag: { fr: 'Ex-CTO OpenAI', nl: 'Ex-CTO OpenAI', en: 'Ex-CTO OpenAI' },
+    bio: {
+      fr: "La femme derrière ChatGPT, DALL-E et Sora. A levé 2 milliards pour son propre laboratoire d'IA.",
+      nl: "De vrouw achter ChatGPT, DALL-E en Sora. Haalde 2 miljard op voor haar eigen AI-laboratorium.",
+      en: "The woman behind ChatGPT, DALL-E and Sora. Raised $2 billion for her own AI lab."
+    }
+  },
+  {
+    id: 'anonymous',
+    name: 'Anonymous',
+    image: '../images/avatar/Anonymous_manga.png',
+    tag: { fr: 'Collectif hacktiviste', nl: 'Hacktivistisch collectief', en: 'Hacktivist collective' },
+    bio: {
+      fr: "\"Nous sommes Anonymous. Nous sommes légion. Attendez-vous à nous.\" Collectif mondial sans visage.",
+      nl: "\"Wij zijn Anonymous. Wij zijn legioen. Verwacht ons.\" Wereldwijd collectief zonder gezicht.",
+      en: "\"We are Anonymous. We are Legion. Expect us.\" A global faceless collective."
+    }
+  },
+  {
+    id: 'wannacry',
+    name: 'WannaCry',
+    image: '../images/avatar/WannaCry_manga.png',
+    tag: { fr: 'Ransomware dévastateur', nl: 'Verwoestende ransomware', en: 'Devastating ransomware' },
+    bio: {
+      fr: "Le ransomware le plus dévastateur de l'histoire. A paralysé des hôpitaux, Renault et FedEx en 2017.",
+      nl: "De meest verwoestende ransomware ooit. Legde ziekenhuizen, Renault en FedEx lam in 2017.",
+      en: "The most devastating ransomware in history. Paralyzed hospitals, Renault and FedEx in 2017."
+    }
+  },
+  {
+    id: 'vous',
+    name: null,   // filled from i18n
+    image: null,
+    isCamera: true,
+    tag: { fr: 'Notre équipe', nl: 'Ons team', en: 'Our team' },
+    bio: {
+      fr: "Prenez un selfie pour représenter votre équipe !",
+      nl: "Maak een selfie om jullie team te vertegenwoordigen!",
+      en: "Take a selfie to represent your team!"
+    }
+  }
+];
+
+/* ══════════════════════════════════════════════════════════
+   State
+══════════════════════════════════════════════════════════ */
+var lang          = 'fr';
+var currentIndex  = 0;
+var selectedId    = null;
+var takenIds      = new Set();
+var cameraPhoto   = null;   // base64 data URL if selfie taken
+var cameraStream  = null;
+var pollTimer     = null;
+var isDragging    = false;
+var dragStartX    = 0;
+var dragCurrentX  = 0;
+
+/* ══════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════ */
+window.addEventListener('load', function() {
+  // Detect lang from URL param, then cookie, then browser
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('lang'))                lang = params.get('lang');
+  else if (getCookie('cq_lang'))         lang = getCookie('cq_lang');
+  else {
+    var nav = (navigator.language || 'fr').toLowerCase();
+    if (nav.startsWith('nl'))       lang = 'nl';
+    else if (nav.startsWith('en'))  lang = 'en';
+    else                            lang = 'fr';
+  }
+
+  applyI18N();
+  buildCarousel();
+  setupSwipe();
+  pollAvailable();
+  pollTimer = setInterval(pollAvailable, 1000);
+});
+
+/* ══════════════════════════════════════════════════════════
+   i18n apply
+══════════════════════════════════════════════════════════ */
+function applyI18N() {
+  var t = I18N[lang];
+  document.getElementById('step-label').textContent   = t.stepLabel;
+  document.getElementById('instr-title').textContent  = t.instrTitle;
+  document.getElementById('instr-sub').textContent    = t.instrSub;
+  document.getElementById('confirm-label').textContent = t.confirmWait;
+  document.getElementById('confirm-hint').textContent  = t.confirmHint;
+  document.getElementById('cam-instruction').textContent = t.camInstruct;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Build carousel
+══════════════════════════════════════════════════════════ */
+function buildCarousel() {
+  var track = document.getElementById('carousel-track');
+  var dotsEl = document.getElementById('dots');
+  track.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  TEAMS.forEach(function(team, i) {
+    var t = I18N[lang];
+
+    // Card
+    var card = document.createElement('div');
+    card.className = 'team-card';
+    card.dataset.idx = i;
+
+    var name = team.isCamera ? t.vousName : team.name;
+    var bio  = team.bio[lang];
+    var tag  = team.tag[lang];
+
+    var avatarHtml;
+    if (team.isCamera) {
+      avatarHtml =
+        '<div class="camera-trigger" id="cam-trigger" onclick="openCamera()">'
+          + '<span class="cam-icon">📷</span>'
+          + '<span class="cam-label">' + t.camLabel + '</span>'
+        + '</div>'
+        + '<img class="camera-preview" id="cam-preview" src="" alt="" />'
+        + '<button class="retake-btn" id="retake-btn" onclick="openCamera()" style="display:none">' + t.retake + '</button>';
+    } else {
+      avatarHtml =
+        '<div class="avatar-wrap">'
+          + '<img src="' + team.image + '" alt="' + name + '" />'
+          + '<div class="taken-overlay">'
+            + '<span class="taken-lock">🔒</span>'
+            + '<span class="taken-label">' + t.takenLabel + '</span>'
+          + '</div>'
+        + '</div>';
+    }
+
+    card.innerHTML =
+      '<div class="card-inner" id="card-' + i + '" onclick="selectCard(' + i + ')">'
+        + '<div class="selected-check">✓</div>'
+        + avatarHtml
+        + '<div class="card-name">' + name + '</div>'
+        + '<div class="card-tag">' + tag + '</div>'
+        + '<div class="card-bio">' + bio + '</div>'
+      + '</div>';
+
+    track.appendChild(card);
+
+    // Dot
+    var dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.dataset.idx = i;
+    dot.onclick = function() { goTo(parseInt(this.dataset.idx)); };
+    dotsEl.appendChild(dot);
+  });
+
+  updateArrows();
+  setTrackPosition(0, false);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Navigation
+══════════════════════════════════════════════════════════ */
+function navigate(dir) {
+  var next = currentIndex + dir;
+  if (next < 0 || next >= TEAMS.length) return;
+  goTo(next);
+}
+
+function goTo(idx) {
+  currentIndex = idx;
+  setTrackPosition(idx, true);
+  updateDots();
+  updateArrows();
+}
+
+function setTrackPosition(idx, animate) {
+  var track = document.getElementById('carousel-track');
+  var wrap  = document.getElementById('track-wrap');
+  var w     = wrap.offsetWidth;
+  if (!animate) track.style.transition = 'none';
+  else          track.style.transition = 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)';
+  track.style.transform = 'translateX(-' + (idx * w) + 'px)';
+}
+
+function updateDots() {
+  document.querySelectorAll('.dot').forEach(function(d, i) {
+    d.classList.toggle('active', i === currentIndex);
+  });
+}
+
+function updateArrows() {
+  document.getElementById('arrow-prev').classList.toggle('disabled', currentIndex === 0);
+  document.getElementById('arrow-next').classList.toggle('disabled', currentIndex === TEAMS.length - 1);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Touch / swipe
+══════════════════════════════════════════════════════════ */
+function setupSwipe() {
+  var wrap = document.getElementById('track-wrap');
+
+  wrap.addEventListener('touchstart', function(e) {
+    isDragging  = true;
+    dragStartX  = e.touches[0].clientX;
+    dragCurrentX = dragStartX;
+    document.getElementById('carousel-track').style.transition = 'none';
+  }, { passive: true });
+
+  wrap.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    dragCurrentX = e.touches[0].clientX;
+    var delta = dragCurrentX - dragStartX;
+    var w = wrap.offsetWidth;
+    var base = currentIndex * w;
+    document.getElementById('carousel-track').style.transform =
+      'translateX(-' + (base - delta) + 'px)';
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', function() {
+    if (!isDragging) return;
+    isDragging = false;
+    var delta = dragCurrentX - dragStartX;
+    if (Math.abs(delta) > 60) {
+      navigate(delta < 0 ? 1 : -1);
+    } else {
+      setTrackPosition(currentIndex, true);
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   Select card
+══════════════════════════════════════════════════════════ */
+function selectCard(idx) {
+  var team = TEAMS[idx];
+  if (takenIds.has(team.id)) return;
+
+  // Camera card — only selectable if photo taken
+  if (team.isCamera && !cameraPhoto) {
+    openCamera();
+    return;
+  }
+
+  selectedId = team.id;
+
+  // Remove selected from all
+  document.querySelectorAll('.card-inner').forEach(function(c) {
+    c.classList.remove('selected');
+  });
+  document.getElementById('card-' + idx).classList.add('selected');
+
+  // Update confirm button
+  var t = I18N[lang];
+  var btn = document.getElementById('confirm-btn');
+  btn.disabled = false;
+  document.getElementById('confirm-label').textContent = t.confirmReady;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Polling — taken teams
+══════════════════════════════════════════════════════════ */
+function pollAvailable() {
+  fetch('/teams/available')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      takenIds = new Set(data.taken || []);
+      updateTakenVisual();
+    })
+    .catch(function() {
+      // Server unreachable — keep current state
+    });
+}
+
+function updateTakenVisual() {
+  var t = I18N[lang];
+  TEAMS.forEach(function(team, i) {
+    var card = document.getElementById('card-' + i);
+    if (!card) return;
+    var isTaken = takenIds.has(team.id);
+    card.classList.toggle('taken', isTaken);
+
+    // Update dot
+    var dot = document.querySelector('.dot[data-idx="' + i + '"]');
+    if (dot) dot.classList.toggle('taken-dot', isTaken);
+
+    // If our selection just got taken by another team
+    if (isTaken && selectedId === team.id) {
+      selectedId = null;
+      card.classList.remove('selected');
+      document.getElementById('confirm-btn').disabled = true;
+      document.getElementById('confirm-label').textContent = t.confirmWait;
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   Camera
+══════════════════════════════════════════════════════════ */
+function openCamera() {
+  var modal = document.getElementById('cam-modal');
+  modal.classList.add('show');
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    .then(function(stream) {
+      cameraStream = stream;
+      var video = document.getElementById('cam-video');
+      video.srcObject = stream;
+    })
+    .catch(function() {
+      closeCamera();
+    });
+}
+
+function shootPhoto() {
+  var video  = document.getElementById('cam-video');
+  var canvas = document.getElementById('cam-canvas');
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+
+  // Crop to square from center
+  var size = Math.min(canvas.width, canvas.height);
+  var cx = Math.floor((canvas.width  - size) / 2);
+  var cy = Math.floor((canvas.height - size) / 2);
+  var sq = document.createElement('canvas');
+  sq.width = sq.height = 300;
+  sq.getContext('2d').drawImage(canvas, cx, cy, size, size, 0, 0, 300, 300);
+
+  cameraPhoto = sq.toDataURL('image/jpeg', 0.8);
+
+  // Show preview in card
+  var preview = document.getElementById('cam-preview');
+  var trigger = document.getElementById('cam-trigger');
+  var retake  = document.getElementById('retake-btn');
+  preview.src = cameraPhoto;
+  preview.style.display = 'block';
+  trigger.style.display = 'none';
+  retake.style.display  = 'inline-block';
+
+  closeCamera();
+
+  // Auto-select the "vous" card
+  var vousIdx = TEAMS.findIndex(function(t) { return t.isCamera; });
+  selectCard(vousIdx);
+}
+
+function closeCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(function(t) { t.stop(); });
+    cameraStream = null;
+  }
+  document.getElementById('cam-modal').classList.remove('show');
+}
+
+/* ══════════════════════════════════════════════════════════
+   Confirm
+══════════════════════════════════════════════════════════ */
+function confirmSelection() {
+  if (!selectedId) return;
+  clearInterval(pollTimer);
+
+  var payload = { team_id: selectedId, lang: lang };
+  if (selectedId === 'vous' && cameraPhoto) {
+    payload.photo = cameraPhoto;
+  }
+
+  fetch('/teams/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) {
+      // Team got taken just now — refresh
+      pollAvailable();
+      return;
+    }
+    // Store UUID in cookie
+    setCookie('cq_uuid', data.uuid, 1);
+    setCookie('cq_team', selectedId, 1);
+    setCookie('cq_lang', lang, 1);
+    showSuccess(data);
+  })
+  .catch(function() {
+    // If server unreachable during dev, show success anyway
+    showSuccess({ uuid: 'demo', team_num: 1 });
+  });
+}
+
+function showSuccess(data) {
+  var t    = I18N[lang];
+  var team = TEAMS.find(function(x) { return x.id === selectedId; });
+  var name = (team && !team.isCamera) ? team.name : I18N[lang].vousName;
+
+  document.getElementById('suc-title').textContent = t.sucTitle;
+  document.getElementById('suc-team').textContent  = name;
+  document.getElementById('suc-msg').textContent   = t.sucMsg;
+
+  var sucAvatar = document.getElementById('suc-avatar');
+  if (team && team.isCamera && cameraPhoto) {
+    sucAvatar.src = cameraPhoto;
+  } else if (team && team.image) {
+    sucAvatar.src = team.image;
+  } else {
+    sucAvatar.style.display = 'none';
+  }
+
+  document.getElementById('success-overlay').classList.add('show');
+
+  // Redirect to waiting/workshop page after 3s
+  setTimeout(function() {
+    window.location.href = '/workshop?lang=' + lang;
+  }, 3000);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Cookie helpers
+══════════════════════════════════════════════════════════ */
+function setCookie(name, val, days) {
+  var d = new Date();
+  d.setTime(d.getTime() + days * 86400000);
+  document.cookie = name + '=' + val + ';expires=' + d.toUTCString() + ';path=/';
+}
+function getCookie(name) {
+  var v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+
+/* ── Resize: recalculate track position ── */
+window.addEventListener('resize', function() {
+  setTrackPosition(currentIndex, false);
+});
+</script>
+</body>
+</html>

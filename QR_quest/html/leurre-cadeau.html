@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">🎁 Félicitations !</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fff8e1;
+      --accent-gold: #f5a623;
+      --accent-red: #e53935;
+      --text: #1a1a1a;
+      --muted: #555;
+      --card: #fff;
+      --border: #f0d080;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 16px 80px;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .lang-btn.active {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    /* ─── Prize screen ─── */
+    #prize-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 420px;
+      width: 100%;
+      margin-top: 48px;
+    }
+
+    .confetti-banner {
+      font-size: clamp(40px, 10vw, 72px);
+      margin-bottom: 8px;
+      animation: bounce 1s ease-in-out infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
+    }
+
+    .prize-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(24px, 7vw, 42px);
+      font-weight: 800;
+      color: var(--accent-gold);
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(245,166,35,0.3);
+      margin-bottom: 6px;
+    }
+
+    .prize-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .ps5-img {
+      width: 200px;
+      max-width: 80vw;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(245,166,35,0.25);
+      margin-bottom: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 8px 32px rgba(245,166,35,0.25); }
+      to   { box-shadow: 0 8px 48px rgba(245,166,35,0.6); }
+    }
+
+    .prize-badge {
+      background: linear-gradient(135deg, #f5a623, #f0c040);
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .form-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .form-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .form-field label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .form-field input, .form-field select {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fafafa;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .form-field input:focus { border-color: var(--accent-gold); }
+
+    .timer-bar {
+      background: #f0f0f0;
+      border-radius: 4px;
+      height: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-gold), var(--accent-red));
+      border-radius: 4px;
+      animation: shrink 30s linear forwards;
+    }
+    @keyframes shrink { from { width: 100%; } to { width: 0%; } }
+
+    .timer-text {
+      font-size: 12px;
+      color: var(--accent-red);
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .claim-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #f5a623, #e8920f);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-appearance: none;
+      transition: transform 0.1s;
+      font-family: 'Syne', sans-serif;
+    }
+    .claim-btn:active { transform: scale(0.98); }
+
+    .fine-print {
+      font-size: 10px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ─── Reveal ─── */
+    #reveal-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 32px;
+    }
+    #reveal-screen.visible { display: flex; }
+
+    .reveal-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%,100% { transform: rotate(0deg); }
+      20%      { transform: rotate(-8deg); }
+      40%      { transform: rotate(8deg); }
+      60%      { transform: rotate(-4deg); }
+      80%      { transform: rotate(4deg); }
+    }
+
+    .reveal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(24px, 7vw, 42px);
+      font-weight: 800;
+      color: var(--accent-red);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .reveal-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .data-leak-card {
+      background: #fff3f3;
+      border: 2px solid var(--accent-red);
+      border-radius: 12px;
+      padding: 20px 24px;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .data-leak-title {
+      font-weight: 700;
+      color: var(--accent-red);
+      font-size: 14px;
+      margin-bottom: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .data-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #ffd0d0;
+      font-size: 13px;
+    }
+    .data-item:last-child { border-bottom: none; }
+    .data-key { color: var(--muted); font-weight: 600; }
+    .data-val { color: var(--accent-red); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+
+    .lesson-card {
+      background: #fff8e1;
+      border: 2px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 20px 24px;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .lesson-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #b07800;
+      margin-bottom: 10px;
+    }
+    .lesson-body {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .lesson-rule {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--accent-gold);
+      padding: 8px 12px;
+      background: rgba(245,166,35,0.1);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+    }
+
+    .no-fragment {
+      background: #f5f5f5;
+      border: 1px dashed #ccc;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+      width: 100%;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <!-- Prize screen -->
+  <div id="prize-screen">
+    <div class="confetti-banner">🎉</div>
+    <div class="prize-title" id="p-title"></div>
+    <div class="prize-subtitle" id="p-subtitle"></div>
+    <img class="ps5-img" src="../../html/images/playstation.jpg" alt="PlayStation" onerror="this.style.fontSize='80px';this.style.textAlign='center';this.outerHTML='<div style=\'font-size:80px;text-align:center;margin-bottom:20px\'>🎮</div>'" />
+    <div class="prize-badge" id="p-badge"></div>
+
+    <div class="form-card">
+      <div class="form-title" id="p-form-title"></div>
+      <div class="timer-bar"><div class="timer-fill"></div></div>
+      <div class="timer-text" id="p-timer-text"></div>
+
+      <form onsubmit="handleClaim(event)">
+        <div class="form-field">
+          <label id="lbl-name"></label>
+          <input type="text" id="f-name" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label id="lbl-email"></label>
+          <input type="email" id="f-email" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label id="lbl-phone"></label>
+          <input type="tel" id="f-phone" autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label id="lbl-address"></label>
+          <input type="text" id="f-address" autocomplete="off" />
+        </div>
+        <button type="submit" class="claim-btn" id="p-claim-btn"></button>
+      </form>
+      <div class="fine-print" id="p-fine-print"></div>
+    </div>
+  </div>
+
+  <!-- Reveal screen -->
+  <div id="reveal-screen">
+    <div class="reveal-icon">🪤</div>
+    <div class="reveal-title" id="r-title"></div>
+    <div class="reveal-sub"   id="r-sub"></div>
+
+    <div class="data-leak-card">
+      <div class="data-leak-title" id="r-leak-title"></div>
+      <div class="data-item">
+        <span class="data-key" id="r-key-name"></span>
+        <span class="data-val" id="r-val-name"></span>
+      </div>
+      <div class="data-item">
+        <span class="data-key" id="r-key-email"></span>
+        <span class="data-val" id="r-val-email"></span>
+      </div>
+      <div class="data-item">
+        <span class="data-key" id="r-key-phone"></span>
+        <span class="data-val" id="r-val-phone"></span>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-title" id="r-lesson-title"></div>
+      <div class="lesson-body"  id="r-lesson-body"></div>
+      <div class="lesson-rule"  id="r-lesson-rule"></div>
+    </div>
+
+    <div class="no-fragment" id="r-no-frag"></div>
+  </div>
+
+  <script>
+    var T = {
+      fr: {
+        title:       "Vous avez gagné !",
+        subtitle:    "Félicitations — vous êtes le(a) grand(e) gagnant(e) du tirage",
+        badge:       "🏆 Prix : PlayStation 5 + 3 jeux au choix",
+        formTitle:   "Remplissez le formulaire pour réclamer votre lot",
+        timerText:   "⏱ Cette offre expire dans 30 secondes !",
+        lName:       "Prénom et nom",
+        lEmail:      "Adresse email",
+        lPhone:      "Numéro de téléphone",
+        lAddress:    "Adresse de livraison",
+        claimBtn:    "🎁 Réclamer mon prix maintenant",
+        finePrint:   "En cliquant, vous acceptez nos conditions. Offre soumise à vérification. Aucun achat requis. Valable jusqu'au 31/12.",
+        // Reveal
+        rTitle:      "C'était un piège !",
+        rSub:        "simulation pédagogique — aucune donnée transmise",
+        leakTitle:   "— données que vous venez de donner —",
+        keyName:     "Nom complet",
+        keyEmail:    "Email",
+        keyPhone:    "Téléphone",
+        lessonTitle: "⚠️ Les arnaques aux cadeaux",
+        lessonBody:  "Les fausses pages de \"vous avez gagné\" sont une technique classique d'ingénierie sociale. L'urgence (\"30 secondes!\"), le prix alléchant, le formulaire personnalisé — tout est conçu pour vous faire agir vite, sans réfléchir. Un vrai site malveillant aurait revendu ces infos, usurpé votre identité ou vidé votre compte.",
+        lessonRule:  "Règle : si c'est trop beau pour être vrai, c'est un piège.",
+        noFrag:      "⚠️ Aucun fragment ici — ce QR était un leurre.",
+      },
+      nl: {
+        title:       "Je hebt gewonnen!",
+        subtitle:    "Gefeliciteerd — jij bent de grote winnaar van de trekking",
+        badge:       "🏆 Prijs: PlayStation 5 + 3 games naar keuze",
+        formTitle:   "Vul het formulier in om je prijs te claimen",
+        timerText:   "⏱ Dit aanbod vervalt over 30 seconden!",
+        lName:       "Voor- en achternaam",
+        lEmail:      "E-mailadres",
+        lPhone:      "Telefoonnummer",
+        lAddress:    "Bezorgadres",
+        claimBtn:    "🎁 Mijn prijs nu claimen",
+        finePrint:   "Door te klikken ga je akkoord met onze voorwaarden. Aanbod onder voorbehoud. Geen aankoop vereist.",
+        rTitle:      "Dit was een val!",
+        rSub:        "educatieve simulatie — geen gegevens verzonden",
+        leakTitle:   "— gegevens die je net hebt gegeven —",
+        keyName:     "Volledige naam",
+        keyEmail:    "E-mail",
+        keyPhone:    "Telefoon",
+        lessonTitle: "⚠️ Prijsoplichting",
+        lessonBody:  "Valse 'je hebt gewonnen'-pagina's zijn een klassieke social engineering truc. De urgentie ('30 seconden!'), de verleidelijke prijs, het gepersonaliseerde formulier — alles is ontworpen om je snel te laten handelen zonder na te denken. Een echte kwaadwillige site zou je gegevens verkopen of je identiteit stelen.",
+        lessonRule:  "Regel: als het te mooi is om waar te zijn, is het een val.",
+        noFrag:      "⚠️ Geen fragment hier — deze QR was een lokaas.",
+      },
+      en: {
+        title:       "You won!",
+        subtitle:    "Congratulations — you're the grand prize winner of the draw",
+        badge:       "🏆 Prize: PlayStation 5 + 3 games of your choice",
+        formTitle:   "Fill in the form to claim your prize",
+        timerText:   "⏱ This offer expires in 30 seconds!",
+        lName:       "Full name",
+        lEmail:      "Email address",
+        lPhone:      "Phone number",
+        lAddress:    "Delivery address",
+        claimBtn:    "🎁 Claim my prize now",
+        finePrint:   "By clicking, you agree to our terms. Offer subject to verification. No purchase required.",
+        rTitle:      "It was a trap!",
+        rSub:        "educational simulation — no data was transmitted",
+        leakTitle:   "— data you just handed over —",
+        keyName:     "Full name",
+        keyEmail:    "Email",
+        keyPhone:    "Phone",
+        lessonTitle: "⚠️ Prize scams",
+        lessonBody:  "Fake 'you've won' pages are a classic social engineering technique. The urgency ('30 seconds!'), the tempting prize, the personalised form — everything is designed to make you act fast, without thinking. A real malicious site would have sold your data, stolen your identity, or emptied your account.",
+        lessonRule:  "Rule: if it's too good to be true, it's a trap.",
+        noFrag:      "⚠️ No fragment here — this QR was a decoy.",
+      }
+    };
+
+    var lang = 'fr';
+    var captured = {};
+
+    function setLang(l) { lang = l; render(); }
+
+    function s(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    function render() {
+      var t = T[lang];
+      document.title = lang === 'fr' ? '🎁 Félicitations !' : lang === 'nl' ? '🎁 Gefeliciteerd!' : '🎁 Congratulations!';
+
+      s('p-title',       t.title);
+      s('p-subtitle',    t.subtitle);
+      s('p-badge',       t.badge);
+      s('p-form-title',  t.formTitle);
+      s('p-timer-text',  t.timerText);
+      s('lbl-name',      t.lName);
+      s('lbl-email',     t.lEmail);
+      s('lbl-phone',     t.lPhone);
+      s('lbl-address',   t.lAddress);
+      s('p-claim-btn',   t.claimBtn);
+      s('p-fine-print',  t.finePrint);
+
+      s('r-title',       t.rTitle);
+      s('r-sub',         t.rSub);
+      s('r-leak-title',  t.leakTitle);
+      s('r-key-name',    t.keyName);
+      s('r-key-email',   t.keyEmail);
+      s('r-key-phone',   t.keyPhone);
+      if (captured.name)  s('r-val-name',  captured.name);
+      if (captured.email) s('r-val-email', captured.email);
+      if (captured.phone) s('r-val-phone', captured.phone || '—');
+
+      s('r-lesson-title', t.lessonTitle);
+      s('r-lesson-body',  t.lessonBody);
+      s('r-lesson-rule',  t.lessonRule);
+      s('r-no-frag',      t.noFrag);
+
+      ['fr','nl','en'].forEach(function(l2) {
+        var b = document.getElementById('btn-' + l2);
+        if (b) b.classList.toggle('active', l2 === lang);
+      });
+    }
+
+    function handleClaim(e) {
+      e.preventDefault();
+      captured.name  = document.getElementById('f-name').value  || '—';
+      captured.email = document.getElementById('f-email').value || '—';
+      captured.phone = document.getElementById('f-phone').value || '—';
+
+      // Tracking : formulaire soumis = piège déclenché (leurre)
+      CyberTrack.track('leurre-cadeau', 'gotcha');
+
+      document.getElementById('prize-screen').style.display  = 'none';
+      var rev = document.getElementById('reveal-screen');
+      rev.classList.add('visible');
+      render();
+    }
+
+    render();
+  </script>
+
+  <!-- CyberQuest tracking -->
+  <script src="/_track.js"></script>
+  <script>
+    CyberTrack.autoTrack('leurre-cadeau');
+  </script>
+</body>
+</html>

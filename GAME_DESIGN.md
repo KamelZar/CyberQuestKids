@@ -6,6 +6,9 @@ Jeu de tower defense pédagogique sur la cybersécurité.
 
 ---
 
+Nom du fichier 
+Tower.html
+
 ## Specs techniques
 - **Format :** Single HTML file (CSS + JS embarqués)
 - **Plateforme cible :** Mobile-first (touch), compatible desktop
@@ -22,6 +25,41 @@ Jeu de tower defense pédagogique sur la cybersécurité.
 - Ennemis arrivent des **4 bords** de la grille
 - Placement des défenses par **tap/clic** sur une case vide
 - **Au départ** : grille vide — aucune défense, le joueur est exposé de tous côtés
+
+---
+
+## Intro (Star Wars crawl)
+- Fond noir étoilé, texte doré qui défile de bas en haut (perspective 3D)
+- Texte : histoire courte sur des jeunes numérisés envoyés sur internet, à protéger
+- Bouton "Passer" disponible dès le début
+- Fondu vers le jeu après la fin du crawl ou après "Passer"
+- Pas d'écran de démarrage séparé — la langue est lue depuis un cookie (défaut : FR)
+
+---
+
+## Progression & Déblocages
+Tout n'est **pas disponible dès le départ**. Le jeu introduit progressivement ennemis et défenses.
+
+| Après vague | Débloqué | Introduit |
+|---|---|---|
+| Démarrage | 🧱 Firewall | 🦠 Virus |
+| Vague 1 | 🔫 Antivirus | 💥 DDoS |
+| Vague 2 | 💾 Backup | 🍪 Cookie |
+| Vague 3 | ⬆️ Update + 🧹 Nettoyage | 🎣 Phishing |
+| Vague 4 | — | 👤 Hacker |
+| Vague 5 | — | 🔓 Zero-day |
+| Vague 6+ | — | 💀 Ransomware (événement) |
+
+Chaque déblocage/introduction déclenche une **carte d'annonce** (3 secondes, entre les vagues).
+
+---
+
+## 🧹 Nettoyage Système (nouvelle action)
+- **Bouton action** dans le panneau (pas plaçable sur la grille)
+- Coût : **180🔐** — délibérément cher
+- Effet : répare tous les firewalls de +30 HP + efface tous les cookie stains
+- Débloqué à partir de la vague 3 (quand les cookies apparaissent)
+- Intéressant quand les défenses ont été fortement attaquées
 
 ---
 
@@ -51,17 +89,28 @@ Chaque case de mur a son propre niveau, upgradable indépendamment.
 
 ## Ressources
 - **Points de sécurité** = monnaie du jeu
-- Gagnés en **répondant aux quiz** entre les vagues
+- Gagnés en **répondant aux questions** dans le panneau dédié (voir ci-dessous)
+- Gagnés en **éliminant les ennemis** (montant variable selon le type)
+- **Aucun revenu passif** — ne rien faire = ne rien gagner
 - Dépensés pour construire, placer ou upgrader des défenses
 
 ---
 
-## Système de Quiz (entre chaque vague)
-- 1 à 3 questions apparaissent entre les vagues
-- Mélange : culture générale + cybersécurité
-- Bonne réponse = points bonus
-- Mauvaise réponse = points réduits ou aucun bonus
-- Les questions deviennent progressivement plus orientées cybersécurité
+## Système de Questions (panneau permanent — sans interruption)
+
+> ⚠️ Décision de design (Session 2) : les questions ne interrompent **plus** le jeu entre les vagues.  
+> Le joueur choisit *lui-même* quand répondre pour gagner des points.
+
+- **Panneau bas à deux onglets** :
+  - 🧱 **Défenses** — sélection et placement des défenses (onglet par défaut)
+  - 💰 **Gagner des points** — une question disponible en permanence
+- Le jeu tourne en continu, les vagues ne s'arrêtent pas
+- Une question Vrai/Faux est toujours affichée dans l'onglet points
+- Bonne réponse = **+30 🔐**
+- Mauvaise réponse = **+5 🔐** (on apprend quand même)
+- Après la réponse : explication pédagogique affichée, puis nouvelle question
+- Les questions sont mélangées aléatoirement et tournent en boucle
+- Contenu : cybersécurité (mots de passe, virus, phishing, vie privée…)
 
 ---
 
@@ -190,3 +239,9 @@ GAME_DESIGN.md      ← ce fichier (source de vérité du design)
 - *Session 1 :* Ransomware avec 3 options (payer / backup / résister), défense Backup ajoutée
 - *Session 1 :* Firewall absent au départ, progression en 3 niveaux visuels
 - *Session 1 :* Thème visuel dynamique HP → prairie ensoleillée (100%) / cyber-dark (0%)
+- *Session 2 :* **Quiz redesign** — plus d'interruption entre les vagues. Les questions sont dans un panneau permanent (onglet "Gagner des points"). Le joueur répond quand il veut, le jeu ne s'arrête pas.
+- *Session 2 :* **Économie** — suppression du revenu passif. Points uniquement via kills + quiz. Sinon le jeu se joue tout seul.
+- *Session 2 :* **Layout** — canvas remplit toute la zone disponible (pas d'espace vide). Langue via cookie (défaut FR), pas d'écran de démarrage.
+- *Session 2 :* **Intro Star Wars** — crawl de texte avant le jeu (histoire des humains numérisés).
+- *Session 2 :* **Progression** — ennemis et défenses se débloquent progressivement avec carte d'annonce.
+- *Session 2 :* **Nettoyage Système** — nouvelle action (180🔐) pour réparer les défenses endommagées.

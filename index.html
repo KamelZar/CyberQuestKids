@@ -3,589 +3,656 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CyberQuestKids — Tower Defense</title>
+<title>CyberQuestKids</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{background:#07090f;color:#aabbff;font-family:'Courier New',Courier,monospace;
-  display:flex;flex-direction:column;align-items:center;height:100svh;overflow:hidden;
-  user-select:none;transition:background .8s;}
+body{background:#000;color:#aabbff;font-family:'Courier New',monospace;
+  display:flex;flex-direction:column;align-items:center;
+  height:100svh;overflow:hidden;user-select:none;}
 
-/* ── START SCREEN ── */
-#start-screen{
-  position:fixed;inset:0;z-index:100;
-  background:linear-gradient(180deg,#07090f 0%,#091209 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  transition:opacity .4s;
-}
-#start-screen.hidden{opacity:0;pointer-events:none;}
-.st-title{font-size:clamp(22px,6vw,36px);font-weight:bold;letter-spacing:3px;
-  color:#44ff88;text-shadow:0 0 20px #44ff8888;}
-.st-sub{font-size:clamp(9px,2.5vw,13px);letter-spacing:2px;opacity:.6;text-align:center;}
-.st-logo{font-size:clamp(40px,12vw,72px);line-height:1;}
-.lang-row{display:flex;gap:8px;}
-.lb{font:bold 11px monospace;padding:6px 14px;border:2px solid rgba(255,255,255,.2);
-  background:rgba(0,0,0,.3);color:#aaa;cursor:pointer;border-radius:2px;letter-spacing:1px;}
-.lb.on{background:rgba(68,255,136,.2);border-color:#44ff88;color:#44ff88;}
-.st-btn{font:bold 14px monospace;padding:12px 32px;background:rgba(68,255,136,.15);
-  border:2px solid #44ff88;color:#44ff88;cursor:pointer;letter-spacing:3px;
-  border-radius:2px;transition:all .2s;}
-.st-btn:hover{background:rgba(68,255,136,.3);}
-.st-hint{font-size:9px;opacity:.4;text-align:center;max-width:260px;line-height:1.6;}
+/* ══ INTRO ══════════════════════════════════════════════════════ */
+#intro{position:fixed;inset:0;z-index:200;background:#000;
+  display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+#intro.hidden{display:none;}
 
-/* ── HUD ── */
-#hud{width:100%;max-width:520px;background:rgba(0,0,0,.35);
-  border-bottom:2px solid #1a2860;padding:4px 10px;
-  display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+#stars{position:absolute;inset:0;pointer-events:none;}
+
+#intro-logo{position:absolute;top:12%;left:50%;transform:translateX(-50%);
+  font-size:clamp(18px,5vw,28px);font-weight:bold;letter-spacing:4px;
+  color:#ffd700;text-shadow:0 0 24px #ffd70099;
+  animation:fadeInOut 18s forwards;white-space:nowrap;}
+@keyframes fadeInOut{0%{opacity:0}8%{opacity:1}70%{opacity:1}90%{opacity:0}100%{opacity:0}}
+
+#crawl-outer{position:absolute;inset:0;
+  perspective:320px;perspective-origin:50% 105%;}
+#crawl{
+  position:absolute;bottom:0;left:50%;
+  width:min(88%,420px);transform:translateX(-50%);
+  color:#ffd700;font-size:clamp(10px,2.8vw,15px);
+  line-height:1.85;text-align:center;
+  transform-origin:50% 100%;
+  animation:crawl 28s linear 1.5s forwards;}
+@keyframes crawl{
+  from{transform:translateX(-50%) rotateX(28deg) translateY(0);}
+  to  {transform:translateX(-50%) rotateX(28deg) translateY(-420%);}}
+
+#skip-btn{position:absolute;bottom:22px;right:22px;
+  font:bold 10px monospace;letter-spacing:2px;padding:7px 16px;
+  background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.4);
+  color:#ffd700;cursor:pointer;border-radius:2px;}
+
+#intro-fade{position:absolute;inset:0;background:#000;opacity:0;
+  pointer-events:none;transition:opacity .8s;}
+
+/* ══ GAME SHELL ══════════════════════════════════════════════════ */
+#game{display:flex;flex-direction:column;align-items:center;
+  width:100%;height:100%;transition:background .8s;}
+
+/* HUD */
+#hud{width:100%;max-width:520px;background:rgba(0,0,0,.4);
+  border-bottom:2px solid #1a2860;padding:4px 10px;flex-shrink:0;
+  display:flex;justify-content:space-between;align-items:center;
   backdrop-filter:blur(4px);transition:border-color .8s;}
 .hb{display:flex;flex-direction:column;align-items:center;gap:1px;}
 .hl{font-size:6px;letter-spacing:1px;text-transform:uppercase;opacity:.5;}
 .hv{font-size:13px;font-weight:bold;letter-spacing:1px;}
-.hpw{width:56px;height:6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);
-  margin-top:1px;border-radius:2px;}
+.hpw{width:52px;height:5px;background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.2);margin-top:2px;border-radius:2px;}
 .hpf{height:100%;border-radius:2px;transition:width .4s,background .8s;}
 .langrow{display:flex;gap:2px;}
-.lb2{font:7px monospace;padding:2px 4px;border:1px solid rgba(255,255,255,.2);
+.lb{font:7px monospace;padding:2px 5px;border:1px solid rgba(255,255,255,.2);
   background:rgba(0,0,0,.3);color:#aaa;cursor:pointer;border-radius:1px;}
-.lb2.on{background:rgba(100,150,255,.3);color:#fff;}
+.lb.on{background:rgba(100,150,255,.3);color:#fff;}
 
-/* ── CANVAS WRAP ── */
-#wrap{flex:1;display:flex;align-items:center;justify-content:center;
-  width:100%;max-width:520px;position:relative;overflow:hidden;}
-#c{image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:crosshair;}
+/* Canvas wrap — fills ALL remaining space */
+#wrap{flex:1;width:100%;max-width:520px;position:relative;
+  overflow:hidden;min-height:0;}
+#c{display:block;width:100%;height:100%;
+  image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair;}
 
-/* ── DEFENSE PANEL ── */
-#panel{width:100%;max-width:520px;background:rgba(0,0,0,.3);
-  border-top:2px solid rgba(255,255,255,.08);padding:4px 6px 6px;flex-shrink:0;
-  backdrop-filter:blur(4px);transition:border-color .8s;}
-.plbl{font-size:6px;letter-spacing:1px;text-transform:uppercase;opacity:.3;
-  text-align:center;margin-bottom:4px;}
-.pbtns{display:flex;gap:4px;justify-content:center;}
-.pbtn{display:flex;flex-direction:column;align-items:center;gap:1px;
-  background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.12);
-  padding:4px 6px;cursor:pointer;min-width:56px;border-radius:2px;
-  transition:border-color .3s,background .3s;}
-.pbtn.sel{border-color:#ffdd44;background:rgba(255,220,0,.08);}
-.pbtn.disabled{opacity:.4;cursor:not-allowed;}
-.pi{font-size:16px;}
-.pn{font-size:6px;color:#8899bb;}
-.pc{font-size:8px;color:#ffdd44;}
+/* Wave / event banners (inside wrap) */
+#wave-banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(180,30,30,.93);border:2px solid #ff3333;
+  color:#fff;padding:4px 14px;font-size:10px;letter-spacing:2px;font-weight:bold;
+  white-space:nowrap;pointer-events:none;display:none;z-index:10;
+  animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* ── OVERLAYS ── */
-.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.85);z-index:50;flex-direction:column;gap:12px;
-  padding:16px;}
+#wave-clear{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(4,14,6,.97);border:2px solid #44ff88;
+  color:#44ff88;padding:10px 22px;font-size:13px;letter-spacing:3px;font-weight:bold;
+  text-align:center;pointer-events:none;display:none;z-index:10;}
+
+/* Unlock card */
+#unlock-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(4,4,18,.97);border:2px solid #4488ff;
+  width:min(82%,300px);padding:14px;text-align:center;z-index:12;display:none;}
+.uc-type{font-size:8px;letter-spacing:2px;margin-bottom:6px;}
+.uc-icon{font-size:36px;margin-bottom:6px;}
+.uc-name{font-size:14px;font-weight:bold;letter-spacing:2px;margin-bottom:6px;}
+.uc-desc{font-size:9px;line-height:1.6;opacity:.8;}
+
+/* Toast / info */
+#toast{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  background:rgba(6,8,20,.96);border:2px solid #4488ff;
+  padding:5px 12px;font-size:9px;text-align:center;z-index:15;
+  pointer-events:none;display:none;min-width:180px;transition:opacity .4s;}
+#toast b{color:#44aaff;display:block;margin-bottom:2px;font-size:10px;}
+
+#info{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.9);border:1px solid #555;color:#ff8844;
+  padding:3px 10px;font-size:8px;letter-spacing:1px;
+  pointer-events:none;display:none;z-index:15;white-space:nowrap;}
+
+/* Choice overlay */
+.overlay{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;background:rgba(0,0,0,.88);z-index:50;padding:12px;}
 .overlay.hidden{display:none;}
 
-/* Wave banner */
-#wave-banner{position:absolute;top:8px;left:50%;transform:translateX(-50%);
-  background:rgba(180,30,30,.92);border:2px solid #ff3333;
-  color:#fff;padding:5px 16px;font-size:11px;letter-spacing:2px;
-  font-weight:bold;white-space:nowrap;pointer-events:none;
-  animation:blink 1s infinite;display:none;z-index:10;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+.modal{background:rgba(4,6,18,.98);border:2px solid #ff8800;
+  width:min(92%,340px);padding:14px;font-family:monospace;}
+.modal.rw{border-color:#ff1111;}
+.modal.go{border-color:#ff2222;text-align:center;}
+.mo-title{font-size:11px;font-weight:bold;letter-spacing:1px;margin-bottom:4px;color:#ff8800;}
+.mo-title.rw{color:#ff3333;}
+.mo-desc{font-size:9px;opacity:.75;margin-bottom:10px;line-height:1.55;}
+.mo-opts{display:flex;flex-direction:column;gap:6px;}
+.mo-opt{background:#0a0800;border:1px solid #cc6600;padding:7px 8px;cursor:pointer;
+  font-size:9px;font-family:monospace;color:#ffcc88;line-height:1.6;border-radius:1px;}
+.mo-opt:active{background:#1a1000;}
+.mo-opt b{display:block;font-size:10px;color:#ffaa44;margin-bottom:1px;}
+.mo-opt small{color:#776;font-size:8px;}
 
-/* Wave clear */
-#wave-clear{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:rgba(6,18,8,.97);border:2px solid #44ff88;
-  color:#44ff88;padding:14px 28px;font-size:14px;letter-spacing:3px;
-  font-weight:bold;text-align:center;pointer-events:none;display:none;z-index:10;}
-
-/* Quiz */
-#quiz-overlay{background:rgba(4,6,12,.97);border:2px solid #2244aa;
-  width:92%;max-width:400px;padding:16px;font-family:monospace;z-index:60;
-  max-height:90%;overflow-y:auto;}
-#quiz-overlay.hidden{display:none;}
-.qt{font-size:10px;color:#4488ff;letter-spacing:2px;margin-bottom:8px;}
-.qq{font-size:13px;line-height:1.55;margin-bottom:14px;color:#ddeeff;}
-.q-btns{display:flex;gap:10px;margin-bottom:10px;}
-.qbtn{flex:1;padding:10px 6px;font:bold 11px monospace;cursor:pointer;
-  border-radius:2px;letter-spacing:1px;transition:all .2s;}
-.qbtn.true-btn{background:rgba(68,200,80,.15);border:2px solid #44c850;color:#44c850;}
-.qbtn.false-btn{background:rgba(220,60,40,.15);border:2px solid #dc3c28;color:#dc3c28;}
-.qbtn:disabled{opacity:.5;cursor:default;}
-.qbtn.correct{background:rgba(68,200,80,.4);}
-.qbtn.wrong{background:rgba(220,60,40,.4);}
-.q-exp{font-size:10px;line-height:1.5;padding:8px;background:rgba(255,255,255,.05);
-  border-left:3px solid #4488ff;display:none;color:#aabbcc;}
-.q-reward{font-size:12px;font-weight:bold;text-align:center;margin-top:8px;display:none;}
-.q-next{font:bold 11px monospace;padding:8px 20px;background:rgba(68,136,255,.2);
-  border:2px solid #4488ff;color:#4488ff;cursor:pointer;letter-spacing:1px;
-  margin-top:10px;width:100%;display:none;}
-.q-progress{font-size:8px;opacity:.5;text-align:center;margin-bottom:6px;}
-
-/* Choice / event */
-#choice-overlay{background:rgba(6,8,18,.97);border:2px solid #ff8800;
-  width:92%;max-width:350px;padding:14px;font-family:monospace;z-index:60;}
-#choice-overlay.hidden{display:none;}
-.ctit{font-size:11px;color:#ff8800;font-weight:bold;letter-spacing:1px;margin-bottom:4px;}
-.cdesc{font-size:9px;opacity:.75;margin-bottom:10px;line-height:1.5;}
-.copts{display:flex;flex-direction:column;gap:6px;}
-.copt{background:#0e0a00;border:1px solid #cc6600;padding:8px;cursor:pointer;
-  font-size:9px;font-family:monospace;color:#ffcc88;line-height:1.6;border-radius:1px;
-  transition:background .2s;}
-.copt:hover{background:#1a1000;}
-.copt b{display:block;font-size:10px;color:#ffaa44;margin-bottom:2px;}
-.copt small{color:#776;font-size:8px;}
-
-/* Ransomware */
-#ransomware-overlay{background:rgba(12,2,2,.98);border:2px solid #ff1111;
-  width:92%;max-width:360px;padding:16px;font-family:monospace;z-index:70;}
-#ransomware-overlay.hidden{display:none;}
-.rtit{font-size:13px;color:#ff3333;font-weight:bold;letter-spacing:2px;
-  text-align:center;margin-bottom:6px;}
-.rdesc{font-size:9px;opacity:.7;text-align:center;margin-bottom:12px;line-height:1.6;}
-
-/* Event toast */
-#event-toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);
-  background:rgba(10,10,20,.95);border:2px solid #4488ff;
-  padding:7px 14px;font-size:10px;text-align:center;z-index:20;
-  pointer-events:none;min-width:220px;max-width:310px;
-  transition:opacity .4s;display:none;}
-#event-toast .et-title{color:#44aaff;font-weight:bold;margin-bottom:3px;}
-#event-toast .et-desc{font-size:8px;opacity:.8;}
-
-/* Game over */
-#gameover-overlay{background:rgba(4,2,2,.98);border:2px solid #ff2222;
-  width:92%;max-width:360px;padding:20px;font-family:monospace;text-align:center;z-index:80;}
-#gameover-overlay.hidden{display:none;}
-.got{font-size:16px;color:#ff3333;font-weight:bold;letter-spacing:3px;margin-bottom:8px;}
-.gos{font-size:9px;opacity:.6;margin-bottom:14px;}
-.go-stats{display:flex;justify-content:center;gap:24px;margin-bottom:14px;}
-.go-stat{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.go-stat .gval{font-size:18px;font-weight:bold;color:#ff8888;}
+.go-stats{display:flex;justify-content:center;gap:28px;margin:12px 0;}
+.go-stat .gval{font-size:20px;font-weight:bold;color:#ff8888;}
 .go-stat .glbl{font-size:7px;opacity:.5;letter-spacing:1px;}
-.go-msg{font-size:10px;line-height:1.7;color:#ffaaaa;margin-bottom:16px;
-  border:1px solid rgba(255,60,60,.3);padding:10px;background:rgba(255,0,0,.05);}
-.go-btn{font:bold 12px monospace;padding:10px 28px;background:rgba(255,60,60,.15);
+.go-msg{font-size:9px;line-height:1.75;color:#ffaaaa;margin-bottom:14px;
+  border:1px solid rgba(255,60,60,.2);padding:9px;background:rgba(255,0,0,.03);}
+.go-btn{font:bold 11px monospace;padding:9px 26px;background:rgba(255,60,60,.15);
   border:2px solid #ff4444;color:#ff6666;cursor:pointer;letter-spacing:2px;}
 
-/* Info flash */
-#info-flash{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.9);border:1px solid #555;color:#ff8844;
-  padding:4px 12px;font-size:9px;letter-spacing:1px;pointer-events:none;
-  display:none;z-index:15;white-space:nowrap;}
+/* ══ BOTTOM PANEL ════════════════════════════════════════════════ */
+#bottom{width:100%;max-width:520px;flex-shrink:0;
+  background:rgba(0,0,0,.35);border-top:2px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(4px);transition:border-color .8s;}
 
-/* Hotkey hint */
-#hotkeys{position:absolute;bottom:4px;right:6px;font-size:7px;opacity:.25;
-  pointer-events:none;line-height:1.6;z-index:5;}
+.tab-bar{display:flex;border-bottom:1px solid rgba(255,255,255,.07);}
+.tab{flex:1;padding:4px 2px;font-size:7px;font-weight:bold;letter-spacing:1px;
+  text-align:center;cursor:pointer;color:rgba(255,255,255,.3);
+  border-bottom:2px solid transparent;transition:all .2s;}
+.tab.on{color:#ffdd44;border-bottom-color:#ffdd44;background:rgba(255,220,0,.04);}
+.tab span{display:block;font-size:13px;margin-bottom:1px;}
+
+.tc{display:none;padding:5px 7px 7px;}
+.tc.on{display:block;}
+
+/* Defense buttons */
+.plbl{font-size:6px;letter-spacing:1px;opacity:.25;text-align:center;margin-bottom:4px;}
+.pbtns{display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.1);
+  padding:3px 5px;cursor:pointer;flex:1;max-width:70px;border-radius:2px;
+  transition:border-color .2s,background .2s,opacity .2s;}
+.pbtn.sel{border-color:#ffdd44;background:rgba(255,220,0,.08);}
+.pbtn.locked{opacity:.35;cursor:not-allowed;filter:grayscale(.8);}
+.pbtn.action{border-color:rgba(100,200,255,.2);background:rgba(30,80,120,.2);}
+.pbtn.action.sel{border-color:#44ddff;background:rgba(44,180,255,.1);}
+.pi{font-size:15px;}
+.pn{font-size:5px;color:#8899bb;letter-spacing:.5px;}
+.pc{font-size:7px;color:#ffdd44;}
+
+/* Quiz panel */
+.qp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.qp-lbl{font-size:6px;letter-spacing:1px;opacity:.4;}
+.qp-hint{font-size:7px;color:#44ff88;}
+.qp-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:2px;padding:6px 7px;}
+.qp-q{font-size:10px;line-height:1.5;color:#ddeeff;margin-bottom:7px;}
+.qp-btns{display:flex;gap:6px;}
+.qbtn{flex:1;padding:5px 3px;font:bold 8px monospace;cursor:pointer;border-radius:2px;letter-spacing:1px;}
+.qbtn.t{background:rgba(68,200,80,.1);border:2px solid rgba(68,200,80,.45);color:#44c850;}
+.qbtn.f{background:rgba(220,60,40,.1);border:2px solid rgba(220,60,40,.45);color:#dc3c28;}
+.qbtn:disabled{opacity:.4;cursor:default;}
+.qbtn.correct{background:rgba(68,200,80,.4);}
+.qbtn.wrong  {background:rgba(220,60,40,.4);}
+.qp-res{display:none;margin-top:6px;}
+.qp-pts{font-size:10px;font-weight:bold;margin-bottom:3px;}
+.qp-exp{font-size:8px;line-height:1.45;opacity:.7;padding-left:6px;
+  border-left:2px solid #4488ff;color:#aabbcc;}
+.qp-nxt{font:bold 7px monospace;padding:4px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);color:#aabb88;cursor:pointer;
+  margin-top:5px;width:100%;letter-spacing:1px;}
+.qp-bar{height:2px;background:rgba(255,255,255,.07);border-radius:1px;margin-top:4px;}
+.qp-fill{height:100%;background:#44ff88;width:100%;transition:width linear;}
 </style>
 </head>
 <body>
 
-<!-- START SCREEN -->
-<div id="start-screen">
-  <div class="st-logo">🛡️</div>
-  <div class="st-title" id="st-title">CyberQuestKids</div>
-  <div class="st-sub" id="st-sub">TOWER DEFENSE · CYBERSÉCURITÉ</div>
-  <div class="lang-row">
-    <button class="lb on" onclick="setLang('fr')">🇫🇷 FR</button>
-    <button class="lb" onclick="setLang('nl')">🇧🇪 NL</button>
-    <button class="lb" onclick="setLang('en')">🇬🇧 EN</button>
+<!-- ══ STAR WARS INTRO ═══════════════════════════════════════════ -->
+<div id="intro">
+  <canvas id="stars"></canvas>
+  <div id="intro-logo">★ CyberQuestKids ★</div>
+  <div id="crawl-outer">
+    <div id="crawl" id="crawl-fr">
+      <p style="font-size:1.3em;font-weight:bold;letter-spacing:3px;margin-bottom:1.2em">2024</p>
+      <p>Une catastrophe numérique.</p>
+      <br>
+      <p>Un groupe de jeunes humains a été accidentellement numérisé et propulsé dans les profondeurs d'Internet.</p>
+      <br>
+      <p>Perdus dans le réseau mondial, ils font face aux pires menaces : virus, hackers, ransomwares…</p>
+      <br>
+      <p>Une équipe de techniciens cherche désespérément un moyen de les ramener dans le monde réel.</p>
+      <br>
+      <p>Cela prendra du temps.</p>
+      <br>
+      <p>En attendant, <strong>c'est toi qui dois les protéger.</strong></p>
+      <br>
+      <p>Construis des défenses.</p>
+      <p>Repousse les attaques.</p>
+      <p>Tiens le plus longtemps possible.</p>
+      <br>
+      <p style="font-size:1.1em">Car aucun système n'est infaillible…</p>
+      <p style="font-size:1.1em">Mais chaque seconde compte.</p>
+      <br><br><br>
+    </div>
   </div>
-  <button class="st-btn" id="start-btn" onclick="startGame()">COMMENCER</button>
-  <div class="st-hint" id="st-hint">Construis tes défenses et résiste aux cyberattaques. Aucun système n'est infaillible…</div>
+  <button id="skip-btn">PASSER ›</button>
+  <div id="intro-fade"></div>
 </div>
 
-<!-- GAME SCREEN -->
-<div id="hud">
-  <div class="langrow">
-    <button class="lb2 on" onclick="setLang('fr')">FR</button>
-    <button class="lb2" onclick="setLang('nl')">NL</button>
-    <button class="lb2" onclick="setLang('en')">EN</button>
+<!-- ══ GAME ══════════════════════════════════════════════════════ -->
+<div id="game">
+  <div id="hud">
+    <div class="langrow">
+      <button class="lb on" onclick="setLang('fr')">FR</button>
+      <button class="lb"    onclick="setLang('nl')">NL</button>
+      <button class="lb"    onclick="setLang('en')">EN</button>
+    </div>
+    <div class="hb">
+      <div class="hl" id="lbl-hp">BASE HP</div>
+      <div class="hpw"><div class="hpf" id="hpfill"></div></div>
+      <div class="hv" id="hpval">100%</div>
+    </div>
+    <div class="hb">
+      <div class="hl" id="lbl-wave">VAGUE</div>
+      <div class="hv" id="wavenum" style="color:#44aaff">—</div>
+    </div>
+    <div class="hb">
+      <div class="hl">POINTS</div>
+      <div class="hv" id="ptsval" style="color:#ffdd44">80🔐</div>
+    </div>
+    <div class="hb">
+      <div class="hl" id="lbl-time">SURVIE</div>
+      <div class="hv" id="timer" style="color:#ff5544">0:00</div>
+    </div>
   </div>
-  <div class="hb">
-    <div class="hl" id="lbl-hp">BASE HP</div>
-    <div class="hpw"><div class="hpf" id="hpfill"></div></div>
-    <div class="hv" id="hpval">100%</div>
-  </div>
-  <div class="hb">
-    <div class="hl" id="lbl-wave">VAGUE</div>
-    <div class="hv" id="wavenum" style="color:#44aaff">—</div>
-  </div>
-  <div class="hb">
-    <div class="hl">POINTS</div>
-    <div class="hv" id="pointsval" style="color:#ffdd44">80 🔐</div>
-  </div>
-  <div class="hb">
-    <div class="hl" id="lbl-time">SURVIE</div>
-    <div class="hv" id="timer" style="color:#ff5544">0:00</div>
-  </div>
-</div>
 
-<div id="wrap">
-  <canvas id="c"></canvas>
-  <div id="wave-banner">⚠ VAGUE 1 EN APPROCHE !</div>
-  <div id="wave-clear">✓ VAGUE REPOUSSÉE !</div>
+  <div id="wrap">
+    <canvas id="c"></canvas>
+    <div id="wave-banner"></div>
+    <div id="wave-clear"></div>
+    <div id="unlock-card">
+      <div class="uc-type" id="uc-type"></div>
+      <div class="uc-icon" id="uc-icon"></div>
+      <div class="uc-name" id="uc-name"></div>
+      <div class="uc-desc" id="uc-desc"></div>
+    </div>
 
-  <!-- Quiz overlay -->
-  <div class="overlay hidden" id="quiz-bg">
-    <div id="quiz-overlay">
-      <div class="qt" id="quiz-title">QUIZ CYBERSÉCURITÉ</div>
-      <div class="q-progress" id="quiz-prog">1 / 3</div>
-      <div class="qq" id="quiz-q">Question…</div>
-      <div class="q-btns">
-        <button class="qbtn true-btn" id="q-true" onclick="answerQuiz(true)">VRAI ✓</button>
-        <button class="qbtn false-btn" id="q-false" onclick="answerQuiz(false)">FAUX ✗</button>
+    <!-- Choice -->
+    <div class="overlay hidden" id="choice-bg">
+      <div class="modal">
+        <div class="mo-title" id="ch-title"></div>
+        <div class="mo-desc"  id="ch-desc"></div>
+        <div class="mo-opts"  id="ch-opts"></div>
       </div>
-      <div class="q-exp" id="q-exp"></div>
-      <div class="q-reward" id="q-reward"></div>
-      <button class="q-next" id="q-next" onclick="nextQuizQ()">Suivant →</button>
     </div>
-  </div>
 
-  <!-- Choice overlay -->
-  <div class="overlay hidden" id="choice-bg">
-    <div id="choice-overlay">
-      <div class="ctit" id="choice-title">⚠️ CHOIX STRATÉGIQUE</div>
-      <div class="cdesc" id="choice-desc"></div>
-      <div class="copts" id="choice-opts"></div>
-    </div>
-  </div>
-
-  <!-- Ransomware overlay -->
-  <div class="overlay hidden" id="ransomware-bg">
-    <div id="ransomware-overlay">
-      <div class="rtit">💀 RANSOMWARE !</div>
-      <div class="rdesc" id="rw-desc"></div>
-      <div class="copts" id="rw-opts"></div>
-    </div>
-  </div>
-
-  <!-- Game over overlay -->
-  <div class="overlay hidden" id="gameover-bg">
-    <div id="gameover-overlay">
-      <div class="got" id="go-title">SYSTÈME COMPROMIS</div>
-      <div class="gos" id="go-sub"></div>
-      <div class="go-stats">
-        <div class="go-stat"><div class="gval" id="go-time">0:00</div><div class="glbl" id="go-lbl-time">SURVIE</div></div>
-        <div class="go-stat"><div class="gval" id="go-waves">0</div><div class="glbl" id="go-lbl-waves">VAGUES</div></div>
+    <!-- Ransomware -->
+    <div class="overlay hidden" id="rw-bg">
+      <div class="modal rw">
+        <div class="mo-title rw" id="rw-title"></div>
+        <div class="mo-desc"     id="rw-desc"></div>
+        <div class="mo-opts"     id="rw-opts"></div>
       </div>
-      <div class="go-msg" id="go-msg"></div>
-      <button class="go-btn" id="go-restart" onclick="restartGame()">REJOUER</button>
     </div>
+
+    <!-- Game Over -->
+    <div class="overlay hidden" id="go-bg">
+      <div class="modal go">
+        <div style="font-size:15px;color:#ff3333;font-weight:bold;letter-spacing:3px;margin-bottom:6px" id="go-title"></div>
+        <div style="font-size:9px;opacity:.55;margin-bottom:12px" id="go-sub"></div>
+        <div class="go-stats">
+          <div class="go-stat"><div class="gval" id="go-time"></div><div class="glbl" id="go-tl"></div></div>
+          <div class="go-stat"><div class="gval" id="go-waves"></div><div class="glbl" id="go-wl"></div></div>
+        </div>
+        <div class="go-msg" id="go-msg"></div>
+        <button class="go-btn" id="go-btn" onclick="restartGame()"></button>
+      </div>
+    </div>
+
+    <div id="toast"><b id="toast-title"></b><span id="toast-desc"></span></div>
+    <div id="info"></div>
   </div>
 
-  <div id="event-toast">
-    <div class="et-title" id="et-title"></div>
-    <div class="et-desc" id="et-desc"></div>
-  </div>
-  <div id="info-flash"></div>
-</div>
-
-<div id="panel">
-  <div class="plbl" id="panel-lbl">Sélectionner une défense à placer</div>
-  <div class="pbtns">
-    <div class="pbtn sel" id="btn-firewall" onclick="selectDefense('firewall')">
-      <div class="pi">🧱</div><div class="pn" id="pn-firewall">Firewall</div><div class="pc">40🔐</div>
+  <div id="bottom">
+    <div class="tab-bar">
+      <div class="tab on" id="tab-def" onclick="switchTab('def')">
+        <span>🧱</span><span id="tl-def">DÉFENSES</span>
+      </div>
+      <div class="tab" id="tab-pts" onclick="switchTab('pts')">
+        <span>💰</span><span id="tl-pts">POINTS</span>
+      </div>
     </div>
-    <div class="pbtn" id="btn-antivirus" onclick="selectDefense('antivirus')">
-      <div class="pi">🔫</div><div class="pn" id="pn-antivirus">Antivirus</div><div class="pc">80🔐</div>
+    <div class="tc on" id="tc-def">
+      <div class="plbl" id="panel-lbl">Sélectionner une défense</div>
+      <div class="pbtns" id="pbtns"></div>
     </div>
-    <div class="pbtn" id="btn-backup" onclick="selectDefense('backup')">
-      <div class="pi">💾</div><div class="pn" id="pn-backup">Backup</div><div class="pc">120🔐</div>
-    </div>
-    <div class="pbtn" id="btn-update" onclick="selectDefense('update')">
-      <div class="pi">⬆️</div><div class="pn" id="pn-update">Update</div><div class="pc">30🔐</div>
+    <div class="tc" id="tc-pts">
+      <div class="qp-hdr">
+        <div class="qp-lbl" id="qp-lbl">RÉPONDS POUR GAGNER DES POINTS</div>
+        <div class="qp-hint" id="qp-hint">+30🔐 / +5🔐</div>
+      </div>
+      <div class="qp-card">
+        <div class="qp-q" id="qp-q">…</div>
+        <div class="qp-btns">
+          <button class="qbtn t" id="qp-t" onclick="answerQ(true)">VRAI ✓</button>
+          <button class="qbtn f" id="qp-f" onclick="answerQ(false)">FAUX ✗</button>
+        </div>
+        <div class="qp-res" id="qp-res">
+          <div class="qp-pts" id="qp-pts"></div>
+          <div class="qp-exp" id="qp-exp"></div>
+          <button class="qp-nxt" id="qp-nxt" onclick="nextQ()">→</button>
+        </div>
+        <div class="qp-bar"><div class="qp-fill" id="qp-fill"></div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
+'use strict';
 // ═══════════════════════════════════════════════════════════════
-// 1. TRANSLATIONS
+// TRANSLATIONS
 // ═══════════════════════════════════════════════════════════════
-const T = {
-  fr: {
-    startBtn:'COMMENCER', sub:'TOWER DEFENSE · CYBERSÉCURITÉ',
-    hint:'Construis tes défenses et résiste aux cyberattaques. Aucun système n\'est infaillible…',
-    hpLbl:'BASE HP', waveLbl:'VAGUE', timeLbl:'SURVIE',
-    panelLbl:'Sélectionner une défense',
-    defNames:{firewall:'Firewall',antivirus:'Antivirus',backup:'Backup',update:'Update'},
-    waveIn:'VAGUE {n} EN APPROCHE !', waveClear:'✓ VAGUE {n} REPOUSSÉE !',
-    waveStart:'VAGUE {n}',
-    quizTitle:'QUIZ CYBERSÉCURITÉ',
-    trueBtn:'VRAI ✓', falseBtn:'FAUX ✗',
-    correctMsg:'+30 🔐 Bonne réponse !', wrongMsg:'+5 🔐 Mauvaise réponse…',
-    nextBtn:'Suivant →', doneBtn:'Continuer le jeu →',
-    noMoney:'Pas assez de points !', occupied:'Case déjà occupée !',
-    houseCell:'Tu ne peux pas construire ici !', noDefHere:'Pas de défense à améliorer ici !',
-    goTitle:'SYSTÈME COMPROMIS',
-    goSub:'Ton PC a été détruit.',
-    goMsg:'Aucun système n\'est infaillible.\nLa vraie sécurité, c\'est être prêt à reconstruire.',
-    goTimeLbl:'SURVIE', goWavesLbl:'VAGUES',
-    goRestart:'REJOUER',
-    choiceTitle:'⚠️ CHOIX STRATÉGIQUE',
-    events:{
-      corruptEmail:{title:'📧 Email Corrompu !', desc:'Une brèche s\'ouvre dans un firewall aléatoire !'},
-      stolenPwd:{title:'🔑 Mot de Passe Volé !', desc:'Un antivirus est désactivé 10 secondes.'},
-      virusInst:{title:'🦠 Virus Installé !', desc:'Un firewall perd 50% de ses HP !'},
-      freeUpdate:{title:'✅ Mise à Jour Gratuite !', desc:'Une défense est améliorée gratuitement !'}
-    },
-    choices:{
-      cookies:{
-        title:'🍪 Accumulation de Cookies !',
-        desc:'Tes données commencent à fuiter... Les firewalls s\'érodent.',
-        opts:[
-          {label:'🍪 Nettoyer les Cookies',effect:'Supprime toute accumulation de cookies',cost:'-50🔐',id:'clean'},
-          {label:'🔒 Installer un VPN',effect:'Ralentit les attaques de type interception',cost:'-80🔐',id:'vpn'}
-        ]
-      },
-      twofa:{
-        title:'🔒 2FA Proposé',
-        desc:'Activer l\'authentification à double facteur ?',
-        opts:[
-          {label:'✅ Activer le 2FA',effect:'Bloque les attaques "mot de passe volé"',cost:'Placement -20%',id:'on'},
-          {label:'❌ Ignorer',effect:'Plus rapide maintenant, vulnérable plus tard',cost:'Risque élevé',id:'off'}
-        ]
-      },
-      fakeUpdate:{
-        title:'🔄 Mise à Jour Disponible',
-        desc:'Est-ce une vraie mise à jour ?',
-        opts:[
-          {label:'⚡ Installer maintenant',effect:'Peut être du malware !',cost:'Risque',id:'install'},
-          {label:'🔍 Vérifier la source',effect:'Sécurisé, coûte du temps',cost:'+5 sec',id:'verify'}
-        ]
-      }
-    },
-    ransomware:{
-      title:'💀 RANSOMWARE DÉTECTÉ !',
-      desc:'Toutes tes défenses sont figées ! Les attaques continuent...',
-      opts:[
-        {label:'💸 Payer la rançon',effect:'Défenses restaurées rapidement',cost:'-80% de tes points · 40% de risque de 2e attaque',id:'pay'},
-        {label:'💾 Restaurer le Backup',effect:'Revenir au dernier backup sauvegardé',cost:'Perd les défenses récentes',id:'restore'},
-        {label:'⏳ Résister / Attendre',effect:'Paralysé 12 secondes, ennemis envahissent',cost:'Dégâts permanents',id:'resist'}
-      ],
-      noBackup:'⚠ Aucun backup disponible !',
-      msgPay:'Tu as financé le cybercrime…',
-      msgRestore:'Les backups t\'ont sauvé ! 💾',
-      msgResist:'Aucun système n\'est infaillible.'
-    }
+const T={
+fr:{
+  hpLbl:'BASE HP',waveLbl:'VAGUE',timeLbl:'SURVIE',
+  tabDef:'DÉFENSES',tabPts:'POINTS',
+  panelLbl:'Sélectionner une défense',
+  trueBtn:'VRAI ✓',falseBtn:'FAUX ✗',
+  qpLbl:'RÉPONDS POUR GAGNER DES POINTS',
+  qpHint:'+30🔐 correct · +5🔐 faux',
+  correctMsg:'+30 🔐',wrongMsg:'+5 🔐',nextQ:'→ Question suivante',
+  waveIn:'VAGUE {n} EN APPROCHE',waveClear:'✓ VAGUE {n} REPOUSSÉE',
+  noMoney:'Pas assez de points !',occupied:'Case déjà occupée !',
+  houseCell:'Impossible ici !',noTarget:'Rien à améliorer ici !',
+  cleanDone:'🧹 Système nettoyé !',
+  goTitle:'SYSTÈME COMPROMIS',goSub:'Ton PC a été détruit.',
+  goMsg:'Aucun système n\'est infaillible.\nLa vraie sécurité, c\'est être prêt à reconstruire.',
+  goTL:'SURVIE',goWL:'VAGUES',goBtn:'REJOUER',
+  skipIntro:'PASSER ›',
+  unlockDef:'🔓 DÉBLOQUÉ',unlockEnemy:'⚠ NOUVEAU DANGER',
+  defDesc:{
+    firewall:'Mur qui bloque physiquement les ennemis. Place-le stratégiquement.',
+    antivirus:'Tourelle automatique. Détruit les ennemis à portée.',
+    backup:'Sauvegarde ton état actuel. Indispensable contre le ransomware.',
+    update:'Améliore un firewall (niv.1→2→3) ou répare un antivirus.',
+    clean:'Répare tous les firewalls (+30 HP) et efface les traces de cookies.'
   },
-  en: {
-    startBtn:'START', sub:'TOWER DEFENSE · CYBERSECURITY',
-    hint:'Build your defenses and resist cyberattacks. No system is unbreakable…',
-    hpLbl:'BASE HP', waveLbl:'WAVE', timeLbl:'SURVIVAL',
-    panelLbl:'Select a defense to place',
-    defNames:{firewall:'Firewall',antivirus:'Antivirus',backup:'Backup',update:'Upgrade'},
-    waveIn:'WAVE {n} INCOMING !', waveClear:'✓ WAVE {n} DEFEATED !',
-    waveStart:'WAVE {n}',
-    quizTitle:'CYBERSECURITY QUIZ',
-    trueBtn:'TRUE ✓', falseBtn:'FALSE ✗',
-    correctMsg:'+30 🔐 Correct!', wrongMsg:'+5 🔐 Wrong answer…',
-    nextBtn:'Next →', doneBtn:'Continue game →',
-    noMoney:'Not enough points!', occupied:'Cell already occupied!',
-    houseCell:'You can\'t build here!', noDefHere:'No defense to upgrade here!',
-    goTitle:'SYSTEM COMPROMISED',
-    goSub:'Your PC has been destroyed.',
-    goMsg:'No system is unbreakable.\nTrue security means being ready to rebuild.',
-    goTimeLbl:'SURVIVAL', goWavesLbl:'WAVES',
-    goRestart:'PLAY AGAIN',
-    choiceTitle:'⚠️ STRATEGIC CHOICE',
-    events:{
-      corruptEmail:{title:'📧 Corrupt Email!', desc:'A breach opens in a random firewall!'},
-      stolenPwd:{title:'🔑 Password Stolen!', desc:'An antivirus is disabled for 10 seconds.'},
-      virusInst:{title:'🦠 Virus Installed!', desc:'A firewall loses 50% of its HP!'},
-      freeUpdate:{title:'✅ Free Update!', desc:'A defense is upgraded for free!'}
-    },
-    choices:{
-      cookies:{
-        title:'🍪 Cookie Accumulation!',
-        desc:'Your data is starting to leak... Firewalls are eroding.',
-        opts:[
-          {label:'🍪 Clear Cookies',effect:'Removes all cookie accumulation',cost:'-50🔐',id:'clean'},
-          {label:'🔒 Install VPN',effect:'Slows down interception attacks',cost:'-80🔐',id:'vpn'}
-        ]
-      },
-      twofa:{
-        title:'🔒 2FA Offered',
-        desc:'Enable two-factor authentication?',
-        opts:[
-          {label:'✅ Enable 2FA',effect:'Blocks "password stolen" attacks',cost:'Placement -20%',id:'on'},
-          {label:'❌ Ignore',effect:'Faster now, vulnerable later',cost:'High risk',id:'off'}
-        ]
-      },
-      fakeUpdate:{
-        title:'🔄 Update Available',
-        desc:'Is this a real update?',
-        opts:[
-          {label:'⚡ Install now',effect:'Could be malware!',cost:'Risk',id:'install'},
-          {label:'🔍 Verify source',effect:'Safe but costs time',cost:'+5 sec',id:'verify'}
-        ]
-      }
-    },
-    ransomware:{
-      title:'💀 RANSOMWARE DETECTED!',
-      desc:'All your defenses are frozen! Attacks continue...',
-      opts:[
-        {label:'💸 Pay the ransom',effect:'Defenses restored quickly',cost:'-80% of your points · 40% risk of 2nd attack',id:'pay'},
-        {label:'💾 Restore Backup',effect:'Revert to last saved backup',cost:'Loses recent defenses',id:'restore'},
-        {label:'⏳ Resist / Wait',effect:'Paralyzed 12 seconds, enemies invade',cost:'Permanent damage',id:'resist'}
-      ],
-      noBackup:'⚠ No backup available!',
-      msgPay:'You funded cybercrime…',
-      msgRestore:'Backups saved you! 💾',
-      msgResist:'No system is unbreakable.'
-    }
+  enemyDesc:{
+    virus:'Standard. Suit le chemin le plus court vers ta base.',
+    ddos:'Arrive en masse. Lent mais très nombreux — ne sous-estime pas la quantité.',
+    cookie:'Lent. S\'accumule sur tes firewalls et les ronge progressivement.',
+    phishing:'Peut se déguiser en mise à jour légitime. Reste vigilant !',
+    hacker:'Très rapide. Cible directement tes tourelles antivirus.',
+    zeroday:'Ignore complètement les firewalls. Seuls les antivirus peuvent l\'arrêter.',
+    ransomware:'Fige toutes tes défenses. Tu devras faire un choix difficile.'
   },
-  nl: {
-    startBtn:'BEGINNEN', sub:'TOWER DEFENSE · CYBERBEVEILIGING',
-    hint:'Bouw je verdedigingen en weerstaan cyberaanvallen. Geen enkel systeem is onkraakbaar…',
-    hpLbl:'BASIS HP', waveLbl:'GOLF', timeLbl:'OVERLEVING',
-    panelLbl:'Selecteer een verdediging',
-    defNames:{firewall:'Firewall',antivirus:'Antivirus',backup:'Backup',update:'Update'},
-    waveIn:'GOLF {n} NADERT !', waveClear:'✓ GOLF {n} VERSLAGEN !',
-    waveStart:'GOLF {n}',
-    quizTitle:'CYBERVEILIGHEID QUIZ',
-    trueBtn:'WAAR ✓', falseBtn:'ONWAAR ✗',
-    correctMsg:'+30 🔐 Correct!', wrongMsg:'+5 🔐 Fout antwoord…',
-    nextBtn:'Volgende →', doneBtn:'Doorgaan →',
-    noMoney:'Niet genoeg punten!', occupied:'Cel al bezet!',
-    houseCell:'Je kunt hier niet bouwen!', noDefHere:'Geen verdediging om te upgraden!',
-    goTitle:'SYSTEEM GECOMPROMITTEERD',
-    goSub:'Je PC is vernietigd.',
-    goMsg:'Geen enkel systeem is onkraakbaar.\nEchte beveiliging betekent klaar zijn om opnieuw op te bouwen.',
-    goTimeLbl:'OVERLEVING', goWavesLbl:'GOLVEN',
-    goRestart:'OPNIEUW SPELEN',
-    choiceTitle:'⚠️ STRATEGISCHE KEUZE',
-    events:{
-      corruptEmail:{title:'📧 Corrupt E-mail!', desc:'Een bres opent in een willekeurige firewall!'},
-      stolenPwd:{title:'🔑 Wachtwoord Gestolen!', desc:'Een antivirus is 10 seconden uitgeschakeld.'},
-      virusInst:{title:'🦠 Virus Geïnstalleerd!', desc:'Een firewall verliest 50% van zijn HP!'},
-      freeUpdate:{title:'✅ Gratis Update!', desc:'Een verdediging is gratis verbeterd!'}
-    },
-    choices:{
-      cookies:{
-        title:'🍪 Cookie-ophoping!',
-        desc:'Je gegevens beginnen te lekken... Firewalls worden aangetast.',
-        opts:[
-          {label:'🍪 Cookies verwijderen',effect:'Verwijdert alle cookie-ophoping',cost:'-50🔐',id:'clean'},
-          {label:'🔒 VPN installeren',effect:'Vertraagt onderscheppingsaanvallen',cost:'-80🔐',id:'vpn'}
-        ]
-      },
-      twofa:{
-        title:'🔒 2FA Aangeboden',
-        desc:'Tweefactorauthenticatie inschakelen?',
-        opts:[
-          {label:'✅ 2FA activeren',effect:'Blokkeert "wachtwoord gestolen" aanvallen',cost:'Plaatsing -20%',id:'on'},
-          {label:'❌ Negeren',effect:'Nu sneller, later kwetsbaar',cost:'Hoog risico',id:'off'}
-        ]
-      },
-      fakeUpdate:{
-        title:'🔄 Update Beschikbaar',
-        desc:'Is dit een echte update?',
-        opts:[
-          {label:'⚡ Nu installeren',effect:'Kan malware zijn!',cost:'Risico',id:'install'},
-          {label:'🔍 Bron verifiëren',effect:'Veilig maar kost tijd',cost:'+5 sec',id:'verify'}
-        ]
-      }
-    },
-    ransomware:{
-      title:'💀 RANSOMWARE GEDETECTEERD!',
-      desc:'Al je verdedigingen zijn bevroren! Aanvallen gaan door...',
-      opts:[
-        {label:'💸 Losgeld betalen',effect:'Verdedigingen snel hersteld',cost:'-80% van je punten · 40% risico 2e aanval',id:'pay'},
-        {label:'💾 Backup herstellen',effect:'Terugkeren naar laatste backup',cost:'Verliest recente verdedigingen',id:'restore'},
-        {label:'⏳ Weerstaan / Wachten',effect:'12 sec verlamd, vijanden vallen binnen',cost:'Permanente schade',id:'resist'}
-      ],
-      noBackup:'⚠ Geen backup beschikbaar!',
-      msgPay:'Je hebt cybercrime gefinancierd…',
-      msgRestore:'Backup heeft je gered! 💾',
-      msgResist:'Geen enkel systeem is onkraakbaar.'
-    }
-  }
+  events:{
+    corruptEmail:{t:'📧 Email Corrompu !',d:'Une brèche s\'ouvre dans un firewall aléatoire.'},
+    stolenPwd:   {t:'🔑 Mot de Passe Volé !',d:'Un antivirus est désactivé 10 secondes.'},
+    virusInst:   {t:'🦠 Virus Installé !',d:'Un firewall perd 50% de ses HP.'},
+    freeUpdate:  {t:'✅ Mise à Jour Gratuite !',d:'Un firewall est amélioré gratuitement.'}
+  },
+  choices:{
+    cookies:{title:'🍪 Accumulation Critique !',desc:'Tes données commencent à fuiter…',opts:[
+      {id:'clean',label:'🍪 Nettoyer les cookies',fx:'Supprime toute accumulation',cost:'-50🔐'},
+      {id:'vpn',  label:'🔒 Installer un VPN',   fx:'Ralentit les interceptions',   cost:'-80🔐'}]},
+    twofa:{title:'🔒 2FA Proposé',desc:'Activer la double authentification ?',opts:[
+      {id:'on', label:'✅ Activer le 2FA',effect:'Bloque les attaques "mot de passe volé"',cost:'Placement -20%'},
+      {id:'off',label:'❌ Ignorer',        effect:'Plus rapide maintenant, risqué plus tard',cost:'Risque élevé'}]},
+    fakeUpdate:{title:'🔄 Mise à Jour Disponible',desc:'Est-ce une vraie mise à jour ?',opts:[
+      {id:'install',label:'⚡ Installer maintenant',fx:'Peut être du malware !',cost:'Risque'},
+      {id:'verify', label:'🔍 Vérifier la source', fx:'Sécurisé, coûte du temps', cost:'+15🔐'}]}
+  },
+  ransomware:{
+    title:'💀 RANSOMWARE !',
+    desc:'Toutes tes défenses sont figées. Les attaques continuent…',
+    opts:[
+      {id:'pay',     label:'💸 Payer la rançon',      fx:'Défenses restaurées vite',   cost:'-80% points · 40% risque 2e attaque'},
+      {id:'restore', label:'💾 Restaurer le Backup',   fx:'Retour au dernier backup',   cost:'Perd les défenses récentes'},
+      {id:'resist',  label:'⏳ Résister / Attendre',   fx:'Paralysé 12s, ennemis libres',cost:'Dégâts permanents'}],
+    noBackup:'⚠ Aucun backup !',
+    msgPay:'Tu as financé le cybercrime…',
+    msgRestore:'Les backups t\'ont sauvé ! 💾',
+    msgResist:'Aucun système n\'est infaillible.'
+  },
+  crawl:`<p style="font-size:1.3em;font-weight:bold;letter-spacing:3px;margin-bottom:1em">2024</p>
+<p>Une catastrophe numérique.</p><br>
+<p>Un groupe de jeunes humains a été accidentellement numérisé et propulsé dans les profondeurs d'Internet.</p><br>
+<p>Perdus dans le réseau mondial, ils font face aux pires menaces&nbsp;: virus, hackers, ransomwares…</p><br>
+<p>Une équipe de techniciens cherche désespérément un moyen de les ramener dans le monde réel.</p><br>
+<p>Cela prendra du temps.</p><br>
+<p>En attendant, <strong>c'est toi qui dois les protéger.</strong></p><br>
+<p>Construis des défenses.</p><p>Repousse les attaques.</p><p>Tiens le plus longtemps possible.</p><br>
+<p style="font-size:1.1em">Car aucun système n'est infaillible…</p>
+<p style="font-size:1.1em">Mais chaque seconde compte.</p><br><br>`
+},
+en:{
+  hpLbl:'BASE HP',waveLbl:'WAVE',timeLbl:'SURVIVAL',
+  tabDef:'DEFENSES',tabPts:'POINTS',
+  panelLbl:'Select a defense to place',
+  trueBtn:'TRUE ✓',falseBtn:'FALSE ✗',
+  qpLbl:'ANSWER TO EARN POINTS',
+  qpHint:'+30🔐 correct · +5🔐 wrong',
+  correctMsg:'+30 🔐',wrongMsg:'+5 🔐',nextQ:'→ Next question',
+  waveIn:'WAVE {n} INCOMING',waveClear:'✓ WAVE {n} DEFEATED',
+  noMoney:'Not enough points!',occupied:'Cell already occupied!',
+  houseCell:'Can\'t build here!',noTarget:'Nothing to upgrade here!',
+  cleanDone:'🧹 System cleaned!',
+  goTitle:'SYSTEM COMPROMISED',goSub:'Your PC has been destroyed.',
+  goMsg:'No system is unbreakable.\nTrue security means being ready to rebuild.',
+  goTL:'SURVIVAL',goWL:'WAVES',goBtn:'PLAY AGAIN',
+  skipIntro:'SKIP ›',
+  unlockDef:'🔓 UNLOCKED',unlockEnemy:'⚠ NEW THREAT',
+  defDesc:{
+    firewall:'A wall that physically blocks enemies. Place it strategically.',
+    antivirus:'Automatic turret. Destroys enemies within range.',
+    backup:'Saves your current state. Essential against ransomware.',
+    update:'Upgrades a firewall (lv1→2→3) or repairs an antivirus.',
+    clean:'Repairs all firewalls (+30 HP) and clears cookie stains.'
+  },
+  enemyDesc:{
+    virus:'Standard. Follows the shortest path to your base.',
+    ddos:'Comes in masses. Slow but numerous — don\'t underestimate quantity.',
+    cookie:'Slow. Accumulates on your firewalls and erodes them gradually.',
+    phishing:'Can disguise itself as a legitimate update. Stay alert!',
+    hacker:'Very fast. Targets your antivirus turrets directly.',
+    zeroday:'Completely ignores firewalls. Only antivirus can stop it.',
+    ransomware:'Freezes all your defenses. You\'ll have to make a hard choice.'
+  },
+  events:{
+    corruptEmail:{t:'📧 Corrupt Email!',   d:'A breach opens in a random firewall.'},
+    stolenPwd:   {t:'🔑 Password Stolen!', d:'An antivirus is disabled for 10s.'},
+    virusInst:   {t:'🦠 Virus Installed!', d:'A firewall loses 50% HP.'},
+    freeUpdate:  {t:'✅ Free Update!',      d:'A firewall is upgraded for free.'}
+  },
+  choices:{
+    cookies:{title:'🍪 Critical Accumulation!',desc:'Your data is starting to leak…',opts:[
+      {id:'clean',label:'🍪 Clear cookies',  fx:'Removes all accumulation', cost:'-50🔐'},
+      {id:'vpn',  label:'🔒 Install VPN',    fx:'Slows interceptions',      cost:'-80🔐'}]},
+    twofa:{title:'🔒 2FA Offered',desc:'Enable two-factor authentication?',opts:[
+      {id:'on', label:'✅ Enable 2FA', effect:'Blocks "password stolen" attacks',cost:'Placement -20%'},
+      {id:'off',label:'❌ Ignore',     effect:'Faster now, risky later',         cost:'High risk'}]},
+    fakeUpdate:{title:'🔄 Update Available',desc:'Is this a real update?',opts:[
+      {id:'install',label:'⚡ Install now',      fx:'Could be malware!',  cost:'Risk'},
+      {id:'verify', label:'🔍 Verify source',    fx:'Safe, costs time',   cost:'+15🔐'}]}
+  },
+  ransomware:{
+    title:'💀 RANSOMWARE!',
+    desc:'All your defenses are frozen. Attacks continue…',
+    opts:[
+      {id:'pay',     label:'💸 Pay the ransom',   fx:'Defenses restored fast',   cost:'-80% points · 40% 2nd attack risk'},
+      {id:'restore', label:'💾 Restore Backup',   fx:'Revert to last backup',    cost:'Loses recent defenses'},
+      {id:'resist',  label:'⏳ Resist / Wait',     fx:'Paralyzed 12s, free invasion',cost:'Permanent damage'}],
+    noBackup:'⚠ No backup!',
+    msgPay:'You funded cybercrime…',
+    msgRestore:'Backup saved you! 💾',
+    msgResist:'No system is unbreakable.'
+  },
+  crawl:`<p style="font-size:1.3em;font-weight:bold;letter-spacing:3px;margin-bottom:1em">2024</p>
+<p>A digital catastrophe.</p><br>
+<p>A group of young humans was accidentally digitized and propelled into the depths of the Internet.</p><br>
+<p>Lost in the global network, they face the worst threats: viruses, hackers, ransomware…</p><br>
+<p>A team of engineers is desperately searching for a way to bring them back to the real world.</p><br>
+<p>It will take time.</p><br>
+<p>Until then, <strong>it's up to you to protect them.</strong></p><br>
+<p>Build defenses.</p><p>Fend off the attacks.</p><p>Hold on as long as possible.</p><br>
+<p style="font-size:1.1em">Because no system is unbreakable…</p>
+<p style="font-size:1.1em">But every second counts.</p><br><br>`
+},
+nl:{
+  hpLbl:'BASIS HP',waveLbl:'GOLF',timeLbl:'OVERLEVING',
+  tabDef:'VERDEDIGINGEN',tabPts:'PUNTEN',
+  panelLbl:'Selecteer een verdediging',
+  trueBtn:'WAAR ✓',falseBtn:'ONWAAR ✗',
+  qpLbl:'BEANTWOORD OM PUNTEN TE VERDIENEN',
+  qpHint:'+30🔐 correct · +5🔐 fout',
+  correctMsg:'+30 🔐',wrongMsg:'+5 🔐',nextQ:'→ Volgende vraag',
+  waveIn:'GOLF {n} NADERT',waveClear:'✓ GOLF {n} VERSLAGEN',
+  noMoney:'Niet genoeg punten!',occupied:'Cel al bezet!',
+  houseCell:'Kan hier niet bouwen!',noTarget:'Niets om hier te upgraden!',
+  cleanDone:'🧹 Systeem gereinigd!',
+  goTitle:'SYSTEEM GECOMPROMITTEERD',goSub:'Je PC is vernietigd.',
+  goMsg:'Geen enkel systeem is onkraakbaar.\nEchte beveiliging betekent klaar zijn om opnieuw op te bouwen.',
+  goTL:'OVERLEVING',goWL:'GOLVEN',goBtn:'OPNIEUW',
+  skipIntro:'OVERSLAAN ›',
+  unlockDef:'🔓 ONTGRENDELD',unlockEnemy:'⚠ NIEUW GEVAAR',
+  defDesc:{
+    firewall:'Een muur die vijanden fysiek blokkeert. Plaats strategisch.',
+    antivirus:'Automatische toren. Vernietigt vijanden in de buurt.',
+    backup:'Slaat je huidige staat op. Essentieel tegen ransomware.',
+    update:'Verbetert een firewall (niv.1→2→3) of herstelt een antivirus.',
+    clean:'Herstelt alle firewalls (+30 HP) en verwijdert cookie-ophoping.'
+  },
+  enemyDesc:{
+    virus:'Standaard. Volgt het kortste pad naar je basis.',
+    ddos:'Komt in massa. Langzaam maar talrijk — onderschat de hoeveelheid niet.',
+    cookie:'Langzaam. Hoopt op je firewalls en vreet ze geleidelijk aan.',
+    phishing:'Kan zich vermommen als een legitieme update. Blijf waakzaam!',
+    hacker:'Zeer snel. Richt zich direct op je antivirus-torens.',
+    zeroday:'Negeert firewalls volledig. Alleen antivirus kan het stoppen.',
+    ransomware:'Bevriest al je verdedigingen. Je zult een moeilijke keuze moeten maken.'
+  },
+  events:{
+    corruptEmail:{t:'📧 Corrupt E-mail!',     d:'Een bres opent in een willekeurige firewall.'},
+    stolenPwd:   {t:'🔑 Wachtwoord Gestolen!',d:'Een antivirus is 10s uitgeschakeld.'},
+    virusInst:   {t:'🦠 Virus Geïnstalleerd!',d:'Een firewall verliest 50% HP.'},
+    freeUpdate:  {t:'✅ Gratis Update!',       d:'Een firewall wordt gratis verbeterd.'}
+  },
+  choices:{
+    cookies:{title:'🍪 Kritieke Ophoping!',desc:'Je gegevens beginnen te lekken…',opts:[
+      {id:'clean',label:'🍪 Cookies verwijderen',fx:'Verwijdert alle ophoping',cost:'-50🔐'},
+      {id:'vpn',  label:'🔒 VPN installeren',    fx:'Vertraagt onderscheppingen',cost:'-80🔐'}]},
+    twofa:{title:'🔒 2FA Aangeboden',desc:'Tweefactorauthenticatie inschakelen?',opts:[
+      {id:'on', label:'✅ 2FA activeren',effect:'Blokkeert wachtwoordaanvallen',cost:'Plaatsing -20%'},
+      {id:'off',label:'❌ Negeren',       effect:'Nu sneller, later kwetsbaar', cost:'Hoog risico'}]},
+    fakeUpdate:{title:'🔄 Update Beschikbaar',desc:'Is dit een echte update?',opts:[
+      {id:'install',label:'⚡ Nu installeren',  fx:'Kan malware zijn!',cost:'Risico'},
+      {id:'verify', label:'🔍 Bron verifiëren', fx:'Veilig, kost tijd', cost:'+15🔐'}]}
+  },
+  ransomware:{
+    title:'💀 RANSOMWARE!',
+    desc:'Al je verdedigingen zijn bevroren. Aanvallen gaan door…',
+    opts:[
+      {id:'pay',     label:'💸 Losgeld betalen',     fx:'Verdedigingen snel hersteld',  cost:'-80% punten · 40% risico 2e aanval'},
+      {id:'restore', label:'💾 Backup herstellen',    fx:'Terug naar laatste backup',    cost:'Verliest recente verdedigingen'},
+      {id:'resist',  label:'⏳ Weerstaan / Wachten',  fx:'12s verlamd, vijanden vrij',   cost:'Permanente schade'}],
+    noBackup:'⚠ Geen backup!',
+    msgPay:'Je hebt cybercrime gefinancierd…',
+    msgRestore:'Backup heeft je gered! 💾',
+    msgResist:'Geen enkel systeem is onkraakbaar.'
+  },
+  crawl:`<p style="font-size:1.3em;font-weight:bold;letter-spacing:3px;margin-bottom:1em">2024</p>
+<p>Een digitale ramp.</p><br>
+<p>Een groep jonge mensen werd per ongeluk gedigitaliseerd en in de diepten van het internet geslingerd.</p><br>
+<p>Verloren in het wereldwijde netwerk, staan ze tegenover de ergste bedreigingen: virussen, hackers, ransomware…</p><br>
+<p>Een team technici zoekt wanhopig een manier om hen terug te halen naar de echte wereld.</p><br>
+<p>Dit zal tijd kosten.</p><br>
+<p>Intussen ben <strong>jij degene die hen moet beschermen.</strong></p><br>
+<p>Bouw verdedigingen.</p><p>Weerstaan de aanvallen.</p><p>Houd zo lang mogelijk stand.</p><br>
+<p style="font-size:1.1em">Want geen enkel systeem is onkraakbaar…</p>
+<p style="font-size:1.1em">Maar elke seconde telt.</p><br><br>`
+}};
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════════════════════════
+const QUIZ={
+fr:[
+  {q:"Un virus peut utiliser ton téléphone pour miner des cryptomonnaies sans que tu le saches",a:true,e:"VRAI ! Ton téléphone devient chaud et la batterie se vide vite — ce sont des signes d'infection."},
+  {q:"Un virus peut bloquer ton téléphone et demander de l'argent",a:true,e:"VRAI ! C'est un ransomware. Il chiffre tes fichiers et exige une rançon."},
+  {q:"Un hacker peut allumer ta caméra à distance et te filmer",a:true,e:"VRAI ! C'est le 'camfecting'. Couvre ta caméra quand tu ne l'utilises pas."},
+  {q:"Tous les VPN gratuits sont sûrs et ne vendent jamais tes données",a:false,e:"FAUX ! Beaucoup de VPN gratuits vendent tes données ou contiennent des malwares."},
+  {q:"Un mot de passe de 8 caractères est suffisant en 2024",a:false,e:"FAUX ! 8 caractères se craquent en quelques heures. Vise 12+ caractères minimum."},
+  {q:"Utiliser le même mot de passe partout est dangereux",a:true,e:"VRAI ! Si un site est piraté, TOUS tes comptes sont compromis."},
+  {q:"Un gestionnaire de mots de passe est plus sûr que mémoriser tous ses mots de passe",a:true,e:"VRAI ! Il génère des mots de passe complexes et uniques pour chaque site."},
+  {q:"Le 2FA par SMS est la méthode de double authentification la plus sûre",a:false,e:"FAUX ! Le SMS peut être intercepté. Une app d'authentification est bien plus sûre."},
+  {q:"Télécharger une app depuis un site suspect peut infecter ton téléphone",a:true,e:"VRAI ! Les apps non officielles peuvent contenir des malwares."},
+  {q:"Scanner un QR code dans un restaurant peut être dangereux",a:true,e:"VRAI ! Des hackers collent de faux QR codes. Vérifie toujours l'URL !"},
+  {q:"Une app gratuite peut gagner de l'argent en vendant tes données",a:true,e:"VRAI ! Si c'est gratuit, TU es souvent le produit."},
+  {q:"Payer avec ton téléphone (Apple Pay, Google Pay) est plus sûr qu'avec ta vraie carte",a:true,e:"VRAI ! Un numéro virtuel temporaire est utilisé. Ta vraie carte n'est jamais exposée."},
+  {q:"Il faut changer ses mots de passe tous les mois pour être plus en sécurité",a:false,e:"FAUX ! Changer trop souvent mène à des mots de passe faibles. Un bon mot de passe stable vaut mieux."},
+  {q:"Les permissions d'une app (caméra, micro, contacts) ne sont pas importantes",a:false,e:"FAUX ! Une lampe torche n'a pas besoin de tes contacts. Limite les permissions !"},
+  {q:"Un antivirus seul suffit à protéger complètement ton ordinateur",a:false,e:"FAUX ! Mises à jour, backups et vigilance sont aussi essentiels."},
+  {q:"Faire des backups réguliers protège contre les ransomwares",a:true,e:"VRAI ! Avec un bon backup, tu restaures tes données sans payer la rançon."},
+  {q:"Une IA peut cloner ta voix avec quelques secondes d'enregistrement",a:true,e:"VRAI ! Méfie-toi des appels suspects, même si la voix semble familière."},
+  {q:"Tous les emails d'une adresse connue sont automatiquement sûrs",a:false,e:"FAUX ! Les hackers peuvent usurper n'importe quelle adresse email."}
+],
+en:[
+  {q:"A virus can use your phone to mine cryptocurrency without you knowing",a:true,e:"TRUE! Your phone gets hot and battery drains fast — signs of infection."},
+  {q:"A virus can lock your phone and demand money",a:true,e:"TRUE! That's ransomware. It encrypts your files and demands a ransom."},
+  {q:"A hacker can turn on your camera remotely and film you",a:true,e:"TRUE! It's called 'camfecting'. Cover your camera when not using it."},
+  {q:"All free VPNs are safe and never sell your data",a:false,e:"FALSE! Many free VPNs sell your data or contain malware."},
+  {q:"An 8-character password is sufficient in 2024",a:false,e:"FALSE! 8 characters can be cracked in hours. Aim for 12+ characters."},
+  {q:"Using the same password everywhere is dangerous",a:true,e:"TRUE! If one site is hacked, ALL your accounts are compromised."},
+  {q:"A password manager is safer than memorising passwords",a:true,e:"TRUE! It generates complex, unique passwords for every site."},
+  {q:"2FA by SMS is the safest two-factor authentication method",a:false,e:"FALSE! SMS can be intercepted. An authenticator app is much safer."},
+  {q:"Downloading an app from a suspicious site can infect your phone",a:true,e:"TRUE! Unofficial apps can contain malware."},
+  {q:"Scanning a QR code in a restaurant can be dangerous",a:true,e:"TRUE! Hackers stick fake QR codes. Always check the URL!"},
+  {q:"A free app can earn money by selling your data",a:true,e:"TRUE! If it's free, YOU are often the product."},
+  {q:"Paying with your phone (Apple Pay) is safer than your real card",a:true,e:"TRUE! A temporary virtual number is used. Your real card is never exposed."},
+  {q:"Changing passwords every month makes you more secure",a:false,e:"FALSE! Changing too often leads to weak passwords. A strong stable password is better."},
+  {q:"App permissions (camera, mic, contacts) are unimportant",a:false,e:"FALSE! A flashlight app doesn't need your contacts. Limit permissions!"},
+  {q:"An antivirus alone is enough to protect your computer",a:false,e:"FALSE! Updates, backups and vigilance are also essential."},
+  {q:"Regular backups protect against ransomware",a:true,e:"TRUE! With a good backup you can restore without paying the ransom."},
+  {q:"AI can clone your voice with a few seconds of audio",a:true,e:"TRUE! Be wary of suspicious calls, even if the voice sounds familiar."},
+  {q:"All emails from a known address are automatically safe",a:false,e:"FALSE! Hackers can spoof any email address."}
+],
+nl:[
+  {q:"Een virus kan je telefoon gebruiken om cryptocurrency te minen zonder dat je het weet",a:true,e:"WAAR! Je telefoon wordt warm en de batterij loopt snel leeg — tekenen van infectie."},
+  {q:"Een virus kan je telefoon blokkeren en geld eisen",a:true,e:"WAAR! Dat is ransomware. Het versleutelt je bestanden en eist losgeld."},
+  {q:"Een hacker kan je camera op afstand aanzetten en je filmen",a:true,e:"WAAR! Dat heet 'camfecting'. Dek je camera af als je hem niet gebruikt."},
+  {q:"Alle gratis VPN's zijn veilig en verkopen nooit je gegevens",a:false,e:"ONWAAR! Veel gratis VPN's verkopen je gegevens of bevatten malware."},
+  {q:"Een wachtwoord van 8 tekens is voldoende in 2024",a:false,e:"ONWAAR! 8 tekens kunnen in uren worden gekraakt. Streef naar minimaal 12+ tekens."},
+  {q:"Hetzelfde wachtwoord overal gebruiken is gevaarlijk",a:true,e:"WAAR! Als één site gehackt wordt, zijn AL je accounts gecompromitteerd."},
+  {q:"Een wachtwoordbeheerder is veiliger dan wachtwoorden onthouden",a:true,e:"WAAR! Hij genereert complexe, unieke wachtwoorden voor elke site."},
+  {q:"2FA via SMS is de veiligste methode voor dubbele authenticatie",a:false,e:"ONWAAR! SMS kan worden onderschept. Een authenticatie-app is veel veiliger."},
+  {q:"Een app downloaden van een verdachte site kan je telefoon infecteren",a:true,e:"WAAR! Niet-officiële apps kunnen malware bevatten."},
+  {q:"Een QR-code scannen in een restaurant kan gevaarlijk zijn",a:true,e:"WAAR! Hackers plakken nep-QR-codes. Controleer altijd de URL!"},
+  {q:"Een gratis app kan geld verdienen door je gegevens te verkopen",a:true,e:"WAAR! Als het gratis is, ben JIJ vaak het product."},
+  {q:"Betalen met je telefoon (Apple Pay) is veiliger dan met je echte kaart",a:true,e:"WAAR! Een tijdelijk virtueel nummer wordt gebruikt. Je echte kaart is nooit zichtbaar."},
+  {q:"Je wachtwoorden elke maand veranderen maakt je veiliger",a:false,e:"ONWAAR! Te vaak veranderen leidt tot zwakke wachtwoorden. Één sterk stabiel wachtwoord is beter."},
+  {q:"App-permissies (camera, microfoon, contacten) zijn onbelangrijk",a:false,e:"ONWAAR! Een zaklamp-app heeft je contacten niet nodig. Beperk permissies!"},
+  {q:"Een antivirus alleen is genoeg om je computer te beschermen",a:false,e:"ONWAAR! Updates, backups en waakzaamheid zijn ook essentieel."},
+  {q:"Regelmatige backups beschermen je tegen ransomware",a:true,e:"WAAR! Met een goede backup herstel je zonder losgeld te betalen."},
+  {q:"AI kan je stem klonen met slechts enkele seconden audio",a:true,e:"WAAR! Wees op je hoede voor verdachte oproepen, ook als de stem vertrouwd klinkt."},
+  {q:"Alle e-mails van een bekend adres zijn automatisch veilig",a:false,e:"ONWAAR! Hackers kunnen elk e-mailadres nabootsen."}
+]};
+
+// ═══════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════
+const COLS=13,ROWS=13;
+const HOME=[];
+for(let r=5;r<=7;r++) for(let c=5;c<=7;c++) HOME.push({r,c});
+const HOME_SET=new Set(HOME.map(h=>`${h.r},${h.c}`));
+
+const FW_HP=[0,50,120,250];
+const AV_RANGE=3.8,AV_DMG=18,AV_CD=65;
+
+// Defense definitions
+const DEFS={
+  firewall: {emoji:'🧱',cost:40,unlockAfter:-1},
+  antivirus:{emoji:'🔫',cost:80,unlockAfter:0},
+  backup:   {emoji:'💾',cost:120,unlockAfter:1},
+  update:   {emoji:'⬆️',cost:30,unlockAfter:2},
+  clean:    {emoji:'🧹',cost:180,unlockAfter:3,isAction:true}
 };
 
-// ═══════════════════════════════════════════════════════════════
-// 2. QUIZ QUESTIONS (FR / EN / NL)
-// ═══════════════════════════════════════════════════════════════
-const QUIZ = {
-  fr:[
-    {q:"Un virus peut utiliser ton téléphone pour miner des cryptomonnaies sans que tu le saches",a:true,e:"VRAI ! Ton téléphone devient chaud, la batterie se vide vite : ce sont des signes d'infection."},
-    {q:"Un virus peut bloquer complètement ton téléphone et demander de l'argent",a:true,e:"VRAI ! C'est un ransomware. Il chiffre tes fichiers et exige une rançon."},
-    {q:"Un hacker peut allumer ta caméra à distance et te filmer",a:true,e:"VRAI ! C'est le 'camfecting'. Couvre ta caméra quand tu ne l'utilises pas !"},
-    {q:"Un VPN gratuit est toujours sûr et ne vend jamais tes données",a:false,e:"FAUX ! Beaucoup de VPN gratuits vendent tes données ou contiennent des malwares."},
-    {q:"Un mot de passe de 8 caractères est suffisant en 2024",a:false,e:"FAUX ! 8 caractères se craquent en quelques heures. Vise 12+ caractères minimum."},
-    {q:"Utiliser le même mot de passe partout est dangereux",a:true,e:"VRAI ! Si un site est piraté, TOUS tes comptes sont compromis."},
-    {q:"Un gestionnaire de mots de passe est plus sûr que retenir ses mots de passe",a:true,e:"VRAI ! Il génère des mots de passe complexes et uniques pour chaque site."},
-    {q:"Le 2FA par SMS est la méthode de double authentification la plus sûre",a:false,e:"FAUX ! Le SMS peut être intercepté. Une app d'authentification est bien plus sûre."},
-    {q:"Télécharger un jeu 'gratuit' depuis un site suspect peut infecter ton téléphone",a:true,e:"VRAI ! Les apps non officielles peuvent contenir des malwares."},
-    {q:"Scanner un QR code dans un restaurant peut être dangereux",a:true,e:"VRAI ! Des hackers collent leurs QR codes par-dessus les vrais. Vérifie toujours l'URL !"},
-    {q:"Une app gratuite peut gagner de l'argent en vendant tes données",a:true,e:"VRAI ! Si c'est gratuit, TU es souvent le produit."},
-    {q:"Payer avec son téléphone (Apple Pay) est plus sûr qu'avec sa vraie carte",a:true,e:"VRAI ! Un numéro virtuel temporaire est utilisé. Ta vraie carte n'est jamais exposée."},
-    {q:"Il faut changer ses mots de passe tous les mois pour être plus en sécurité",a:false,e:"FAUX ! Changer trop souvent pousse à des mots de passe faibles. Mieux vaut 1 mot de passe fort stable."},
-    {q:"Les permissions d'une app (caméra, micro, contacts) ne sont pas importantes",a:false,e:"FAUX ! Une appli lampe torche n'a pas besoin de tes contacts. Limite les permissions !"},
-    {q:"Un antivirus suffit à protéger complètement ton ordinateur",a:false,e:"FAUX ! Un antivirus est important mais ne suffit pas seul. Mises à jour, backups et vigilance sont aussi essentiels."},
-    {q:"Faire des backups réguliers permet de se protéger contre les ransomwares",a:true,e:"VRAI ! Avec un bon backup, tu peux restaurer tes données sans payer la rançon."},
-    {q:"Une IA peut parfaitement cloner ta voix avec quelques secondes d'enregistrement",a:true,e:"VRAI ! Méfie-toi des appels suspects, même si la voix semble familière."},
-    {q:"Tous les emails venant d'une adresse connue sont sûrs",a:false,e:"FAUX ! Les hackers peuvent usurper une adresse email. Vérifie toujours les liens avant de cliquer."}
-  ],
-  en:[
-    {q:"A virus can use your phone to mine cryptocurrency without you knowing",a:true,e:"TRUE! Your phone gets hot and the battery drains fast — signs of infection."},
-    {q:"A virus can completely lock your phone and demand money",a:true,e:"TRUE! That's ransomware. It encrypts your files and demands a ransom."},
-    {q:"A hacker can turn on your camera remotely and film you",a:true,e:"TRUE! It's called 'camfecting'. Cover your camera when not using it!"},
-    {q:"A free VPN is always safe and never sells your data",a:false,e:"FALSE! Many free VPNs sell your data or contain malware."},
-    {q:"An 8-character password is sufficient in 2024",a:false,e:"FALSE! 8 characters can be cracked in hours. Aim for 12+ characters minimum."},
-    {q:"Using the same password everywhere is dangerous",a:true,e:"TRUE! If one site is hacked, ALL your accounts are compromised."},
-    {q:"A password manager is safer than remembering passwords",a:true,e:"TRUE! It generates complex, unique passwords for each site."},
-    {q:"2FA by SMS is the safest two-factor authentication method",a:false,e:"FALSE! SMS can be intercepted. An authenticator app is much safer."},
-    {q:"Downloading a 'free' game from a suspicious site can infect your phone",a:true,e:"TRUE! Unofficial apps can contain malware."},
-    {q:"Scanning a QR code in a restaurant can be dangerous",a:true,e:"TRUE! Hackers stick their QR codes over the real ones. Always check the URL!"},
-    {q:"A free app can make money by selling your data",a:true,e:"TRUE! If it's free, YOU are often the product."},
-    {q:"Paying with your phone (Apple Pay) is safer than your real card",a:true,e:"TRUE! A temporary virtual number is used. Your real card is never exposed."},
-    {q:"You should change passwords every month to be more secure",a:false,e:"FALSE! Changing too often leads to weak passwords. One strong stable password is better."},
-    {q:"App permissions (camera, mic, contacts) are not important",a:false,e:"FALSE! A flashlight app doesn't need your contacts. Limit permissions!"},
-    {q:"An antivirus alone is enough to protect your computer",a:false,e:"FALSE! Antivirus is important but not enough alone. Updates, backups and vigilance are also essential."},
-    {q:"Regular backups protect you against ransomware",a:true,e:"TRUE! With a good backup, you can restore your data without paying the ransom."},
-    {q:"AI can clone your voice with just a few seconds of recording",a:true,e:"TRUE! Beware of suspicious calls, even if the voice sounds familiar."},
-    {q:"All emails from a known address are safe",a:false,e:"FALSE! Hackers can spoof email addresses. Always check links before clicking."}
-  ],
-  nl:[
-    {q:"Een virus kan je telefoon gebruiken om cryptocurrency te minen zonder dat je het weet",a:true,e:"WAAR! Je telefoon wordt warm en de batterij gaat snel leeg — tekenen van infectie."},
-    {q:"Een virus kan je telefoon volledig blokkeren en geld eisen",a:true,e:"WAAR! Dat is ransomware. Het versleutelt je bestanden en eist losgeld."},
-    {q:"Een hacker kan je camera op afstand aanzetten en je filmen",a:true,e:"WAAR! Dat heet 'camfecting'. Dek je camera af als je hem niet gebruikt!"},
-    {q:"Een gratis VPN is altijd veilig en verkoopt nooit je gegevens",a:false,e:"ONWAAR! Veel gratis VPN's verkopen je gegevens of bevatten malware."},
-    {q:"Een wachtwoord van 8 tekens is voldoende in 2024",a:false,e:"ONWAAR! 8 tekens kunnen in uren worden gekraakt. Streef naar minimaal 12+ tekens."},
-    {q:"Hetzelfde wachtwoord overal gebruiken is gevaarlijk",a:true,e:"WAAR! Als één site gehackt wordt, zijn AL je accounts gecompromitteerd."},
-    {q:"Een wachtwoordbeheerder is veiliger dan wachtwoorden onthouden",a:true,e:"WAAR! Hij genereert complexe, unieke wachtwoorden voor elke site."},
-    {q:"2FA via SMS is de veiligste tweefactorauthenticatiemethode",a:false,e:"ONWAAR! SMS kan worden onderschept. Een authenticatie-app is veel veiliger."},
-    {q:"Een 'gratis' spel downloaden van een verdachte site kan je telefoon infecteren",a:true,e:"WAAR! Niet-officiële apps kunnen malware bevatten."},
-    {q:"Een QR-code scannen in een restaurant kan gevaarlijk zijn",a:true,e:"WAAR! Hackers plakken hun QR-codes over de echte. Controleer altijd de URL!"},
-    {q:"Een gratis app kan geld verdienen door je gegevens te verkopen",a:true,e:"WAAR! Als het gratis is, ben JIJ vaak het product."},
-    {q:"Betalen met je telefoon (Apple Pay) is veiliger dan met je echte kaart",a:true,e:"WAAR! Er wordt een tijdelijk virtueel nummer gebruikt. Je echte kaart is nooit zichtbaar."},
-    {q:"Je wachtwoorden elke maand veranderen maakt je veiliger",a:false,e:"ONWAAR! Te vaak veranderen leidt tot zwakke wachtwoorden. Één sterk stabiel wachtwoord is beter."},
-    {q:"App-permissies (camera, microfoon, contacten) zijn niet belangrijk",a:false,e:"ONWAAR! Een zaklamp-app heeft je contacten niet nodig. Beperk permissies!"},
-    {q:"Een antivirus alleen is genoeg om je computer te beschermen",a:false,e:"ONWAAR! Antivirus is belangrijk maar niet alleen voldoende. Updates, backups en waakzaamheid zijn ook essentieel."},
-    {q:"Regelmatige backups beschermen je tegen ransomware",a:true,e:"WAAR! Met een goede backup kun je je gegevens herstellen zonder losgeld te betalen."},
-    {q:"AI kan je stem klonen met slechts een paar seconden opname",a:true,e:"WAAR! Wees op je hoede voor verdachte oproepen, zelfs als de stem vertrouwd klinkt."},
-    {q:"Alle e-mails van een bekend adres zijn veilig",a:false,e:"ONWAAR! Hackers kunnen e-mailadressen spoofen. Controleer altijd links voor je klikt."}
-  ]
+// Enemy definitions
+const EDEFS={
+  virus:      {emoji:'🦠',hp:35,spd:1.4,dmg:8,  kill:4, unlockAfter:-1,size:.7},
+  ddos:       {emoji:'💥',hp:20,spd:0.7,dmg:5,  kill:3, unlockAfter:0, size:.6},
+  cookie:     {emoji:'🍪',hp:20,spd:0.55,dmg:4, kill:3, unlockAfter:1, size:.65},
+  phishing:   {emoji:'🎣',hp:30,spd:1.1,dmg:10, kill:6, unlockAfter:2, size:.68},
+  hacker:     {emoji:'👤',hp:50,spd:2.2,dmg:15, kill:8, unlockAfter:3, size:.65},
+  zeroday:    {emoji:'🔓',hp:60,spd:1.6,dmg:20, kill:12,unlockAfter:4, size:.7},
+  ransomware: {emoji:'💀',hp:160,spd:0.75,dmg:30,kill:25,unlockAfter:5,size:.8}
 };
 
-// ═══════════════════════════════════════════════════════════════
-// 3. CONSTANTS & CONFIG
-// ═══════════════════════════════════════════════════════════════
-const COLS=13, ROWS=13;
-const HOME_CELLS=[];
-for(let r=5;r<=7;r++) for(let c=5;c<=7;c++) HOME_CELLS.push({r,c});
-const HOME_SET=new Set(HOME_CELLS.map(h=>`${h.r},${h.c}`));
-
-const DEFENSE_COSTS={firewall:40,antivirus:80,backup:120,update:30};
-const FIREWALL_HP=[0,50,120,250];
-const ANTIVIRUS_RANGE=3.8, ANTIVIRUS_DAMAGE=18, ANTIVIRUS_COOLDOWN=65;
-const PASSIVE_INCOME=1.5; // points per second
-
-const ENEMY_DEFS={
-  virus:  {emoji:'🦠',hp:35, speed:1.4, dmg:8,  color:'#ff3300',size:.7},
-  ddos:   {emoji:'💥',hp:20, speed:0.7, dmg:5,  color:'#aa0066',size:.6},
-  cookie: {emoji:'🍪',hp:20, speed:0.55,dmg:4,  color:'#b86820',size:.65},
-  phishing:{emoji:'🎣',hp:30,speed:1.1, dmg:10, color:'#ff9900',size:.68},
-  hacker: {emoji:'👤',hp:50, speed:2.2, dmg:15, color:'#4400ff',size:.65},
-  ransomware:{emoji:'💀',hp:160,speed:0.75,dmg:30,color:'#ff0000',size:.8},
-  zeroday:{emoji:'🔓',hp:60, speed:1.6, dmg:20, color:'#cc00ff',size:.7}
-};
-
-// Wave definitions
-const WAVES=[
+// Wave compositions (index = wave-1)
+const WAVE_DEFS=[
   [{t:'virus',n:4}],
   [{t:'virus',n:5},{t:'ddos',n:4}],
   [{t:'virus',n:5},{t:'ddos',n:5},{t:'cookie',n:3}],
@@ -595,825 +662,770 @@ const WAVES=[
   [{t:'virus',n:7},{t:'ddos',n:9},{t:'cookie',n:6},{t:'phishing',n:4},{t:'hacker',n:4},{t:'zeroday',n:2},{t:'ransomware',n:1}]
 ];
 
-// HP→ theme keyframes
+// Things to announce after each wave ends (before next starts)
+const ANNOUNCE_AT={
+  0:[{type:'def',key:'antivirus'},{type:'enemy',key:'ddos'}],
+  1:[{type:'def',key:'backup'},{type:'enemy',key:'cookie'}],
+  2:[{type:'def',key:'update'},{type:'def',key:'clean'},{type:'enemy',key:'phishing'}],
+  3:[{type:'enemy',key:'hacker'}],
+  4:[{type:'enemy',key:'zeroday'}],
+  5:[{type:'enemy',key:'ransomware'}]
+};
+
+// HP themes
 const THEMES=[
-  {hp:100,bg:'#b8e068',c0:'#a8d458',c1:'#b0dc60',hud:'#6aaa20',panel:'#6aaa20',hpCol:'#44dd44'},
-  {hp:80, bg:'#d4b840',c0:'#c8aa30',c1:'#d0b438',hud:'#aa8810',panel:'#aa8810',hpCol:'#eecc22'},
-  {hp:60, bg:'#7a8c6a',c0:'#6a7c5a',c1:'#728464',hud:'#445530',panel:'#445530',hpCol:'#aacc66'},
-  {hp:40, bg:'#2a3a3a',c0:'#22302e',c1:'#263434',hud:'#1a3030',panel:'#1a3030',hpCol:'#44ccaa'},
-  {hp:20, bg:'#111a28',c0:'#0f1520',c1:'#121824',hud:'#1a2860',panel:'#1a2860',hpCol:'#ff8844'},
-  {hp:0,  bg:'#070910',c0:'#09090f',c1:'#0c0d18',hud:'#660a0a',panel:'#660a0a',hpCol:'#ff3333'}
+  {hp:100,bg:'#b8e068',c0:'#a8d458',c1:'#b0dc60',hud:'#6aaa20',bot:'#6aaa20',hpC:'#44dd44'},
+  {hp:80, bg:'#d4b840',c0:'#c8aa30',c1:'#d0b438',hud:'#aa8810',bot:'#aa8810',hpC:'#eecc22'},
+  {hp:60, bg:'#7a8c6a',c0:'#6a7c5a',c1:'#728464',hud:'#445530',bot:'#445530',hpC:'#aacc66'},
+  {hp:40, bg:'#2a3a3a',c0:'#22302e',c1:'#263434',hud:'#1a3030',bot:'#1a3030',hpC:'#44ccaa'},
+  {hp:20, bg:'#111a28',c0:'#0f1520',c1:'#121824',hud:'#1a2860',bot:'#1a2860',hpC:'#ff8844'},
+  {hp:0,  bg:'#070910',c0:'#09090f',c1:'#0c0d18',hud:'#660a0a',bot:'#660a0a',hpC:'#ff3333'}
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// 4. GAME STATE
+// STATE
 // ═══════════════════════════════════════════════════════════════
 let lang='fr';
-let G; // game state object
+let G,tick=0;
 
-function initState(){
+function initG(){
   G={
-    phase:'start',
-    hp:100, points:80,
+    phase:'playing',   // playing|choice|ransomware|announce|gameover
+    hp:100,pts:80,
     wave:0,
-    wavePhase:'clear',// incoming|active|clear
-    waveTimer:0,
-    tick:0, seconds:0,
-    grid:[], enemies:[], projectiles:[],
-    spawnQueue:[], spawnTimer:0,
-    selectedDef:'firewall',
-    quiz:null, quizIdx:0, quizEarned:0,
-    choice:null,
-    hasBackup:false,
-    backupGrid:null,
-    twoFAActive:false,
-    vpnActive:false,
-    frozen:false, frozenTimer:0,
-    secondRansomRisk:false,
-    cookieEventTriggered:false,
-    twofaEventTriggered:false,
-    fakeUpdateTriggered:false,
-    ransomwareTriggered:false,
-    pointTimer:0,
-    wavesDefeated:0,
-    usedQuizIdxs:[],
-    extraWaves:0 // after wave 7, keep going
+    wavePhase:'clear', // clear|incoming|active
+    waveTimer:80,
+    grid:[],enemies:[],projs:[],
+    spawnQ:[],spawnT:0,
+    sel:'firewall',
+    hasBackup:false,bkGrid:null,
+    twoFA:false,vpn:false,
+    frozen:false,frozenT:0,
+    rwDone:false,
+    cookieEvt:false,twofaEvt:false,fkUpdEvt:false,
+    wavesCleared:0,
+    secs:0,
+    announceQ:[],       // queue of {type,key}
+    unlockedDefs:new Set(['firewall']),
+    seenEnemies:new Set(['virus'])
   };
-  // Build empty grid
-  G.grid=[];
-  for(let r=0;r<ROWS;r++){
-    G.grid[r]=[];
-    for(let c=0;c<COLS;c++){
-      G.grid[r][c]={
-        type:null,level:1,hp:0,maxHp:0,
-        cookieStains:0,disabled:false,
-        shootTimer:0,angle:0,frozen:false
-      };
-    }
-  }
-  // Mark house cells
-  HOME_CELLS.forEach(({r,c})=>{G.grid[r][c].type='house';});
+  G.grid=Array.from({length:ROWS},(_,r)=>
+    Array.from({length:COLS},(_,c)=>({
+      type:HOME_SET.has(`${r},${c}`)? 'house':null,
+      level:1,hp:0,maxHp:0,stains:0,
+      disabled:false,shootT:0,angle:0,frozen:false
+    }))
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 5. PATHFINDING (BFS)
+// CANVAS (fills wrap completely, grid centred with offset)
 // ═══════════════════════════════════════════════════════════════
-function bfs(sr,sc,ignoreFirewall){
-  // Returns array of {r,c} from start to first house cell reached
-  const visited=Array.from({length:ROWS},()=>new Array(COLS).fill(false));
+const cv=document.getElementById('c');
+const ctx=cv.getContext('2d');
+const wrap=document.getElementById('wrap');
+let cellS=30,ox=0,oy=0;
+
+function resize(){
+  cv.width=wrap.clientWidth;
+  cv.height=wrap.clientHeight;
+  cellS=Math.floor(Math.min(cv.width,cv.height)/COLS);
+  ox=Math.floor((cv.width -cellS*COLS)/2);
+  oy=Math.floor((cv.height-cellS*ROWS)/2);
+}
+resize();
+window.addEventListener('resize',resize);
+
+// ═══════════════════════════════════════════════════════════════
+// PATHFINDING
+// ═══════════════════════════════════════════════════════════════
+function bfs(sr,sc,ignFW){
+  if(sr<0||sr>=ROWS||sc<0||sc>=COLS) return null;
+  const vis=Array.from({length:ROWS},()=>new Uint8Array(COLS));
   const prev=Array.from({length:ROWS},()=>new Array(COLS).fill(null));
-  const queue=[{r:sr,c:sc}];
-  visited[sr][sc]=true;
-  while(queue.length){
-    const cur=queue.shift();
+  const q=[{r:sr,c:sc}];vis[sr][sc]=1;
+  while(q.length){
+    const cur=q.shift();
     if(HOME_SET.has(`${cur.r},${cur.c}`)){
-      // reconstruct
-      const path=[];let node=cur;
-      while(node){path.unshift(node);node=prev[node.r][node.c];}
+      const path=[];let n=cur;
+      while(n){path.unshift(n);n=prev[n.r][n.c];}
       return path;
     }
     for(const[dr,dc] of[[-1,0],[1,0],[0,-1],[0,1]]){
-      const nr=cur.r+dr, nc=cur.c+dc;
-      if(nr<0||nr>=ROWS||nc<0||nc>=COLS||visited[nr][nc]) continue;
-      const cell=G.grid[nr][nc];
-      // Firewalls block (unless ignoreFirewall)
-      if(!ignoreFirewall && cell.type==='firewall') continue;
-      // Antivirus and backup don't block — but can't be "placed on" paths
-      visited[nr][nc]=true;
-      prev[nr][nc]=cur;
-      queue.push({r:nr,c:nc});
+      const nr=cur.r+dr,nc=cur.c+dc;
+      if(nr<0||nr>=ROWS||nc<0||nc>=COLS||vis[nr][nc]) continue;
+      const t=G.grid[nr][nc].type;
+      if(!ignFW&&t==='firewall') continue;
+      vis[nr][nc]=1;prev[nr][nc]=cur;q.push({r:nr,c:nc});
     }
   }
   return null;
 }
-
-function getPath(enemy){
-  const cr=Math.round(enemy.y), cc=Math.round(enemy.x);
-  const r=Math.max(0,Math.min(ROWS-1,cr));
-  const c=Math.max(0,Math.min(COLS-1,cc));
-  const ignore=(enemy.type==='zeroday');
-  return bfs(r,c,ignore);
+function getPath(e){
+  return bfs(
+    Math.max(0,Math.min(ROWS-1,Math.round(e.y))),
+    Math.max(0,Math.min(COLS-1,Math.round(e.x))),
+    e.type==='zeroday'
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 6. WAVE & SPAWN SYSTEM
+// WAVE / SPAWN
 // ═══════════════════════════════════════════════════════════════
 let eid=0;
 function spawnEnemy(type){
-  const def=ENEMY_DEFS[type];
-  // Random edge
-  const edge=Math.floor(Math.random()*4);
+  const d=EDEFS[type],edge=rnd(4);
   let x,y;
-  if(edge===0){x=Math.random()*12;y=-0.5;}
-  else if(edge===1){x=Math.random()*12;y=12.5;}
-  else if(edge===2){x=-0.5;y=Math.random()*12;}
-  else{x=12.5;y=Math.random()*12;}
-
-  const e={
-    id:eid++, type, x, y,
-    hp:def.hp, maxHp:def.hp,
-    speed:def.speed*(0.85+Math.random()*0.3),
-    dmg:def.dmg,
-    path:null, pathIdx:0,
-    attackingWall:null, attackTimer:0,
-    cookieTimer:0,
-    disguised:type==='phishing'&&Math.random()<0.6,
-    frozen:false, frozenTimer:0
-  };
-  G.enemies.push(e);
+  if(edge===0){x=Math.random()*12;y=-.6;}
+  else if(edge===1){x=Math.random()*12;y=12.6;}
+  else if(edge===2){x=-.6;y=Math.random()*12;}
+  else{x=12.6;y=Math.random()*12;}
+  G.enemies.push({id:eid++,type,x,y,
+    hp:d.hp,maxHp:d.hp,
+    spd:d.spd*(0.85+Math.random()*.3),
+    dmg:d.dmg,kill:d.kill,
+    path:null,pi:0,atkWall:null,atkT:0,
+    cookieT:0,
+    disguised:type==='phishing'&&Math.random()<.6});
 }
 
-function buildSpawnQueue(waveIdx){
-  const wDef=WAVES[Math.min(waveIdx,WAVES.length-1)];
-  const queue=[];
-  // For higher waves, scale up
-  const scale=waveIdx>=WAVES.length?1+(waveIdx-WAVES.length+1)*0.3:1;
-  wDef.forEach(({t,n})=>{
-    const count=Math.round(n*scale);
-    for(let i=0;i<count;i++) queue.push(t);
-  });
-  // Shuffle
-  for(let i=queue.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [queue[i],queue[j]]=[queue[j],queue[i]];
-  }
-  return queue;
+function buildQ(wi){
+  const def=WAVE_DEFS[Math.min(wi,WAVE_DEFS.length-1)];
+  const scale=wi>=WAVE_DEFS.length?1+(wi-WAVE_DEFS.length+1)*.3:1;
+  const q=[];
+  def.forEach(({t,n})=>{ if(G.seenEnemies.has(t)) for(let i=0;i<Math.round(n*scale);i++) q.push(t); });
+  return shuffle(q);
 }
 
-function startNextWave(){
+function startWave(){
   G.wave++;
+  // Unlock enemies for this wave
+  Object.entries(EDEFS).forEach(([k,d])=>{if(d.unlockAfter<G.wave) G.seenEnemies.add(k);});
   G.wavePhase='incoming';
-  G.waveTimer=120; // 2 seconds at 60fps
-  showWaveBanner(G.wave);
-  G.spawnQueue=buildSpawnQueue(G.wave-1);
-  G.spawnTimer=0;
+  G.waveTimer=90;
+  showBanner(T[lang].waveIn.replace('{n}',G.wave));
+  G.spawnQ=buildQ(G.wave-1);
+  G.spawnT=0;
 }
 
-function triggerRandomEvent(){
-  if(G.phase!=='playing') return;
-  const r=Math.random();
-  const keys=['corruptEmail','stolenPwd','virusInst','freeUpdate'];
-  const weights=[0.3,0.3,0.2,0.2];
-  let cum=0;
-  let chosen='corruptEmail';
-  for(let i=0;i<keys.length;i++){
-    cum+=weights[i];
-    if(r<cum){chosen=keys[i];break;}
-  }
-  applyEvent(chosen);
-}
-
-function applyEvent(evtKey){
-  const ev=T[lang].events[evtKey];
-  showToast(ev.title,ev.desc);
-  if(evtKey==='corruptEmail'){
-    // Damage a random firewall
-    const fws=[];
-    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
-      if(G.grid[r][c].type==='firewall') fws.push({r,c});
-    if(fws.length){
-      const fw=fws[Math.floor(Math.random()*fws.length)];
-      G.grid[fw.r][fw.c].hp=Math.max(1,G.grid[fw.r][fw.c].hp-30);
-    }
-  } else if(evtKey==='stolenPwd'){
-    if(G.twoFAActive) return; // 2FA blocks this
-    const avs=[];
-    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
-      if(G.grid[r][c].type==='antivirus') avs.push({r,c});
-    if(avs.length){
-      const av=avs[Math.floor(Math.random()*avs.length)];
-      G.grid[av.r][av.c].disabled=true;
-      setTimeout(()=>{
-        if(G.grid[av.r]&&G.grid[av.r][av.c]) G.grid[av.r][av.c].disabled=false;
-      },10000);
-    }
-  } else if(evtKey==='virusInst'){
-    const fws=[];
-    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
-      if(G.grid[r][c].type==='firewall') fws.push({r,c});
-    if(fws.length){
-      const fw=fws[Math.floor(Math.random()*fws.length)];
-      G.grid[fw.r][fw.c].hp=Math.floor(G.grid[fw.r][fw.c].hp*0.5);
-    }
-  } else if(evtKey==='freeUpdate'){
-    // Upgrade random firewall
-    const fws=[];
-    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
-      if(G.grid[r][c].type==='firewall'&&G.grid[r][c].level<3) fws.push({r,c});
-    if(fws.length){
-      const fw=fws[Math.floor(Math.random()*fws.length)];
-      upgradeFirewall(fw.r,fw.c);
-    }
-  }
-}
-
-function triggerChoice(choiceKey){
-  if(G.phase!=='playing') return;
-  G.phase='choice';
-  G.choice=choiceKey;
-  showChoiceOverlay(choiceKey);
-}
-
-function handleChoiceResult(optId){
-  const ck=G.choice;
-  hideChoiceOverlay();
-  G.phase='playing';
-  if(ck==='cookies'){
-    if(optId==='clean'){
-      if(G.points>=50){
-        G.points-=50;
-        // Clear all cookie stains
-        for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
-          G.grid[r][c].cookieStains=0;
-        showToast('🍪 Cookies nettoyés!','Toutes les accumulations ont été supprimées.');
-      } else flashInfo(T[lang].noMoney);
-    } else { // vpn
-      if(G.points>=80){
-        G.points-=80;
-        G.vpnActive=true;
-        // Slow all interception-type enemies
-        G.enemies.filter(e=>e.type==='cookie'||e.type==='phishing')
-          .forEach(e=>e.speed*=0.6);
-        showToast('🔒 VPN Activé!','Les attaques d\'interception sont ralenties.');
-      } else flashInfo(T[lang].noMoney);
-    }
-  } else if(ck==='twofa'){
-    if(optId==='on'){
-      G.twoFAActive=true;
-      showToast('🔒 2FA Activé!','Attaques "mot de passe volé" bloquées.');
-    }
-  } else if(ck==='fakeUpdate'){
-    if(optId==='install'){
-      // Bad! Damage random defense
-      applyEvent('virusInst');
-    } else {
-      // Safe +5 bonus
-      G.points+=15;
-      showToast('✅ Source vérifiée!','+15🔐 accordés pour ta vigilance.');
-    }
-  }
-}
-
-function triggerRansomware(){
-  if(G.ransomwareTriggered) return;
-  G.ransomwareTriggered=true;
-  G.phase='ransomware';
-  G.frozen=true;
-  // Freeze all defenses
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G.grid[r][c].frozen=true;
-  showRansomwareOverlay();
-}
-
-function handleRansomwareResult(optId){
-  hideRansomwareOverlay();
-  G.frozen=false;
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G.grid[r][c].frozen=false;
-  const rw=T[lang].ransomware;
-  if(optId==='pay'){
-    G.points=Math.floor(G.points*0.2);
-    showToast('💸',rw.msgPay);
-    // 40% chance second attack
-    if(Math.random()<0.4) setTimeout(()=>{
-      G.ransomwareTriggered=false;
-      triggerRansomware();
-    },30000);
-    G.phase='playing';
-  } else if(optId==='restore'){
-    if(!G.hasBackup||!G.backupGrid){
-      flashInfo(rw.noBackup);
-      G.phase='playing';
-      return;
-    }
-    // Restore grid from backup
-    restoreFromBackup();
-    showToast('💾',rw.msgRestore);
-    G.phase='playing';
-  } else { // resist
-    G.phase='playing';
-    G.frozenTimer=12*60; // 12 sec
-    // House takes extra damage during this
-    showToast('⏳',rw.msgResist);
-  }
-}
-
-function restoreFromBackup(){
-  if(!G.backupGrid) return;
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      if(HOME_SET.has(`${r},${c}`)) continue;
-      const b=G.backupGrid[r][c];
-      G.grid[r][c]={...b};
-    }
-  }
-  G.enemies=[];
-  G.projectiles=[];
-}
-
-function saveBackup(){
-  G.backupGrid=G.grid.map(row=>row.map(cell=>({...cell})));
-  showToast('💾 Backup sauvegardé!','Tu pourras restaurer cet état si nécessaire.');
+function onWaveClear(){
+  G.wavesCleared++;
+  G.wavePhase='clear';
+  G.waveTimer=120;
+  showWaveClearMsg();
+  // Queue unlock announcements
+  const ann=ANNOUNCE_AT[G.wavesCleared-1];
+  if(ann) ann.forEach(a=>G.announceQ.push(a));
+  // Apply unlocks
+  Object.entries(DEFS).forEach(([k,d])=>{if(d.unlockAfter<G.wavesCleared) G.unlockedDefs.add(k);});
+  buildPanel();
+  // Schedule choice events
+  if(G.wavesCleared===2&&!G.twofaEvt){G.twofaEvt=true;setTimeout(()=>trigChoice('twofa'),200);}
+  else if(G.wavesCleared===3&&!G.cookieEvt){G.cookieEvt=true;setTimeout(()=>trigChoice('cookies'),200);}
+  else if(G.wavesCleared>=4&&!G.fkUpdEvt&&Math.random()<.5){G.fkUpdEvt=true;setTimeout(()=>trigChoice('fakeUpdate'),200);}
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 7. DEFENSE PLACEMENT
+// UPDATE
 // ═══════════════════════════════════════════════════════════════
-function placeDefense(r,c){
+function update(dt){
   if(G.phase!=='playing') return;
-  if(r<0||r>=ROWS||c<0||c>=COLS) return;
-  const cell=G.grid[r][c];
-  const def=G.selectedDef;
+  tick++;
 
-  if(HOME_SET.has(`${r},${c}`)){flashInfo(T[lang].houseCell);return;}
+  // Frozen timer (ransomware resist)
+  if(G.frozenT>0){G.frozenT--;if(G.frozenT>0)G.hp-=.04;}
 
-  if(def==='update'){
-    // Upgrade firewall or re-enable antivirus
-    if(cell.type==='firewall'&&cell.level<3){
-      if(G.points<DEFENSE_COSTS.update){flashInfo(T[lang].noMoney);return;}
-      G.points-=DEFENSE_COSTS.update;
-      upgradeFirewall(r,c);
-    } else if(cell.type==='antivirus'){
-      if(G.points<DEFENSE_COSTS.update){flashInfo(T[lang].noMoney);return;}
-      G.points-=DEFENSE_COSTS.update;
-      G.grid[r][c].hp=Math.min(G.grid[r][c].maxHp,G.grid[r][c].hp+40);
-      flashInfo('+40 HP restored!');
-    } else {
-      flashInfo(T[lang].noDefHere);
-    }
+  // Announce queue between waves
+  if(G.wavePhase==='clear'&&G.announceQ.length&&G.waveTimer<90){
+    showUnlockCard(G.announceQ.shift());
+    G.waveTimer=90; // reset timer while announcing
     return;
   }
 
-  if(cell.type!==null){flashInfo(T[lang].occupied);return;}
-  if(G.points<DEFENSE_COSTS[def]){flashInfo(T[lang].noMoney);return;}
-
-  G.points-=DEFENSE_COSTS[def];
-
-  if(def==='firewall'){
-    cell.type='firewall'; cell.level=1;
-    cell.hp=FIREWALL_HP[1]; cell.maxHp=FIREWALL_HP[1];
-    cell.cookieStains=0;
-    // Recalculate paths for all enemies
-    G.enemies.forEach(e=>{e.path=null;e.pathIdx=0;e.attackingWall=null;});
-  } else if(def==='antivirus'){
-    cell.type='antivirus'; cell.level=1;
-    cell.hp=80; cell.maxHp=80;
-    cell.shootTimer=0; cell.angle=0; cell.disabled=false;
-  } else if(def==='backup'){
-    cell.type='backup'; cell.level=1;
-    cell.hp=60; cell.maxHp=60;
-    G.hasBackup=true;
-    saveBackup();
-  }
-  updatePanelUI();
-}
-
-function upgradeFirewall(r,c){
-  const cell=G.grid[r][c];
-  if(cell.type!=='firewall'||cell.level>=3) return;
-  cell.level++;
-  cell.maxHp=FIREWALL_HP[cell.level];
-  cell.hp=cell.maxHp;
-  G.enemies.forEach(e=>{e.path=null;e.pathIdx=0;e.attackingWall=null;});
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 8. UPDATE LOOP
-// ═══════════════════════════════════════════════════════════════
-function updateGame(dt){
-  if(G.phase==='start'||G.phase==='gameover') return;
-  if(G.phase==='quiz'||G.phase==='choice'||G.phase==='ransomware') return;
-
-  G.tick++;
-  G.pointTimer+=dt;
-  if(G.pointTimer>=1){G.points+=PASSIVE_INCOME;G.pointTimer=0;}
-
-  // Frozen timer (ransomware resist)
-  if(G.frozenTimer>0){
-    G.frozenTimer--;
-    // House takes 0.08 dmg/frame while frozen
-    if(G.frozenTimer>0) G.hp-=0.05;
-  }
-
   // Wave state machine
-  if(G.wavePhase==='incoming'){
+  if(G.wavePhase==='clear'){
     G.waveTimer--;
-    if(G.waveTimer<=0){
-      G.wavePhase='active';
-      hideBanner();
-    }
-  } else if(G.wavePhase==='clear'){
-    // Start wave after 2s
+    if(G.waveTimer<=0) startWave();
+  } else if(G.wavePhase==='incoming'){
     G.waveTimer--;
-    if(G.waveTimer<=0&&G.wave===0){
-      startNextWave();
-    } else if(G.waveTimer<=0&&G.wave>0){
-      // Show quiz first
-      startQuiz();
-    }
+    if(G.waveTimer<=0){G.wavePhase='active';hideBanner();}
+  } else {
+    // Active: spawn
+    G.spawnT++;
+    if(G.spawnQ.length&&G.spawnT>=26){spawnEnemy(G.spawnQ.shift());G.spawnT=0;}
+    if(!G.spawnQ.length&&!G.enemies.length) onWaveClear();
   }
 
-  if(G.wavePhase==='active'){
-    // Spawn enemies
-    G.spawnTimer++;
-    if(G.spawnQueue.length>0&&G.spawnTimer>=28){
-      spawnEnemy(G.spawnQueue.shift());
-      G.spawnTimer=0;
-    }
-    // Check wave complete
-    if(G.spawnQueue.length===0&&G.enemies.length===0){
-      G.wavePhase='clear';
-      G.waveTimer=30;
-      G.wavesDefeated++;
-      showWaveClear();
-      // Trigger choice events
-      if(G.wave===3&&!G.cookieEventTriggered){
-        G.cookieEventTriggered=true;
-        setTimeout(()=>triggerChoice('cookies'),1200);
-      } else if(G.wave===2&&!G.twofaEventTriggered){
-        G.twofaEventTriggered=true;
-        setTimeout(()=>triggerChoice('twofa'),1200);
-      } else if(G.wave>=4&&!G.fakeUpdateTriggered&&Math.random()<0.5){
-        G.fakeUpdateTriggered=true;
-        setTimeout(()=>triggerChoice('fakeUpdate'),1200);
-      }
-    }
-  }
-
-  // Update enemies
   updateEnemies(dt);
-
-  // Update antivirus turrets
   updateTurrets();
+  updateProjs(dt);
+  updateCookies();
 
-  // Update projectiles
-  updateProjectiles(dt);
-
-  // Cookie accumulation on firewalls
-  updateCookieStains();
-
-  // Random events (rare)
-  if(G.tick%480===0&&G.wavePhase==='active'&&Math.random()<0.35) triggerRandomEvent();
+  // Random events
+  if(tick%520===0&&G.wavePhase==='active'&&Math.random()<.3) trigEvent();
 
   // Ransomware trigger
-  if(G.wave>=5&&!G.ransomwareTriggered&&G.enemies.some(e=>e.type==='ransomware')){
-    triggerRansomware();
-  }
+  if(!G.rwDone&&G.enemies.some(e=>e.type==='ransomware')) trigRansomware();
 
-  // Game over check
-  if(G.hp<=0){
-    G.hp=0;
-    G.phase='gameover';
-    showGameOver();
-  }
-
+  if(G.hp<=0){G.hp=0;G.phase='gameover';showGameOver();}
   updateHUD();
 }
 
 function updateEnemies(dt){
-  const toRemove=[];
+  const dead=[];
   G.enemies.forEach(e=>{
-    if(e.frozen){
-      e.frozenTimer--;
-      if(e.frozenTimer<=0) e.frozen=false;
-      return;
-    }
-
-    // Recompute path if needed
-    if(!e.path||e.pathIdx>=e.path.length){
-      e.path=getPath(e);
-      e.pathIdx=0;
-      e.attackingWall=null;
-    }
-
-    if(!e.path){
-      // No path — attack nearest firewall
-      attackNearestFirewall(e);
-      return;
-    }
-
-    const target=e.path[e.pathIdx];
-    const tx=target.c, ty=target.r;
-    const dx=tx-e.x, dy=ty-e.y;
-    const dist=Math.hypot(dx,dy);
-
-    // Check if next step is a firewall (path might be stale)
-    const tc=G.grid[target.r]&&G.grid[target.r][target.c];
-    if(tc&&tc.type==='firewall'&&e.type!=='zeroday'){
-      // Attack this wall
-      e.attackingWall={r:target.r,c:target.c};
-      e.attackTimer++;
-      if(e.attackTimer%40===0){
-        tc.hp-=12;
-        if(tc.hp<=0){
-          destroyCell(target.r,target.c);
-          e.attackingWall=null;
-          e.path=null;
-        }
+    if(!e.path||e.pi>=e.path.length){e.path=getPath(e);e.pi=0;e.atkWall=null;}
+    if(!e.path){atkNearestFW(e);return;}
+    const tgt=e.path[e.pi];
+    const cell=G.grid[tgt.r]&&G.grid[tgt.r][tgt.c];
+    if(cell&&cell.type==='firewall'&&e.type!=='zeroday'){
+      e.atkWall={r:tgt.r,c:tgt.c};e.atkT++;
+      if(e.atkT%38===0){
+        cell.hp-=10;
+        if(cell.hp<=0){destroyCell(tgt.r,tgt.c);e.path=null;}
       }
       return;
     }
-    e.attackingWall=null;
-
-    // Move
-    if(dist<0.08){
-      // Reached this step
-      e.x=tx; e.y=ty;
-      e.pathIdx++;
-      // Check if on house
-      if(HOME_SET.has(`${target.r},${target.c}`)){
-        G.hp-=e.dmg;
-        toRemove.push(e.id);
-        return;
-      }
+    e.atkWall=null;
+    // Move toward tgt cell centre
+    const tx=tgt.c+.5,ty=tgt.r+.5;
+    const dx=tx-e.x,dy=ty-e.y,d=Math.hypot(dx,dy);
+    if(d<.09){
+      e.x=tx;e.y=ty;e.pi++;
+      if(HOME_SET.has(`${tgt.r},${tgt.c}`)){G.hp-=e.dmg;dead.push(e.id);}
     } else {
-      const spd=e.speed*dt*0.06;
-      e.x+=dx/dist*spd;
-      e.y+=dy/dist*spd;
+      const s=e.spd*dt*.055;e.x+=dx/d*s;e.y+=dy/d*s;
     }
-
-    // Cookie behavior: stain firewalls when adjacent
+    // Cookie staining
     if(e.type==='cookie'){
-      e.cookieTimer++;
-      if(e.cookieTimer%50===0){
-        // Check adjacent cells for firewalls
-        const er=Math.round(e.y), ec=Math.round(e.x);
+      e.cookieT++;
+      if(e.cookieT%55===0){
+        const er=Math.round(e.y-.5),ec=Math.round(e.x-.5);
         for(const[dr,dc] of[[-1,0],[1,0],[0,-1],[0,1]]){
-          const nr=er+dr, nc=ec+dc;
-          if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&G.grid[nr][nc].type==='firewall'){
-            G.grid[nr][nc].cookieStains=Math.min(1,G.grid[nr][nc].cookieStains+0.07);
-          }
+          const nr=er+dr,nc=ec+dc;
+          if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&G.grid[nr][nc].type==='firewall')
+            G.grid[nr][nc].stains=Math.min(1,G.grid[nr][nc].stains+.06);
         }
       }
     }
   });
-  G.enemies=G.enemies.filter(e=>!toRemove.includes(e.id));
+  G.enemies=G.enemies.filter(e=>!dead.includes(e.id));
 }
 
-function attackNearestFirewall(e){
-  let best=null,bd=Infinity;
-  const er=Math.round(e.y), ec=Math.round(e.x);
+function atkNearestFW(e){
+  let best=null,bd=999;
+  const er=Math.round(e.y-.5),ec=Math.round(e.x-.5);
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
-    if(G.grid[r][c].type==='firewall'){
-      const d=Math.hypot(r-er,c-ec);
-      if(d<bd){bd=d;best={r,c};}
+    if(G.grid[r][c].type==='firewall'){const d=Math.hypot(r-er,c-ec);if(d<bd){bd=d;best={r,c};}}
+  }
+  if(best&&bd<2.5){
+    e.atkT++;
+    if(e.atkT%40===0){G.grid[best.r][best.c].hp-=8;if(G.grid[best.r][best.c].hp<=0)destroyCell(best.r,best.c);}
+    const dx=(best.c+.5)-e.x,dy=(best.r+.5)-e.y,d=Math.hypot(dx,dy);
+    if(d>.1){e.x+=dx/d*.035;e.y+=dy/d*.035;}
+  }
+}
+
+function updateTurrets(){
+  if(G.frozenT>0) return;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=G.grid[r][c];
+    if(cell.type!=='antivirus'||cell.disabled||cell.frozen) continue;
+    let best=null,bd=999;
+    G.enemies.forEach(e=>{
+      const d=Math.hypot(e.x-(c+.5),e.y-(r+.5));
+      if(d<AV_RANGE&&d<bd){bd=d;best=e;}
+    });
+    if(best){
+      cell.angle=Math.atan2(best.y-(r+.5),best.x-(c+.5));
+      cell.shootT++;
+      if(cell.shootT>=AV_CD){
+        cell.shootT=0;
+        G.projs.push({x:c+.5,y:r+.5,tid:best.id,tx:best.x,ty:best.y,dmg:AV_DMG});
+      }
     }
   }
-  if(best&&bd<2){
-    e.attackTimer++;
-    if(e.attackTimer%40===0){
-      G.grid[best.r][best.c].hp-=10;
-      if(G.grid[best.r][best.c].hp<=0) destroyCell(best.r,best.c);
+}
+
+function updateProjs(dt){
+  const done=[];
+  G.projs.forEach(p=>{
+    const tgt=G.enemies.find(e=>e.id===p.tid);
+    if(tgt){p.tx=tgt.x;p.ty=tgt.y;}
+    const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy),s=8*dt*.055;
+    if(d<.2+s){
+      if(tgt){tgt.hp-=p.dmg;if(tgt.hp<=0){G.pts+=tgt.kill;G.enemies=G.enemies.filter(e=>e.id!==tgt.id);}}
+      done.push(p);
+    } else {p.x+=dx/d*s;p.y+=dy/d*s;}
+  });
+  G.projs=G.projs.filter(p=>!done.includes(p));
+}
+
+function updateCookies(){
+  if(tick%100!==0) return;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=G.grid[r][c];
+    if(cell.type==='firewall'&&cell.stains>0){
+      cell.hp-=Math.floor(cell.stains*4);
+      if(cell.hp<=0){destroyCell(r,c);continue;}
+      if(cell.stains>.75){G.hp-=.35;flashInfo('🍪 Fuite de données !');}
     }
-    // Move toward it
-    const dx=best.c-e.x, dy=best.r-e.y;
-    const d=Math.hypot(dx,dy);
-    if(d>0.1){e.x+=dx/d*0.04;e.y+=dy/d*0.04;}
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DEFENSE PLACEMENT
+// ═══════════════════════════════════════════════════════════════
+function placeAt(r,c){
+  if(G.phase!=='playing') return;
+  if(r<0||r>=ROWS||c<0||c>=COLS) return;
+  const t=T[lang],sel=G.sel;
+  if(!G.unlockedDefs.has(sel)) return;
+
+  // Clean is an action, not placement
+  if(sel==='clean'){
+    if(G.pts<DEFS.clean.cost){flashInfo(t.noMoney);return;}
+    G.pts-=DEFS.clean.cost;
+    for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+      const cell=G.grid[rr][cc];
+      if(cell.type==='firewall'){cell.hp=Math.min(cell.maxHp,cell.hp+30);cell.stains=0;}
+    }
+    showToast('',t.cleanDone);
+    return;
+  }
+
+  if(HOME_SET.has(`${r},${c}`)){flashInfo(t.houseCell);return;}
+  const cell=G.grid[r][c];
+
+  if(sel==='update'){
+    if(cell.type==='firewall'&&cell.level<3){
+      if(G.pts<30){flashInfo(t.noMoney);return;}
+      G.pts-=30;cell.level++;cell.maxHp=FW_HP[cell.level];cell.hp=cell.maxHp;
+      G.enemies.forEach(e=>{e.path=null;e.pi=0;e.atkWall=null;});
+    } else if(cell.type==='antivirus'){
+      if(G.pts<30){flashInfo(t.noMoney);return;}
+      G.pts-=30;cell.hp=Math.min(cell.maxHp,cell.hp+40);
+    } else flashInfo(t.noTarget);
+    return;
+  }
+
+  if(cell.type!==null){flashInfo(t.occupied);return;}
+  if(G.pts<DEFS[sel].cost){flashInfo(t.noMoney);return;}
+  G.pts-=DEFS[sel].cost;
+
+  if(sel==='firewall'){
+    Object.assign(cell,{type:'firewall',level:1,hp:FW_HP[1],maxHp:FW_HP[1],stains:0});
+    G.enemies.forEach(e=>{e.path=null;e.pi=0;e.atkWall=null;});
+  } else if(sel==='antivirus'){
+    Object.assign(cell,{type:'antivirus',level:1,hp:80,maxHp:80,shootT:0,angle:0,disabled:false});
+  } else if(sel==='backup'){
+    Object.assign(cell,{type:'backup',level:1,hp:60,maxHp:60});
+    G.hasBackup=true;
+    G.bkGrid=G.grid.map(row=>row.map(c2=>({...c2})));
+    showToast('💾','Backup sauvegardé !');
   }
 }
 
 function destroyCell(r,c){
-  G.grid[r][c]={type:null,level:1,hp:0,maxHp:0,cookieStains:0,
-    disabled:false,shootTimer:0,angle:0,frozen:false};
-  // Check if destroyed backup
+  G.grid[r][c]={type:null,level:1,hp:0,maxHp:0,stains:0,
+    disabled:false,shootT:0,angle:0,frozen:false};
   if(!G.grid.some(row=>row.some(cell=>cell.type==='backup'))) G.hasBackup=false;
-  G.enemies.forEach(e=>{e.path=null;e.pathIdx=0;e.attackingWall=null;});
-}
-
-function updateTurrets(){
-  if(G.frozen) return;
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const cell=G.grid[r][c];
-      if(cell.type!=='antivirus'||cell.disabled) continue;
-      // Find nearest enemy in range
-      let best=null,bd=Infinity;
-      G.enemies.forEach(e=>{
-        const d=Math.hypot(e.x-c,e.y-r);
-        if(d<ANTIVIRUS_RANGE&&d<bd){bd=d;best=e;}
-      });
-      if(best){
-        cell.angle=Math.atan2(best.y-r,best.x-c);
-        cell.shootTimer++;
-        if(cell.shootTimer>=ANTIVIRUS_COOLDOWN){
-          cell.shootTimer=0;
-          // Fire projectile
-          G.projectiles.push({
-            x:c+.5,y:r+.5,
-            tx:best.x,ty:best.y,
-            targetId:best.id,
-            speed:8,dmg:ANTIVIRUS_DAMAGE
-          });
-        }
-      }
-    }
-  }
-}
-
-function updateProjectiles(dt){
-  const done=[];
-  G.projectiles.forEach(p=>{
-    // Chase target
-    const tgt=G.enemies.find(e=>e.id===p.targetId);
-    if(tgt){p.tx=tgt.x;p.ty=tgt.y;}
-    const dx=p.tx-p.x, dy=p.ty-p.y;
-    const d=Math.hypot(dx,dy);
-    const spd=p.speed*dt*0.06;
-    if(d<0.15+spd){
-      // Hit
-      if(tgt){
-        tgt.hp-=p.dmg;
-        if(tgt.hp<=0){
-          G.enemies=G.enemies.filter(e=>e.id!==tgt.id);
-          G.points+=6;
-        }
-      }
-      done.push(p);
-    } else {
-      p.x+=dx/d*spd;
-      p.y+=dy/d*spd;
-    }
-  });
-  G.projectiles=G.projectiles.filter(p=>!done.includes(p));
-}
-
-function updateCookieStains(){
-  if(G.tick%120!==0) return;
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
-    const cell=G.grid[r][c];
-    if(cell.type==='firewall'&&cell.cookieStains>0){
-      // Stains cause gradual damage
-      cell.hp-=Math.floor(cell.cookieStains*5);
-      if(cell.hp<=0) destroyCell(r,c);
-      // Data leak: house takes small dmg if stains > 0.7
-      if(cell.cookieStains>0.7){
-        G.hp-=0.5;
-        flashInfo('🍪 Fuite de données !');
-      }
-    }
-  }
+  G.enemies.forEach(e=>{e.path=null;e.pi=0;e.atkWall=null;});
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 9. QUIZ SYSTEM
+// EVENTS & CHOICES
 // ═══════════════════════════════════════════════════════════════
-function startQuiz(){
-  G.phase='quiz';
-  // Pick 3 random unasked questions
-  const pool=QUIZ[lang];
-  const available=pool.filter((_,i)=>!G.usedQuizIdxs.includes(i));
-  let qs=[];
-  if(available.length<3){G.usedQuizIdxs=[];qs=shuffleArr([...pool]).slice(0,3);}
-  else qs=shuffleArr([...available]).slice(0,3);
-  // store indices
-  qs.forEach(q=>{const i=pool.indexOf(q);if(i>=0)G.usedQuizIdxs.push(i);});
-  G.quiz=qs;
-  G.quizIdx=0;
-  G.quizEarned=0;
-  showQuizQ();
+function trigEvent(){
+  const keys=['corruptEmail','stolenPwd','virusInst','freeUpdate'];
+  const w=[.3,.3,.2,.2];let cum=0,r=Math.random(),k='corruptEmail';
+  for(let i=0;i<keys.length;i++){cum+=w[i];if(r<cum){k=keys[i];break;}}
+  applyEvent(k);
+}
+function applyEvent(k){
+  const ev=T[lang].events[k];
+  showToast(ev.t,ev.d);
+  const fws=()=>{const a=[];for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(G.grid[r][c].type==='firewall') a.push({r,c});return a;};
+  if(k==='corruptEmail'){const a=fws();if(a.length){const f=a[rnd(a.length)];G.grid[f.r][f.c].hp=Math.max(1,G.grid[f.r][f.c].hp-30);}}
+  else if(k==='stolenPwd'){if(G.twoFA)return;const a=[];for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(G.grid[r][c].type==='antivirus') a.push({r,c});if(a.length){const av=a[rnd(a.length)];G.grid[av.r][av.c].disabled=true;setTimeout(()=>{if(G.grid[av.r])G.grid[av.r][av.c].disabled=false;},10000);}}
+  else if(k==='virusInst'){const a=fws();if(a.length){const f=a[rnd(a.length)];G.grid[f.r][f.c].hp=Math.floor(G.grid[f.r][f.c].hp*.5);}}
+  else if(k==='freeUpdate'){const a=fws().filter(f=>G.grid[f.r][f.c].level<3);if(a.length){const f=a[rnd(a.length)];const cell=G.grid[f.r][f.c];cell.level++;cell.maxHp=FW_HP[cell.level];cell.hp=cell.maxHp;G.enemies.forEach(e=>{e.path=null;e.pi=0;});}}
 }
 
-function showQuizQ(){
-  const q=G.quiz[G.quizIdx];
-  const t=T[lang];
-  document.getElementById('quiz-title').textContent=t.quizTitle;
-  document.getElementById('quiz-prog').textContent=`${G.quizIdx+1} / ${G.quiz.length}`;
-  document.getElementById('quiz-q').textContent=q.q;
-  document.getElementById('q-true').textContent=t.trueBtn;
-  document.getElementById('q-false').textContent=t.falseBtn;
-  document.getElementById('q-true').disabled=false;
-  document.getElementById('q-false').disabled=false;
-  document.getElementById('q-true').className='qbtn true-btn';
-  document.getElementById('q-false').className='qbtn false-btn';
-  document.getElementById('q-exp').style.display='none';
-  document.getElementById('q-reward').style.display='none';
-  document.getElementById('q-next').style.display='none';
-  document.getElementById('quiz-bg').classList.remove('hidden');
-}
-
-function answerQuiz(answer){
-  const q=G.quiz[G.quizIdx];
-  const correct=(answer===q.a);
-  const pts=correct?30:5;
-  G.points+=pts;
-  G.quizEarned+=pts;
-  const exp=document.getElementById('q-exp');
-  const rwd=document.getElementById('q-reward');
-  exp.textContent=q.e;
-  exp.style.display='block';
-  rwd.textContent=correct?T[lang].correctMsg:T[lang].wrongMsg;
-  rwd.style.color=correct?'#44ff88':'#ff8844';
-  rwd.style.display='block';
-  document.getElementById('q-true').disabled=true;
-  document.getElementById('q-false').disabled=true;
-  if(correct){
-    document.getElementById(answer?'q-true':'q-false').classList.add('correct');
-  } else {
-    document.getElementById(answer?'q-true':'q-false').classList.add('wrong');
-    document.getElementById(q.a?'q-true':'q-false').classList.add('correct');
-  }
-  const nxt=document.getElementById('q-next');
-  const isLast=G.quizIdx>=G.quiz.length-1;
-  nxt.textContent=isLast?T[lang].doneBtn:T[lang].nextBtn;
-  nxt.style.display='block';
-}
-
-function nextQuizQ(){
-  G.quizIdx++;
-  if(G.quizIdx>=G.quiz.length){
-    // Done
-    document.getElementById('quiz-bg').classList.add('hidden');
-    G.quiz=null;
-    G.phase='playing';
-    startNextWave();
-  } else {
-    showQuizQ();
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 10. UI FUNCTIONS
-// ═══════════════════════════════════════════════════════════════
-function showChoiceOverlay(ck){
+function trigChoice(ck){
+  if(G.phase!=='playing') return;
+  G.phase='choice';G.choiceKey=ck;
   const ch=T[lang].choices[ck];
-  document.getElementById('choice-title').textContent=ch.title;
-  document.getElementById('choice-desc').textContent=ch.desc;
-  const optsEl=document.getElementById('choice-opts');
-  optsEl.innerHTML='';
+  document.getElementById('ch-title').textContent=ch.title;
+  document.getElementById('ch-desc').textContent=ch.desc;
+  const el=document.getElementById('ch-opts');el.innerHTML='';
   ch.opts.forEach(opt=>{
-    const d=document.createElement('div');
-    d.className='copt';
-    d.innerHTML=`<b>${opt.label}</b>${opt.effect}<small>${opt.cost}</small>`;
-    d.onclick=()=>handleChoiceResult(opt.id);
-    optsEl.appendChild(d);
+    const d=document.createElement('div');d.className='mo-opt';
+    d.innerHTML=`<b>${opt.label}</b>${opt.fx||opt.effect||''}<small>${opt.cost}</small>`;
+    d.onclick=()=>handleChoice(opt.id);el.appendChild(d);
   });
   document.getElementById('choice-bg').classList.remove('hidden');
 }
-function hideChoiceOverlay(){
+function handleChoice(id){
   document.getElementById('choice-bg').classList.add('hidden');
+  G.phase='playing';
+  const ck=G.choiceKey,t=T[lang];
+  if(ck==='cookies'){
+    if(id==='clean'){if(G.pts>=50){G.pts-=50;for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G.grid[r][c].stains=0;showToast('🍪','Cookies nettoyés !');}else flashInfo(t.noMoney);}
+    else{if(G.pts>=80){G.pts-=80;G.vpn=true;G.enemies.filter(e=>['cookie','phishing'].includes(e.type)).forEach(e=>e.spd*=.6);showToast('🔒','VPN activé !');}else flashInfo(t.noMoney);}
+  } else if(ck==='twofa'){
+    if(id==='on'){G.twoFA=true;showToast('🔒','2FA activé !');}
+  } else if(ck==='fakeUpdate'){
+    if(id==='install')applyEvent('virusInst');
+    else{G.pts+=15;showToast('✅','+15🔐 !');}
+  }
 }
 
-function showRansomwareOverlay(){
+function trigRansomware(){
+  G.rwDone=true;G.phase='ransomware';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G.grid[r][c].frozen=true;
   const rw=T[lang].ransomware;
+  document.getElementById('rw-title').textContent=rw.title;
   document.getElementById('rw-desc').textContent=rw.desc;
-  const optsEl=document.getElementById('rw-opts');
-  optsEl.innerHTML='';
+  const el=document.getElementById('rw-opts');el.innerHTML='';
   rw.opts.forEach(opt=>{
-    const d=document.createElement('div');
-    d.className='copt';
-    const isRestore=opt.id==='restore';
-    const disabled=isRestore&&(!G.hasBackup||!G.backupGrid);
-    d.innerHTML=`<b>${opt.label}</b>${opt.effect}<small>${opt.cost}</small>`;
-    if(disabled){
-      d.innerHTML+=`<small style="color:#ff4444;display:block">${rw.noBackup}</small>`;
-      d.style.opacity='0.5';
-      d.onclick=()=>flashInfo(rw.noBackup);
-    } else {
-      d.onclick=()=>handleRansomwareResult(opt.id);
-    }
-    optsEl.appendChild(d);
+    const d=document.createElement('div');d.className='mo-opt';
+    const noRest=opt.id==='restore'&&(!G.hasBackup||!G.bkGrid);
+    d.innerHTML=`<b>${opt.label}</b>${opt.fx}<small>${opt.cost}</small>`;
+    if(noRest){d.innerHTML+=`<small style="color:#f44;display:block">${rw.noBackup}</small>`;d.style.opacity='.45';d.onclick=()=>flashInfo(rw.noBackup);}
+    else d.onclick=()=>handleRW(opt.id);
+    el.appendChild(d);
   });
-  document.getElementById('ransomware-bg').classList.remove('hidden');
+  document.getElementById('rw-bg').classList.remove('hidden');
 }
-function hideRansomwareOverlay(){
-  document.getElementById('ransomware-bg').classList.add('hidden');
+function handleRW(id){
+  document.getElementById('rw-bg').classList.add('hidden');
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G.grid[r][c].frozen=false;
+  const rw=T[lang].ransomware;
+  G.phase='playing';
+  if(id==='pay'){
+    G.pts=Math.floor(G.pts*.2);showToast('💸',rw.msgPay);
+    if(Math.random()<.4) setTimeout(()=>{G.rwDone=false;},30000);
+  } else if(id==='restore'){
+    if(!G.bkGrid){flashInfo(rw.noBackup);return;}
+    G.grid.forEach((row,r)=>row.forEach((_,c)=>{if(!HOME_SET.has(`${r},${c}`))G.grid[r][c]={...G.bkGrid[r][c]};}));
+    G.enemies=[];G.projs=[];showToast('💾',rw.msgRestore);
+  } else {
+    G.frozenT=12*60;showToast('⏳',rw.msgResist);
+  }
 }
 
-let toastTimeout=null;
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function lerp(a,b,t){return a+(b-a)*t;}
+function hexRGB(h){const v=parseInt(h.slice(1),16);return[(v>>16)&255,(v>>8)&255,v&255];}
+function lH(a,b,t){const[r1,g1,b1]=hexRGB(a),[r2,g2,b2]=hexRGB(b);
+  return`rgb(${~~lerp(r1,r2,t)},${~~lerp(g1,g2,t)},${~~lerp(b1,b2,t)})`;}
+function getTheme(hp){
+  if(hp>=100)return THEMES[0];if(hp<=0)return THEMES[5];
+  for(let i=0;i<5;i++){const hi=THEMES[i],lo=THEMES[i+1];
+    if(hp<=hi.hp&&hp>=lo.hp){const t=(hp-lo.hp)/(hi.hp-lo.hp);
+      return{bg:lH(lo.bg,hi.bg,t),c0:lH(lo.c0,hi.c0,t),c1:lH(lo.c1,hi.c1,t),
+        hud:lH(lo.hud,hi.hud,t),bot:lH(lo.bot,hi.bot,t),hpC:lH(lo.hpC,hi.hpC,t)};}}
+  return THEMES[5];
+}
+
+function render(){
+  if(!G||G.phase==='start') return;
+  const s=cellS,th=getTheme(G.hp);
+  ctx.clearRect(0,0,cv.width,cv.height);
+
+  // Outer background (fills dead space around grid)
+  ctx.fillStyle=th.bg;ctx.fillRect(0,0,cv.width,cv.height);
+
+  const fA=Math.max(0,(G.hp-60)/40); // flower alpha
+
+  // Grid cells
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    ctx.fillStyle=(r+c)%2===0?th.c0:th.c1;
+    ctx.fillRect(ox+c*s,oy+r*s,s,s);
+  }
+
+  // Nature decoration (empty corner cells)
+  if(fA>0){
+    [[0,0],[2,0],[0,2],[11,0],[12,0],[12,1],[0,12],[12,12],[6,0],[0,6],[12,6],[6,12]].forEach(([c,r])=>{
+      if(!G.grid[r]||G.grid[r][c].type!==null)return;
+      drawFlower(ox+c*s,oy+r*s,s,c*7+r*3,fA);
+    });
+  }
+
+  // Defenses & house
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=G.grid[r][c],x=ox+c*s,y=oy+r*s;
+    if(cell.type==='house')     drawHouse(x,y,s,r,c);
+    else if(cell.type==='firewall') drawFW(x,y,s,cell);
+    else if(cell.type==='antivirus') drawAV(x,y,s,cell);
+    else if(cell.type==='backup')    drawBK(x,y,s);
+  }
+
+  // Laser beams
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=G.grid[r][c];
+    if(cell.type!=='antivirus'||cell.disabled) continue;
+    const near=G.enemies.filter(e=>Math.hypot(e.x-(c+.5),e.y-(r+.5))<AV_RANGE)
+      .sort((a,b)=>Math.hypot(a.x-(c+.5),a.y-(r+.5))-Math.hypot(b.x-(c+.5),b.y-(r+.5)))[0];
+    if(near&&Math.sin(tick*.18+c*.7)>.1){
+      ctx.strokeStyle='rgba(68,255,238,.15)';ctx.lineWidth=5;
+      ctx.beginPath();ctx.moveTo(ox+(c+.5)*s,oy+(r+.5)*s);ctx.lineTo(ox+near.x*s,oy+near.y*s);ctx.stroke();
+      ctx.strokeStyle='rgba(68,255,238,.7)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(ox+(c+.5)*s,oy+(r+.5)*s);ctx.lineTo(ox+near.x*s,oy+near.y*s);ctx.stroke();
+    }
+  }
+
+  // Enemies
+  G.enemies.forEach((e,i)=>{
+    const ex=ox+e.x*s,ey=oy+e.y*s;
+    ctx.save();ctx.translate(ex,ey);
+    ctx.font=`${Math.floor(s*EDEFS[e.type].size)}px sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(e.disguised?'🔄':EDEFS[e.type].emoji,0,Math.sin(tick*.07+i)*(s*.04));
+    const hR=Math.max(0,e.hp/e.maxHp),bw=s*.7;
+    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(-bw/2,-s*.52,bw,4);
+    ctx.fillStyle=hR>.5?'#44ff44':hR>.25?'#ffbb00':'#ff3300';
+    ctx.fillRect(-bw/2,-s*.52,bw*hR,4);
+    if(e.atkWall){ctx.font=`${Math.max(6,~~(s*.22))}px sans-serif`;ctx.fillText('⚡',s*.38,-s*.35);}
+    ctx.restore();
+  });
+
+  // Projectiles
+  G.projs.forEach(p=>{
+    ctx.fillStyle='rgba(68,255,238,.35)';ctx.beginPath();ctx.arc(ox+p.x*s,oy+p.y*s,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#44ffee';ctx.beginPath();ctx.arc(ox+p.x*s,oy+p.y*s,2.5,0,Math.PI*2);ctx.fill();
+  });
+
+  // Hover highlight
+  if(hov.r>=0&&G.phase==='playing'){
+    ctx.strokeStyle='rgba(255,220,44,.6)';ctx.lineWidth=2;
+    ctx.strokeRect(ox+hov.c*s+1,oy+hov.r*s+1,s-2,s-2);
+  }
+
+  // Vignette
+  const nat=Math.max(0,Math.min(1,(G.hp-20)/80));
+  if(nat<1){
+    const vg=ctx.createRadialGradient(cv.width*.5,cv.height*.5,cv.width*.18,cv.width*.5,cv.height*.5,cv.width*.75);
+    vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,`rgba(0,0,0,${(1-nat)*.55})`);
+    ctx.fillStyle=vg;ctx.fillRect(0,0,cv.width,cv.height);
+  }
+  if(G.hp<20){ctx.fillStyle=`rgba(255,0,0,${(.12+.1*Math.sin(tick*.08))*(1-G.hp/20)})`;ctx.fillRect(0,0,cv.width,cv.height);}
+
+  // Theme UI
+  const game=document.getElementById('game');
+  game.style.background=th.bg;
+  document.getElementById('hud').style.borderBottomColor=th.hud;
+  document.getElementById('bottom').style.borderTopColor=th.bot;
+}
+
+// --- Sprite drawing ---
+function drawFlower(x,y,s,seed,a){
+  const sw=Math.sin(tick*.03+seed)*.04,cx=x+s*.5+sw*s,cy=y+s*.5;
+  const pr=Math.max(1,~~(s/9));
+  const cols=['#ffee44','#ff88cc','#ffffff','#ffaa44'];
+  ctx.globalAlpha=a*.75;ctx.fillStyle=cols[seed%4];
+  ctx.fillRect(cx-pr*2,cy-pr*.5,pr*1.5,pr);ctx.fillRect(cx+pr*.5,cy-pr*.5,pr*1.5,pr);
+  ctx.fillRect(cx-pr*.5,cy-pr*2,pr,pr*1.5);ctx.fillRect(cx-pr*.5,cy+pr*.5,pr,pr*1.5);
+  ctx.fillStyle='#ffdd44';ctx.fillRect(cx-pr*.5,cy-pr*.5,pr,pr);
+  ctx.fillStyle='#44aa22';ctx.fillRect(cx-pr*.3,cy+pr*1.5,pr*.6,pr*1.5);
+  ctx.globalAlpha=1;
+}
+function drawHouse(x,y,s,r,c){
+  const hr=r-5,hc=c-5,dk=G.hp<=60;
+  const A=dk?'#1e3420':'#2a4a22',B=dk?'#162818':'#1e3c18';
+  if(hr===0){
+    ctx.fillStyle=B;ctx.fillRect(x,y,s,s);
+    const tw=Math.max(2,~~(s/5));ctx.fillStyle=A;
+    for(let i=0;i<s;i+=tw*2)ctx.fillRect(x+i,y+s*.25,tw,s*.75);
+    if(hc===2){ctx.fillStyle='#5a3520';ctx.fillRect(x+s*.65,y,s*.14,s*.46);}
+  } else if(hr===1){
+    ctx.fillStyle=A;ctx.fillRect(x,y,s,s);
+    if(hc!==1){
+      ctx.fillStyle=`rgba(68,238,136,${.35+.4*Math.sin(tick*.04+hc)})`;
+      ctx.fillRect(x+s*.24,y+s*.18,s*.52,s*.48);
+      ctx.fillStyle='#081408';
+      ctx.fillRect(x+s*.49,y+s*.18,s*.04,s*.48);
+      ctx.fillRect(x+s*.24,y+s*.4,s*.52,s*.04);
+    } else {
+      ctx.fillStyle=`rgba(68,238,136,${.25+.3*Math.sin(tick*.05)})`;
+      ctx.fillRect(x+s*.32,y+s*.22,s*.36,s*.55);
+    }
+  } else {
+    ctx.fillStyle=A;ctx.fillRect(x,y,s,s*.88);
+    ctx.fillStyle=dk?'#1a3a1a':'#2a5028';ctx.fillRect(x,y+s*.88,s,s*.12);
+    if(hc===1){ctx.fillStyle='#281408';ctx.fillRect(x+s*.3,y+s*.28,s*.4,s*.6);
+      ctx.fillStyle='#ffcc44';ctx.fillRect(x+s*.61,y+s*.52,s*.06,s*.06);}
+  }
+}
+function drawFW(x,y,s,cell){
+  const lvl=cell.level;
+  const palettes=[['#8B6914','#a07c22','#6a500e'],['#b03a12','#d85022','#8a2a0a'],['#cc4400','#ff6622','#aa2200']];
+  const[ca,cb,cc]=palettes[lvl-1];
+  ctx.fillStyle=ca;ctx.fillRect(x,y,s,s);
+  const bH=s/4;
+  for(let i=0;i<4;i++){
+    const off=(i%2===0)?0:s*.25;
+    for(let b=-1;b<3;b++){
+      const bx=x+b*(s*.5)+off,by=y+i*bH;
+      const x2=Math.max(bx+1,x),w2=Math.min(bx+s*.5-1,x+s)-x2;
+      if(w2>0){ctx.fillStyle=i%2===0?cb:cc;ctx.fillRect(x2,by+1,w2,bH-2);}
+    }
+  }
+  ctx.fillStyle='rgba(255,255,255,.75)';
+  ctx.font=`bold ${Math.max(6,~~(s*.2))}px monospace`;ctx.textAlign='center';
+  ctx.fillText(lvl,x+s*.5,y+s*.34);
+  const hR=Math.max(0,cell.hp/cell.maxHp);
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+2,y+s*.74,s-4,4);
+  ctx.fillStyle=hR>.5?'#44ff44':hR>.25?'#ffbb00':'#ff3300';
+  ctx.fillRect(x+2,y+s*.74,(s-4)*hR,4);
+  if(cell.stains>0){
+    ctx.fillStyle=`rgba(150,80,20,${cell.stains*.5})`;ctx.fillRect(x,y,s,s);
+    ctx.fillStyle='#b86820';ctx.beginPath();
+    ctx.arc(x+s*.5,y+s*.28+cell.stains*s*.15,s*.16,0,Math.PI*2);ctx.fill();
+  }
+  if(1-hR>.2){ctx.fillStyle=`rgba(0,0,0,${(1-hR)*.4})`;ctx.fillRect(x,y,s,s);}
+  if(cell.frozen){ctx.fillStyle='rgba(100,180,255,.28)';ctx.fillRect(x,y,s,s);}
+}
+function drawAV(x,y,s,cell){
+  const ang=cell.angle,cx=x+s/2,cy=y+s/2,dis=cell.disabled;
+  ctx.fillStyle=dis?'#223':'#0e2e60';ctx.fillRect(x+s*.16,y+s*.52,s*.68,s*.44);
+  ctx.fillStyle=dis?'#334':'#1a4888';
+  ctx.fillRect(x+s*.2,y+s*.55,s*.6,s*.32);
+  ctx.beginPath();ctx.arc(cx,cy,s*.36,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=dis?'#334':'#2860a0';
+  ctx.beginPath();ctx.arc(cx-s*.06,cy-s*.06,s*.25,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);
+  ctx.fillStyle=dis?'#334':'#3080be';ctx.fillRect(s*.04,-s*.05,s*.44,s*.1);
+  ctx.fillStyle=dis?'#446':'#40d8ff';ctx.fillRect(s*.4,-s*.035,s*.1,s*.07);
+  ctx.restore();
+  ctx.fillStyle=`rgba(64,216,255,${dis?.18:(.5+.4*Math.sin(tick*.1+x))})`;
+  ctx.beginPath();ctx.arc(cx,cy,s*.09,0,Math.PI*2);ctx.fill();
+  const hR=Math.max(0,cell.hp/cell.maxHp);
+  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+2,y+s*.77,s-4,3);
+  ctx.fillStyle=hR>.5?'#44ff44':'#ff8800';ctx.fillRect(x+2,y+s*.77,(s-4)*hR,3);
+  if(cell.frozen){ctx.fillStyle='rgba(100,180,255,.28)';ctx.fillRect(x,y,s,s);}
+}
+function drawBK(x,y,s){
+  ctx.fillStyle='#2a0e46';ctx.fillRect(x+s*.07,y+s*.04,s*.86,s*.92);
+  ctx.fillStyle='#441870';ctx.fillRect(x+s*.12,y+s*.08,s*.76,s*.8);
+  for(let i=0;i<3;i++){
+    const dy2=y+s*(.12+i*.24);
+    ctx.fillStyle='#04050c';ctx.fillRect(x+s*.17,dy2,s*.66,s*.2);
+    ctx.fillStyle=i===0?`rgba(51,221,136,${.5+.45*Math.sin(tick*.08+i*1.5)})`:i===1?'#aa44dd':'#333';
+    ctx.fillRect(x+s*.67,dy2+s*.05,s*.09,s*.1);
+    ctx.fillStyle='#181828';ctx.fillRect(x+s*.19,dy2+s*.04,s*.42,s*.12);
+  }
+  ctx.fillStyle='#33dd88';ctx.font=`bold ${Math.max(5,~~(s*.12))}px monospace`;
+  ctx.textAlign='center';ctx.fillText('BKP',x+s*.5,y+s*.95);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════
+function updateHUD(){
+  const th=getTheme(G.hp);
+  const hf=document.getElementById('hpfill');
+  hf.style.width=Math.max(0,G.hp)+'%';
+  hf.style.background=G.hp>60?th.hpC:G.hp>30?'#ffbb00':'#ff3300';
+  document.getElementById('hpval').textContent=Math.max(0,~~G.hp)+'%';
+  document.getElementById('hpval').style.color=th.hpC;
+  document.getElementById('ptsval').textContent=~~G.pts+'🔐';
+  document.getElementById('wavenum').textContent=G.wave>0?String(G.wave).padStart(2,'0'):'—';
+}
+
+function buildPanel(){
+  const el=document.getElementById('pbtns');el.innerHTML='';
+  const t=T[lang];
+  Object.entries(DEFS).forEach(([key,def])=>{
+    const locked=!G.unlockedDefs.has(key);
+    const btn=document.createElement('div');
+    btn.className='pbtn'+(key===G.sel?' sel':'')+(locked?' locked':'')+(def.isAction?' action':'');
+    btn.innerHTML=`<div class="pi">${locked?'🔒':def.emoji}</div>
+      <div class="pn">${t.defNames?.[key]||key}</div>
+      <div class="pc">${locked?'???':def.cost+'🔐'}</div>`;
+    if(!locked) btn.onclick=()=>selectDef(key);
+    el.appendChild(btn);
+  });
+  document.getElementById('panel-lbl').textContent=t.panelLbl;
+}
+
+function selectDef(k){
+  G.sel=k;
+  buildPanel();
+  switchTab('def');
+}
+
+let activeTab='def';
+function switchTab(t){
+  activeTab=t;
+  document.getElementById('tab-def').classList.toggle('on',t==='def');
+  document.getElementById('tab-pts').classList.toggle('on',t==='pts');
+  document.getElementById('tc-def').classList.toggle('on',t==='def');
+  document.getElementById('tc-pts').classList.toggle('on',t==='pts');
+}
+
+function updateLangUI(){
+  const t=T[lang];
+  document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent===lang.toUpperCase()));
+  document.getElementById('lbl-hp').textContent=t.hpLbl;
+  document.getElementById('lbl-wave').textContent=t.waveLbl;
+  document.getElementById('lbl-time').textContent=t.timeLbl;
+  document.getElementById('tab-def').querySelector('span:last-child').textContent=t.tabDef;
+  document.getElementById('tab-pts').querySelector('span:last-child').textContent=t.tabPts;
+  document.getElementById('qp-lbl').textContent=t.qpLbl;
+  document.getElementById('qp-hint').textContent=t.qpHint;
+  document.getElementById('qp-t').textContent=t.trueBtn;
+  document.getElementById('qp-f').textContent=t.falseBtn;
+  document.getElementById('skip-btn').textContent=t.skipIntro;
+  if(G) buildPanel();
+}
+
+let toastT=null;
 function showToast(title,desc){
-  const el=document.getElementById('event-toast');
-  document.getElementById('et-title').textContent=title;
-  document.getElementById('et-desc').textContent=desc;
+  document.getElementById('toast-title').textContent=title;
+  document.getElementById('toast-desc').textContent=desc;
+  const el=document.getElementById('toast');
   el.style.display='block';el.style.opacity='1';
-  clearTimeout(toastTimeout);
-  toastTimeout=setTimeout(()=>{
-    el.style.opacity='0';
-    setTimeout(()=>{el.style.display='none';},400);
-  },3200);
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.style.display='none',400);},3000);
 }
-
-let flashTimeout=null;
+let infoT=null;
 function flashInfo(msg){
-  const el=document.getElementById('info-flash');
+  const el=document.getElementById('info');
   el.textContent=msg;el.style.display='block';
-  clearTimeout(flashTimeout);
-  flashTimeout=setTimeout(()=>{el.style.display='none';},2000);
+  clearTimeout(infoT);infoT=setTimeout(()=>el.style.display='none',2000);
 }
-
-function showWaveBanner(n){
-  const b=document.getElementById('wave-banner');
-  b.textContent=T[lang].waveIn.replace('{n}',n);
-  b.style.display='block';
+let bannerT=null;
+function showBanner(txt){
+  const b=document.getElementById('wave-banner');b.textContent=txt;b.style.display='block';
 }
-function hideBanner(){
-  document.getElementById('wave-banner').style.display='none';
-}
-
-let clearTimeout2=null;
-function showWaveClear(){
+function hideBanner(){document.getElementById('wave-banner').style.display='none';}
+let clearT=null;
+function showWaveClearMsg(){
   const el=document.getElementById('wave-clear');
   el.textContent=T[lang].waveClear.replace('{n}',G.wave);
-  el.style.display='block';
-  clearTimeout(clearTimeout2);
-  clearTimeout2=setTimeout(()=>{el.style.display='none';},2000);
+  el.style.display='block';clearTimeout(clearT);
+  clearT=setTimeout(()=>el.style.display='none',2200);
+}
+
+let unlockT=null;
+function showUnlockCard(ann){
+  const t=T[lang];
+  const isEnemy=ann.type==='enemy';
+  const key=ann.key;
+  const uc=document.getElementById('unlock-card');
+  document.getElementById('uc-type').textContent=isEnemy?t.unlockEnemy:t.unlockDef;
+  document.getElementById('uc-type').style.color=isEnemy?'#ff6644':'#44ff88';
+  uc.style.borderColor=isEnemy?'#ff6644':'#44ff88';
+  document.getElementById('uc-icon').textContent=isEnemy?EDEFS[key].emoji:DEFS[key].emoji;
+  document.getElementById('uc-name').textContent=key.charAt(0).toUpperCase()+key.slice(1);
+  document.getElementById('uc-desc').textContent=isEnemy?t.enemyDesc[key]:t.defDesc[key];
+  uc.style.display='block';
+  clearTimeout(unlockT);
+  unlockT=setTimeout(()=>{uc.style.display='none';},3500);
 }
 
 function showGameOver(){
@@ -1422,513 +1434,205 @@ function showGameOver(){
   document.getElementById('go-sub').textContent=t.goSub;
   document.getElementById('go-msg').textContent=t.goMsg;
   document.getElementById('go-time').textContent=document.getElementById('timer').textContent;
-  document.getElementById('go-waves').textContent=G.wavesDefeated;
-  document.getElementById('go-lbl-time').textContent=t.goTimeLbl;
-  document.getElementById('go-lbl-waves').textContent=t.goWavesLbl;
-  document.getElementById('go-restart').textContent=t.goRestart;
-  document.getElementById('gameover-bg').classList.remove('hidden');
-}
-
-function selectDefense(def){
-  G.selectedDef=def;
-  updatePanelUI();
-}
-
-function updatePanelUI(){
-  ['firewall','antivirus','backup','update'].forEach(d=>{
-    const el=document.getElementById('btn-'+d);
-    el.classList.toggle('sel',d===G.selectedDef);
-  });
-  document.getElementById('panel-lbl').textContent=T[lang].panelLbl;
-  const t=T[lang].defNames;
-  document.getElementById('pn-firewall').textContent=t.firewall;
-  document.getElementById('pn-antivirus').textContent=t.antivirus;
-  document.getElementById('pn-backup').textContent=t.backup;
-  document.getElementById('pn-update').textContent=t.update;
-}
-
-function lerp(a,b,t){return a+(b-a)*t;}
-function hexToRgb(h){
-  const v=parseInt(h.slice(1),16);
-  return[(v>>16)&255,(v>>8)&255,v&255];
-}
-function lerpHex(h1,h2,t){
-  const[r1,g1,b1]=hexToRgb(h1),[r2,g2,b2]=hexToRgb(h2);
-  return`rgb(${Math.round(lerp(r1,r2,t))},${Math.round(lerp(g1,g2,t))},${Math.round(lerp(b1,b2,t))})`;
-}
-function getTheme(hp){
-  if(hp>=100) return THEMES[0];
-  if(hp<=0)   return THEMES[THEMES.length-1];
-  for(let i=0;i<THEMES.length-1;i++){
-    const hi=THEMES[i],lo=THEMES[i+1];
-    if(hp<=hi.hp&&hp>=lo.hp){
-      const t=(hp-lo.hp)/(hi.hp-lo.hp);
-      return{bg:lerpHex(lo.bg,hi.bg,t),c0:lerpHex(lo.c0,hi.c0,t),
-        c1:lerpHex(lo.c1,hi.c1,t),hud:lerpHex(lo.hud,hi.hud,t),
-        panel:lerpHex(lo.panel,hi.panel,t),hpCol:lerpHex(lo.hpCol,hi.hpCol,t)};
-    }
-  }
-  return THEMES[THEMES.length-1];
-}
-
-function updateHUD(){
-  const th=getTheme(G.hp);
-  document.body.style.background=th.bg;
-  document.getElementById('hud').style.borderBottomColor=th.hud;
-  document.getElementById('panel').style.borderTopColor=th.panel;
-  const hf=document.getElementById('hpfill');
-  hf.style.width=G.hp+'%';
-  hf.style.background=G.hp>60?th.hpCol:G.hp>30?'#ffbb00':'#ff3300';
-  document.getElementById('hpval').textContent=Math.max(0,Math.round(G.hp))+'%';
-  document.getElementById('hpval').style.color=th.hpCol;
-  document.getElementById('pointsval').textContent=Math.floor(G.points)+' 🔐';
-  document.getElementById('wavenum').textContent=G.wave>0?String(G.wave).padStart(2,'0'):'—';
-  // HUD labels
-  document.getElementById('lbl-hp').textContent=T[lang].hpLbl;
-  document.getElementById('lbl-wave').textContent=T[lang].waveLbl;
-  document.getElementById('lbl-time').textContent=T[lang].timeLbl;
+  document.getElementById('go-waves').textContent=G.wavesCleared;
+  document.getElementById('go-tl').textContent=t.goTL;
+  document.getElementById('go-wl').textContent=t.goWL;
+  document.getElementById('go-btn').textContent=t.goBtn;
+  document.getElementById('go-bg').classList.remove('hidden');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 11. CANVAS DRAWING
+// QUIZ PANEL
 // ═══════════════════════════════════════════════════════════════
-const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d');
-const wrap=document.getElementById('wrap');
+let QP={pool:[],idx:0,answered:false,autoT:null};
 
-function resize(){
-  const aw=wrap.clientWidth-2,ah=wrap.clientHeight-2;
-  const cs=Math.floor(Math.min(aw,ah)/COLS);
-  canvas.width=canvas.height=cs*COLS;
+function qpInit(){
+  QP.pool=shuffle([...QUIZ[lang]]);QP.idx=0;QP.answered=false;
+  clearTimeout(QP.autoT);renderQ();
 }
-resize();
-window.addEventListener('resize',resize);
-function S(){return canvas.width/COLS;}
-
-function drawGrid(){
-  const s=S(),th=getTheme(G.hp);
-  const nat=Math.max(0,Math.min(1,(G.hp-20)/80));
-  const flwA=Math.max(0,(G.hp-60)/40);
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      ctx.fillStyle=(r+c)%2===0?th.c0:th.c1;
-      ctx.fillRect(c*s,r*s,s,s);
-    }
-  }
-  // Subtle nature decoration
-  if(flwA>0){
-    [[0,0],[2,0],[11,0],[12,0],[0,12],[12,12],[1,6],[11,6],[6,0],[6,12]].forEach(([c,r])=>{
-      if(G.grid[r][c].type!==null) return;
-      drawFlower(c*s,r*s,s,c*7+r*3,flwA);
-    });
-  }
+function renderQ(){
+  const q=QP.pool[QP.idx%QP.pool.length];
+  const t=T[lang];
+  document.getElementById('qp-q').textContent=q.q;
+  document.getElementById('qp-t').textContent=t.trueBtn;
+  document.getElementById('qp-f').textContent=t.falseBtn;
+  document.getElementById('qp-t').disabled=false;
+  document.getElementById('qp-f').disabled=false;
+  document.getElementById('qp-t').className='qbtn t';
+  document.getElementById('qp-f').className='qbtn f';
+  document.getElementById('qp-res').style.display='none';
+  const bar=document.getElementById('qp-fill');
+  bar.style.transition='none';bar.style.width='100%';
+  QP.answered=false;
 }
-
-function drawFlower(x,y,s,seed,a){
-  const sway=Math.sin(G.tick*.03+seed)*.04;
-  const cx=x+s*.5+sway*s,cy=y+s*.5;
-  const pr=Math.max(1,Math.floor(s/9));
-  const cols=['#ffee44','#ff88cc','#ffffff','#ffaa44'];
-  ctx.globalAlpha=a*.8;
-  ctx.fillStyle=cols[seed%cols.length];
-  ctx.fillRect(cx-pr*2,cy-pr*.5,pr*1.5,pr);
-  ctx.fillRect(cx+pr*.5,cy-pr*.5,pr*1.5,pr);
-  ctx.fillRect(cx-pr*.5,cy-pr*2,pr,pr*1.5);
-  ctx.fillRect(cx-pr*.5,cy+pr*.5,pr,pr*1.5);
-  ctx.fillStyle='#ffdd44';
-  ctx.fillRect(cx-pr*.5,cy-pr*.5,pr,pr);
-  ctx.fillStyle='#44aa22';
-  ctx.fillRect(cx-pr*.3,cy+pr*1.5,pr*.6,pr*1.5);
-  ctx.globalAlpha=1;
+function answerQ(ans){
+  if(QP.answered)return;QP.answered=true;
+  const q=QP.pool[QP.idx%QP.pool.length];
+  const ok=ans===q.a,pts=ok?30:5;
+  if(G&&G.phase!=='start')G.pts+=pts;
+  document.getElementById('qp-t').disabled=true;
+  document.getElementById('qp-f').disabled=true;
+  document.getElementById(ans?'qp-t':'qp-f').classList.add(ok?'correct':'wrong');
+  document.getElementById(q.a?'qp-t':'qp-f').classList.add('correct');
+  const t=T[lang];
+  const rEl=document.getElementById('qp-pts');
+  rEl.textContent=(ok?t.correctMsg:t.wrongMsg);
+  rEl.style.color=ok?'#44ff88':'#ff8844';
+  document.getElementById('qp-exp').textContent=q.e;
+  document.getElementById('qp-nxt').textContent=t.nextQ;
+  document.getElementById('qp-res').style.display='block';
+  // Auto-advance
+  const bar=document.getElementById('qp-fill');
+  bar.style.transition='width 4s linear';bar.style.width='0%';
+  QP.autoT=setTimeout(nextQ,4000);
 }
-
-function drawDefenses(){
-  const s=S();
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const cell=G.grid[r][c];
-      const x=c*s,y=r*s;
-      if(cell.type==='house')   drawHouseCell(x,y,s,r,c);
-      else if(cell.type==='firewall') drawFW(x,y,s,cell);
-      else if(cell.type==='antivirus') drawAV(x,y,s,cell);
-      else if(cell.type==='backup') drawBackup(x,y,s);
-    }
-  }
-}
-
-function drawHouseCell(x,y,s,r,c){
-  const hr=r-5,hc=c-5;// 0-2, 0-2
-  const dark=G.hp<=60;
-  const hvA=dark?'#1e3420':'#2a4a22';
-  const hvB=dark?'#162818':'#1e3c18';
-  if(hr===0){
-    ctx.fillStyle=hvB;ctx.fillRect(x,y,s,s);
-    const tw=Math.max(2,Math.floor(s/5));
-    ctx.fillStyle=hvA;
-    for(let i=0;i<s;i+=tw*2) ctx.fillRect(x+i,y+s*.25,tw,s*.75);
-    if(hc===2){ctx.fillStyle='#5a3520';ctx.fillRect(x+s*.65,y,s*.14,s*.46);}
-  } else if(hr===1){
-    ctx.fillStyle=hvA;ctx.fillRect(x,y,s,s);
-    if(hc!==1){
-      const wa=.4+.4*Math.sin(G.tick*.04+hc);
-      ctx.fillStyle=`rgba(68,238,136,${wa})`;
-      ctx.fillRect(x+s*.24,y+s*.18,s*.52,s*.48);
-      ctx.fillStyle='#081408';
-      ctx.fillRect(x+s*.49,y+s*.18,s*.04,s*.48);
-      ctx.fillRect(x+s*.24,y+s*.4,s*.52,s*.04);
-    } else {
-      ctx.fillStyle=`rgba(68,238,136,${.3+.3*Math.sin(G.tick*.05)})`;
-      ctx.fillRect(x+s*.32,y+s*.22,s*.36,s*.55);
-    }
-  } else {
-    ctx.fillStyle=hvA;ctx.fillRect(x,y,s,s*.88);
-    ctx.fillStyle=dark?'#1a3a1a':'#2a5028';
-    ctx.fillRect(x,y+s*.88,s,s*.12);
-    if(hc===1){
-      ctx.fillStyle='#281408';ctx.fillRect(x+s*.3,y+s*.28,s*.4,s*.6);
-      ctx.fillStyle='#ffcc44';ctx.fillRect(x+s*.61,y+s*.52,s*.06,s*.06);
-    }
-  }
-}
-
-function drawFW(x,y,s,cell){
-  const lvl=cell.level||1;
-  const dmgRatio=1-cell.hp/cell.maxHp;
-  const cols=[['#8B6914','#a07c22','#6a500e'],
-               ['#b03a12','#d85022','#8a2a0a'],
-               ['#cc4400','#ff6622','#aa2200']];
-  const[ca,cb,cc]=cols[lvl-1];
-  ctx.fillStyle=ca;ctx.fillRect(x,y,s,s);
-  const bH=s/4;
-  for(let rr=0;rr<4;rr++){
-    const off=(rr%2===0)?0:s*.25;
-    for(let b=-1;b<3;b++){
-      const bx=x+b*(s*.5)+off,by=y+rr*bH;
-      const cx2=Math.max(bx+1,x),cw2=Math.min(bx+s*.5-1,x+s)-cx2;
-      if(cw2>0){
-        ctx.fillStyle=rr%2===0?cb:cc;
-        ctx.fillRect(cx2,by+1,cw2,bH-2);
-      }
-    }
-  }
-  // Level indicator
-  ctx.fillStyle='rgba(255,255,255,.7)';
-  ctx.font=`bold ${Math.max(6,Math.floor(s*.22))}px monospace`;
-  ctx.textAlign='center';
-  ctx.fillText(lvl,x+s*.5,y+s*.35);
-  // HP bar
-  const hpR=cell.hp/cell.maxHp;
-  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+2,y+s-.9*s+s*.72,s-4,4);
-  ctx.fillStyle=hpR>0.5?'#44ff44':hpR>0.25?'#ffbb00':'#ff3300';
-  ctx.fillRect(x+2,y+s*.72,Math.max(0,(s-4)*hpR),4);
-  // Cookie stains
-  if(cell.cookieStains>0){
-    ctx.fillStyle=`rgba(150,80,20,${cell.cookieStains*.55})`;
-    ctx.fillRect(x,y,s,s);
-    // Cookie dot
-    const cr=s*.18,cx3=x+s*.5,cy3=y+s*.28+cell.cookieStains*s*.15;
-    ctx.fillStyle='#b86820';
-    ctx.beginPath();ctx.arc(cx3,cy3,cr,0,Math.PI*2);ctx.fill();
-  }
-  // Damage overlay
-  if(dmgRatio>.2){
-    ctx.fillStyle=`rgba(0,0,0,${dmgRatio*.5})`;ctx.fillRect(x,y,s,s);
-  }
-  // Frozen
-  if(cell.frozen){
-    ctx.fillStyle='rgba(100,180,255,.3)';ctx.fillRect(x,y,s,s);
-  }
-}
-
-function drawAV(x,y,s,cell){
-  const ang=cell.angle||0;
-  const cx2=x+s/2,cy2=y+s/2;
-  const col=cell.disabled?'#334':'#0e2e60';
-  ctx.fillStyle=col;ctx.fillRect(x+s*.16,y+s*.52,s*.68,s*.44);
-  ctx.fillStyle=cell.disabled?'#445':'#1a4888';
-  ctx.fillRect(x+s*.2,y+s*.55,s*.6,s*.32);
-  ctx.beginPath();ctx.arc(cx2,cy2,s*.36,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=cell.disabled?'#4455aa':'#2860a0';
-  ctx.beginPath();ctx.arc(cx2-s*.06,cy2-s*.06,s*.25,0,Math.PI*2);ctx.fill();
-  // Barrel
-  ctx.save();ctx.translate(cx2,cy2);ctx.rotate(ang);
-  ctx.fillStyle=cell.disabled?'#334':'#3080be';
-  ctx.fillRect(s*.04,-s*.05,s*.44,s*.1);
-  ctx.fillStyle=cell.disabled?'#556':'#40d8ff';
-  ctx.fillRect(s*.4,-s*.035,s*.1,s*.07);
-  ctx.restore();
-  // Glow
-  const ga=cell.disabled?.3:(.55+.45*Math.sin(G.tick*.1+x));
-  ctx.fillStyle=`rgba(64,216,255,${ga})`;
-  ctx.beginPath();ctx.arc(cx2,cy2,s*.09,0,Math.PI*2);ctx.fill();
-  // HP bar
-  const hpR=cell.hp/cell.maxHp;
-  ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+2,y+s*.75,s-4,3);
-  ctx.fillStyle=hpR>0.5?'#44ff44':'#ff8800';
-  ctx.fillRect(x+2,y+s*.75,(s-4)*Math.max(0,hpR),3);
-  if(cell.frozen){ctx.fillStyle='rgba(100,180,255,.3)';ctx.fillRect(x,y,s,s);}
-}
-
-function drawBackup(x,y,s){
-  ctx.fillStyle='#2a0e46';ctx.fillRect(x+s*.07,y+s*.04,s*.86,s*.92);
-  ctx.fillStyle='#441870';ctx.fillRect(x+s*.12,y+s*.08,s*.76,s*.8);
-  for(let i=0;i<3;i++){
-    const dy=y+s*(.12+i*.24);
-    ctx.fillStyle='#04050c';ctx.fillRect(x+s*.17,dy,s*.66,s*.2);
-    ctx.fillStyle=i===0?`rgba(51,221,136,${.55+.45*Math.sin(G.tick*.08+i*1.5)})`:i===1?'#aa44dd':'#333';
-    ctx.fillRect(x+s*.67,dy+s*.05,s*.09,s*.1);
-    ctx.fillStyle='#181828';ctx.fillRect(x+s*.19,dy+s*.04,s*.42,s*.12);
-  }
-  ctx.fillStyle='#33dd88';
-  ctx.font=`bold ${Math.max(5,Math.floor(s*.13))}px monospace`;
-  ctx.textAlign='center';
-  ctx.fillText('BKP',x+s*.5,y+s*.95);
-}
-
-function drawEnemies(){
-  const s=S();
-  G.enemies.forEach((e,i)=>{
-    const ex=e.x*s, ey=e.y*s;
-    ctx.save();
-    ctx.translate(ex,ey);
-
-    // Use emoji rendering
-    const sz=Math.floor(s*ENEMY_DEFS[e.type].size);
-    ctx.font=`${sz}px sans-serif`;
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-
-    // Disguise phishing as update icon
-    const icon=(e.disguised&&e.type==='phishing')
-      ?'🔄':ENEMY_DEFS[e.type].emoji;
-
-    // Shadow/bob
-    const bob=Math.sin(G.tick*.07+i)*(s*.04);
-    ctx.fillText(icon,0,bob);
-
-    // HP bar
-    const hpR=e.hp/e.maxHp;
-    const bw=s*.7;
-    ctx.fillStyle='rgba(0,0,0,.5)';
-    ctx.fillRect(-bw/2,-s*.5,bw,4);
-    ctx.fillStyle=hpR>.5?'#44ff44':hpR>.25?'#ffbb00':'#ff3300';
-    ctx.fillRect(-bw/2,-s*.5,bw*hpR,4);
-
-    // Attack indicator
-    if(e.attackingWall){
-      ctx.fillStyle='rgba(255,80,0,.7)';
-      ctx.font=`${Math.max(6,Math.floor(s*.25))}px monospace`;
-      ctx.fillText('⚡',s*.4,-s*.3);
-    }
-
-    // Frozen
-    if(e.frozen){
-      ctx.fillStyle='rgba(150,220,255,.3)';
-      ctx.beginPath();ctx.arc(0,0,s*.4,0,Math.PI*2);ctx.fill();
-    }
-    ctx.restore();
-  });
-}
-
-function drawProjectiles(){
-  const s=S();
-  G.projectiles.forEach(p=>{
-    ctx.fillStyle='#44ffee';
-    ctx.beginPath();
-    ctx.arc(p.x*s,p.y*s,3,0,Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle='rgba(68,255,238,.4)';
-    ctx.beginPath();
-    ctx.arc(p.x*s,p.y*s,5,0,Math.PI*2);
-    ctx.fill();
-  });
-}
-
-function drawLaserBeams(){
-  const s=S();
-  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
-    const cell=G.grid[r][c];
-    if(cell.type!=='antivirus'||cell.disabled) continue;
-    const rng=ANTIVIRUS_RANGE;
-    const near=G.enemies.filter(e=>Math.hypot(e.x-c,e.y-r)<rng)
-      .sort((a,b)=>Math.hypot(a.x-c,a.y-r)-Math.hypot(b.x-c,b.y-r))[0];
-    if(near&&Math.sin(G.tick*.18+c*.7)>0.15){
-      ctx.strokeStyle='rgba(68,255,238,.18)';ctx.lineWidth=5;
-      ctx.beginPath();ctx.moveTo((c+.5)*s,(r+.5)*s);
-      ctx.lineTo(near.x*s,near.y*s);ctx.stroke();
-      ctx.strokeStyle='rgba(68,255,238,.7)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo((c+.5)*s,(r+.5)*s);
-      ctx.lineTo(near.x*s,near.y*s);ctx.stroke();
-    }
-  }
-}
-
-function drawVignette(){
-  const hp=G.hp, nat=Math.max(0,Math.min(1,(hp-20)/80));
-  if(nat<1){
-    const vg=ctx.createRadialGradient(
-      canvas.width*.5,canvas.height*.5,canvas.width*.2,
-      canvas.width*.5,canvas.height*.5,canvas.width*.72
-    );
-    vg.addColorStop(0,'rgba(0,0,0,0)');
-    vg.addColorStop(1,`rgba(0,0,0,${(1-nat)*.55})`);
-    ctx.fillStyle=vg;ctx.fillRect(0,0,canvas.width,canvas.height);
-  }
-  // Red pulse at low HP
-  if(hp<20){
-    ctx.fillStyle=`rgba(255,0,0,${(.15+.1*Math.sin(G.tick*.08))*(1-hp/20)})`;
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-  }
-}
-
-// Selected cell highlight
-let hoverCell={r:-1,c:-1};
-
-function drawHover(){
-  if(hoverCell.r<0||G.phase!=='playing') return;
-  const s=S();
-  ctx.strokeStyle='rgba(255,220,44,.6)';
-  ctx.lineWidth=2;
-  ctx.strokeRect(hoverCell.c*s+1,hoverCell.r*s+1,s-2,s-2);
-}
-
-function render(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(G.phase==='start') return;
-  drawGrid();
-  drawDefenses();
-  drawLaserBeams();
-  drawEnemies();
-  drawProjectiles();
-  drawHover();
-  drawVignette();
+function nextQ(){
+  clearTimeout(QP.autoT);QP.idx++;
+  if(QP.idx>=QP.pool.length){QP.pool=shuffle([...QUIZ[lang]]);QP.idx=0;}
+  renderQ();
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 12. INPUT HANDLING
+// INPUT
 // ═══════════════════════════════════════════════════════════════
-function getCellFromEvent(e){
-  const rect=canvas.getBoundingClientRect();
-  const s=S();
-  let cx,cy;
-  if(e.touches){
-    cx=e.touches[0].clientX-rect.left;
-    cy=e.touches[0].clientY-rect.top;
-  } else {
-    cx=e.clientX-rect.left;
-    cy=e.clientY-rect.top;
-  }
-  const scaleX=canvas.width/rect.width;
-  const scaleY=canvas.height/rect.height;
-  return{
-    c:Math.floor(cx*scaleX/s),
-    r:Math.floor(cy*scaleY/s)
-  };
+const hov={r:-1,c:-1};
+function evCell(e){
+  const rect=cv.getBoundingClientRect();
+  let px,py;
+  if(e.touches){px=e.touches[0].clientX-rect.left;py=e.touches[0].clientY-rect.top;}
+  else{px=e.clientX-rect.left;py=e.clientY-rect.top;}
+  const sx=cv.width/rect.width,sy=cv.height/rect.height;
+  return{c:~~((px*sx-ox)/cellS),r:~~((py*sy-oy)/cellS)};
 }
-
-canvas.addEventListener('click',e=>{
-  if(G.phase!=='playing') return;
-  const{r,c}=getCellFromEvent(e);
-  if(r<0||r>=ROWS||c<0||c>=COLS) return;
-  placeDefense(r,c);
+cv.addEventListener('click',e=>{
+  if(!G||G.phase!=='playing')return;
+  const{r,c}=evCell(e);placeAt(r,c);
+  switchTab('def');
 });
-canvas.addEventListener('touchstart',e=>{
+cv.addEventListener('touchstart',e=>{
   e.preventDefault();
-  if(G.phase!=='playing') return;
-  const{r,c}=getCellFromEvent(e);
-  if(r<0||r>=ROWS||c<0||c>=COLS) return;
-  placeDefense(r,c);
+  if(!G||G.phase!=='playing')return;
+  const{r,c}=evCell(e);placeAt(r,c);
 },{passive:false});
-canvas.addEventListener('mousemove',e=>{
-  if(G.phase!=='playing'){hoverCell={r:-1,c:-1};return;}
-  const{r,c}=getCellFromEvent(e);
-  hoverCell={r:Math.max(0,Math.min(ROWS-1,r)),c:Math.max(0,Math.min(COLS-1,c))};
+cv.addEventListener('mousemove',e=>{
+  if(!G||G.phase!=='playing'){hov.r=-1;return;}
+  const{r,c}=evCell(e);
+  hov.r=Math.max(0,Math.min(ROWS-1,r));hov.c=Math.max(0,Math.min(COLS-1,c));
 });
-canvas.addEventListener('mouseleave',()=>hoverCell={r:-1,c:-1});
-
-// Keyboard shortcuts
+cv.addEventListener('mouseleave',()=>hov.r=-1);
 window.addEventListener('keydown',e=>{
-  if(G.phase!=='playing') return;
-  const map={f:'firewall',a:'antivirus',b:'backup',u:'update'};
-  const k=e.key.toLowerCase();
-  if(map[k]) selectDefense(map[k]);
+  if(!G||G.phase!=='playing')return;
+  const map={f:'firewall',a:'antivirus',b:'backup',u:'update',c:'clean'};
+  const k=map[e.key.toLowerCase()];
+  if(k&&G.unlockedDefs.has(k))selectDef(k);
 });
 
 // ═══════════════════════════════════════════════════════════════
-// 13. LANGUAGE & START
+// STAR WARS INTRO
+// ═══════════════════════════════════════════════════════════════
+(function initIntro(){
+  // Starfield
+  const sc=document.getElementById('stars');
+  sc.width=window.innerWidth;sc.height=window.innerHeight;
+  const stx=sc.getContext('2d');
+  for(let i=0;i<180;i++){
+    const x=Math.random()*sc.width,y=Math.random()*sc.height;
+    const r=Math.random()*1.4+.3;
+    stx.fillStyle=`rgba(255,255,255,${.3+Math.random()*.7})`;
+    stx.beginPath();stx.arc(x,y,r,0,Math.PI*2);stx.fill();
+  }
+
+  // Set crawl text for current lang
+  document.getElementById('crawl').innerHTML=T[lang].crawl;
+
+  // Skip button
+  document.getElementById('skip-btn').onclick=finishIntro;
+
+  // Auto-finish after 28s
+  setTimeout(finishIntro,29000);
+})();
+
+function finishIntro(){
+  const fade=document.getElementById('intro-fade');
+  fade.style.opacity='1';
+  setTimeout(()=>{
+    document.getElementById('intro').classList.add('hidden');
+    startGame();
+  },850);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LANGUAGE
 // ═══════════════════════════════════════════════════════════════
 function setLang(l){
   lang=l;
-  // Update start screen
-  document.querySelectorAll('.lb').forEach(b=>{
-    b.classList.toggle('on',b.textContent.includes(l.toUpperCase())||b.textContent.includes({fr:'🇫🇷',en:'🇬🇧',nl:'🇧🇪'}[l]));
-  });
-  document.querySelectorAll('.lb2').forEach(b=>{
-    b.classList.toggle('on',b.textContent===l.toUpperCase());
-  });
-  document.getElementById('start-btn').textContent=T[l].startBtn;
-  document.getElementById('st-sub').textContent=T[l].sub;
-  document.getElementById('st-hint').textContent=T[l].hint;
-  if(G&&G.phase!=='start') updatePanelUI();
+  document.cookie=`lang=${l};max-age=31536000;path=/`;
+  document.getElementById('crawl').innerHTML=T[l].crawl;
+  updateLangUI();
+  qpInit();
 }
 
+function detectLang(){
+  const cookie=document.cookie.split(';').find(c=>c.trim().startsWith('lang='));
+  if(cookie){const v=cookie.split('=')[1].trim();if(T[v])return v;}
+  const bl=(navigator.language||'fr').slice(0,2);
+  return T[bl]?bl:'fr';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME START / RESTART
+// ═══════════════════════════════════════════════════════════════
 function startGame(){
-  document.getElementById('start-screen').classList.add('hidden');
-  initState();
-  G.phase='playing';
-  G.waveTimer=60; // 1s before first wave starts
+  initG();
+  updateLangUI();
   updateHUD();
-  updatePanelUI();
+  qpInit();
+  buildPanel();
 }
-
 function restartGame(){
-  document.getElementById('gameover-bg').classList.add('hidden');
-  document.getElementById('quiz-bg').classList.add('hidden');
-  document.getElementById('choice-bg').classList.add('hidden');
-  document.getElementById('ransomware-bg').classList.add('hidden');
-  G.seconds=0;
-  initState();
-  G.phase='playing';
-  G.waveTimer=60;
-  updateHUD();
-  updatePanelUI();
-}
-
-function shuffleArr(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
+  ['go-bg','choice-bg','rw-bg'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('unlock-card').style.display='none';
+  initG();updateHUD();qpInit();buildPanel();
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 14. GAME LOOP
+// UTILS
 // ═══════════════════════════════════════════════════════════════
-let lastTime=0,elapsed=0;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function rnd(n){return Math.floor(Math.random()*n);}
+
+// Add defNames to T (reusing DEFS keys)
+['fr','en','nl'].forEach(l=>{
+  T[l].defNames={
+    firewall:T[l].defDesc.firewall.split('.')[0].split(' ').slice(-1)[0]==='ici'?'Firewall':'Firewall',
+    antivirus:'Antivirus',backup:'Backup',update:'Update',
+    clean:{fr:'Nettoyage',en:'Clean',nl:'Reiniging'}[l]
+  };
+  T[l].defNames={firewall:'Firewall',antivirus:'Antivirus',backup:'Backup',
+    update:'Update',clean:{fr:'Nettoyage',en:'Clean',nl:'Reiniging'}[l]};
+});
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN LOOP
+// ═══════════════════════════════════════════════════════════════
+let lastT=0;
 function loop(ts){
-  const dt=Math.min(ts-lastTime,50); // cap dt at 50ms
-  lastTime=ts;
-  if(G&&G.phase!=='start'){
-    updateGame(dt);
-    render();
-  }
+  const dt=Math.min(ts-lastT,50);lastT=ts;
+  if(G){update(dt);render();}
   requestAnimationFrame(loop);
 }
 
-// Timer
 setInterval(()=>{
-  if(!G||G.phase==='start'||G.phase==='gameover') return;
-  G.seconds++;
-  const m=Math.floor(G.seconds/60),s=G.seconds%60;
+  if(!G||G.phase==='gameover')return;
+  G.secs++;
+  const m=~~(G.secs/60),s=G.secs%60;
   document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;
 },1000);
 
-// ═══════════════════════════════════════════════════════════════
-// 15. INIT
-// ═══════════════════════════════════════════════════════════════
-initState();
-setLang('fr');
+// ── Boot ──
+lang=detectLang();
+document.getElementById('crawl').innerHTML=T[lang].crawl;
+updateLangUI();
 requestAnimationFrame(loop);
 </script>
 </body>

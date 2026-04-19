@@ -78,6 +78,9 @@ This project is part of the Devoxx4Kids initiatives, aimed at making technology 
 ### 🎵 Music
 All background music files are sourced from [Pixabay](https://pixabay.com/) - royalty-free music under Pixabay License. No copyright restrictions apply for educational use.
 
+**Tower Defense intro music:**
+- **"Information Flow"** by [Aylex](https://freetouse.com/music/category/technology) — sourced from [freetouse.com](https://freetouse.com), free for educational use.
+
 ### 🖼️ Images
 Background images and visual assets are generated using **Google Studio AI** (formerly Google Bard). These AI-generated images are created specifically for this educational project.
 

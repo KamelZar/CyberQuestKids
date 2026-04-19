@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Chargement...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111520;
+      --border: #1e2535;
+      --accent: #00ffd0;
+      --accent2: #ff3b6b;
+      --text: #e8eaf2;
+      --muted: #5a6580;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,208,0.08); }
+
+    /* ─── Phase 1 : fake loading ─── */
+    #phase-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .fake-spinner {
+      width: 56px; height: 56px;
+      border: 4px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .fake-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .progress-bar {
+      width: 240px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+    }
+
+    /* ─── Phase 2 : fake alert ─── */
+    #phase-alert {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      max-width: 360px;
+    }
+
+    .alert-icon { font-size: 64px; animation: pulse 1s ease-in-out infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+    .alert-title {
+      font-size: clamp(22px, 6vw, 34px);
+      font-weight: 800;
+      color: var(--accent2);
+      text-shadow: 0 0 20px rgba(255,59,107,0.4);
+    }
+
+    .alert-body {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .alert-btn {
+      background: var(--accent2);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      -webkit-appearance: none;
+      animation: btn-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes btn-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,59,107,0.4); }
+      50%      { box-shadow: 0 0 0 12px rgba(255,59,107,0); }
+    }
+
+    /* ─── Phase 3 : troll reveal ─── */
+    #phase-reveal {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      max-width: 480px;
+    }
+
+    .troll-face { font-size: 96px; animation: spin-slow 4s linear infinite; }
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    .troll-title {
+      font-size: clamp(28px, 8vw, 48px);
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 0 30px rgba(0,255,208,0.5);
+    }
+
+    .troll-body {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .troll-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .troll-stat:last-child { border-bottom: none; }
+    .tstat-key { color: var(--muted); }
+    .tstat-val { color: var(--accent); }
+
+    .lesson-mono {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--accent2);
+      padding: 12px 16px;
+      background: rgba(255,59,107,0.06);
+      border-left: 3px solid var(--accent2);
+      border-radius: 4px;
+      width: 100%;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .no-fragment {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <!-- Phase 1 : loading -->
+  <div id="phase-loading">
+    <div class="fake-spinner"></div>
+    <div class="fake-label" id="load-text"></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <!-- Phase 2 : scary alert -->
+  <div id="phase-alert">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-title" id="alert-title"></div>
+    <div class="alert-body"  id="alert-body"></div>
+    <button class="alert-btn" id="alert-btn" onclick="showReveal()"></button>
+  </div>
+
+  <!-- Phase 3 : troll reveal -->
+  <div id="phase-reveal">
+    <div class="troll-face">😂</div>
+    <div class="troll-title" id="r-title"></div>
+    <div class="troll-body">
+      <div class="troll-stat">
+        <span class="tstat-key" id="r-time-key"></span>
+        <span class="tstat-val" id="r-time-val"></span>
+      </div>
+      <div class="troll-stat">
+        <span class="tstat-key" id="r-clicks-key"></span>
+        <span class="tstat-val" id="r-clicks-val"></span>
+      </div>
+      <div class="troll-stat">
+        <span class="tstat-key" id="r-fragment-key"></span>
+        <span class="tstat-val" id="r-fragment-val"></span>
+      </div>
+    </div>
+    <div class="lesson-mono" id="r-lesson"></div>
+    <div class="no-fragment"  id="r-nofrag"></div>
+  </div>
+
+  <script>
+    var T = {
+      fr: {
+        loadText: "Analyse de votre appareil en cours...",
+        alertTitle: "ACCÈS NON AUTORISÉ",
+        alertBody: "Votre appareil a été détecté.\nToutes vos données sont en cours de transfert.\nCliquez IMMÉDIATEMENT pour annuler.",
+        alertBtn: "⛔ ANNULER LE TRANSFERT",
+        rTitle: "GOTCHA ! 😂",
+        rTimeKey: "Temps perdu sur cette page",
+        rClicksKey: "Nombre de fois que vous avez paniqué",
+        rFragmentKey: "Fragment obtenu",
+        rFragmentVal: "NÉANT 🚫",
+        rLesson: "Il n'y a rien ici. C'est un leurre.\nLeçon : des millions de QR codes dans le monde mènent à des pages inutiles, mensongères ou dangereuses. Scannez toujours avec méfiance.",
+        rNofrag: "⚠️ Ce QR ne contenait aucun fragment. Continuez la chasse !",
+      },
+      nl: {
+        loadText: "Je apparaat wordt geanalyseerd...",
+        alertTitle: "ONGEAUTORISEERDE TOEGANG",
+        alertBody: "Je apparaat is gedetecteerd.\nAl je gegevens worden overgedragen.\nKlik ONMIDDELLIJK om te annuleren.",
+        alertBtn: "⛔ OVERDRACHT ANNULEREN",
+        rTitle: "GOTCHA! 😂",
+        rTimeKey: "Verspilde tijd op deze pagina",
+        rClicksKey: "Aantal keer in paniek",
+        rFragmentKey: "Verkregen fragment",
+        rFragmentVal: "NIETS 🚫",
+        rLesson: "Er is hier niets. Dit is lokaas.\nLes: miljoenen QR-codes ter wereld leiden naar nutteloze, misleidende of gevaarlijke pagina's. Scan altijd met argwaan.",
+        rNofrag: "⚠️ Deze QR bevatte geen fragment. Zoek verder!",
+      },
+      en: {
+        loadText: "Scanning your device...",
+        alertTitle: "UNAUTHORISED ACCESS",
+        alertBody: "Your device has been detected.\nAll your data is being transferred.\nClick IMMEDIATELY to cancel.",
+        alertBtn: "⛔ CANCEL TRANSFER",
+        rTitle: "GOTCHA! 😂",
+        rTimeKey: "Time wasted on this page",
+        rClicksKey: "Times you panicked",
+        rFragmentKey: "Fragment obtained",
+        rFragmentVal: "NOTHING 🚫",
+        rLesson: "There is nothing here. It's a decoy.\nLesson: millions of QR codes in the world lead to useless, misleading, or dangerous pages. Always scan with caution.",
+        rNofrag: "⚠️ This QR had no fragment. Keep hunting!",
+      }
+    };
+
+    var lang     = 'fr';
+    var startTime = Date.now();
+    var panicCount = 0;
+
+    function setLang(l) { lang = l; render(); }
+
+    function s(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    function render() {
+      var t = T[lang];
+      s('load-text',      t.loadText);
+      s('alert-title',    t.alertTitle);
+      s('alert-body',     t.alertBody);
+      s('alert-btn',      t.alertBtn);
+      s('r-title',        t.rTitle);
+      s('r-time-key',     t.rTimeKey);
+      s('r-clicks-key',   t.rClicksKey);
+      s('r-fragment-key', t.rFragmentKey);
+      s('r-fragment-val', t.rFragmentVal);
+      s('r-lesson',       t.rLesson);
+      s('r-nofrag',       t.rNofrag);
+
+      // Update time if already revealed
+      if (document.getElementById('phase-reveal').style.display === 'flex') {
+        updateRevealStats();
+      }
+
+      ['fr','nl','en'].forEach(function(l2) {
+        var b = document.getElementById('btn-' + l2);
+        if (b) b.classList.toggle('active', l2 === lang);
+      });
+    }
+
+    function updateRevealStats() {
+      var elapsed = Math.round((Date.now() - startTime) / 1000);
+      s('r-time-val',   elapsed + 's');
+      s('r-clicks-val', panicCount + '×');
+    }
+
+    // Animate progress bar then show scary alert
+    var fill = document.getElementById('progress-fill');
+    var pct  = 0;
+    var interval = setInterval(function() {
+      pct += 2;
+      fill.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(showAlert, 400);
+      }
+    }, 40);
+
+    function showAlert() {
+      document.getElementById('phase-loading').style.display = 'none';
+      var al = document.getElementById('phase-alert');
+      al.style.display = 'flex';
+      panicCount = 0;
+    }
+
+    // Count clicks on alert button as "panics"
+    document.getElementById('alert-btn').addEventListener('click', function() {
+      panicCount++;
+    });
+
+    function showReveal() {
+      document.getElementById('phase-alert').style.display = 'none';
+      var rev = document.getElementById('phase-reveal');
+      rev.style.display = 'flex';
+      updateRevealStats();
+      render();
+
+      // Tracking : le participant a cliqué sur "annuler" et vu le troll
+      CyberTrack.track('leurre-troll', 'gotcha');
+    }
+
+    render();
+  </script>
+
+  <!-- CyberQuest tracking -->
+  <script src="/_track.js"></script>
+  <script>
+    CyberTrack.autoTrack('leurre-troll');
+  </script>
+</body>
+</html>

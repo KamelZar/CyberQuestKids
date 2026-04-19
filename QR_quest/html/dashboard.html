@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberQuest — Dashboard Animateur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0a0c10;
+      --surface: #111520;
+      --border:  #1e2535;
+      --accent:  #00ffd0;
+      --red:     #ff3b6b;
+      --yellow:  #ffcc00;
+      --green:   #00e676;
+      --blue:    #448aff;
+      --text:    #e8eaf2;
+      --muted:   #5a6580;
+      --card:    #13192a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Syne', sans-serif; min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.012) 2px, rgba(0,255,208,0.012) 4px
+      );
+      pointer-events: none; z-index: 1000;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--bg); z-index: 100;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .hdr-left { display: flex; align-items: center; gap: 14px; }
+    .hdr-title { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .hdr-sub { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .status-dot.offline { background: var(--red); box-shadow: 0 0 8px var(--red); animation: none; }
+
+    .hdr-right { display: flex; align-items: center; gap: 10px; }
+    .last-update { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); }
+
+    .btn-reset {
+      background: transparent; border: 1px solid var(--red);
+      color: var(--red); font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; padding: 6px 14px; border-radius: 6px;
+      cursor: pointer; -webkit-appearance: none; letter-spacing: 1px;
+    }
+    .btn-reset:hover { background: rgba(255,59,107,0.1); }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex; gap: 12px; padding: 16px 24px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      min-width: 90px;
+    }
+    .stat-num { font-family: 'Share Tech Mono', monospace; font-size: 24px; font-weight: bold; }
+    .stat-lbl { font-size: 11px; color: var(--muted); text-align: center; }
+    .stat-chip.teams  .stat-num { color: var(--blue); }
+    .stat-chip.frags  .stat-num { color: var(--accent); }
+    .stat-chip.gotcha .stat-num { color: var(--red); }
+    .stat-chip.leurre .stat-num { color: var(--yellow); }
+
+    /* ── Grid ── */
+    .grid-wrap { padding: 20px 24px; overflow-x: auto; }
+
+    table {
+      border-collapse: separate; border-spacing: 4px;
+      min-width: 700px; width: 100%;
+    }
+
+    th {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+      padding: 8px 10px; background: var(--surface);
+      border-radius: 6px; white-space: nowrap;
+    }
+    th.team-col { text-align: left; min-width: 80px; }
+    th.act-col  { text-align: center; min-width: 90px; }
+
+    td { padding: 6px 4px; }
+    td.team-cell {
+      font-family: 'Share Tech Mono', monospace; font-size: 14px;
+      color: var(--yellow); padding: 6px 10px;
+      background: var(--card); border-radius: 6px; white-space: nowrap;
+    }
+
+    .cell {
+      border-radius: 8px; padding: 8px 6px;
+      text-align: center; font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; transition: all 0.3s;
+      min-height: 44px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2px;
+    }
+    .cell-empty   { background: var(--surface); color: var(--muted); }
+    .cell-view    { background: rgba(68,138,255,0.15); color: var(--blue); border: 1px solid rgba(68,138,255,0.3); }
+    .cell-gotcha  { background: rgba(255,59,107,0.18); color: var(--red);   border: 1px solid rgba(255,59,107,0.4); }
+    .cell-success { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+    .cell-trap    { background: rgba(255,204,0,0.15);  color: var(--yellow);border: 1px solid rgba(255,204,0,0.3); }
+    .cell-icon    { font-size: 16px; }
+    .cell-time    { font-size: 10px; color: var(--muted); }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex; gap: 16px; padding: 12px 24px 20px;
+      flex-wrap: wrap; border-top: 1px solid var(--border);
+    }
+    .leg-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .leg-dot  { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* ── Event feed ── */
+    .feed-title {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+      padding: 12px 24px 8px; border-top: 1px solid var(--border);
+    }
+    .feed {
+      padding: 0 24px 24px; max-height: 220px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .feed-row {
+      display: flex; gap: 12px; align-items: baseline;
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      padding: 4px 8px; border-radius: 4px; background: var(--surface);
+    }
+    .feed-time  { color: var(--muted); white-space: nowrap; font-size: 11px; }
+    .feed-team  { color: var(--yellow); min-width: 50px; }
+    .feed-exo   { color: var(--text); min-width: 100px; }
+    .feed-status.view    { color: var(--blue); }
+    .feed-status.gotcha  { color: var(--red); }
+    .feed-status.success { color: var(--green); }
+    .feed-status.start   { color: var(--accent); }
+    .feed-status.return  { color: var(--muted); }
+    .feed-status.trap    { color: var(--yellow); }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center; padding: 48px 24px;
+      font-family: 'Share Tech Mono', monospace; font-size: 14px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="hdr-left">
+      <div class="status-dot" id="status-dot"></div>
+      <div>
+        <div class="hdr-title">🛡️ CyberQuest — Dashboard Animateur</div>
+        <div class="hdr-sub" id="hdr-sub">Connexion…</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <span class="last-update" id="last-update">—</span>
+      <button class="btn-reset" onclick="resetData()">⚠️ RESET</button>
+    </div>
+  </header>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-chip teams">
+      <div class="stat-num" id="stat-teams">0</div>
+      <div class="stat-lbl">Équipes</div>
+    </div>
+    <div class="stat-chip frags">
+      <div class="stat-num" id="stat-frags">0</div>
+      <div class="stat-lbl">Fragments<br>collectés</div>
+    </div>
+    <div class="stat-chip gotcha">
+      <div class="stat-num" id="stat-gotcha">0</div>
+      <div class="stat-lbl">Pièges<br>déclenchés</div>
+    </div>
+    <div class="stat-chip leurre">
+      <div class="stat-num" id="stat-leurre">0</div>
+      <div class="stat-lbl">Leurres<br>mordus</div>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid-wrap">
+    <div class="empty" id="empty-state">
+      <span class="empty-icon">📡</span>
+      En attente des premiers participants…
+    </div>
+    <table id="grid-table" style="display:none;">
+      <thead>
+        <tr>
+          <th class="team-col">Équipe</th>
+          <th class="act-col">🪤 mirror</th>
+          <th class="act-col">🎭 phishing</th>
+          <th class="act-col">🔓 lockpick</th>
+          <th class="act-col">🎁 cadeau</th>
+          <th class="act-col">😂 troll</th>
+        </tr>
+      </thead>
+      <tbody id="grid-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#1e2535"></div> Pas visité</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(68,138,255,0.4)"></div> Visité</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(255,59,107,0.5)"></div> Piégé / Gotcha</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(0,230,118,0.4)"></div> Fragment collecté</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(255,204,0,0.4)"></div> Leurre mordu</div>
+  </div>
+
+  <!-- Event feed -->
+  <div class="feed-title">— Journal des événements (temps réel) —</div>
+  <div class="feed" id="event-feed"></div>
+
+  <script>
+    var ACTIVITIES = ['mirror', 'phishing', 'lockpicking', 'leurre-cadeau', 'leurre-troll'];
+    var POLL_MS    = 5000; // refresh toutes les 5 secondes
+
+    /* Détermine la "meilleure" status pour une cellule */
+    function bestStatus(events) {
+      var s = { view: false, gotcha: false, success: false, trap: false };
+      events.forEach(function(e) { s[e.status] = true; });
+      if (s.gotcha)  return 'gotcha';
+      if (s.success) return 'success';
+      if (s.trap)    return 'trap';
+      if (s.view)    return 'view';
+      return null;
+    }
+
+    function cellHtml(status, time) {
+      if (!status) return '<div class="cell cell-empty">—</div>';
+      var icons = { view:'👁️', gotcha:'🪤', success:'✅', trap:'😂' };
+      var cls   = { view:'cell-view', gotcha:'cell-gotcha', success:'cell-success', trap:'cell-trap' };
+      var t = time ? '<div class="cell-time">' + time.slice(11,16) + '</div>' : '';
+      return '<div class="cell ' + cls[status] + '">'
+        + '<div class="cell-icon">' + (icons[status]||'?') + '</div>' + t + '</div>';
+    }
+
+    /* Build / refresh the grid */
+    function buildGrid(events) {
+      /* Group by team */
+      var teams = {};
+      events.forEach(function(e) {
+        if (!e.id || e.exo === 'init') return;
+        if (!teams[e.id]) teams[e.id] = {};
+        if (!teams[e.id][e.exo]) teams[e.id][e.exo] = [];
+        teams[e.id][e.exo].push(e);
+      });
+
+      var teamIds = Object.keys(teams);
+      if (teamIds.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+        document.getElementById('grid-table').style.display = 'none';
+        return;
+      }
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('grid-table').style.display = 'table';
+
+      var tbody = document.getElementById('grid-body');
+      tbody.innerHTML = '';
+      teamIds.sort().forEach(function(tid) {
+        var tr = document.createElement('tr');
+        var tdTeam = document.createElement('td');
+        tdTeam.className = 'team-cell';
+        tdTeam.textContent = '# ' + tid;
+        tr.appendChild(tdTeam);
+
+        ACTIVITIES.forEach(function(act) {
+          var evList = teams[tid][act] || [];
+          var status = bestStatus(evList);
+          var lastTime = evList.length ? evList[evList.length - 1].timestamp : null;
+          var td = document.createElement('td');
+          td.innerHTML = cellHtml(status, lastTime);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* Stats */
+    function updateStats(events) {
+      var teams   = new Set();
+      var frags   = new Set();
+      var gotchas = 0, leurres = 0;
+
+      events.forEach(function(e) {
+        if (e.id) teams.add(e.id);
+        if ((e.exo === 'mirror' || e.exo === 'phishing') && e.status === 'gotcha') {
+          frags.add(e.id + '_' + e.exo);
+          gotchas++;
+        }
+        if (e.exo === 'lockpicking' && e.status === 'view') {
+          frags.add(e.id + '_lockpick');
+        }
+        if ((e.exo === 'leurre-cadeau' || e.exo === 'leurre-troll') && e.status === 'gotcha') {
+          leurres++;
+        }
+      });
+
+      document.getElementById('stat-teams').textContent  = teams.size;
+      document.getElementById('stat-frags').textContent  = frags.size;
+      document.getElementById('stat-gotcha').textContent = gotchas;
+      document.getElementById('stat-leurre').textContent = leurres;
+    }
+
+    /* Event feed */
+    var knownCount = 0;
+    function updateFeed(events) {
+      var newEvents = events.slice(knownCount);
+      if (!newEvents.length) return;
+      knownCount = events.length;
+
+      var feed = document.getElementById('event-feed');
+      newEvents.reverse().forEach(function(e) {
+        var div = document.createElement('div');
+        div.className = 'feed-row';
+        var time = e.timestamp ? e.timestamp.slice(11, 19) : '??:??:??';
+        div.innerHTML =
+          '<span class="feed-time">' + time + '</span>' +
+          '<span class="feed-team">#' + (e.id || '???') + '</span>' +
+          '<span class="feed-exo">'  + (e.exo || '?') + '</span>' +
+          '<span class="feed-status ' + (e.status||'') + '">' + (e.status||'?') + '</span>';
+        feed.insertBefore(div, feed.firstChild);
+      });
+
+      /* Keep only last 50 entries */
+      while (feed.children.length > 50) feed.removeChild(feed.lastChild);
+    }
+
+    /* Polling */
+    function poll() {
+      fetch('/dashboard/data', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('status-dot').className = 'status-dot';
+          document.getElementById('hdr-sub').textContent = 'En direct — ' + data.length + ' événements';
+          document.getElementById('last-update').textContent =
+            'Mise à jour ' + new Date().toLocaleTimeString();
+          buildGrid(data);
+          updateStats(data);
+          updateFeed(data);
+        })
+        .catch(function() {
+          document.getElementById('status-dot').className = 'status-dot offline';
+          document.getElementById('hdr-sub').textContent = 'Serveur inaccessible…';
+        });
+    }
+
+    function resetData() {
+      if (!confirm('Effacer TOUS les événements ? Action irréversible.')) return;
+      fetch('/dashboard/reset', { method: 'POST' })
+        .then(function() { knownCount = 0; poll(); });
+    }
+
+    /* Boot */
+    poll();
+    setInterval(poll, POLL_MS);
+  </script>
+</body>
+</html>

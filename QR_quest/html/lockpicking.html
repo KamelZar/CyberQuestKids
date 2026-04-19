@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">CyberQuest — Serrurerie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111520;
+      --border: #1e2535;
+      --accent: #00ffd0;
+      --accent2: #ff9f43;
+      --text: #e8eaf2;
+      --muted: #5a6580;
+      --card-bg: #13192a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .lang-btn.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,159,67,0.08); }
+
+    /* Header */
+    header {
+      padding: 60px 24px 32px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .lock-icon {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 16px;
+      animation: unlock 3s ease-in-out infinite;
+    }
+    @keyframes unlock {
+      0%,40%,100% { transform: rotate(0deg); }
+      20% { transform: rotate(-15deg); }
+      30% { transform: rotate(10deg); }
+    }
+
+    h1 {
+      font-size: clamp(28px, 7vw, 52px);
+      font-weight: 800;
+      color: var(--accent2);
+      letter-spacing: -1px;
+      text-shadow: 0 0 30px rgba(255,159,67,0.4);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: clamp(13px, 3vw, 16px);
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Main */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 16px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 28px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::before, .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Location card */
+    .location-card {
+      background: var(--card-bg);
+      border: 2px solid var(--accent2);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .location-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent2), transparent);
+    }
+
+    .loc-pin {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 12px;
+      animation: bounce 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-8px); }
+    }
+
+    .loc-room {
+      font-size: clamp(32px, 10vw, 56px);
+      font-weight: 800;
+      color: var(--accent2);
+      font-family: 'Share Tech Mono', monospace;
+      text-shadow: 0 0 20px rgba(255,159,67,0.5);
+      margin-bottom: 8px;
+    }
+
+    .loc-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Info card */
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+
+    .info-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-body {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-num {
+      background: var(--accent2);
+      color: var(--bg);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .step-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    /* Lesson orange */
+    .lesson-card {
+      background: rgba(255,159,67,0.06);
+      border: 1px solid rgba(255,159,67,0.3);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .lesson-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent2);
+      margin-bottom: 10px;
+    }
+    .lesson-body {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .lesson-rule {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      padding: 10px 14px;
+      background: rgba(0,255,208,0.06);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    /* Fragment */
+    .fragment-card {
+      background: #0d1a15;
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .fragment-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+    .fragment-code {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 36px;
+      color: var(--accent);
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(0,255,208,0.6);
+      letter-spacing: 6px;
+    }
+    .fragment-note {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <header>
+    <span class="lock-icon">🔓</span>
+    <h1 id="h-title"></h1>
+    <p class="subtitle" id="h-subtitle"></p>
+    <p class="tagline"  id="h-tagline"></p>
+  </header>
+
+  <main>
+    <div class="section-label" id="label-location"></div>
+
+    <div class="location-card">
+      <span class="loc-pin">📍</span>
+      <div class="loc-room" id="loc-room">SALLE B-12</div>
+      <div class="loc-desc" id="loc-desc"></div>
+    </div>
+
+    <div class="section-label" id="label-mission"></div>
+
+    <div class="info-card">
+      <div class="info-title" id="mission-title"></div>
+      <div class="steps" id="steps-container"></div>
+    </div>
+
+    <div class="section-label" id="label-lesson"></div>
+
+    <div class="lesson-card">
+      <div class="lesson-title" id="lesson-title"></div>
+      <div class="lesson-body"  id="lesson-body"></div>
+      <div class="lesson-rule"  id="lesson-rule"></div>
+    </div>
+
+    <div class="fragment-card">
+      <div class="fragment-label" id="frag-label"></div>
+      <div class="fragment-code">CYB-C1</div>
+      <div class="fragment-note" id="frag-note"></div>
+    </div>
+  </main>
+
+  <script>
+    var T = {
+      fr: {
+        title:    "Sécurité physique",
+        subtitle: "Tu as trouvé la salle de crochetage !",
+        tagline:  "Toute serrure a ses limites.",
+        labelLoc: "— où aller —",
+        locDesc:  "Un animateur t'attend ici avec des serrures d'entraînement et les outils de crochetage. Montre cette page pour accéder à l'activité.",
+        labelMission: "— ta mission —",
+        missionTitle: "🔑 Défi : crocheter une serrure",
+        steps: [
+          "Observe la serrure : comprends comment elle fonctionne (goupilles, barillet, ressort).",
+          "Utilise le crochet et le tournevis de tension pour soulever les goupilles une à une.",
+          "Écoute et ressens : chaque petit clic indique une goupille en position.",
+          "Applique une légère tension et maintiens-la pendant que tu crochètes.",
+          "Quand toutes les goupilles sont alignées, le barillet tourne — tu as réussi !"
+        ],
+        labelLesson: "— la leçon —",
+        lessonTitle: "⚠️ La sécurité physique a ses limites",
+        lessonBody: "Avec les bons outils et un peu de pratique, n'importe quelle serrure standard peut être ouverte en quelques minutes — sans la clé. Les cadenas bon marché ? Encore plus rapides. C'est la même chose en informatique : aucun système n'est impénétrable. La sécurité est une question de temps et de motivation de l'attaquant.",
+        lessonRule: "Règle : la sécurité parfaite n'existe pas — l'objectif est de ralentir l'attaquant.",
+        fragLabel: "Fragment débloqué",
+        fragNote:  "Obtenu après avoir réussi le défi de crochetage",
+      },
+      nl: {
+        title:    "Fysieke beveiliging",
+        subtitle: "Je hebt de slotenpikzaal gevonden!",
+        tagline:  "Elk slot heeft zijn grenzen.",
+        labelLoc: "— waar naartoe —",
+        locDesc:  "Een begeleider wacht hier op je met oefensloten en lockpick-gereedschap. Toon deze pagina om deel te nemen.",
+        labelMission: "— jouw missie —",
+        missionTitle: "🔑 Uitdaging: kraak een slot",
+        steps: [
+          "Bestudeer het slot: begrijp hoe het werkt (pinnen, cilinder, veer).",
+          "Gebruik de pick en spanningstang om de pinnen één voor één op te tillen.",
+          "Luister en voel: elk klikje betekent een pin op zijn plek.",
+          "Houd lichte druk op de spanningstang terwijl je de pinnen oppikt.",
+          "Als alle pinnen zijn uitgelijnd, draait de cilinder — gelukt!"
+        ],
+        labelLesson: "— de les —",
+        lessonTitle: "⚠️ Fysieke beveiliging heeft grenzen",
+        lessonBody: "Met de juiste tools en een beetje oefening kan elk standaardslot in enkele minuten worden geopend — zonder sleutel. Goedkope hangsloten? Nog sneller. Hetzelfde geldt voor informatica: geen enkel systeem is onneembaar. Beveiliging gaat over tijd en de motivatie van de aanvaller.",
+        lessonRule: "Regel: perfecte beveiliging bestaat niet — het doel is de aanvaller vertragen.",
+        fragLabel: "Fragment ontgrendeld",
+        fragNote:  "Verkregen na het slagen voor de lockpick-uitdaging",
+      },
+      en: {
+        title:    "Physical Security",
+        subtitle: "You found the lockpicking room!",
+        tagline:  "Every lock has its limits.",
+        labelLoc: "— where to go —",
+        locDesc:  "An instructor is waiting here with practice locks and lockpick tools. Show this page to join the activity.",
+        labelMission: "— your mission —",
+        missionTitle: "🔑 Challenge: pick a lock",
+        steps: [
+          "Study the lock: understand how it works (pins, cylinder, spring).",
+          "Use the pick and tension wrench to lift the pins one by one.",
+          "Listen and feel: each small click means a pin is set.",
+          "Apply light tension to the wrench while picking.",
+          "When all pins are aligned, the cylinder turns — you did it!"
+        ],
+        labelLesson: "— the lesson —",
+        lessonTitle: "⚠️ Physical security has its limits",
+        lessonBody: "With the right tools and a bit of practice, any standard lock can be opened in minutes — without a key. Cheap padlocks? Even faster. The same applies to computing: no system is impenetrable. Security is about the time and motivation of the attacker.",
+        lessonRule: "Rule: perfect security doesn't exist — the goal is to slow down the attacker.",
+        fragLabel: "Fragment unlocked",
+        fragNote:  "Obtained after completing the lockpicking challenge",
+      }
+    };
+
+    var lang = 'fr';
+
+    function setLang(l) { lang = l; render(); }
+
+    function s(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+
+    function render() {
+      var t = T[lang];
+      document.title = 'CyberQuest — ' + t.title;
+
+      s('h-title',        t.title);
+      s('h-subtitle',     t.subtitle);
+      s('h-tagline',      t.tagline);
+      s('label-location', t.labelLoc);
+      s('loc-desc',       t.locDesc);
+      s('label-mission',  t.labelMission);
+      s('mission-title',  t.missionTitle);
+      s('label-lesson',   t.labelLesson);
+      s('lesson-title',   t.lessonTitle);
+      s('lesson-body',    t.lessonBody);
+      s('lesson-rule',    t.lessonRule);
+      s('frag-label',     t.fragLabel);
+      s('frag-note',      t.fragNote);
+
+      // Rebuild steps
+      var container = document.getElementById('steps-container');
+      container.innerHTML = '';
+      t.steps.forEach(function(step, i) {
+        var div = document.createElement('div');
+        div.className = 'step';
+        div.innerHTML =
+          '<div class="step-num">' + (i + 1) + '</div>' +
+          '<div class="step-text">' + esc(step) + '</div>';
+        container.appendChild(div);
+      });
+
+      ['fr','nl','en'].forEach(function(l2) {
+        var b = document.getElementById('btn-' + l2);
+        if (b) b.classList.toggle('active', l2 === lang);
+      });
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    render();
+  </script>
+
+  <!-- CyberQuest tracking -->
+  <script src="/_track.js"></script>
+  <script>
+    // "view" = participant arrivé dans la salle → fragment CYB-C1 débloqué
+    CyberTrack.autoTrack('lockpicking');
+  </script>
+</body>
+</html>

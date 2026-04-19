@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberQuest — Initialisation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0a0c10;
+      --surface:  #111520;
+      --border:   #1e2535;
+      --accent:   #00ffd0;
+      --accent2:  #ff3b6b;
+      --accent3:  #ffcc00;
+      --text:     #e8eaf2;
+      --muted:    #5a6580;
+      --card:     #13192a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none; z-index: 999;
+    }
+
+    /* ── Lang ── */
+    .lang-switcher {
+      position: fixed; top: 16px; right: 16px; z-index: 200;
+      display: flex; gap: 8px;
+    }
+    .lang-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; -webkit-appearance: none;
+    }
+    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,208,0.08); }
+
+    /* ── Screens ── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 16px 80px;
+      position: relative; z-index: 2;
+    }
+    .screen.active { display: flex; }
+
+    /* ══ SCREEN 1 : WiFi ══════════════════════════════════════ */
+    .wifi-icon { font-size: 72px; margin-bottom: 16px; animation: pulse 2s ease-in-out infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+
+    .main-title {
+      font-size: clamp(26px, 7vw, 48px); font-weight: 800;
+      color: var(--accent); text-shadow: 0 0 30px rgba(0,255,208,0.4);
+      text-align: center; margin-bottom: 6px;
+    }
+    .main-sub {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+      text-align: center; margin-bottom: 32px;
+    }
+
+    .wifi-card {
+      background: var(--card); border: 2px solid var(--accent);
+      border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 380px;
+      margin-bottom: 20px; position: relative; overflow: hidden;
+    }
+    .wifi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .wifi-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 18px; text-align: center;
+    }
+    .wifi-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .wifi-row:last-child { border-bottom: none; }
+    .wifi-key { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--muted); text-transform: uppercase; }
+    .wifi-val { font-family: 'Share Tech Mono', monospace; font-size: 16px; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+    .wifi-pass { color: var(--accent3); }
+
+    .step-btn {
+      width: 100%; max-width: 380px;
+      background: transparent; border: 1px solid var(--accent);
+      color: var(--accent); font-family: 'Share Tech Mono', monospace;
+      font-size: 14px; padding: 14px; border-radius: 10px;
+      cursor: pointer; letter-spacing: 2px; text-transform: uppercase;
+      -webkit-appearance: none; transition: background 0.2s;
+    }
+    .step-btn:active { background: rgba(0,255,208,0.08); }
+
+    /* ══ SCREEN 2 : Génération ID ════════════════════════════ */
+    .gen-icon { font-size: 56px; margin-bottom: 16px; }
+
+    .id-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 24px; text-align: center;
+      width: 100%; max-width: 380px; margin-bottom: 20px;
+    }
+    .id-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
+    .id-code {
+      font-family: 'Share Tech Mono', monospace; font-size: 56px;
+      font-weight: bold; color: var(--accent3);
+      text-shadow: 0 0 24px rgba(255,204,0,0.5);
+      letter-spacing: 8px; line-height: 1;
+      animation: id-appear 0.6s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes id-appear {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .id-sub {
+      font-size: 13px; color: var(--muted); margin-top: 10px;
+    }
+
+    .step-btn.orange {
+      border-color: var(--accent3); color: var(--accent3);
+    }
+    .step-btn.orange:active { background: rgba(255,204,0,0.08); }
+
+    /* ══ SCREEN 3 : Leçon Cookie ═════════════════════════════ */
+    .cookie-icon { font-size: 64px; margin-bottom: 16px; }
+
+    .lesson-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 22px 24px;
+      width: 100%; max-width: 560px; margin-bottom: 14px;
+    }
+    .lesson-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .lesson-body  { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    .cookie-demo {
+      background: #0d1a15; border: 1px solid var(--accent);
+      border-radius: 10px; padding: 14px 18px;
+      font-family: 'Share Tech Mono', monospace; font-size: 13px;
+      color: var(--accent); width: 100%; max-width: 560px;
+      word-break: break-all; line-height: 1.6; margin-bottom: 14px;
+    }
+
+    .warn-banner {
+      background: rgba(255,59,107,0.08); border: 1px solid var(--accent2);
+      border-radius: 10px; padding: 14px 18px;
+      font-family: 'Share Tech Mono', monospace; font-size: 13px;
+      color: var(--accent2); width: 100%; max-width: 560px;
+      line-height: 1.6; margin-bottom: 20px;
+    }
+
+    /* ══ SCREEN 4 : Déjà enregistré ══════════════════════════ */
+    .check-icon { font-size: 72px; margin-bottom: 16px; }
+    .team-badge {
+      font-family: 'Share Tech Mono', monospace; font-size: 42px;
+      font-weight: bold; color: var(--accent3);
+      text-shadow: 0 0 24px rgba(255,204,0,0.5);
+      letter-spacing: 8px; margin: 16px 0;
+    }
+    .reset-link {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); cursor: pointer; margin-top: 20px;
+      text-decoration: underline; text-underline-offset: 3px;
+    }
+
+    /* Fragments reminder */
+    .frags-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+      width: 100%; max-width: 560px; margin-bottom: 16px;
+    }
+    .frag-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-family: 'Share Tech Mono', monospace; font-size: 13px;
+    }
+    .frag-row:last-child { border-bottom: none; }
+    .frag-name  { color: var(--muted); }
+    .frag-code  { color: var(--accent); }
+    .frag-type  { font-size: 11px; color: var(--accent2); letter-spacing: 1px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <!-- ── SCREEN A : Déjà enregistré ── -->
+  <div class="screen" id="screen-known">
+    <div class="check-icon">✅</div>
+    <div class="main-title" id="ka-title"></div>
+    <div class="main-sub"   id="ka-sub"></div>
+    <div class="team-badge cq-team-id"></div>
+    <div class="lesson-block" style="text-align:center;">
+      <div class="lesson-body" id="ka-body"></div>
+    </div>
+    <div class="frags-card" id="ka-frags-card">
+      <div class="lesson-title" id="ka-frags-title"></div>
+      <div class="frag-row"><span class="frag-name">mirror.html</span>  <span class="frag-code">CYB-A3</span> <span class="frag-type" id="ft-trap"></span></div>
+      <div class="frag-row"><span class="frag-name">phishing.html</span><span class="frag-code">CYB-B7</span> <span class="frag-type" id="ft-trap2"></span></div>
+      <div class="frag-row"><span class="frag-name">lockpicking</span>  <span class="frag-code">CYB-C1</span> <span class="frag-type" id="ft-room"></span></div>
+    </div>
+    <div class="reset-link" id="ka-reset" onclick="resetTeam()"></div>
+  </div>
+
+  <!-- ── SCREEN 1 : WiFi ── -->
+  <div class="screen" id="screen-wifi">
+    <div class="wifi-icon">📶</div>
+    <div class="main-title" id="w-title"></div>
+    <div class="main-sub"   id="w-sub"></div>
+    <div class="wifi-card">
+      <div class="wifi-label" id="w-label"></div>
+      <div class="wifi-row">
+        <span class="wifi-key" id="w-ssid-key">SSID</span>
+        <span class="wifi-val" id="w-ssid-val">CyberQuestWifi</span>
+      </div>
+      <div class="wifi-row">
+        <span class="wifi-key" id="w-pass-key"></span>
+        <span class="wifi-val wifi-pass" id="w-pass-val">Password1234</span>
+      </div>
+    </div>
+    <button class="step-btn" id="w-btn" onclick="goToScreen('screen-generate')"></button>
+  </div>
+
+  <!-- ── SCREEN 2 : Génération ID ── -->
+  <div class="screen" id="screen-generate">
+    <div class="gen-icon">🎲</div>
+    <div class="main-title" id="g-title"></div>
+    <div class="main-sub"   id="g-sub"></div>
+    <div class="id-card">
+      <div class="id-label" id="g-id-label"></div>
+      <div class="id-code"  id="g-id-code">----</div>
+      <div class="id-sub"   id="g-id-sub"></div>
+    </div>
+    <button class="step-btn orange" id="g-btn" onclick="confirmAndContinue()"></button>
+  </div>
+
+  <!-- ── SCREEN 3 : Leçon Cookie ── -->
+  <div class="screen" id="screen-cookie">
+    <div class="cookie-icon">🍪</div>
+    <div class="main-title" id="c-title"></div>
+    <div class="main-sub"   id="c-sub"></div>
+    <div class="lesson-block">
+      <div class="lesson-title" id="c-what-title"></div>
+      <div class="lesson-body"  id="c-what-body"></div>
+    </div>
+    <div class="cookie-demo" id="c-demo"></div>
+    <div class="warn-banner" id="c-warn"></div>
+    <button class="step-btn" id="c-btn" onclick="goToScreen('screen-known')"></button>
+  </div>
+
+  <!-- tracking module -->
+  <script src="/_track.js"></script>
+
+  <script>
+    /* ── i18n ─────────────────────────────────────────────── */
+    var T = {
+      fr: {
+        /* WiFi screen */
+        wTitle:  "Bienvenue dans CyberQuest !",
+        wSub:    "étape 1 sur 2 — connexion wifi",
+        wLabel:  "— connecte-toi à ce réseau —",
+        wPassKey:"Mot de passe",
+        wBtn:    "✅ Je suis connecté(e) — continuer",
+        /* Generate screen */
+        gTitle:  "Ton identifiant équipe",
+        gSub:    "généré aléatoirement pour toi",
+        gIdLabel:"numéro d'équipe",
+        gIdSub:  "Note-le ! Tu en auras besoin à la fin.",
+        gBtn:    "🚀 Lancer la chasse au trésor",
+        /* Cookie screen */
+        cTitle:  "Un cookie vient d'être créé 🍪",
+        cSub:    "ce qu'on a posé sur ton appareil",
+        cWhatTitle: "C'est quoi un cookie ?",
+        cWhatBody:  "Un cookie est un petit fichier texte qu'un site web dépose dans ton navigateur. Il permet au site de \"se souvenir\" de toi. Ici on stocke ton numéro d'équipe — mais sur un vrai site, les cookies peuvent contenir des données de session, des préférences, ou même servir à te tracer entre plusieurs sites.",
+        cWarn:   "⚠️ Chaque site que tu visites aujourd'hui lira ce cookie pour savoir qui tu es. C'est exactement comme ça que le tracking publicitaire fonctionne sur internet.",
+        cBtn:    "🗺️ Voir la carte et démarrer",
+        /* Already known */
+        kaTitle: "Déjà enregistré(e) !",
+        kaSub:   "ton équipe est toujours active",
+        kaBody:  "Ton cookie est toujours présent dans ton navigateur. Tu peux reprendre la chasse là où tu t'es arrêté(e).",
+        kaFragsTitle: "Fragments à collecter :",
+        ftTrap:  "🪤 piège",
+        ftRoom:  "🔓 salle",
+        kaReset: "[ Réinitialiser mon équipe ]",
+      },
+      nl: {
+        wTitle:  "Welkom bij CyberQuest!",
+        wSub:    "stap 1 van 2 — wifi-verbinding",
+        wLabel:  "— verbind je met dit netwerk —",
+        wPassKey:"Wachtwoord",
+        wBtn:    "✅ Ik ben verbonden — verder",
+        gTitle:  "Jouw team-ID",
+        gSub:    "willekeurig voor jou gegenereerd",
+        gIdLabel:"team-nummer",
+        gIdSub:  "Onthoud het! Je hebt het nodig aan het einde.",
+        gBtn:    "🚀 Start de schattenjacht",
+        cTitle:  "Er is zojuist een cookie aangemaakt 🍪",
+        cSub:    "wat we op je apparaat hebben geplaatst",
+        cWhatTitle: "Wat is een cookie?",
+        cWhatBody:  "Een cookie is een klein tekstbestand dat een website in je browser plaatst. Hiermee kan de site je 'onthouden'. Hier slaan we je team-nummer op — maar op een echte site kunnen cookies sessiegegevens, voorkeuren of zelfs tracking over meerdere sites bevatten.",
+        cWarn:   "⚠️ Elke site die je vandaag bezoekt leest dit cookie om te weten wie je bent. Zo werkt reclame-tracking op het internet.",
+        cBtn:    "🗺️ Bekijk de kaart en start",
+        kaTitle: "Al geregistreerd!",
+        kaSub:   "je team is nog steeds actief",
+        kaBody:  "Je cookie is nog aanwezig in je browser. Je kunt de jacht hervatten waar je gebleven was.",
+        kaFragsTitle: "Te verzamelen fragmenten:",
+        ftTrap:  "🪤 val",
+        ftRoom:  "🔓 zaal",
+        kaReset: "[ Mijn team opnieuw instellen ]",
+      },
+      en: {
+        wTitle:  "Welcome to CyberQuest!",
+        wSub:    "step 1 of 2 — wifi connection",
+        wLabel:  "— connect to this network —",
+        wPassKey:"Password",
+        wBtn:    "✅ I'm connected — continue",
+        gTitle:  "Your team ID",
+        gSub:    "randomly generated for you",
+        gIdLabel:"team number",
+        gIdSub:  "Write it down! You'll need it at the end.",
+        gBtn:    "🚀 Start the treasure hunt",
+        cTitle:  "A cookie was just created 🍪",
+        cSub:    "what we placed on your device",
+        cWhatTitle: "What is a cookie?",
+        cWhatBody:  "A cookie is a small text file that a website places in your browser. It allows the site to 'remember' you. Here we store your team number — but on a real site, cookies can contain session data, preferences, or even be used to track you across multiple sites.",
+        cWarn:   "⚠️ Every site you visit today will read this cookie to know who you are. This is exactly how advertising tracking works on the internet.",
+        cBtn:    "🗺️ See the map and start",
+        kaTitle: "Already registered!",
+        kaSub:   "your team is still active",
+        kaBody:  "Your cookie is still present in your browser. You can resume the hunt where you left off.",
+        kaFragsTitle: "Fragments to collect:",
+        ftTrap:  "🪤 trap",
+        ftRoom:  "🔓 room",
+        kaReset: "[ Reset my team ]",
+      }
+    };
+
+    var lang = 'fr';
+    var assignedId = null;
+
+    /* ── Utils ── */
+    function s(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; }
+
+    function goToScreen(id) {
+      document.querySelectorAll('.screen').forEach(function(el) { el.classList.remove('active'); });
+      var el = document.getElementById(id);
+      if (el) el.classList.add('active');
+    }
+
+    function setLang(l) { lang = l; render(); }
+
+    /* ── Random 4-digit ID ── */
+    function generateId() {
+      return String(Math.floor(1000 + Math.random() * 9000));
+    }
+
+    /* ── Confirm ID, set cookie, go to cookie lesson ── */
+    function confirmAndContinue() {
+      if (!assignedId) return;
+      CyberTrack.setTeamId(assignedId);
+      CyberTrack.track('init', 'start');
+      goToScreen('screen-cookie');
+      render(); // refresh cookie demo with real ID
+    }
+
+    /* ── Reset (animateur / debug) ── */
+    function resetTeam() {
+      document.cookie = 'cqid=; path=/; max-age=0';
+      location.reload();
+    }
+
+    /* ── Render ── */
+    function render() {
+      var t  = T[lang];
+      var id = CyberTrack.getTeamId();
+
+      /* WiFi */
+      s('w-title',    t.wTitle);
+      s('w-sub',      t.wSub);
+      s('w-label',    t.wLabel);
+      s('w-pass-key', t.wPassKey);
+      s('w-btn',      t.wBtn);
+
+      /* Generate */
+      s('g-title',   t.gTitle);
+      s('g-sub',     t.gSub);
+      s('g-id-label',t.gIdLabel);
+      s('g-id-sub',  t.gIdSub);
+      s('g-btn',     t.gBtn);
+      if (assignedId) s('g-id-code', assignedId);
+
+      /* Cookie lesson */
+      s('c-title',       t.cTitle);
+      s('c-sub',         t.cSub);
+      s('c-what-title',  t.cWhatTitle);
+      s('c-what-body',   t.cWhatBody);
+      s('c-warn',        t.cWarn);
+      s('c-btn',         t.cBtn);
+      var displayId = id || assignedId || '????';
+      s('c-demo', 'Set-Cookie: cqid=' + displayId + '; path=/; max-age=86400');
+
+      /* Already known */
+      s('ka-title',      t.kaTitle);
+      s('ka-sub',        t.kaSub);
+      s('ka-body',       t.kaBody);
+      s('ka-frags-title',t.kaFragsTitle);
+      s('ft-trap',       t.ftTrap);
+      s('ft-trap2',      t.ftTrap);
+      s('ft-room',       t.ftRoom);
+      s('ka-reset',      t.kaReset);
+
+      /* Lang buttons */
+      ['fr','nl','en'].forEach(function(l2) {
+        var b = document.getElementById('btn-' + l2);
+        if (b) b.classList.toggle('active', l2 === lang);
+      });
+
+      /* Inject team badge */
+      CyberTrack.injectTeamBadge();
+    }
+
+    /* ── Boot ── */
+    (function boot() {
+      var existingId = CyberTrack.getTeamId();
+      if (existingId) {
+        /* Already registered */
+        render();
+        goToScreen('screen-known');
+        CyberTrack.track('init', 'return');
+      } else {
+        /* Fresh start */
+        assignedId = generateId();
+        render();
+        goToScreen('screen-wifi');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>CyberQuest — Vue d'ensemble du projet</title>
+  <style>
+    :root {
+      --accent:  #007777;
+      --yellow:  #cc8800;
+      --red:     #cc2244;
+      --green:   #007744;
+      --blue:    #1a5fb4;
+      --purple:  #6633aa;
+      --bg:      #ffffff;
+      --card:    #f8f9fa;
+      --border:  #dee2e6;
+      --text:    #212529;
+      --muted:   #6c757d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11px;
+      color: var(--text);
+      background: #fff;
+      padding: 16px;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 3px solid var(--accent);
+      padding-bottom: 10px; margin-bottom: 16px;
+    }
+    .doc-title { font-size: 22px; font-weight: 900; color: var(--accent); }
+    .doc-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .doc-badge {
+      background: var(--accent); color: #fff;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    }
+
+    /* ── Grid layout ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+    /* ── Section ── */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .section-title {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--muted); margin-bottom: 8px;
+      padding-bottom: 4px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .section-title .dot {
+      width: 8px; height: 8px; border-radius: 50; flex-shrink: 0;
+    }
+
+    /* ── User flow ── */
+    .flow {
+      display: flex; align-items: stretch; gap: 0;
+      margin-bottom: 12px;
+    }
+    .flow-step {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: 10px 8px;
+      position: relative;
+    }
+    .flow-step:first-child { border-radius: 8px 0 0 8px; }
+    .flow-step:last-child  { border-right: 1px solid var(--border); border-radius: 0 8px 8px 0; }
+
+    /* Arrow between steps */
+    .flow-step:not(:last-child)::after {
+      content: '▶';
+      position: absolute; right: -10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px; color: var(--accent);
+      z-index: 2; background: #fff;
+      padding: 2px 0;
+    }
+
+    .flow-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 6px;
+    }
+    .flow-title {
+      font-size: 10px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px; line-height: 1.3;
+    }
+    .flow-desc {
+      font-size: 9px; color: var(--muted); line-height: 1.5;
+    }
+    .flow-tag {
+      display: inline-block; margin-top: 4px;
+      font-size: 8px; padding: 1px 5px; border-radius: 3px;
+      font-weight: 700; letter-spacing: 0.5px;
+    }
+    .tag-orange { background: #fff3cd; color: #856404; }
+    .tag-red    { background: #f8d7da; color: #721c24; }
+    .tag-green  { background: #d4edda; color: #155724; }
+    .tag-blue   { background: #cce5ff; color: #004085; }
+    .tag-purple { background: #e2d9f3; color: #432874; }
+
+    /* ── Checklist ── */
+    .todo-list { list-style: none; }
+    .todo-list li {
+      padding: 4px 0; border-bottom: 1px dashed var(--border);
+      display: flex; align-items: flex-start; gap: 6px;
+      font-size: 10px; line-height: 1.4;
+    }
+    .todo-list li:last-child { border-bottom: none; }
+    .todo-box {
+      width: 12px; height: 12px; border: 1.5px solid var(--border);
+      border-radius: 2px; flex-shrink: 0; margin-top: 1px;
+    }
+    .todo-box.done { background: var(--green); border-color: var(--green); }
+    .todo-label { flex: 1; }
+    .todo-prio {
+      font-size: 8px; font-weight: 700; padding: 1px 4px;
+      border-radius: 3px; flex-shrink: 0;
+    }
+    .prio-1 { background: #f8d7da; color: #721c24; }
+    .prio-2 { background: #fff3cd; color: #856404; }
+    .prio-3 { background: #d4edda; color: #155724; }
+
+    /* ── Architecture diagram ── */
+    .arch {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .arch-row {
+      display: flex; gap: 6px; align-items: stretch;
+    }
+    .arch-box {
+      flex: 1; border: 1px solid var(--border);
+      border-radius: 6px; padding: 7px 10px;
+      background: #fff;
+    }
+    .arch-box.highlight { border-color: var(--accent); background: #f0fffe; }
+    .arch-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 3px;
+    }
+    .arch-val {
+      font-size: 10px; font-family: 'Courier New', monospace;
+      color: var(--text);
+    }
+
+    /* ── Teams table ── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 10px;
+    }
+    th {
+      background: var(--accent); color: #fff;
+      padding: 5px 8px; text-align: left;
+      font-size: 9px; letter-spacing: 0.5px;
+    }
+    td { padding: 4px 8px; border-bottom: 1px solid var(--border); }
+    tr:nth-child(even) td { background: #f8f9fa; }
+    .badge {
+      display: inline-block; font-size: 8px; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px;
+    }
+    .badge-hacker  { background: #f8d7da; color: #721c24; }
+    .badge-pioneer { background: #cce5ff; color: #004085; }
+    .badge-leader  { background: #e2d9f3; color: #432874; }
+    .badge-other   { background: #d4edda; color: #155724; }
+
+    /* ── Exercises ── */
+    .exo-card {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 10px; background: #fff;
+    }
+    .exo-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    .exo-name { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+    .exo-file { font-size: 9px; font-family: 'Courier New', monospace; color: var(--muted); }
+    .exo-fragment {
+      display: inline-block; margin-top: 4px;
+      font-family: 'Courier New', monospace; font-size: 11px;
+      font-weight: 700; color: var(--accent);
+      background: #f0fffe; border: 1px solid var(--accent);
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .exo-status {
+      font-size: 8px; color: var(--muted); margin-top: 3px;
+    }
+
+    /* ── Pedagogy box ── */
+    .pedagogy {
+      border-left: 4px solid var(--yellow);
+      background: #fffbf0;
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 10px; line-height: 1.6;
+    }
+    .pedagogy strong { color: var(--yellow); }
+
+    /* ── Notes box ── */
+    .notes {
+      border: 2px dashed var(--border);
+      border-radius: 8px; padding: 8px 12px;
+      min-height: 50px;
+      font-size: 10px; color: var(--muted);
+    }
+
+    /* ── Footer ── */
+    .doc-footer {
+      margin-top: 16px; padding-top: 8px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: var(--muted);
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { padding: 8px; font-size: 10px; }
+      @page { margin: 10mm; size: A4 landscape; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="doc-header">
+  <div>
+    <div class="doc-title">🛡️ CyberQuest — Vue d'ensemble du projet</div>
+    <div class="doc-sub">Workshop cybersécurité · 11–15 ans · FR / NL / EN · Sessions multi-groupes</div>
+  </div>
+  <div class="doc-badge">v2.0 — En développement</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PARCOURS UTILISATEUR
+═══════════════════════════════════════════ -->
+<div class="section-title" style="margin-bottom:6px;">
+  <div class="dot" style="background:#007777; border-radius:50%;"></div>
+  PARCOURS PARTICIPANT — Du WiFi à la fin du workshop
+</div>
+
+<div class="flow">
+
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-title">Connexion WiFi</div>
+    <div class="flow-desc">
+      Le participant scanne le QR code WiFi.<br>
+      L'OS détecte l'absence d'internet et ouvre <strong>automatiquement</strong> le captive portal.
+    </div>
+    <span class="flow-tag tag-blue">AUTOMATIQUE</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-title">Captive Portal</div>
+    <div class="flow-desc">
+      Choix de la langue (FR/NL/EN).<br>
+      Faux portail : Google / Apple / Facebook / Instagram.<br>
+      Peu importe le bouton → Gotcha.
+    </div>
+    <span class="flow-tag tag-orange">PHISHING PÉDAGOGIQUE</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-title">Page Gotcha</div>
+    <div class="flow-desc">
+      Affiche ce qui a été collecté : OS, navigateur, langue, IP, heure.<br>
+      <em>"Tu es au bon endroit... :-)"</em>
+    </div>
+    <span class="flow-tag tag-red">RÉVÉLATION</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-title">Choix d'équipe</div>
+    <div class="flow-desc">
+      Carrousel de 10 personnages + option selfie.<br>
+      Noms pris = grisés en live (poll 1s).<br>
+      UUID généré + cookie posé.
+    </div>
+    <span class="flow-tag tag-purple">1 APPAREIL / ÉQUIPE</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-title">Théorie + Démarrage</div>
+    <div class="flow-desc">
+      Page d'attente jusqu'au signal animateur.<br>
+      Bouton "Ouvrir le workshop" → tout s'ouvre simultanément.
+    </div>
+    <span class="flow-tag tag-blue">VERROU ANIMATEUR</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">6</div>
+    <div class="flow-title">Parcours libre</div>
+    <div class="flow-desc">
+      3 exercices à compléter dans la salle.<br>
+      QR codes à scanner. Tracking en temps réel sur le dashboard.
+    </div>
+    <span class="flow-tag tag-green">JEU DE PISTE</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">7</div>
+    <div class="flow-title">Clôture</div>
+    <div class="flow-desc">
+      Page projetée devant le groupe.<br>
+      Bilan réseau : temps connecté, pages vues, actions.<br>
+      <em>"Tu n'es pas invisible."</em>
+    </div>
+    <span class="flow-tag tag-orange">LEÇON FINALE</span>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     3 colonnes : checklist | exercices | architecture
+═══════════════════════════════════════════ -->
+<div class="grid-3">
+
+  <!-- Checklist -->
+  <div class="section">
+    <div class="section-title">
+      <div class="dot" style="background:#cc2244; border-radius:50%;"></div>
+      À DÉVELOPPER — Liste de tâches
+    </div>
+    <ul class="todo-list">
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Captive portal</strong> — langue + faux portail</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Page Gotcha</strong> — données collectées</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Carrousel équipes</strong> — photos + grisage live</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Routes server.py</strong> — /teams/available + /teams/register</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Gestion UUID + cookies</strong> — anti-triche</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Verrou d'activation</strong> — bouton dashboard</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>IP dynamique</strong> dans server.py</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Log réseau enrichi</strong> — temps, pages, actions</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Dashboard animateur</strong> — suivi équipes live</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Page de clôture</strong> — bilan à projeter</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>start_windows.bat</strong> — hotspot + Flask</span>
+        <span class="todo-prio prio-3">P3</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>start_mac.sh</strong> — hotspot + Flask</span>
+        <span class="todo-prio prio-3">P3</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>DNS local</strong> (dnsmasq) captive portal</span>
+        <span class="todo-prio prio-3">P3</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Images manga</strong> — McKinnon, Hopper, Berners-Lee, Torvalds, WannaCry</span>
+        <span class="todo-prio prio-3">P3</span>
+      </li>
+    </ul>
+    <div style="margin-top:8px; font-size:9px; color:var(--muted);">
+      <span style="background:#f8d7da;color:#721c24;padding:1px 5px;border-radius:3px;font-weight:700;">P1</span> Critique &nbsp;
+      <span style="background:#fff3cd;color:#856404;padding:1px 5px;border-radius:3px;font-weight:700;">P2</span> Important &nbsp;
+      <span style="background:#d4edda;color:#155724;padding:1px 5px;border-radius:3px;font-weight:700;">P3</span> Finalisation
+    </div>
+  </div>
+
+  <!-- Exercices -->
+  <div class="section">
+    <div class="section-title">
+      <div class="dot" style="background:#1a5fb4; border-radius:50%;"></div>
+      EXERCICES DU PARCOURS
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+      <div class="exo-card">
+        <span class="exo-icon">🪤</span>
+        <div class="exo-name">Mirror</div>
+        <div class="exo-file">mirror.html</div>
+        <div class="exo-fragment">CYB-A3</div>
+        <div class="exo-status">Tracking : gotcha</div>
+      </div>
+      <div class="exo-card">
+        <span class="exo-icon">🎭</span>
+        <div class="exo-name">Phishing</div>
+        <div class="exo-file">phishing.html</div>
+        <div class="exo-fragment">CYB-B7</div>
+        <div class="exo-status">Tracking : gotcha</div>
+      </div>
+      <div class="exo-card">
+        <span class="exo-icon">🔓</span>
+        <div class="exo-name">Lockpicking</div>
+        <div class="exo-file">Salle physique</div>
+        <div class="exo-fragment">CYB-C1</div>
+        <div class="exo-status">Tracking : view</div>
+      </div>
+    </div>
+
+    <div style="font-size:9px; color:var(--muted); margin-bottom:8px;">
+      Tracking via pixel GIF invisible → <code>/cyberquest/&lt;id&gt;/&lt;exo&gt;/&lt;status&gt;</code>
+    </div>
+
+    <div class="pedagogy">
+      <strong>Objectif pédagogique</strong><br>
+      Collecter 3 fragments (CYB-A3, CYB-B7, CYB-C1) pour former le code final. Chaque exercice illustre une technique de cyberattaque réelle.
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="section">
+    <div class="section-title">
+      <div class="dot" style="background:#6633aa; border-radius:50%;"></div>
+      ARCHITECTURE TECHNIQUE
+    </div>
+
+    <div class="arch">
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">RÉSEAU</div>
+      <div class="arch-row">
+        <div class="arch-box highlight">
+          <div class="arch-label">PC Animateur</div>
+          <div class="arch-val">MacBook ou Windows<br>Hotspot WiFi local<br>Flask server.py</div>
+        </div>
+        <div class="arch-box">
+          <div class="arch-label">IP serveur</div>
+          <div class="arch-val">Windows: 192.168.137.1<br>Mac: 192.168.2.x<br>→ à rendre dynamique</div>
+        </div>
+      </div>
+
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">FICHIERS SERVEUR</div>
+      <div class="arch-row">
+        <div class="arch-box">
+          <div class="arch-label">server.py</div>
+          <div class="arch-val">Flask · port 80/8080<br>0.0.0.0 (réseau local)</div>
+        </div>
+        <div class="arch-box">
+          <div class="arch-label">Stockage</div>
+          <div class="arch-val">events.json<br>teams.json (à créer)<br>photos/ (temporaire)</div>
+        </div>
+      </div>
+
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">ROUTES CLÉS</div>
+      <div style="font-size:9px; font-family:'Courier New',monospace; line-height:1.8; background:#fff; border:1px solid var(--border); border-radius:6px; padding:6px 8px;">
+        GET  /                      → captive portal<br>
+        GET  /gotcha                → page gotcha<br>
+        GET  /team-select           → choix équipe<br>
+        GET  /teams/available       → noms libres (poll)<br>
+        POST /teams/register        → enregistrer équipe<br>
+        GET  /workshop              → page d'attente<br>
+        GET  /cyberquest/id/exo/st  → tracking pixel<br>
+        GET  /dashboard             → animateur live<br>
+        GET  /dashboard/data        → JSON events<br>
+        POST /dashboard/reset       → reset session<br>
+        GET  /closing               → bilan final
+      </div>
+
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">SÉCURITÉ</div>
+      <div class="arch-box">
+        <div class="arch-val">
+          UUID par appareil → cookie cq_uuid<br>
+          UUID inconnu → page neutre<br>
+          Reset = purge UUID + events + photos
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Équipes + Notes
+═══════════════════════════════════════════ -->
+<div class="grid-2">
+
+  <!-- Teams -->
+  <div class="section">
+    <div class="section-title">
+      <div class="dot" style="background:#007744; border-radius:50%;"></div>
+      NOMS D'ÉQUIPES DISPONIBLES
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Type</th>
+          <th>Avatar</th>
+          <th>Description courte</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Kevin Mitnick</strong></td><td><span class="badge badge-hacker">Hacker</span></td><td>✅ manga</td><td>Le hacker le plus recherché des années 90</td></tr>
+        <tr><td><strong>Jonathan James</strong></td><td><span class="badge badge-hacker">Hacker</span></td><td>✅ manga</td><td>A piraté la NASA à 15 ans</td></tr>
+        <tr><td><strong>Gary McKinnon</strong></td><td><span class="badge badge-hacker">Hacker</span></td><td>⏳ photo</td><td>97 systèmes militaires US, cherchait des OVNIs</td></tr>
+        <tr><td><strong>Tim Berners-Lee</strong></td><td><span class="badge badge-pioneer">Pionnier</span></td><td>✅ manga</td><td>Inventeur du World Wide Web</td></tr>
+        <tr><td><strong>Linus Torvalds</strong></td><td><span class="badge badge-pioneer">Pionnier</span></td><td>✅ manga</td><td>Créateur de Linux, 96% des serveurs mondiaux</td></tr>
+        <tr><td><strong>Edward Snowden</strong></td><td><span class="badge badge-other">Militant</span></td><td>✅ manga</td><td>A révélé la surveillance de masse de la NSA</td></tr>
+        <tr><td><strong>Grace Hopper</strong></td><td><span class="badge badge-pioneer">Pionnière</span></td><td>✅ manga</td><td>Inventrice du compilateur, popularisa "bug"</td></tr>
+        <tr><td><strong>Mira Murati</strong></td><td><span class="badge badge-leader">Leader</span></td><td>✅ manga</td><td>Ex-CTO OpenAI — ChatGPT, DALL-E, Sora</td></tr>
+        <tr><td><strong>Anonymous</strong></td><td><span class="badge badge-other">Collectif</span></td><td>✅ manga</td><td>"We are Legion. Expect us."</td></tr>
+        <tr><td><strong>WannaCry</strong></td><td><span class="badge badge-hacker">Malware</span></td><td>✅ manga</td><td>Ransomware le plus dévastateur de l'histoire</td></tr>
+        <tr><td><strong>Vous</strong></td><td><span class="badge badge-other">Selfie</span></td><td>📷 caméra</td><td>L'équipe prend un selfie en guise d'avatar</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:6px; font-size:9px; color:var(--muted);">
+      ✅ manga = avatar stylisé prêt · ⏳ = image à remplacer par version manga (pattern: <code>nom_manga.png</code>)
+    </div>
+  </div>
+
+  <!-- Notes + objectifs -->
+  <div style="display:flex; flex-direction:column; gap:12px;">
+
+    <div class="section">
+      <div class="section-title">
+        <div class="dot" style="background:#cc8800; border-radius:50%;"></div>
+        OBJECTIFS PÉDAGOGIQUES
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; font-size:10px; line-height:1.6;">
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <span>🎯</span>
+          <span>Montrer que <strong>se connecter à un WiFi inconnu</strong> expose des données personnelles (OS, navigateur, IP, langue)</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <span>🎯</span>
+          <span>Illustrer le <strong>phishing</strong> de manière concrète et mémorable via le captive portal</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <span>🎯</span>
+          <span>Démontrer en clôture que <strong>personne n'est invisible</strong> sur un réseau (inspiration Black Hat London)</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <span>🎯</span>
+          <span>Encourager l'<strong>apprentissage par le jeu</strong> — coopération, amusement, démarche active</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <span>🎯</span>
+          <span>Message final : <em>"Tu as aussi un rôle à jouer dans la cybersécurité"</em></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <div class="dot" style="background:#6c757d; border-radius:50%;"></div>
+        NOTES / QUESTIONS OUVERTES
+      </div>
+      <div class="notes">
+        PC animateur : MacBook ou Windows (à confirmer)<br>
+        <br>
+        ___________________________________________________<br>
+        ___________________________________________________<br>
+        ___________________________________________________
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="doc-footer">
+  <span>🛡️ CyberQuest — Document interne animateurs</span>
+  <span>FR / NL / EN · Public : 11–15 ans · Sessions multi-groupes</span>
+  <span>Imprimé le : <script>document.write(new Date().toLocaleDateString('fr-BE'))</script></span>
+</div>
+
+</body>
+</html>

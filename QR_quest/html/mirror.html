@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberChasse — Piège</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111520;
+      --border: #1e2535;
+      --accent: #00ffd0;
+      --accent2: #ff3b6b;
+      --text: #e8eaf2;
+      --muted: #5a6580;
+      --card-bg: #13192a;
+      --warn-bg: #1a0d12;
+      --warn-border: #ff3b6b;
+      --fragment-bg: #0d1a15;
+      --fragment-border: #00ffd0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,208,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,208,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .lang-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0,255,208,0.08);
+    }
+
+    /* Header */
+    header {
+      padding: 60px 24px 40px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .eye-icon {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 16px;
+      animation: pulse-eye 2s ease-in-out infinite;
+    }
+    @keyframes pulse-eye {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.08); }
+    }
+    h1 {
+      font-size: clamp(32px, 8vw, 64px);
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -1px;
+      text-shadow: 0 0 40px rgba(0,255,208,0.4);
+      animation: glitch 5s infinite;
+    }
+    @keyframes glitch {
+      0%, 90%, 100% { transform: none; }
+      92% { transform: translate(-2px,0); }
+      94% { transform: translate(2px,0); }
+      96% { transform: none; }
+    }
+    .subtitle {
+      font-size: clamp(14px, 3vw, 18px);
+      color: var(--muted);
+      margin-top: 10px;
+    }
+    .tagline {
+      margin-top: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Main */
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 16px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 24px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::before, .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Data rows */
+    .data-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+
+    .data-row {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(-16px);
+      animation: slide-in 0.4s forwards;
+    }
+    @keyframes slide-in { to { opacity: 1; transform: translateX(0); } }
+
+    .data-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .data-value {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: var(--accent);
+      text-align: right;
+      word-break: break-all;
+    }
+
+    /* Buttons */
+    .reveal-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      -webkit-appearance: none;
+      transition: background 0.2s;
+    }
+    .reveal-btn:active { background: rgba(0,255,208,0.08); }
+    .reveal-btn.danger { border-color: var(--accent2); color: var(--accent2); }
+    .reveal-btn.danger:active { background: rgba(255,59,107,0.08); }
+    .reveal-btn:disabled { opacity: 0.35; cursor: default; }
+
+    /* Geo result */
+    .geo-result {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .geo-result.visible { display: flex; }
+
+    /* Camera */
+    #camera-container {
+      display: none;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--accent2);
+      margin-bottom: 8px;
+    }
+    #camera-container.visible { display: block; }
+    #camera-feed { width: 100%; display: block; }
+
+    /* Warning */
+    .warning-card {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .warning-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent2), transparent);
+    }
+    .warning-title { font-size: 18px; font-weight: 700; color: var(--accent2); margin-bottom: 12px; }
+    .warning-body  { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+    .warning-lesson {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      padding: 10px 14px;
+      background: rgba(0,255,208,0.06);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    /* Fragment */
+    .fragment-card {
+      background: var(--fragment-bg);
+      border: 1px solid var(--fragment-border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .fragment-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+    .fragment-code {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 36px;
+      color: var(--accent);
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(0,255,208,0.6);
+      letter-spacing: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <header>
+    <span class="eye-icon">👁️</span>
+    <h1 id="h-title"></h1>
+    <p class="subtitle" id="h-subtitle"></p>
+    <p class="tagline" id="h-tagline"></p>
+  </header>
+
+  <main>
+    <div class="section-label" id="label-auto"></div>
+    <div class="data-grid" id="data-grid"></div>
+
+    <div class="section-label" id="label-perm"></div>
+    <button class="reveal-btn" id="geo-btn" onclick="requestGeo()"></button>
+    <div class="geo-result" id="geo-result">
+      <span class="data-label" id="label-gps"></span>
+      <span class="data-value" id="geo-value"></span>
+    </div>
+
+    <button class="reveal-btn danger" id="cam-btn" onclick="requestCamera()"></button>
+    <div id="camera-container">
+      <video id="camera-feed" autoplay playsinline muted></video>
+    </div>
+
+    <div class="warning-card">
+      <div class="warning-title" id="warn-title"></div>
+      <div class="warning-body"  id="warn-body"></div>
+      <div class="warning-lesson" id="warn-lesson"></div>
+    </div>
+
+    <div class="fragment-card">
+      <div class="fragment-label" id="fragment-label"></div>
+      <div class="fragment-code"  id="fragment-code"></div>
+    </div>
+  </main>
+
+  <footer id="footer-text"></footer>
+
+  <script>
+    // ── i18n ──────────────────────────────────────────────────────
+    var T = {
+      fr: {
+        autoLabel: "— collecté automatiquement —",
+        permLabel: "— avec permission —",
+        title:    "On vous observe...",
+        subtitle: "Voici ce qu'un site web sait sur vous",
+        tagline:  "Sans vous demander la moindre permission.",
+        lBrowser: "Navigateur",   lOs: "Système",
+        lScreen:  "Écran",        lLang: "Langue",
+        lTime:    "Heure locale", lTz: "Fuseau horaire",
+        lTouch:   "Écran tactile",lCookies: "Cookies",
+        lDnt:     "Do Not Track",
+        yes: "Oui", no: "Non", unk: "Inconnu",
+        on: "Activé", off: "Désactivé", act: "Actif", inact: "Inactif",
+        warnTitle:  "⚠️ C'est un piège pédagogique !",
+        warnBody:   "Ce site vient de collecter toutes ces informations sur vous — automatiquement, sans aucune permission. Imaginez un vrai site malveillant qui ferait pareil... C'est pourquoi il faut réfléchir avant de scanner un QR code inconnu.",
+        warnLesson: "Leçon : méfiez-vous des QR codes et des sites inconnus.",
+        fragLabel: "Fragment débloqué",
+        fragCode:  "CYB-A3",
+        geoBtn:    "📍 Révéler ma position GPS",
+        geoLabel:  "Position GPS",
+        geoDenied: "Position refusée",
+        camBtn:    "📷 Activer la caméra",
+        footer:    "Tout ceci est légal pour n'importe quel site. Aucune donnée n'est stockée ici.",
+      },
+      nl: {
+        autoLabel: "— automatisch verzameld —",
+        permLabel: "— met toestemming —",
+        title:    "We kijken mee...",
+        subtitle: "Dit weet een website over jou",
+        tagline:  "Zonder ook maar één toestemming te vragen.",
+        lBrowser: "Browser",          lOs: "Besturingssysteem",
+        lScreen:  "Scherm",           lLang: "Taal",
+        lTime:    "Lokale tijd",      lTz: "Tijdzone",
+        lTouch:   "Touchscreen",      lCookies: "Cookies",
+        lDnt:     "Do Not Track",
+        yes: "Ja", no: "Nee", unk: "Onbekend",
+        on: "Ingeschakeld", off: "Uitgeschakeld", act: "Actief", inact: "Inactief",
+        warnTitle:  "⚠️ Dit was een educatieve val!",
+        warnBody:   "Deze site heeft zojuist al deze informatie over jou verzameld — automatisch, zonder enige toestemming. Stel je voor wat een echte kwaadwillige site daarmee zou doen... Denk daarom altijd na voor je een onbekende QR-code scant.",
+        warnLesson: "Les: wees voorzichtig met QR-codes en onbekende websites.",
+        fragLabel: "Fragment ontgrendeld",
+        fragCode:  "CYB-A3",
+        geoBtn:    "📍 Mijn GPS-locatie tonen",
+        geoLabel:  "GPS-locatie",
+        geoDenied: "Locatie geweigerd",
+        camBtn:    "📷 Camera activeren",
+        footer:    "Dit is wettelijk toegestaan voor elke website. Geen gegevens worden hier opgeslagen.",
+      },
+      en: {
+        autoLabel: "— collected automatically —",
+        permLabel: "— with permission —",
+        title:    "We see you...",
+        subtitle: "Here's what a website knows about you",
+        tagline:  "Without asking for a single permission.",
+        lBrowser: "Browser",        lOs: "Operating System",
+        lScreen:  "Screen",         lLang: "Language",
+        lTime:    "Local Time",     lTz: "Timezone",
+        lTouch:   "Touchscreen",    lCookies: "Cookies",
+        lDnt:     "Do Not Track",
+        yes: "Yes", no: "No", unk: "Unknown",
+        on: "Enabled", off: "Disabled", act: "Active", inact: "Inactive",
+        warnTitle:  "⚠️ This was an educational trap!",
+        warnBody:   "This site just collected all this information about you — automatically, without any permission. Imagine a real malicious site doing the same... That's why you should always think before scanning an unknown QR code.",
+        warnLesson: "Lesson: be careful with QR codes and unknown websites.",
+        fragLabel: "Fragment unlocked",
+        fragCode:  "CYB-A3",
+        geoBtn:    "📍 Reveal my GPS location",
+        geoLabel:  "GPS Location",
+        geoDenied: "Location denied",
+        camBtn:    "📷 Activate camera",
+        footer:    "All of this is legal for any website. No data is stored here.",
+      }
+    };
+
+    // ── Detect device info — called once ──────────────────────────
+    function detect() {
+      var ua = navigator.userAgent;
+
+      var browser = 'Unknown';
+      if (/CriOS\/(\d+)/.test(ua))                browser = 'Chrome iOS '   + RegExp.$1;
+      else if (/FxiOS\/(\d+)/.test(ua))           browser = 'Firefox iOS '  + RegExp.$1;
+      else if (/Firefox\/(\d+)/.test(ua))         browser = 'Firefox '      + RegExp.$1;
+      else if (/Edg\/(\d+)/.test(ua))             browser = 'Edge '         + RegExp.$1;
+      else if (/Chrome\/(\d+)/.test(ua))          browser = 'Chrome '       + RegExp.$1;
+      else if (/Version\/([\d.]+).*Safari/.test(ua)) browser = 'Safari '    + RegExp.$1;
+
+      var os = 'Unknown';
+      if      (/iPhone OS ([\d_]+)/.test(ua))     os = 'iOS '     + RegExp.$1.replace(/_/g,'.');
+      else if (/iPad.*OS ([\d_]+)/.test(ua))      os = 'iPadOS '  + RegExp.$1.replace(/_/g,'.');
+      else if (/Android ([\d.]+)/.test(ua))       os = 'Android ' + RegExp.$1;
+      else if (/Windows NT/.test(ua))             os = 'Windows';
+      else if (/Mac OS X/.test(ua))               os = 'macOS';
+      else if (/Linux/.test(ua))                  os = 'Linux';
+
+      var dntRaw = navigator.doNotTrack || window.doNotTrack || null;
+      var dnt = (dntRaw === '1' || dntRaw === 'yes') ? 'on'
+              : (dntRaw === '0' || dntRaw === 'no')  ? 'off'
+              : 'unk';
+
+      var tz = null;
+      try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){}
+
+      return {
+        browser:     browser,
+        os:          os,
+        screen:      screen.width + '×' + screen.height + 'px',
+        language:    navigator.language || null,
+        time:        new Date().toLocaleTimeString(),
+        timezone:    tz,
+        touch:       ('ontouchstart' in window || navigator.maxTouchPoints > 0),
+        cookies:     navigator.cookieEnabled,
+        dnt:         dnt
+      };
+    }
+
+    // ── Render ────────────────────────────────────────────────────
+    var lang = 'fr';
+
+    function render() {
+      var t = T[lang];
+      var d = detect();
+
+      document.documentElement.lang = lang;
+      setText('h-title',       t.title);
+      setText('h-subtitle',    t.subtitle);
+      setText('h-tagline',     t.tagline);
+      setText('label-auto',    t.autoLabel);
+      setText('label-perm',    t.permLabel);
+      setText('warn-title',    t.warnTitle);
+      setText('warn-body',     t.warnBody);
+      setText('warn-lesson',   t.warnLesson);
+      setText('fragment-label',t.fragLabel);
+      setText('fragment-code', t.fragCode);
+      setText('geo-btn',       t.geoBtn);
+      setText('cam-btn',       t.camBtn);
+      setText('label-gps',     t.geoLabel);
+      setText('footer-text',   t.footer);
+
+      // Active lang button
+      ['fr','nl','en'].forEach(function(l) {
+        var b = document.getElementById('btn-' + l);
+        b.classList.toggle('active', l === lang);
+      });
+
+      // Build rows
+      var rows = [
+        { label: t.lBrowser,  val: d.browser },
+        { label: t.lOs,       val: d.os },
+        { label: t.lScreen,   val: d.screen },
+        { label: t.lLang,     val: d.language },
+        { label: t.lTime,     val: d.time },
+        { label: t.lTz,       val: d.timezone },
+        { label: t.lTouch,    val: d.touch ? t.yes : t.no },
+        { label: t.lCookies,  val: d.cookies ? t.on : t.off },
+        { label: t.lDnt,      val: t[d.dnt] }
+      ];
+
+      var grid = document.getElementById('data-grid');
+      grid.innerHTML = '';
+      rows.forEach(function(row, i) {
+        if (!row.val) return;
+        var div = document.createElement('div');
+        div.className = 'data-row';
+        div.style.animationDelay = (i * 80) + 'ms';
+        div.innerHTML =
+          '<span class="data-label">' + esc(row.label) + '</span>' +
+          '<span class="data-value">'  + esc(row.val)   + '</span>';
+        grid.appendChild(div);
+      });
+    }
+
+    function setText(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;');
+    }
+
+    // ── Geo ───────────────────────────────────────────────────────
+    function requestGeo() {
+      if (!navigator.geolocation) return;
+      var btn = document.getElementById('geo-btn');
+      btn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          var lat = pos.coords.latitude.toFixed(5);
+          var lng = pos.coords.longitude.toFixed(5);
+          var acc = Math.round(pos.coords.accuracy);
+          document.getElementById('geo-value').textContent = lat + ', ' + lng + ' (±' + acc + 'm)';
+          document.getElementById('geo-result').classList.add('visible');
+          btn.style.display = 'none';
+        },
+        function() {
+          document.getElementById('geo-value').textContent = T[lang].geoDenied;
+          document.getElementById('geo-result').classList.add('visible');
+          btn.style.display = 'none';
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    }
+
+    // ── Camera ────────────────────────────────────────────────────
+    function requestCamera() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+        .then(function(stream) {
+          var v = document.getElementById('camera-feed');
+          v.srcObject = stream;
+          document.getElementById('camera-container').classList.add('visible');
+          document.getElementById('cam-btn').style.display = 'none';
+        })
+        .catch(function() {
+          document.getElementById('cam-btn').disabled = true;
+        });
+    }
+
+    // ── Lang switch ───────────────────────────────────────────────
+    function setLang(l) { lang = l; render(); }
+
+    // ── Boot ──────────────────────────────────────────────────────
+    render();
+  </script>
+
+  <!-- CyberQuest tracking -->
+  <script src="/_track.js"></script>
+  <script>
+    // "view" immédiat + "gotcha" après 1 s (la collecte de données EST le piège)
+    CyberTrack.autoTrack('mirror');
+    setTimeout(function () { CyberTrack.track('mirror', 'gotcha'); }, 1000);
+  </script>
+</body>
+</html>

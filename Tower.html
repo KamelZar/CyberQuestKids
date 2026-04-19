@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CyberQuestKids — Tower Defense</title>
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #020b18;
+  font-family: 'Courier New', Courier, monospace;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════
+   LANGUE — sélecteur flottant (coin supérieur droit)
+═══════════════════════════════════════════ */
+#lang-picker {
+  position: fixed;
+  top: 14px; right: 14px;
+  display: flex; gap: 5px;
+  z-index: 100;
+}
+.lb {
+  font: bold 9px monospace;
+  padding: 3px 7px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.4);
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.lb.on {
+  background: rgba(255,210,0,.18);
+  color: #ffd700;
+  border-color: #ffd700;
+}
+
+/* ═══════════════════════════════════════════
+   INTRO — fond étoilé + crawl Star Wars
+═══════════════════════════════════════════ */
+#intro {
+  position: fixed;
+  inset: 0;
+  background: #020b18;
+  display: flex; flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transition: opacity 1.2s ease;
+  z-index: 10;
+}
+#intro.fade-out { opacity: 0; pointer-events: none; }
+
+/* — Étoiles — */
+#stars-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* — Zone de perspective du crawl — */
+#crawl-viewport {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 88%;
+  perspective: 700px;
+  perspective-origin: 50% 20%;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(0,0,0,.2) 10%,
+    black 22%,
+    black 100%
+  );
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(0,0,0,.2) 10%,
+    black 22%,
+    black 100%
+  );
+}
+
+#crawl-track {
+  transform-origin: 50% 100%;
+  transform: rotateX(18deg);
+  width: 100%;
+  animation: crawl var(--crawl-duration, 38s) linear forwards;
+  padding: 0 4%;
+}
+
+@keyframes crawl {
+  0%   { transform: rotateX(18deg) translateY(95%); }
+  100% { transform: rotateX(18deg) translateY(-340%); }
+}
+
+#crawl-text {
+  text-align: center;
+  color: #ffd700;
+  line-height: 1.75;
+  padding-bottom: 40vh;
+}
+#crawl-text .episode {
+  font-size: clamp(14px, 3.5vw, 20px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #cc9900;
+  margin-bottom: 0.3em;
+}
+#crawl-text .title {
+  font-size: clamp(22px, 6vw, 38px);
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1.2em;
+  text-shadow: 0 0 22px #ffd70099;
+}
+#crawl-text p {
+  font-size: clamp(16px, 4vw, 24px);
+  margin-bottom: 1.1em;
+  letter-spacing: 0.5px;
+}
+#crawl-text .big {
+  font-size: clamp(20px, 5.5vw, 30px);
+  font-weight: bold;
+  margin-top: 1.4em;
+  text-shadow: 0 0 18px #ffd70088;
+}
+#crawl-text .small {
+  font-size: clamp(14px, 3.5vw, 20px);
+  color: #cc9900;
+  margin-top: 0.2em;
+}
+
+/* — Ligne "CYBERKIDS" en haut (style intro SW) — */
+#logo-bar {
+  position: absolute;
+  top: 6%;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+#logo-bar .logo-line {
+  font-size: clamp(8px, 1.8vw, 11px);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: #ffd700;
+  opacity: .7;
+}
+
+/* — Bouton Passer — */
+#btn-skip {
+  position: absolute;
+  bottom: 28px;
+  left: 50%; transform: translateX(-50%);
+  font: bold 10px monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffd700;
+  border: 1px solid #ffd70055;
+  background: rgba(0,0,0,.5);
+  padding: 8px 22px;
+  cursor: pointer;
+  border-radius: 2px;
+  backdrop-filter: blur(3px);
+  transition: background .2s, border-color .2s;
+  z-index: 20;
+  animation: pulse-skip 2s ease-in-out infinite;
+}
+#btn-skip:hover { background: rgba(255,210,0,.12); border-color: #ffd700; }
+@keyframes pulse-skip {
+  0%,100% { opacity: .7; } 50% { opacity: 1; }
+}
+
+#btn-mute {
+  position: absolute;
+  bottom: 30px;
+  right: 16px;
+  font-size: 16px;
+  background: rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  cursor: pointer;
+  z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+#btn-mute:hover { background: rgba(255,210,0,.12); }
+
+/* — Tap to start — */
+#tap-start {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 30;
+  cursor: pointer;
+}
+#tap-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  animation: pulse-tap 1.8s ease-in-out infinite;
+}
+#tap-icon {
+  font-size: 52px;
+  color: #ffd700;
+  text-shadow: 0 0 30px #ffd70099, 0 0 60px #ffd70033;
+  line-height: 1;
+}
+#tap-label {
+  font: bold 13px monospace;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #ffd700;
+  opacity: .85;
+}
+@keyframes pulse-tap {
+  0%,100% { transform: scale(1);   opacity: .8; }
+  50%      { transform: scale(1.08); opacity: 1;  }
+}
+
+/* ═══════════════════════════════════════════
+   ÉCRAN JEU
+═══════════════════════════════════════════ */
+#game {
+  position: fixed;
+  inset: 0;
+  background: #0b1120;
+  display: flex; flex-direction: column; align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+  z-index: 5;
+  font-family: 'Courier New', Courier, monospace;
+}
+#game.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── HUD ── */
+#hud {
+  width: 100%; max-width: 520px;
+  background: rgba(0,0,0,.45);
+  border-bottom: 2px solid #1a2860;
+  padding: 5px 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
+  transition: border-color .8s;
+  z-index: 2;
+}
+.hb { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hl { font-size: 7px; letter-spacing: 1px; text-transform: uppercase; opacity: .5; color: #aabbff; }
+.hv { font-size: 14px; font-weight: bold; letter-spacing: 1px; color: #aabbff; }
+.hpw { width: 56px; height: 6px; background: rgba(0,0,0,.4);
+       border: 1px solid rgba(255,255,255,.2); border-radius: 2px; margin-top: 2px; }
+.hpf { height: 100%; border-radius: 2px; background: #44dd44;
+       transition: width .4s, background .8s; }
+
+.g-langrow { display: flex; gap: 3px; }
+.g-lb { font: bold 8px monospace; padding: 2px 5px;
+  border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.3);
+  color: #aaa; cursor: pointer; border-radius: 1px; transition: background .2s, color .2s; }
+.g-lb.on { background: rgba(100,150,255,.3); color: #fff; border-color: #aabbff; }
+
+/* ── Canvas wrap ── */
+#game-wrap {
+  flex: 1;
+  width: 100%; max-width: 520px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+#game-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+  touch-action: none;
+}
+
+/* ══ BARRE DE BOUTONS BAS ══════════════════════════════ */
+#bottom-bar {
+  width: 100%; max-width: 520px;
+  flex-shrink: 0;
+  display: flex;
+  border-top: 3px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+}
+.bot-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 4px 10px;
+  cursor: pointer; border: none; background: none;
+  transition: background .2s;
+  position: relative;
+}
+.bot-btn:first-child { border-right: 2px solid rgba(255,255,255,.08); }
+.bot-btn:active, .bot-btn:hover { background: rgba(255,255,255,.06); }
+.bot-icon { font-size: 36px; line-height: 1; }
+.bot-label {
+  font: bold 9px monospace; letter-spacing: 2px;
+  text-transform: uppercase; color: #8899bb;
+}
+
+/* ── Coffre CSS ── */
+.chest-svg {
+  width: 40px; height: 34px; display: block;
+}
+
+/* ══ OVERLAY (pause + contenu) ═══════════════════════ */
+#overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,8,.82);
+  backdrop-filter: blur(3px);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 20;
+  animation: fadeInOv .2s ease;
+}
+#overlay.open { display: flex; }
+@keyframes fadeInOv { from { opacity:0; } to { opacity:1; } }
+
+.ov-box {
+  background: rgba(6,10,28,.97);
+  border: 2px solid rgba(100,140,255,.3);
+  border-radius: 6px;
+  width: 90%; max-width: 360px;
+  padding: 16px;
+  position: relative;
+}
+.ov-title {
+  font: bold 12px monospace; letter-spacing: 3px;
+  text-transform: uppercase; color: #aabbff;
+  text-align: center; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.ov-close {
+  position: absolute; top: 10px; right: 12px;
+  font: bold 16px monospace; color: #445; cursor: pointer;
+  background: none; border: none; transition: color .2s;
+}
+.ov-close:hover { color: #ff5544; }
+
+/* Boutons défenses dans l'overlay */
+.pbtns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pbtn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: rgba(0,0,0,.4); border: 2px solid rgba(255,255,255,.15);
+  padding: 8px 10px; cursor: pointer; min-width: 64px; border-radius: 4px;
+  transition: border-color .2s, background .2s;
+}
+.pbtn.sel { border-color: #ffdd44; background: rgba(255,220,0,.1); }
+.pbtn.locked { opacity: .3; cursor: not-allowed; }
+.pi { font-size: 22px; }
+.pn { font-size: 8px; color: #8899bb; }
+.pc { font-size: 10px; color: #ffdd44; font-weight: bold; }
+
+</style>
+</head>
+<body>
+
+<!-- ── Sélecteur de langue ── -->
+<div id="lang-picker">
+  <button class="lb" data-lang="FR">FR</button>
+  <button class="lb" data-lang="NL">NL</button>
+  <button class="lb" data-lang="EN">EN</button>
+</div>
+
+<!-- ══════════════ INTRO ══════════════ -->
+<div id="intro">
+  <canvas id="stars-canvas"></canvas>
+
+  <div id="logo-bar">
+    <div class="logo-line">CyberQuestKids</div>
+  </div>
+
+  <div id="crawl-viewport">
+    <div id="crawl-track">
+      <div id="crawl-text">
+        <!-- rempli par JS selon la langue -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tap to start -->
+<div id="tap-start">
+  <div id="tap-inner">
+    <div id="tap-icon">▶</div>
+    <div id="tap-label">Appuyer pour commencer</div>
+  </div>
+</div>
+
+<button id="btn-skip" style="display:none">— Passer —</button>
+<button id="btn-mute" style="display:none" title="Couper le son">🔊</button>
+
+<audio id="intro-audio" preload="auto">
+  <source src="QR_quest/mp3/intro.mp3" type="audio/mpeg">
+</audio>
+</div>
+
+<!-- ══════════════ JEU ══════════════ -->
+<div id="game">
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="g-langrow">
+      <button class="g-lb" data-glang="FR">FR</button>
+      <button class="g-lb" data-glang="NL">NL</button>
+      <button class="g-lb" data-glang="EN">EN</button>
+    </div>
+    <div class="hb">
+      <div class="hl" data-ui="hp">Base HP</div>
+      <div class="hpw"><div class="hpf" id="g-hpfill" style="width:100%"></div></div>
+      <div class="hv" id="g-hpval">100%</div>
+    </div>
+    <div class="hb">
+      <div class="hl" data-ui="wave">Vague</div>
+      <div class="hv" id="g-wave" style="color:#44aaff">01</div>
+    </div>
+    <div class="hb">
+      <div class="hl" data-ui="points">Points</div>
+      <div class="hv" id="g-points" style="color:#ffdd44">0 🔐</div>
+    </div>
+    <div class="hb">
+      <div class="hl" data-ui="time">Survie</div>
+      <div class="hv" id="g-timer" style="color:#ff5544">0:00</div>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div id="game-wrap">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- ── Overlay pause ── -->
+  <div id="overlay">
+    <div class="ov-box">
+      <div class="ov-title" id="ov-title">🎒 DÉFENSES</div>
+      <button class="ov-close" id="ov-close">✕</button>
+      <div id="ov-content"></div>
+    </div>
+  </div>
+
+  <!-- ── Barre de boutons bas ── -->
+  <div id="bottom-bar">
+
+    <button class="bot-btn" id="btn-def">
+      <span class="bot-icon">🎒</span>
+      <span class="bot-label" data-ui="btn-def">Défenses</span>
+    </button>
+
+    <button class="bot-btn" id="btn-quiz">
+      <!-- Coffre SVG pixel art -->
+      <svg class="chest-svg" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- corps -->
+        <rect x="2" y="16" width="36" height="16" rx="2" fill="#6b3a0e" stroke="#e8a820" stroke-width="1.5"/>
+        <!-- couvercle -->
+        <rect x="2" y="4" width="36" height="13" rx="2" fill="#8b4e14" stroke="#e8a820" stroke-width="1.5"/>
+        <!-- cerclage métallique -->
+        <rect x="2" y="15" width="36" height="4" fill="#c87818" stroke="#e8a820" stroke-width="1"/>
+        <!-- cadenas corps -->
+        <rect x="16" y="18" width="8" height="8" rx="1.5" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
+        <!-- cadenas arceau -->
+        <path d="M18 18 v-3 a2 2 0 0 1 4 0 v3" stroke="#f0c030" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- pièces visibles dans coffre -->
+        <circle cx="10" cy="24" r="3" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
+        <circle cx="30" cy="24" r="3" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
+        <circle cx="10" cy="9" r="2.5" fill="#f0d050" stroke="#a07808" stroke-width="1" opacity=".6"/>
+        <circle cx="30" cy="9" r="2.5" fill="#f0d050" stroke="#a07808" stroke-width="1" opacity=".6"/>
+      </svg>
+      <span class="bot-label" data-ui="btn-quiz">Gagner des points</span>
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   TEXTES DU CRAWL (3 langues)
+═══════════════════════════════════════════════════════ */
+const CRAWL = {
+  FR: {
+    skip: '— Passer —',
+    tapStart: 'Appuyer pour commencer',
+    episode: 'Épisode I',
+    title: 'CyberQuest Kids',
+    lines: [
+      'Dans un monde où chaque clic laisse une trace...',
+      'une équipe de jeunes explorateurs a été numérisée et propulsée dans les couloirs invisibles d\'Internet.',
+      'Leur mission : traverser le réseau, apprendre ses secrets, et revenir sains et saufs.',
+      'Mais les routes du web sont infestées de dangers.',
+      'Virus, hackers, ransomwares et espions numériques guettent dans l\'ombre, prêts à frapper.',
+      'Une seule chose peut les protéger :',
+      'TOI.',
+      'Construis des défenses. Prends les bonnes décisions. Réponds aux questions.',
+      'Et surtout, rappelle-toi...',
+      'Aucun système n\'est infaillible.',
+      'L\'objectif n\'est pas de gagner.',
+      'C\'est de tenir le plus longtemps possible.',
+      'Bonne chance.',
+    ],
+  },
+  NL: {
+    skip: '— Overslaan —',
+    tapStart: 'Tik om te beginnen',
+    episode: 'Aflevering I',
+    title: 'CyberQuest Kids',
+    lines: [
+      'In een wereld waar elke klik een spoor nalaat...',
+      'werd een groep jonge ontdekkingsreizigers gedigitaliseerd en de onzichtbare gangen van het internet ingestuurd.',
+      'Hun missie: het netwerk doorkruisen, zijn geheimen ontdekken en veilig terugkeren.',
+      'Maar de wegen van het web zijn bezaaid met gevaren.',
+      'Virussen, hackers, ransomware en digitale spionnen loeren in de schaduw, klaar om toe te slaan.',
+      'Er is maar één ding dat hen kan beschermen:',
+      'JIJ.',
+      'Bouw verdedigingen. Neem de juiste beslissingen. Beantwoord de vragen.',
+      'En vergeet dit nooit...',
+      'Geen enkel systeem is onfeilbaar.',
+      'Het doel is niet winnen.',
+      'Het is zo lang mogelijk standhouden.',
+      'Veel succes.',
+    ],
+  },
+  EN: {
+    skip: '— Skip —',
+    tapStart: 'Tap to start',
+    episode: 'Episode I',
+    title: 'CyberQuest Kids',
+    lines: [
+      'In a world where every click leaves a trace...',
+      'a team of young explorers was digitized and sent through the invisible highways of the Internet.',
+      'Their mission: cross the network, learn its secrets, and return safely.',
+      'But the roads of the web are filled with dangers.',
+      'Viruses, hackers, ransomware and digital spies lurk in the shadows, ready to strike.',
+      'Only one thing can protect them:',
+      'YOU.',
+      'Build defenses. Make the right choices. Answer the questions.',
+      'And above all, remember...',
+      'No system is foolproof.',
+      'The goal is not to win.',
+      'It is to hold out as long as possible.',
+      'Good luck.',
+    ],
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   COOKIE helpers
+═══════════════════════════════════════════════════════ */
+function getCookie(name) {
+  const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 86400000);
+  document.cookie = name + '=' + encodeURIComponent(value)
+    + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+}
+
+/* ═══════════════════════════════════════════════════════
+   LANGUE
+═══════════════════════════════════════════════════════ */
+let currentLang = (getCookie('cqk_lang') || 'FR').toUpperCase();
+if (!CRAWL[currentLang]) currentLang = 'FR';
+
+function applyLang(lang) {
+  currentLang = lang;
+  setCookie('cqk_lang', lang, 365);
+  document.querySelectorAll('.lb').forEach(b => {
+    b.classList.toggle('on', b.dataset.lang === lang);
+  });
+  document.documentElement.lang = lang.toLowerCase();
+  buildCrawlText();
+  resetCrawl();
+  document.getElementById('btn-skip').textContent  = CRAWL[lang].skip;
+  document.getElementById('tap-label').textContent = CRAWL[lang].tapStart;
+}
+
+document.querySelectorAll('.lb').forEach(b => {
+  b.addEventListener('click', () => applyLang(b.dataset.lang));
+});
+
+/* ═══════════════════════════════════════════════════════
+   CONSTRUCTION DU TEXTE DU CRAWL
+═══════════════════════════════════════════════════════ */
+function buildCrawlText() {
+  const data = CRAWL[currentLang];
+  const ct = document.getElementById('crawl-text');
+  ct.innerHTML = '';
+
+  // Épisode + titre
+  const ep = document.createElement('div');
+  ep.className = 'episode'; ep.textContent = data.episode;
+  ct.appendChild(ep);
+
+  const ti = document.createElement('div');
+  ti.className = 'title'; ti.textContent = data.title;
+  ct.appendChild(ti);
+
+  // Lignes — on marque en "big" certaines lignes clés
+  const bigIdxs = new Set([5, 6, 8, 9, 10, 11]);
+  const smallIdxs = new Set([10, 11]);
+
+  data.lines.forEach((line, i) => {
+    const p = document.createElement('p');
+    if (bigIdxs.has(i)) p.classList.add('big');
+    if (smallIdxs.has(i)) p.classList.add('small');
+    p.textContent = line;
+    ct.appendChild(p);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANIMATION DU CRAWL
+═══════════════════════════════════════════════════════ */
+const CRAWL_DURATION = 80; // secondes
+
+let crawlTimer = null;
+
+function resetCrawl() {
+  const track = document.getElementById('crawl-track');
+  // Force reflow pour relancer l'animation CSS
+  track.style.animation = 'none';
+  track.offsetHeight; // reflow
+  track.style.setProperty('--crawl-duration', CRAWL_DURATION + 's');
+  track.style.animation = `crawl ${CRAWL_DURATION}s linear forwards`;
+
+  // Fin déclenchée par la fin de l'animation (sync parfaite texte + audio)
+  clearTimeout(crawlTimer);
+  track.removeEventListener('animationend', endIntro);
+  track.addEventListener('animationend', endIntro, { once: true });
+}
+
+function endIntro() {
+  clearTimeout(crawlTimer);
+  // Fondu audio de sortie
+  if (window._introAudio && !window._introAudio.paused) {
+    const fadeOut = setInterval(() => {
+      window._introAudio.volume = Math.max(window._introAudio.volume - 0.06, 0);
+      if (window._introAudio.volume <= 0) {
+        clearInterval(fadeOut);
+        window._introAudio.pause();
+      }
+    }, 80);
+  }
+  const intro = document.getElementById('intro');
+  const game  = document.getElementById('game');
+  intro.classList.add('fade-out');
+  game.classList.add('visible');
+  setTimeout(() => {
+    intro.style.display = 'none';
+    startGame();
+  }, 1300);
+}
+
+document.getElementById('btn-skip').addEventListener('click', endIntro);
+
+/* ═══════════════════════════════════════════════════════
+   ÉTOILES (canvas)
+═══════════════════════════════════════════════════════ */
+(function initStars() {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    const count = Math.floor((canvas.width * canvas.height) / 1600);
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + 0.3,
+      alpha: Math.random() * 0.6 + 0.3,
+      speed: Math.random() * 0.008 + 0.003,
+      phase: Math.random() * Math.PI * 2,
+    }));
+  }
+
+  let raf;
+  function draw(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      const a = s.alpha * (0.7 + 0.3 * Math.sin(t * s.speed + s.phase));
+      ctx.globalAlpha = a;
+      // légère variation bleu/blanc selon la position
+      const hue = 210 + Math.floor(s.phase * 20);
+      ctx.fillStyle = `hsl(${hue}, 40%, 95%)`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  raf = requestAnimationFrame(draw);
+})();
+
+/* ═══════════════════════════════════════════════════════
+   TAP TO START + AUDIO
+═══════════════════════════════════════════════════════ */
+window._introAudio = document.getElementById('intro-audio');
+const btnMute  = document.getElementById('btn-mute');
+const tapStart = document.getElementById('tap-start');
+const btnSkip  = document.getElementById('btn-skip');
+
+tapStart.addEventListener('click', function startEverything() {
+  // 1 — Cacher l'overlay, montrer les boutons
+  tapStart.style.transition = 'opacity .4s';
+  tapStart.style.opacity = '0';
+  setTimeout(() => { tapStart.style.display = 'none'; }, 400);
+  btnSkip.style.display = '';
+  btnMute.style.display = '';
+
+  // 2 — Lancer le crawl (au cas où resetCrawl a déjà été appelé,
+  //     on repart proprement depuis le début)
+  resetCrawl();
+
+  // 3 — Lancer l'audio avec fondu d'entrée
+  window._introAudio.volume = 0;
+  window._introAudio.muted  = false;
+  const playPromise = window._introAudio.play();
+  if (playPromise) {
+    playPromise.catch(err => console.warn('Audio play failed:', err));
+  }
+  let v = 0;
+  const fadeIn = setInterval(() => {
+    v = Math.min(v + 0.04, 0.75);
+    window._introAudio.volume = v;
+    if (v >= 0.75) clearInterval(fadeIn);
+  }, 80);
+
+  // 4 — Fondu de sortie à 30s, arrêt à 33s
+  setTimeout(() => {
+    const fadeOut = setInterval(() => {
+      window._introAudio.volume = Math.max(window._introAudio.volume - 0.025, 0);
+      if (window._introAudio.volume <= 0) {
+        clearInterval(fadeOut);
+        window._introAudio.pause();
+      }
+    }, 100);
+  }, 30000);
+});
+
+btnMute.addEventListener('click', (e) => {
+  e.stopPropagation();
+  window._introAudio.muted = !window._introAudio.muted;
+  if (!window._introAudio.muted) window._introAudio.volume = 0.75;
+  btnMute.textContent = window._introAudio.muted ? '🔇' : '🔊';
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT INTRO
+═══════════════════════════════════════════════════════ */
+applyLang(currentLang);
+
+/* ═══════════════════════════════════════════════════════
+   GAME — CONSTANTES
+═══════════════════════════════════════════════════════ */
+const COLS = 13, ROWS = 13;
+const BASE_COL = 5, BASE_ROW = 5; // coin supérieur gauche de la base 3×3
+
+// Grille : 0=vide, 'H'=maison, 'F'=firewall, 'A'=antivirus, 'B'=backup
+const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+// Place la base 3×3 au centre
+for (let r = BASE_ROW; r < BASE_ROW + 3; r++)
+  for (let c = BASE_COL; c < BASE_COL + 3; c++)
+    grid[r][c] = 'H';
+
+/* ── État global ── */
+const G = {
+  hp: 100,       // 0–100
+  points: 0,
+  wave: 0,
+  tick: 0,
+  selectedDef: 'firewall',
+  running: false,
+  paused: false,
+  startTime: null,
+};
+
+/* ═══════════════════════════════════════════════════════
+   GAME — THÈMES DYNAMIQUES (prairie → cyber-dark)
+═══════════════════════════════════════════════════════ */
+const THEMES = [
+  { hp:100, bg:'#b8e068', cell0:'#a8d458', cell1:'#b0dc60', grid:'rgba(80,140,20,.25)',
+    hudBorder:'#6aaa20', panelBorder:'#6aaa20', hpColor:'#44dd44' },
+  { hp:80,  bg:'#d4b840', cell0:'#c8aa30', cell1:'#d0b438', grid:'rgba(140,100,10,.3)',
+    hudBorder:'#aa8810', panelBorder:'#aa8810', hpColor:'#eecc22' },
+  { hp:60,  bg:'#7a8c6a', cell0:'#6a7c5a', cell1:'#728464', grid:'rgba(40,60,30,.35)',
+    hudBorder:'#445530', panelBorder:'#445530', hpColor:'#aacc66' },
+  { hp:40,  bg:'#2a3a3a', cell0:'#22302e', cell1:'#263434', grid:'rgba(20,50,40,.4)',
+    hudBorder:'#1a3030', panelBorder:'#1a3030', hpColor:'#44ccaa' },
+  { hp:20,  bg:'#111a28', cell0:'#0f1520', cell1:'#121824', grid:'rgba(20,40,80,.4)',
+    hudBorder:'#1a2860', panelBorder:'#1a2860', hpColor:'#ff8844' },
+  { hp:0,   bg:'#070910', cell0:'#09090f', cell1:'#0c0d18', grid:'rgba(180,20,20,.25)',
+    hudBorder:'#660a0a', panelBorder:'#660a0a', hpColor:'#ff3333' },
+];
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function hexToRgb(h) {
+  return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+}
+function lerpHex(h1, h2, t) {
+  const [r1,g1,b1] = hexToRgb(h1), [r2,g2,b2] = hexToRgb(h2);
+  return `rgb(${Math.round(lerp(r1,r2,t))},${Math.round(lerp(g1,g2,t))},${Math.round(lerp(b1,b2,t))})`;
+}
+function getTheme(hpPct) {
+  if (hpPct >= 100) return THEMES[0];
+  if (hpPct <= 0)   return THEMES[THEMES.length - 1];
+  let lo = THEMES[THEMES.length-1], hi = THEMES[0];
+  for (let i = 0; i < THEMES.length - 1; i++) {
+    if (hpPct <= THEMES[i].hp && hpPct >= THEMES[i+1].hp) {
+      hi = THEMES[i]; lo = THEMES[i+1]; break;
+    }
+  }
+  const t = (hpPct - lo.hp) / (hi.hp - lo.hp);
+  return {
+    bg:          lerpHex(lo.bg,          hi.bg,          t),
+    cell0:       lerpHex(lo.cell0,       hi.cell0,       t),
+    cell1:       lerpHex(lo.cell1,       hi.cell1,       t),
+    grid:        hi.grid,
+    hudBorder:   lerpHex(lo.hudBorder,   hi.hudBorder,   t),
+    panelBorder: lerpHex(lo.panelBorder, hi.panelBorder, t),
+    hpColor:     lerpHex(lo.hpColor,     hi.hpColor,     t),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME — CANVAS & RESIZE
+═══════════════════════════════════════════════════════ */
+const gc  = document.getElementById('game-canvas');
+const gctx = gc.getContext('2d');
+const gwrap = document.getElementById('game-wrap');
+
+function resizeGame() {
+  const aw = gwrap.clientWidth - 2;
+  const ah = gwrap.clientHeight - 2;
+  const cs = Math.floor(Math.min(aw, ah) / COLS);
+  gc.width = gc.height = cs * COLS;
+}
+window.addEventListener('resize', resizeGame);
+
+function S() { return gc.width / COLS; }
+
+/* ═══════════════════════════════════════════════════════
+   GAME — FLEURS & HERBE (décor prairie)
+═══════════════════════════════════════════════════════ */
+const FLOWER_CELLS = [
+  {c:0,r:0},{c:2,r:0},{c:1,r:1},{c:0,r:2},{c:2,r:2},
+  {c:11,r:0},{c:12,r:0},{c:12,r:1},{c:11,r:2},
+  {c:0,r:10},{c:0,r:12},{c:1,r:11},{c:2,r:11},
+  {c:10,r:10},{c:12,r:10},{c:11,r:11},{c:12,r:12},
+  {c:1,r:5},{c:1,r:7},{c:11,r:5},{c:11,r:7},
+  {c:5,r:1},{c:6,r:0},{c:7,r:1},{c:5,r:11},{c:7,r:12},
+];
+const FLOWER_COLORS = ['#ffee44','#ff88cc','#ffffff','#ffaa44','#ccff88','#ff6699'];
+
+function drawFlower(x, y, s, seed, alpha) {
+  if (alpha <= 0) return;
+  const sway = Math.sin(G.tick * .03 + seed) * .04;
+  const cx = x + s * .5 + sway * s, cy = y + s * .5;
+  const pr = Math.max(1, Math.floor(s / 8));
+  const col = FLOWER_COLORS[seed % FLOWER_COLORS.length];
+  gctx.globalAlpha = Math.min(1, alpha) * .9;
+  gctx.fillStyle = col;
+  gctx.fillRect(cx - pr*2.5, cy - pr*.5, pr*2, pr);
+  gctx.fillRect(cx + pr*.5,  cy - pr*.5, pr*2, pr);
+  gctx.fillRect(cx - pr*.5,  cy - pr*2.5, pr, pr*2);
+  gctx.fillRect(cx - pr*.5,  cy + pr*.5,  pr, pr*2);
+  gctx.fillStyle = '#ffdd44';
+  gctx.fillRect(cx - pr*.5, cy - pr*.5, pr, pr);
+  gctx.fillStyle = '#44aa22'; gctx.globalAlpha = Math.min(1, alpha) * .7;
+  gctx.fillRect(cx - pr*.5, cy + pr*1.5, pr, pr*2);
+  gctx.globalAlpha = 1;
+}
+
+function drawGrass(x, y, s, seed, alpha) {
+  if (alpha <= 0) return;
+  gctx.globalAlpha = alpha * .5;
+  gctx.fillStyle = '#5ab040';
+  const pr = Math.max(1, Math.floor(s / 10));
+  const sway = Math.sin(G.tick * .025 + seed) * .03 * s;
+  for (let i = 0; i < 3; i++) {
+    const bx = x + s * (.25 + i * .25) + sway;
+    gctx.fillRect(bx, y + s*.5, pr, s*.5);
+    gctx.fillRect(bx + pr*.5*(i%2?1:-1), y + s*.25, pr, s*.28);
+  }
+  gctx.globalAlpha = 1;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME — DESSIN DE LA BASE (maison / PC)
+═══════════════════════════════════════════════════════ */
+function drawBase(col, row, s, theme) {
+  const x = col * s, y = row * s;
+  const w = s * 3, h = s * 3;
+
+  // Fond de la base
+  gctx.fillStyle = '#0a1a2e';
+  gctx.fillRect(x, y, w, h);
+
+  // Bordure lumineuse
+  gctx.strokeStyle = '#2255aa';
+  gctx.lineWidth = Math.max(2, s * .07);
+  gctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+
+  // Écran PC (centre)
+  const sx = x + s * .55, sy = y + s * .45;
+  const sw = s * 1.9, sh = s * 1.4;
+  gctx.fillStyle = '#0d2040';
+  gctx.fillRect(sx, sy, sw, sh);
+  gctx.strokeStyle = '#1a3a6a';
+  gctx.lineWidth = 1;
+  gctx.strokeRect(sx, sy, sw, sh);
+
+  // Lueur de l'écran
+  gctx.fillStyle = '#0a4080';
+  gctx.fillRect(sx + 2, sy + 2, sw - 4, sh - 4);
+
+  // Lignes de code sur l'écran (pixel art)
+  const lineColors = ['#22aaff', '#44ff88', '#ffdd44', '#22aaff', '#ff4488'];
+  const lineW = [.6, .8, .5, .7, .4];
+  for (let i = 0; i < 5; i++) {
+    gctx.fillStyle = lineColors[i];
+    gctx.globalAlpha = .7 + .3 * Math.sin(G.tick * .05 + i);
+    gctx.fillRect(sx + 4, sy + 4 + i * (sh - 8) / 5, sw * lineW[i] - 8, Math.max(1, s * .06));
+  }
+  gctx.globalAlpha = 1;
+
+  // Pied du moniteur
+  const mx = x + s * 1.15, my = y + s * 1.9;
+  gctx.fillStyle = '#0d2040';
+  gctx.fillRect(mx, my, s * .7, s * .18);
+  gctx.fillRect(mx - s*.1, my + s*.16, s * .9, s * .08);
+
+  // Icône bouclier (au-dessus de l'écran)
+  const shx = x + s * 1.35, shy = y + s * .1;
+  gctx.fillStyle = '#1a66cc';
+  gctx.globalAlpha = .9;
+  gctx.beginPath();
+  gctx.moveTo(shx + s*.15, shy);
+  gctx.lineTo(shx + s*.3,  shy + s*.05);
+  gctx.lineTo(shx + s*.3,  shy + s*.22);
+  gctx.lineTo(shx + s*.15, shy + s*.3);
+  gctx.lineTo(shx,         shy + s*.22);
+  gctx.lineTo(shx,         shy + s*.05);
+  gctx.closePath();
+  gctx.fill();
+  gctx.fillStyle = '#55aaff';
+  gctx.font = `bold ${Math.max(6, s*.18)}px monospace`;
+  gctx.textAlign = 'center';
+  gctx.fillText('🔒', shx + s*.15, shy + s*.22);
+  gctx.globalAlpha = 1;
+  gctx.textAlign = 'left';
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME — BOUCLE DE RENDU
+═══════════════════════════════════════════════════════ */
+function renderGame() {
+  const s = S();
+  if (!s) return;
+  const th = getTheme(G.hp);
+
+  // Fond
+  gctx.fillStyle = th.bg;
+  gctx.fillRect(0, 0, gc.width, gc.height);
+
+  // Cellules + décor
+  const flowerAlpha = Math.max(0, Math.min(1, (G.hp - 60) / 40));
+  const grassAlpha  = Math.max(0, Math.min(1, (G.hp - 20) / 40));
+  const flowerSet   = new Set(FLOWER_CELLS.map(f => `${f.c},${f.r}`));
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = grid[r][c];
+      if (cell === 'H') continue; // dessiné séparément
+
+      const x = c * s, y = r * s;
+      const even = (r + c) % 2 === 0;
+      gctx.fillStyle = even ? th.cell0 : th.cell1;
+      gctx.fillRect(x, y, s, s);
+
+      // Décor nature
+      if (cell === 0) {
+        const key = `${c},${r}`;
+        if (flowerSet.has(key)) {
+          const seed = (c * 7 + r * 13) % FLOWER_COLORS.length;
+          drawFlower(x, y, s, seed, flowerAlpha);
+        } else if (grassAlpha > 0 && (c + r) % 3 === 0) {
+          drawGrass(x, y, s, c * r, grassAlpha);
+        }
+      }
+    }
+  }
+
+  // Base 3×3 au centre
+  drawBase(BASE_COL, BASE_ROW, s, th);
+
+  // Lignes de grille
+  gctx.strokeStyle = th.grid;
+  gctx.lineWidth = 1;
+  for (let i = 0; i <= COLS; i++) {
+    gctx.beginPath(); gctx.moveTo(i*s, 0); gctx.lineTo(i*s, gc.height); gctx.stroke();
+    gctx.beginPath(); gctx.moveTo(0, i*s); gctx.lineTo(gc.width, i*s); gctx.stroke();
+  }
+
+  // Surbrillance de la cellule sélectionnée au clic
+  if (G.hoverCell) {
+    const { c, r } = G.hoverCell;
+    gctx.fillStyle = 'rgba(255,220,0,.18)';
+    gctx.fillRect(c*s, r*s, s, s);
+    gctx.strokeStyle = '#ffdd44';
+    gctx.lineWidth = 2;
+    gctx.strokeRect(c*s+1, r*s+1, s-2, s-2);
+  }
+
+  // HUD dynamique
+  applyGameTheme(th);
+  G.tick++;
+}
+
+function applyGameTheme(th) {
+  document.getElementById('hud').style.borderBottomColor        = th.hudBorder;
+  document.getElementById('bottom-bar').style.borderTopColor    = th.panelBorder;
+  const hpf = document.getElementById('g-hpfill');
+  hpf.style.width      = G.hp + '%';
+  hpf.style.background = th.hpColor;
+  document.getElementById('g-hpval').style.color = th.hpColor;
+  document.getElementById('game').style.background = th.bg;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME — LOOP
+═══════════════════════════════════════════════════════ */
+let gameRaf;
+function gameLoop() {
+  if (!G.paused) renderGame();
+  gameRaf = requestAnimationFrame(gameLoop);
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME — INTERACTIONS (tap/clic sur grille)
+═══════════════════════════════════════════════════════ */
+G.hoverCell = null;
+
+gc.addEventListener('pointermove', e => {
+  const rect = gc.getBoundingClientRect();
+  const s = S();
+  const c = Math.floor((e.clientX - rect.left)  / s);
+  const r = Math.floor((e.clientY - rect.top)   / s);
+  if (c >= 0 && c < COLS && r >= 0 && r < ROWS) G.hoverCell = { c, r };
+  else G.hoverCell = null;
+});
+gc.addEventListener('pointerleave', () => { G.hoverCell = null; });
+
+gc.addEventListener('pointerdown', e => {
+  const rect = gc.getBoundingClientRect();
+  const s = S();
+  const c = Math.floor((e.clientX - rect.left) / s);
+  const r = Math.floor((e.clientY - rect.top)  / s);
+  if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
+  const cell = grid[r][c];
+  if (cell === 'H') return; // base intouchable
+  // Placement d'une défense (coût vérifié dans les prochaines étapes)
+  console.log(`Clic cellule [${c},${r}] — défense sélectionnée : ${G.selectedDef}`);
+});
+
+/* ── OVERLAY (pause + défenses / quiz) ── */
+const overlay   = document.getElementById('overlay');
+const ovTitle   = document.getElementById('ov-title');
+const ovContent = document.getElementById('ov-content');
+
+const DEF_HTML = `
+<div class="pbtns">
+  <div class="pbtn sel" data-defense="firewall">
+    <div class="pi">🧱</div><div class="pn">Firewall</div><div class="pc">40🔐</div>
+  </div>
+  <div class="pbtn locked" data-defense="antivirus">
+    <div class="pi">🔫</div><div class="pn">Antivirus</div><div class="pc">80🔐</div>
+  </div>
+  <div class="pbtn locked" data-defense="backup">
+    <div class="pi">💾</div><div class="pn">Backup</div><div class="pc">120🔐</div>
+  </div>
+  <div class="pbtn locked" data-defense="update">
+    <div class="pi">⬆️</div><div class="pn">Update</div><div class="pc">30🔐</div>
+  </div>
+</div>`;
+
+const QUIZ_HTML = `
+<div style="text-align:center;color:#667;font-size:11px;padding:12px 0;letter-spacing:1px">
+  🪙 Quiz disponible à la vague 1 🪙
+</div>`;
+
+function openOverlay(type) {
+  G.paused = true;
+  if (type === 'def') {
+    ovTitle.innerHTML   = '🎒 <span data-ui="btn-def">Défenses</span>';
+    ovContent.innerHTML = DEF_HTML;
+    // Rétablir la sélection active
+    ovContent.querySelectorAll('.pbtn:not(.locked)').forEach(btn => {
+      btn.classList.toggle('sel', btn.dataset.defense === G.selectedDef);
+      btn.addEventListener('click', () => {
+        ovContent.querySelectorAll('.pbtn').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        G.selectedDef = btn.dataset.defense;
+        closeOverlay();
+      });
+    });
+  } else {
+    ovTitle.innerHTML   = '🪙 <span data-ui="btn-quiz">Gagner des points</span>';
+    ovContent.innerHTML = QUIZ_HTML;
+  }
+  overlay.classList.add('open');
+}
+
+function closeOverlay() {
+  overlay.classList.remove('open');
+  G.paused = false;
+}
+
+document.getElementById('btn-def').addEventListener('click',  () => openOverlay('def'));
+document.getElementById('btn-quiz').addEventListener('click', () => openOverlay('quiz'));
+document.getElementById('ov-close').addEventListener('click', closeOverlay);
+// Clic fond overlay = fermer
+overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+/* ── Sélection défense ── */
+document.querySelectorAll('.pbtn:not(.locked)').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pbtn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    G.selectedDef = btn.dataset.defense;
+  });
+});
+
+/* ── Langue dans le HUD ── */
+document.querySelectorAll('.g-lb').forEach(b => {
+  b.addEventListener('click', () => {
+    applyLang(b.dataset.glang);
+    document.querySelectorAll('.g-lb').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   GAME — DÉMARRAGE (déclenché par endIntro)
+═══════════════════════════════════════════════════════ */
+function startGame() {
+  resizeGame();
+  G.running = true;
+  G.startTime = Date.now();
+  // Synchro langue dans le HUD
+  document.querySelectorAll('.g-lb').forEach(b => {
+    b.classList.toggle('on', b.dataset.glang === currentLang);
+  });
+  gameLoop();
+  // Timer de survie
+  setInterval(() => {
+    if (!G.running) return;
+    const s = Math.floor((Date.now() - G.startTime) / 1000);
+    const m = Math.floor(s / 60), sec = s % 60;
+    document.getElementById('g-timer').textContent =
+      m + ':' + String(sec).padStart(2, '0');
+  }, 1000);
+}
+
+// startGame est appelé directement depuis endIntro
+</script>
+</body>
+</html>

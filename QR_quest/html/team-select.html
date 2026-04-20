@@ -701,7 +701,8 @@ function buildCarousel() {
 ══════════════════════════════════════════════════════════ */
 function navigate(dir) {
   var next = currentIndex + dir;
-  if (next < 0 || next >= TEAMS.length) return;
+  if (next < 0) next = TEAMS.length - 1;
+  else if (next >= TEAMS.length) next = 0;
   goTo(next);
 }
 
@@ -728,8 +729,8 @@ function updateDots() {
 }
 
 function updateArrows() {
-  document.getElementById('arrow-prev').classList.toggle('disabled', currentIndex === 0);
-  document.getElementById('arrow-next').classList.toggle('disabled', currentIndex === TEAMS.length - 1);
+  document.getElementById('arrow-prev').classList.remove('disabled');
+  document.getElementById('arrow-next').classList.remove('disabled');
 }
 
 /* ══════════════════════════════════════════════════════════

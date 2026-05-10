@@ -1,25 +1,22 @@
 /**
  * CyberQuest — Module de tracking
  * Inclure via <script src="/_track.js"></script> dans chaque page.
- * L'IP du serveur peut être surchargée AVANT l'inclusion :
- *   <script>window.CYBERQUEST_SERVER='http://192.168.0.45:8080';</script>
  */
 (function () {
   'use strict';
 
-  var SERVER      = (window.CYBERQUEST_SERVER || 'http://192.168.0.45:8080').replace(/\/$/, '');
-  var COOKIE_NAME = 'cqid';
+  // Chemin relatif — fonctionne peu importe l'IP du serveur
+  var SERVER = window.location.origin;
 
   /* ── Cookie helpers ──────────────────────────────────────── */
-  function getTeamId() {
-    var m = document.cookie.match(/(?:^|;\s*)cqid=([^;]+)/);
-    return m ? decodeURIComponent(m[1]) : null;
+  function getCookie(name) {
+    var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? decodeURIComponent(m[2]) : null;
   }
 
-  function setTeamId(id) {
-    var safe = encodeURIComponent(String(id).trim().slice(0, 16));
-    document.cookie = COOKIE_NAME + '=' + safe +
-      '; path=/; max-age=86400; SameSite=Lax';
+  function getTeamId() {
+    // cq_team posé par team-select.html (nom d'équipe : snowden, hopper, ...)
+    return getCookie('cq_team');
   }
 
   /* ── Fire-and-forget tracking pixel ─────────────────────── */
@@ -56,7 +53,6 @@
   window.CyberTrack = {
     track:           track,
     getTeamId:       getTeamId,
-    setTeamId:       setTeamId,
     autoTrack:       autoTrack,
     injectTeamBadge: injectTeamBadge
   };

@@ -5,1576 +5,1285 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CyberQuestKids — Tower Defense</title>
 <style>
-/* ═══════════════════════════════════════════
-   RESET & BASE
-═══════════════════════════════════════════ */
-*, *::before, *::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: #020b18;
-  font-family: 'Courier New', Courier, monospace;
-  user-select: none;
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background:#07090f;
+  color:#aabbff;
+  font-family:'Courier New',Courier,monospace;
+  display:flex; flex-direction:column; align-items:center;
+  height:100svh; overflow:hidden;
+  user-select:none;
+  transition: background .8s;
 }
 
-/* ═══════════════════════════════════════════
-   LANGUE — sélecteur flottant (coin supérieur droit)
-═══════════════════════════════════════════ */
-#lang-picker {
-  position: fixed;
-  top: 14px; right: 14px;
-  display: flex; gap: 5px;
-  z-index: 100;
-}
-.lb {
-  font: bold 9px monospace;
-  padding: 3px 7px;
-  border: 1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.4);
-  color: #aaa;
-  cursor: pointer;
-  border-radius: 2px;
-  letter-spacing: 1px;
-  transition: background .2s, color .2s, border-color .2s;
-}
-.lb.on {
-  background: rgba(255,210,0,.18);
-  color: #ffd700;
-  border-color: #ffd700;
+#intro-screen {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:#000;
+  display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+  z-index:1000;
+  overflow:hidden;
 }
 
-/* ═══════════════════════════════════════════
-   INTRO — fond étoilé + crawl Star Wars
-═══════════════════════════════════════════ */
-#intro {
-  position: fixed;
-  inset: 0;
-  background: #020b18;
-  display: flex; flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-  transition: opacity 1.2s ease;
-  z-index: 10;
-}
-#intro.fade-out { opacity: 0; pointer-events: none; }
-
-/* — Étoiles — */
-#stars-canvas {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+.stars {
+  position:absolute; width:100%; height:100%; overflow:hidden;
 }
 
-/* — Zone de perspective du crawl — */
-#crawl-viewport {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 88%;
-  perspective: 700px;
-  perspective-origin: 50% 20%;
-  overflow: hidden;
-  mask-image: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(0,0,0,.2) 10%,
-    black 22%,
-    black 100%
-  );
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(0,0,0,.2) 10%,
-    black 22%,
-    black 100%
-  );
+.star {
+  position:absolute; width:1px; height:1px;
+  background:#fff; border-radius:50%;
+  animation:twinkle 3s infinite;
 }
 
-#crawl-track {
-  transform-origin: 50% 100%;
-  transform: rotateX(18deg) translateY(95%);
-  width: 100%;
-  padding: 0 4%;
-  /* animation démarrée uniquement au clic ▶ */
+@keyframes twinkle {
+  0%, 100% { opacity:.3; }
+  50% { opacity:1; }
 }
 
-@keyframes crawl {
-  0%   { transform: rotateX(18deg) translateY(95%); }
-  100% { transform: rotateX(18deg) translateY(-340%); }
+.crawl {
+  perspective:400px;
+  height:60%;
+  display:flex; align-items:flex-end; justify-content:center;
 }
 
-#crawl-text {
-  text-align: center;
-  color: #ffd700;
-  line-height: 1.75;
-  padding-bottom: 40vh;
-}
-#crawl-text .episode {
-  font-size: clamp(14px, 3.5vw, 20px);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: #cc9900;
-  margin-bottom: 0.3em;
-}
-#crawl-text .title {
-  font-size: clamp(22px, 6vw, 38px);
-  font-weight: bold;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 1.2em;
-  text-shadow: 0 0 22px #ffd70099;
-}
-#crawl-text p {
-  font-size: clamp(16px, 4vw, 24px);
-  margin-bottom: 1.1em;
-  letter-spacing: 0.5px;
-}
-#crawl-text .big {
-  font-size: clamp(20px, 5.5vw, 30px);
-  font-weight: bold;
-  margin-top: 1.4em;
-  text-shadow: 0 0 18px #ffd70088;
-}
-#crawl-text .small {
-  font-size: clamp(14px, 3.5vw, 20px);
-  color: #cc9900;
-  margin-top: 0.2em;
+.crawl-text {
+  transform:rotateX(55deg) translateZ(0);
+  font-size:2.5vw;
+  text-align:center;
+  color:#ffd700;
+  font-weight:bold;
+  letter-spacing:2px;
+  max-width:85%;
+  line-height:1.6;
+  opacity:0;
+  animation:crawlup 8s ease-in forwards;
+  text-shadow:0 0 30px rgba(255,215,0,.5);
 }
 
-/* — Ligne "CYBERKIDS" en haut (style intro SW) — */
-#logo-bar {
-  position: absolute;
-  top: 6%;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
-}
-#logo-bar .logo-line {
-  font-size: clamp(8px, 1.8vw, 11px);
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: #ffd700;
-  opacity: .7;
+@keyframes crawlup {
+  0% { opacity:0; transform:rotateX(55deg) translateY(400px); }
+  10% { opacity:1; }
+  90% { opacity:1; }
+  100% { opacity:0; transform:rotateX(55deg) translateY(-800px); }
 }
 
-/* — Bouton Passer — */
-#btn-skip {
-  position: absolute;
-  bottom: 28px;
-  left: 50%; transform: translateX(-50%);
-  font: bold 10px monospace;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #ffd700;
-  border: 1px solid #ffd70055;
-  background: rgba(0,0,0,.5);
-  padding: 8px 22px;
-  cursor: pointer;
-  border-radius: 2px;
-  backdrop-filter: blur(3px);
-  transition: background .2s, border-color .2s;
-  z-index: 20;
-  animation: pulse-skip 2s ease-in-out infinite;
-}
-#btn-skip:hover { background: rgba(255,210,0,.12); border-color: #ffd700; }
-@keyframes pulse-skip {
-  0%,100% { opacity: .7; } 50% { opacity: 1; }
+.intro-btn {
+  align-self:flex-start;
+  margin:10px 20px;
+  padding:8px 16px;
+  background:rgba(255,215,0,.15);
+  border:2px solid #ffd700;
+  color:#ffd700;
+  cursor:pointer;
+  font-family:monospace;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1px;
+  border-radius:2px;
+  z-index:10;
 }
 
-#btn-mute {
-  position: absolute;
-  bottom: 30px;
-  right: 16px;
-  font-size: 16px;
-  background: rgba(0,0,0,.4);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 50%;
-  width: 34px; height: 34px;
-  cursor: pointer;
-  z-index: 20;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .2s;
-}
-#btn-mute:hover { background: rgba(255,210,0,.12); }
+.intro-btn:hover { background:rgba(255,215,0,.25); }
 
-/* — Tap to start — */
-#tap-start {
-  position: absolute;
-  inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 30;
-  cursor: pointer;
-}
-#tap-inner {
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-  animation: pulse-tap 1.8s ease-in-out infinite;
-}
-#tap-icon {
-  font-size: 52px;
-  color: #ffd700;
-  text-shadow: 0 0 30px #ffd70099, 0 0 60px #ffd70033;
-  line-height: 1;
-}
-#tap-label {
-  font: bold 13px monospace;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #ffd700;
-  opacity: .85;
-}
-@keyframes pulse-tap {
-  0%,100% { transform: scale(1);   opacity: .8; }
-  50%      { transform: scale(1.08); opacity: 1;  }
+.lang-selector {
+  display:flex; gap:5px;
+  margin:10px;
+  z-index:10;
 }
 
-/* ═══════════════════════════════════════════
-   ÉCRAN JEU
-═══════════════════════════════════════════ */
-#game {
-  position: fixed;
-  inset: 0;
-  background: #0b1120;
-  display: flex; flex-direction: column; align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1.2s ease;
-  z-index: 5;
-  font-family: 'Courier New', Courier, monospace;
-}
-#game.visible {
-  opacity: 1;
-  pointer-events: all;
+.lang-btn {
+  padding:6px 12px;
+  background:rgba(100,150,255,.15);
+  border:2px solid rgba(255,255,255,.3);
+  color:#aaa;
+  cursor:pointer;
+  font-family:monospace;
+  font-size:10px;
+  font-weight:bold;
+  border-radius:2px;
 }
 
-/* ── HUD ── */
+.lang-btn.active {
+  background:rgba(255,215,0,.3);
+  color:#ffd700;
+  border-color:#ffd700;
+}
+
+#game-screen {
+  display:none;
+  flex:1;
+  width:100%; max-width:520px;
+  display:flex;
+  flex-direction:column;
+  height:100svh;
+  overflow:hidden;
+}
+
 #hud {
-  width: 100%; max-width: 520px;
-  background: rgba(0,0,0,.45);
-  border-bottom: 2px solid #1a2860;
-  padding: 5px 10px;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-shrink: 0;
+  width:100%;
+  background:rgba(0,0,0,.35);
+  border-bottom:2px solid #1a2860;
+  padding:5px 12px;
+  display:flex; justify-content:space-between; align-items:center;
+  flex-shrink:0;
   backdrop-filter: blur(4px);
   transition: border-color .8s;
-  z-index: 2;
-}
-.hb { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.hl { font-size: 7px; letter-spacing: 1px; text-transform: uppercase; opacity: .5; color: #aabbff; }
-.hv { font-size: 14px; font-weight: bold; letter-spacing: 1px; color: #aabbff; }
-.hpw { width: 56px; height: 6px; background: rgba(0,0,0,.4);
-       border: 1px solid rgba(255,255,255,.2); border-radius: 2px; margin-top: 2px; }
-.hpf { height: 100%; border-radius: 2px; background: #44dd44;
-       transition: width .4s, background .8s; }
-
-.g-langrow { display: flex; gap: 3px; }
-.g-lb { font: bold 8px monospace; padding: 2px 5px;
-  border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.3);
-  color: #aaa; cursor: pointer; border-radius: 1px; transition: background .2s, color .2s; }
-.g-lb.on { background: rgba(100,150,255,.3); color: #fff; border-color: #aabbff; }
-
-/* ── Canvas wrap ── */
-#game-wrap {
-  flex: 1;
-  width: 100%; max-width: 520px;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-}
-#game-canvas {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  display: block;
-  touch-action: none;
 }
 
-/* ══ BARRE DE BOUTONS BAS ══════════════════════════════ */
-#bottom-bar {
-  width: 100%; max-width: 520px;
-  flex-shrink: 0;
-  display: flex;
-  border-top: 3px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
-}
-.bot-btn {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; padding: 10px 4px 10px;
-  cursor: pointer; border: none; background: none;
-  transition: background .2s;
-  position: relative;
-}
-.bot-btn:first-child { border-right: 2px solid rgba(255,255,255,.08); }
-.bot-btn:active, .bot-btn:hover { background: rgba(255,255,255,.06); }
-.bot-icon { font-size: 36px; line-height: 1; }
-.bot-label {
-  font: bold 9px monospace; letter-spacing: 2px;
-  text-transform: uppercase; color: #8899bb;
+.hb { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.hl { font-size:7px; letter-spacing:1px; text-transform:uppercase; opacity:.55; }
+.hv { font-size:15px; font-weight:bold; letter-spacing:1px; }
+.hpw { width:64px; height:7px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.2); margin-top:2px; border-radius:2px; }
+.hpf { height:100%; border-radius:2px; transition: width .4s, background .8s; }
+
+#wrap {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
 }
 
-/* ── Coffre CSS ── */
-.chest-svg {
-  width: 40px; height: 34px; display: block;
+#c { image-rendering:pixelated; image-rendering:crisp-edges; display:block; }
+
+#wavebanner {
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  background:rgba(180,30,30,.9); border:2px solid #ff3333;
+  color:#fff; padding:5px 18px; font-size:11px; letter-spacing:2px;
+  font-weight:bold; white-space:nowrap; pointer-events:none;
+  animation:blink 1s infinite;
+  display:none;
+  z-index:5;
 }
 
-/* ══ OVERLAY (pause + contenu) ═══════════════════════ */
-#overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,8,.82);
-  backdrop-filter: blur(3px);
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center;
-  z-index: 20;
-  animation: fadeInOv .2s ease;
-}
-#overlay.open { display: flex; }
-@keyframes fadeInOv { from { opacity:0; } to { opacity:1; } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.55} }
 
-.ov-box {
-  background: rgba(6,10,28,.97);
-  border: 2px solid rgba(100,140,255,.3);
-  border-radius: 6px;
-  width: 90%; max-width: 360px;
-  padding: 16px;
-  position: relative;
+#panel {
+  width:100%;
+  background:rgba(0,0,0,.3);
+  border-top:2px solid rgba(255,255,255,.08);
+  padding:5px 8px 8px;
+  flex-shrink:0;
+  backdrop-filter:blur(4px);
+  transition: border-color .8s;
 }
-.ov-title {
-  font: bold 12px monospace; letter-spacing: 3px;
-  text-transform: uppercase; color: #aabbff;
-  text-align: center; margin-bottom: 14px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.ov-close {
-  position: absolute; top: 10px; right: 12px;
-  font: bold 16px monospace; color: #445; cursor: pointer;
-  background: none; border: none; transition: color .2s;
-}
-.ov-close:hover { color: #ff5544; }
 
-/* Boutons défenses dans l'overlay */
-.pbtns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.ptabs {
+  display:flex; gap:4px; margin-bottom:8px;
+}
+
+.ptab {
+  flex:1; padding:6px;
+  background:rgba(0,0,0,.35);
+  border:2px solid rgba(255,255,255,.12);
+  color:#888;
+  text-align:center;
+  font-size:9px;
+  cursor:pointer;
+  border-radius:2px;
+  transition:border-color .3s, background .3s;
+}
+
+.ptab.active {
+  border-color:#ffdd44;
+  background:rgba(255,220,0,.1);
+  color:#ffdd44;
+}
+
+.ptab-content { display:none; flex-direction:column; }
+.ptab-content.active { display:flex; }
+
+.plbl { font-size:7px; letter-spacing:1px; text-transform:uppercase; opacity:.3; text-align:center; margin-bottom:5px; }
+.pbtns { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
 .pbtn {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: rgba(0,0,0,.4); border: 2px solid rgba(255,255,255,.15);
-  padding: 8px 10px; cursor: pointer; min-width: 64px; border-radius: 4px;
-  transition: border-color .2s, background .2s;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:rgba(0,0,0,.35); border:2px solid rgba(255,255,255,.12);
+  padding:5px 8px; cursor:pointer; min-width:58px; border-radius:2px;
+  transition: border-color .5s, background .5s, opacity .3s;
 }
-.pbtn.sel { border-color: #ffdd44; background: rgba(255,220,0,.1); }
-.pbtn.locked { opacity: .3; cursor: not-allowed; }
-.pi { font-size: 22px; }
-.pn { font-size: 8px; color: #8899bb; }
-.pc { font-size: 10px; color: #ffdd44; font-weight: bold; }
+.pbtn.sel { border-color:#ffdd44; background:rgba(255,220,0,.08); }
+.pbtn.disabled { opacity:.4; cursor:not-allowed; }
+.pi { font-size:17px; }
+.pn { font-size:7px; color:#8899bb; }
+.pc { font-size:9px; color:#ffdd44; }
 
+.quiz-question {
+  background:rgba(100,100,150,.15);
+  border:1px solid rgba(100,150,255,.3);
+  padding:8px;
+  border-radius:2px;
+  font-size:9px;
+  line-height:1.4;
+  text-align:center;
+}
+
+.quiz-btns {
+  display:flex; gap:4px;
+}
+
+.quiz-btn {
+  flex:1;
+  padding:6px;
+  background:rgba(0,0,0,.35);
+  border:2px solid rgba(100,150,255,.3);
+  color:#aabbff;
+  font-size:9px;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:2px;
+  transition:border-color .3s;
+}
+
+.quiz-btn:hover { border-color:#44ccff; }
+
+.quiz-feedback {
+  font-size:8px;
+  text-align:center;
+  min-height:14px;
+  color:#ffdd44;
+}
+
+#gameover-screen {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:1001;
+  color:#fff;
+  text-align:center;
+  gap:20px;
+  padding:20px;
+}
+
+.gameover-title {
+  font-size:3vw;
+  font-weight:bold;
+  color:#ff3333;
+  letter-spacing:2px;
+  text-shadow:0 0 30px rgba(255,50,50,.8);
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { text-shadow:0 0 30px rgba(255,50,50,.8); }
+  50% { text-shadow:0 0 60px rgba(255,50,50,.4); }
+}
+
+.gameover-stats {
+  font-size:1.5vw;
+  color:#aabbff;
+  line-height:2;
+}
+
+.gameover-message {
+  font-size:1.1vw;
+  max-width:90%;
+  line-height:1.6;
+  color:#cccccc;
+  font-style:italic;
+}
+
+.gameover-btn {
+  padding:12px 28px;
+  background:rgba(255,215,0,.2);
+  border:2px solid #ffd700;
+  color:#ffd700;
+  cursor:pointer;
+  font-family:monospace;
+  font-size:14px;
+  font-weight:bold;
+  border-radius:3px;
+  margin-top:10px;
+}
+
+.gameover-btn:hover {
+  background:rgba(255,215,0,.35);
+}
 </style>
 </head>
 <body>
 
-<!-- ── Sélecteur de langue ── -->
-<div id="lang-picker">
-  <button class="lb" data-lang="FR">FR</button>
-  <button class="lb" data-lang="NL">NL</button>
-  <button class="lb" data-lang="EN">EN</button>
-</div>
-
-<!-- ══════════════ INTRO ══════════════ -->
-<div id="intro">
-  <canvas id="stars-canvas"></canvas>
-
-  <div id="logo-bar">
-    <div class="logo-line">CyberQuestKids</div>
+<div id="intro-screen">
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="nl">NL</button>
+    <button class="lang-btn" data-lang="en">EN</button>
   </div>
-
-  <div id="crawl-viewport">
-    <div id="crawl-track">
-      <div id="crawl-text">
-        <!-- rempli par JS selon la langue -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Tap to start -->
-<div id="tap-start">
-  <div id="tap-inner">
-    <div id="tap-icon">▶</div>
-    <div id="tap-label">Appuyer pour commencer</div>
+  <button class="intro-btn" id="skip-intro">Passer</button>
+  <div class="stars" id="stars"></div>
+  <div class="crawl" id="crawl-container">
+    <div class="crawl-text" id="crawl-text"></div>
   </div>
 </div>
 
-<button id="btn-skip" style="display:none">— Passer —</button>
-<button id="btn-mute" style="display:none" title="Couper le son">🔊</button>
-
-<audio id="intro-audio" preload="auto">
-  <source src="QR_quest/mp3/intro.mp3" type="audio/mpeg">
-</audio>
-</div>
-
-<!-- ══════════════ JEU ══════════════ -->
-<div id="game">
-
-  <!-- HUD -->
+<div id="game-screen">
   <div id="hud">
-    <div class="g-langrow">
-      <button class="g-lb" data-glang="FR">FR</button>
-      <button class="g-lb" data-glang="NL">NL</button>
-      <button class="g-lb" data-glang="EN">EN</button>
+    <div class="hb">
+      <div class="hl">❤ HP Base</div>
+      <div class="hpw"><div class="hpf" id="hpfill"></div></div>
+      <div class="hv" id="hpval">100%</div>
     </div>
     <div class="hb">
-      <div class="hl" data-ui="hp">Base HP</div>
-      <div class="hpw"><div class="hpf" id="g-hpfill" style="width:100%"></div></div>
-      <div class="hv" id="g-hpval">100%</div>
+      <div class="hl">Vague</div>
+      <div class="hv" id="wave" style="color:#44aaff">01</div>
     </div>
     <div class="hb">
-      <div class="hl" data-ui="wave">Vague</div>
-      <div class="hv" id="g-wave" style="color:#44aaff">01</div>
+      <div class="hl">Points 🔐</div>
+      <div class="hv" id="points" style="color:#ffdd44">0</div>
     </div>
     <div class="hb">
-      <div class="hl" data-ui="points">Points</div>
-      <div class="hv" id="g-points" style="color:#ffdd44">0 🔐</div>
-    </div>
-    <div class="hb">
-      <div class="hl" data-ui="time">Survie</div>
-      <div class="hv" id="g-timer" style="color:#ff5544">0:00</div>
+      <div class="hl">Survie</div>
+      <div class="hv" id="timer" style="color:#ff5544">0:00</div>
     </div>
   </div>
 
-  <!-- Canvas -->
-  <div id="game-wrap">
-    <canvas id="game-canvas"></canvas>
+  <div id="wrap">
+    <canvas id="c"></canvas>
+    <div id="wavebanner"></div>
   </div>
 
-  <!-- ── Overlay pause ── -->
-  <div id="overlay">
-    <div class="ov-box">
-      <div class="ov-title" id="ov-title">🎒 DÉFENSES</div>
-      <button class="ov-close" id="ov-close">✕</button>
-      <div id="ov-content"></div>
+  <div id="panel">
+    <div class="ptabs">
+      <div class="ptab active" data-tab="defenses">Défenses</div>
+      <div class="ptab" data-tab="quiz">Quiz 🧠</div>
+    </div>
+
+    <div id="tab-defenses" class="ptab-content active">
+      <div class="plbl">Sélectionner une défense</div>
+      <div class="pbtns" id="defense-buttons"></div>
+    </div>
+
+    <div id="tab-quiz" class="ptab-content">
+      <div class="quiz-question" id="quiz-question">Chargement du quiz...</div>
+      <div class="quiz-btns">
+        <button class="quiz-btn" id="quiz-true">VRAI</button>
+        <button class="quiz-btn" id="quiz-false">FAUX</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
     </div>
   </div>
+</div>
 
-  <!-- ── Barre de boutons bas ── -->
-  <div id="bottom-bar">
-
-    <button class="bot-btn" id="btn-def">
-      <span class="bot-icon">🎒</span>
-      <span class="bot-label" data-ui="btn-def">Défenses</span>
-    </button>
-
-    <button class="bot-btn" id="btn-quiz">
-      <!-- Coffre SVG pixel art -->
-      <svg class="chest-svg" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- corps -->
-        <rect x="2" y="16" width="36" height="16" rx="2" fill="#6b3a0e" stroke="#e8a820" stroke-width="1.5"/>
-        <!-- couvercle -->
-        <rect x="2" y="4" width="36" height="13" rx="2" fill="#8b4e14" stroke="#e8a820" stroke-width="1.5"/>
-        <!-- cerclage métallique -->
-        <rect x="2" y="15" width="36" height="4" fill="#c87818" stroke="#e8a820" stroke-width="1"/>
-        <!-- cadenas corps -->
-        <rect x="16" y="18" width="8" height="8" rx="1.5" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
-        <!-- cadenas arceau -->
-        <path d="M18 18 v-3 a2 2 0 0 1 4 0 v3" stroke="#f0c030" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <!-- pièces visibles dans coffre -->
-        <circle cx="10" cy="24" r="3" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
-        <circle cx="30" cy="24" r="3" fill="#f0c030" stroke="#a07808" stroke-width="1"/>
-        <circle cx="10" cy="9" r="2.5" fill="#f0d050" stroke="#a07808" stroke-width="1" opacity=".6"/>
-        <circle cx="30" cy="9" r="2.5" fill="#f0d050" stroke="#a07808" stroke-width="1" opacity=".6"/>
-      </svg>
-      <span class="bot-label" data-ui="btn-quiz">Gagner des points</span>
-    </button>
-
+<div id="gameover-screen">
+  <div class="gameover-title" id="gameover-title">SYSTÈME COMPROMIS</div>
+  <div class="gameover-stats">
+    <div>Survie: <span id="gameover-time">0:00</span></div>
+    <div>Vague atteinte: <span id="gameover-wave">1</span></div>
   </div>
-
+  <div class="gameover-message" id="gameover-message"></div>
+  <button class="gameover-btn" id="restart-btn">Rejouer</button>
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════
-   TEXTES DU CRAWL (3 langues)
-═══════════════════════════════════════════════════════ */
-const CRAWL = {
-  FR: {
-    skip: '— Passer —',
-    tapStart: 'Appuyer pour commencer',
-    episode: 'Épisode I',
-    title: 'CyberQuest Kids',
-    lines: [
-      'Dans un monde où chaque clic laisse une trace...',
-      'une équipe de jeunes explorateurs a été numérisée et propulsée dans les couloirs invisibles d\'Internet.',
-      'Leur mission : traverser le réseau, apprendre ses secrets, et revenir sains et saufs.',
-      'Mais les routes du web sont infestées de dangers.',
-      'Virus, hackers, ransomwares et espions numériques guettent dans l\'ombre, prêts à frapper.',
-      'Une seule chose peut les protéger :',
-      'TOI.',
-      'Construis des défenses. Prends les bonnes décisions. Réponds aux questions.',
-      'Et surtout, rappelle-toi...',
-      'Aucun système n\'est infaillible.',
-      'L\'objectif n\'est pas de gagner.',
-      'C\'est de tenir le plus longtemps possible.',
-      'Bonne chance.',
-    ],
+const COLS=13, ROWS=13;
+const HOUSE_CELLS=new Set(['5,5','5,6','5,7','6,5','6,6','6,7','7,5','7,6','7,7']);
+
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const wrap=document.getElementById('wrap');
+const introScreen=document.getElementById('intro-screen');
+const gameScreen=document.getElementById('game-screen');
+const gameoverScreen=document.getElementById('gameover-screen');
+
+const TEXTS={
+  fr:{
+    crawl:"Dans un monde où chaque appareil est connecté... une génération entière a migré vers le cyberespace. Tu es leur gardien. Des vagues de menaces approchent — virus, hackers, cookies espions... Construis tes défenses. Protège la base. Aucun système n'est invincible. Tiens le plus longtemps possible.",
+    gameoverTitle:"SYSTÈME COMPROMIS",
+    gameoverMsg:"Aucun système n'est infaillible. La vraie sécurité, c'est être prêt à reconstruire.",
+    restartBtn:"Rejouer",
+    defTab:"Défenses",
+    quizTab:"Quiz 🧠",
+    firewall:"Firewall",
+    antivirus:"Antivirus",
+    backup:"Backup",
+    clean:"Nettoyer",
+    vrai:"VRAI",
+    faux:"FAUX",
+    quiz:[
+      {q:"Un mot de passe fort doit avoir au moins 12 caractères, des majuscules, des chiffres et des symboles.",a:true,e:"Plus il est long et varié, plus il résiste aux attaques."},
+      {q:"Un antivirus seul suffit à protéger totalement ton ordinateur.",a:false,e:"Il faut aussi un firewall, des mises à jour régulières et de bonnes habitudes."},
+      {q:"Le phishing consiste à voler tes données via de faux emails ou sites.",a:true,e:"Toujours vérifier l'adresse de l'expéditeur avant de cliquer."},
+      {q:"Utiliser le même mot de passe partout est pratique et sans risque.",a:false,e:"Si un compte est piraté, tous les autres le sont aussi."},
+      {q:"Un VPN chiffre ta connexion et cache ton adresse IP.",a:true,e:"Utile sur les réseaux Wi-Fi publics comme au café ou à l'hôtel."},
+      {q:"Les cookies sont toujours des logiciels malveillants dangereux.",a:false,e:"Ils servent surtout à mémoriser tes préférences, mais certains tracent ton activité."},
+      {q:"Faire des sauvegardes régulières permet de récupérer ses données après une attaque.",a:true,e:"La règle 3-2-1 : 3 copies, 2 supports différents, 1 hors site."},
+      {q:"Un hacker a toujours besoin d'un accès physique à ton ordinateur pour attaquer.",a:false,e:"La plupart des attaques se font à distance, via internet."},
+      {q:"Le cadenas 🔒 dans l'URL signifie que la connexion est chiffrée (HTTPS).",a:true,e:"Mais cela ne garantit pas que le site est honnête — vérifie l'adresse complète."},
+      {q:"Mettre à jour ses logiciels corrige des failles de sécurité.",a:true,e:"Les mises à jour colmatent des brèches que les hackers exploitent."},
+      {q:"Un réseau Wi-Fi sans mot de passe est aussi sécurisé qu'un réseau protégé.",a:false,e:"Toute personne sur ce réseau peut intercepter ton trafic."},
+      {q:"L'authentification à deux facteurs (2FA) rend l'accès à tes comptes plus difficile pour les pirates.",a:true,e:"Même avec ton mot de passe, ils auraient besoin de ton téléphone."},
+    ]
   },
-  NL: {
-    skip: '— Overslaan —',
-    tapStart: 'Tik om te beginnen',
-    episode: 'Aflevering I',
-    title: 'CyberQuest Kids',
-    lines: [
-      'In een wereld waar elke klik een spoor nalaat...',
-      'werd een groep jonge ontdekkingsreizigers gedigitaliseerd en de onzichtbare gangen van het internet ingestuurd.',
-      'Hun missie: het netwerk doorkruisen, zijn geheimen ontdekken en veilig terugkeren.',
-      'Maar de wegen van het web zijn bezaaid met gevaren.',
-      'Virussen, hackers, ransomware en digitale spionnen loeren in de schaduw, klaar om toe te slaan.',
-      'Er is maar één ding dat hen kan beschermen:',
-      'JIJ.',
-      'Bouw verdedigingen. Neem de juiste beslissingen. Beantwoord de vragen.',
-      'En vergeet dit nooit...',
-      'Geen enkel systeem is onfeilbaar.',
-      'Het doel is niet winnen.',
-      'Het is zo lang mogelijk standhouden.',
-      'Veel succes.',
-    ],
+  nl:{
+    crawl:"In een wereld waar elk apparaat verbonden is... een hele generatie migreerde naar het cyberspace. Jij bent hun bewaker. Golven van bedreigingen naderen — virussen, hackers, spycookies... Bouw je verdediging. Bescherm de basis. Geen enkel systeem is onoverwinnelijk. Hou zo lang mogelijk stand.",
+    gameoverTitle:"SYSTEEM GECOMPROMITTEERD",
+    gameoverMsg:"Geen enkel systeem is onfeilbaar. Echte veiligheid betekent bereid zijn om opnieuw op te bouwen.",
+    restartBtn:"Opnieuw spelen",
+    firewall:"Firewall",
+    antivirus:"Antivirus",
+    backup:"Backup",
+    clean:"Schoonmaken",
+    vrai:"WAAR",
+    faux:"ONWAAR",
+    quiz:[
+      {q:"Een sterk wachtwoord moet minstens 12 tekens bevatten met hoofdletters, cijfers en symbolen.",a:true,e:"Hoe langer en gevarieerder, hoe moeilijker te kraken."},
+      {q:"Een antivirusprogramma alleen beschermt je computer volledig.",a:false,e:"Je hebt ook een firewall, updates en goede gewoonten nodig."},
+      {q:"Phishing is een techniek om je gegevens te stelen via valse e-mails of websites.",a:true,e:"Controleer altijd het e-mailadres van de afzender voor je klikt."},
+      {q:"Hetzelfde wachtwoord overal gebruiken is handig en veilig.",a:false,e:"Als één account gehackt wordt, zijn alle andere dat ook."},
+      {q:"Een VPN versleutelt je verbinding en verbergt je IP-adres.",a:true,e:"Handig op openbare wifi zoals in een café of hotel."},
+      {q:"Cookies zijn altijd gevaarlijke malware.",a:false,e:"Ze onthouden meestal je voorkeuren, maar sommige volgen je activiteit."},
+      {q:"Regelmatige back-ups maken stelt je in staat gegevens te herstellen na een aanval.",a:true,e:"De 3-2-1 regel: 3 kopieën, 2 verschillende media, 1 offsite."},
+      {q:"Een hacker heeft altijd fysieke toegang tot je computer nodig.",a:false,e:"De meeste aanvallen gebeuren op afstand, via internet."},
+      {q:"Het slotje 🔒 in de URL betekent dat de verbinding versleuteld is (HTTPS).",a:true,e:"Maar het garandeert niet dat de site eerlijk is."},
+      {q:"Software-updates herstellen beveiligingslekken.",a:true,e:"Updates dichten gaten die hackers misbruiken."},
+      {q:"Een wifi-netwerk zonder wachtwoord is net zo veilig als een beveiligd netwerk.",a:false,e:"Iedereen op dat netwerk kan je verkeer onderscheppen."},
+      {q:"Tweefactorauthenticatie (2FA) maakt toegang tot je accounts moeilijker voor hackers.",a:true,e:"Zelfs met je wachtwoord zouden ze je telefoon nodig hebben."},
+    ]
   },
-  EN: {
-    skip: '— Skip —',
-    tapStart: 'Tap to start',
-    episode: 'Episode I',
-    title: 'CyberQuest Kids',
-    lines: [
-      'In a world where every click leaves a trace...',
-      'a team of young explorers was digitized and sent through the invisible highways of the Internet.',
-      'Their mission: cross the network, learn its secrets, and return safely.',
-      'But the roads of the web are filled with dangers.',
-      'Viruses, hackers, ransomware and digital spies lurk in the shadows, ready to strike.',
-      'Only one thing can protect them:',
-      'YOU.',
-      'Build defenses. Make the right choices. Answer the questions.',
-      'And above all, remember...',
-      'No system is foolproof.',
-      'The goal is not to win.',
-      'It is to hold out as long as possible.',
-      'Good luck.',
-    ],
-  },
+  en:{
+    crawl:"In a world where every device is connected... an entire generation migrated to cyberspace. You are their guardian. Waves of threats are approaching — viruses, hackers, spy cookies... Build your defenses. Protect the base. No system is invincible. Hold on as long as possible.",
+    gameoverTitle:"SYSTEM COMPROMISED",
+    gameoverMsg:"No system is invincible. True security is being ready to rebuild.",
+    restartBtn:"Restart",
+    firewall:"Firewall",
+    antivirus:"Antivirus",
+    backup:"Backup",
+    clean:"Clean",
+    vrai:"TRUE",
+    faux:"FALSE",
+    quiz:[
+      {q:"A strong password should have at least 12 characters with uppercase, numbers and symbols.",a:true,e:"The longer and more varied, the harder it is to crack."},
+      {q:"Antivirus software alone is enough to fully protect your computer.",a:false,e:"You also need a firewall, regular updates and good habits."},
+      {q:"Phishing steals your data through fake emails or websites.",a:true,e:"Always check the sender's address before clicking any link."},
+      {q:"Using the same password everywhere is convenient and safe.",a:false,e:"If one account is hacked, all others are compromised too."},
+      {q:"A VPN encrypts your connection and hides your IP address.",a:true,e:"Useful on public Wi-Fi like in a café or hotel."},
+      {q:"Cookies are always dangerous malware.",a:false,e:"They mostly remember your preferences, but some track your activity."},
+      {q:"Regular backups allow you to recover data after an attack.",a:true,e:"The 3-2-1 rule: 3 copies, 2 different media, 1 offsite."},
+      {q:"A hacker always needs physical access to your computer to attack.",a:false,e:"Most attacks happen remotely, over the internet."},
+      {q:"The padlock 🔒 in the URL means the connection is encrypted (HTTPS).",a:true,e:"But it doesn't guarantee the site is trustworthy."},
+      {q:"Updating software fixes security vulnerabilities.",a:true,e:"Updates patch holes that hackers exploit."},
+      {q:"A Wi-Fi network without a password is as safe as a protected one.",a:false,e:"Anyone on that network can intercept your traffic."},
+      {q:"Two-factor authentication (2FA) makes it harder for hackers to access your accounts.",a:true,e:"Even with your password, they'd still need your phone."},
+    ]
+  }
 };
 
-/* ═══════════════════════════════════════════════════════
-   COOKIE helpers
-═══════════════════════════════════════════════════════ */
-function getCookie(name) {
-  const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
-  return m ? decodeURIComponent(m[1]) : null;
-}
-function setCookie(name, value, days) {
-  const d = new Date();
-  d.setTime(d.getTime() + days * 86400000);
-  document.cookie = name + '=' + encodeURIComponent(value)
-    + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
-}
+let lang='fr';
 
-/* ═══════════════════════════════════════════════════════
-   LANGUE
-═══════════════════════════════════════════════════════ */
-let currentLang = (getCookie('cqk_lang') || 'FR').toUpperCase();
-if (!CRAWL[currentLang]) currentLang = 'FR';
-
-function applyLang(lang) {
-  currentLang = lang;
-  setCookie('cqk_lang', lang, 365);
-  document.querySelectorAll('.lb').forEach(b => {
-    b.classList.toggle('on', b.dataset.lang === lang);
-  });
-  document.documentElement.lang = lang.toLowerCase();
-  buildCrawlText();
-  // resetCrawl uniquement si le crawl est déjà démarré (changement de langue en cours de lecture)
-  if (window._crawlStarted) resetCrawl();
-  document.getElementById('btn-skip').textContent  = CRAWL[lang].skip;
-  document.getElementById('tap-label').textContent = CRAWL[lang].tapStart;
-}
-
-document.querySelectorAll('.lb').forEach(b => {
-  b.addEventListener('click', () => applyLang(b.dataset.lang));
-});
-
-/* ═══════════════════════════════════════════════════════
-   CONSTRUCTION DU TEXTE DU CRAWL
-═══════════════════════════════════════════════════════ */
-function buildCrawlText() {
-  const data = CRAWL[currentLang];
-  const ct = document.getElementById('crawl-text');
-  ct.innerHTML = '';
-
-  // Épisode + titre
-  const ep = document.createElement('div');
-  ep.className = 'episode'; ep.textContent = data.episode;
-  ct.appendChild(ep);
-
-  const ti = document.createElement('div');
-  ti.className = 'title'; ti.textContent = data.title;
-  ct.appendChild(ti);
-
-  // Lignes — on marque en "big" certaines lignes clés
-  const bigIdxs = new Set([5, 6, 8, 9, 10, 11]);
-  const smallIdxs = new Set([10, 11]);
-
-  data.lines.forEach((line, i) => {
-    const p = document.createElement('p');
-    if (bigIdxs.has(i)) p.classList.add('big');
-    if (smallIdxs.has(i)) p.classList.add('small');
-    p.textContent = line;
-    ct.appendChild(p);
-  });
-}
-
-/* ═══════════════════════════════════════════════════════
-   ANIMATION DU CRAWL
-═══════════════════════════════════════════════════════ */
-const CRAWL_DURATION = 80; // secondes
-
-let crawlTimer = null;
-
-function resetCrawl() {
-  const track = document.getElementById('crawl-track');
-  // Force reflow pour relancer l'animation CSS
-  track.style.animation = 'none';
-  track.offsetHeight; // reflow
-  track.style.setProperty('--crawl-duration', CRAWL_DURATION + 's');
-  track.style.animation = `crawl ${CRAWL_DURATION}s linear forwards`;
-
-  // Fin déclenchée par la fin de l'animation (sync parfaite texte + audio)
-  clearTimeout(crawlTimer);
-  track.removeEventListener('animationend', endIntro);
-  track.addEventListener('animationend', endIntro, { once: true });
-}
-
-function endIntro() {
-  clearTimeout(crawlTimer);
-  // Fondu audio de sortie
-  if (window._introAudio && !window._introAudio.paused) {
-    const fadeOut = setInterval(() => {
-      window._introAudio.volume = Math.max(window._introAudio.volume - 0.06, 0);
-      if (window._introAudio.volume <= 0) {
-        clearInterval(fadeOut);
-        window._introAudio.pause();
-      }
-    }, 80);
-  }
-  const intro = document.getElementById('intro');
-  const game  = document.getElementById('game');
-  intro.classList.add('fade-out');
-  game.classList.add('visible');
-  setTimeout(() => {
-    intro.style.display = 'none';
-    startGame();
-  }, 1300);
-}
-
-document.getElementById('btn-skip').addEventListener('click', endIntro);
-
-/* ═══════════════════════════════════════════════════════
-   ÉTOILES (canvas)
-═══════════════════════════════════════════════════════ */
-(function initStars() {
-  const canvas = document.getElementById('stars-canvas');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    buildStars();
-  }
-
-  function buildStars() {
-    const count = Math.floor((canvas.width * canvas.height) / 1600);
-    stars = Array.from({ length: count }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.4 + 0.3,
-      alpha: Math.random() * 0.6 + 0.3,
-      speed: Math.random() * 0.008 + 0.003,
-      phase: Math.random() * Math.PI * 2,
-    }));
-  }
-
-  let raf;
-  function draw(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      const a = s.alpha * (0.7 + 0.3 * Math.sin(t * s.speed + s.phase));
-      ctx.globalAlpha = a;
-      // légère variation bleu/blanc selon la position
-      const hue = 210 + Math.floor(s.phase * 20);
-      ctx.fillStyle = `hsl(${hue}, 40%, 95%)`;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-    raf = requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', resize);
-  resize();
-  raf = requestAnimationFrame(draw);
-})();
-
-/* ═══════════════════════════════════════════════════════
-   TAP TO START + AUDIO
-═══════════════════════════════════════════════════════ */
-window._introAudio = document.getElementById('intro-audio');
-const btnMute  = document.getElementById('btn-mute');
-const tapStart = document.getElementById('tap-start');
-const btnSkip  = document.getElementById('btn-skip');
-
-tapStart.addEventListener('click', function startEverything() {
-  // 1 — Cacher l'overlay, montrer les boutons
-  tapStart.style.transition = 'opacity .4s';
-  tapStart.style.opacity = '0';
-  setTimeout(() => { tapStart.style.display = 'none'; }, 400);
-  btnSkip.style.display = '';
-  btnMute.style.display = '';
-
-  // 2 — Démarrer le crawl pour la première fois
-  window._crawlStarted = true;
-  resetCrawl();
-
-  // 3 — Lancer l'audio avec fondu d'entrée
-  window._introAudio.volume = 0;
-  window._introAudio.muted  = false;
-  const playPromise = window._introAudio.play();
-  if (playPromise) {
-    playPromise.catch(err => console.warn('Audio play failed:', err));
-  }
-  let v = 0;
-  const fadeIn = setInterval(() => {
-    v = Math.min(v + 0.04, 0.75);
-    window._introAudio.volume = v;
-    if (v >= 0.75) clearInterval(fadeIn);
-  }, 80);
-
-  // 4 — Fondu de sortie à 30s, arrêt à 33s
-  setTimeout(() => {
-    const fadeOut = setInterval(() => {
-      window._introAudio.volume = Math.max(window._introAudio.volume - 0.025, 0);
-      if (window._introAudio.volume <= 0) {
-        clearInterval(fadeOut);
-        window._introAudio.pause();
-      }
-    }, 100);
-  }, 30000);
-});
-
-btnMute.addEventListener('click', (e) => {
-  e.stopPropagation();
-  window._introAudio.muted = !window._introAudio.muted;
-  if (!window._introAudio.muted) window._introAudio.volume = 0.75;
-  btnMute.textContent = window._introAudio.muted ? '🔇' : '🔊';
-});
-
-/* ═══════════════════════════════════════════════════════
-   INIT INTRO
-═══════════════════════════════════════════════════════ */
-applyLang(currentLang);
-
-/* ═══════════════════════════════════════════════════════
-   GAME — CONSTANTES
-═══════════════════════════════════════════════════════ */
-const COLS = 13, ROWS = 13;
-const BASE_COL = 5, BASE_ROW = 5; // coin supérieur gauche de la base 3×3
-
-// Grille : 0=vide, 'H'=maison, 'F'=firewall, 'A'=antivirus, 'B'=backup
-const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-// Place la base 3×3 au centre
-for (let r = BASE_ROW; r < BASE_ROW + 3; r++)
-  for (let c = BASE_COL; c < BASE_COL + 3; c++)
-    grid[r][c] = 'H';
-
-/* ── État global ── */
-const G = {
-  hp: 100,
-  points: 800,   // points de départ
-  wave: 0,
-  tick: 0,
-  selectedDef: 'firewall',
-  running: false,
-  paused: false,
-  startTime: null,
-  pointsFlash: 0, // compteur de frames pour flash rouge
+const gameState={
+  hp:100,
+  points:0,
+  waveNum:0,
+  gameTime:0,
+  isGameOver:false,
+  grid:Array(ROWS).fill(null).map(()=>Array(COLS).fill(0)),
+  defenses:{},
+  enemies:[],
+  turrets:{},
+  waveState:'idle',
+  wavePrep:0,
+  currentQuizIdx:0,
+  quizAnswered:false,
+  quizFeedback:'',
+  selectedDefense:'FW',
+  unlockedDefenses:{FW:true, AV:false, BKP:false, CLEAN:false},
 };
 
-/* ── Défenses posées sur la grille ── */
-// Clé : "col,row" → { type, level, hp, maxHp }
-const defenses = {};
-function defKey(c, r) { return `${c},${r}`; }
+const DEFENSE_DEFS={
+  FW:  {name:'firewall', cost:40,   icon:'🧱', maxLevel:3, hp:[80,180,320]},
+  AV:  {name:'antivirus',cost:80,   icon:'🔫', maxLevel:1, hp:[120]},
+  BKP: {name:'backup',   cost:120,  icon:'💾', maxLevel:1, hp:[100]},
+  CLEAN:{name:'clean',   cost:180,  icon:'⬆️', maxLevel:1, hp:[0]},
+};
 
-/* ── Coûts & HP ── */
-const DEFENSE_COSTS = { firewall: 40, antivirus: 80, backup: 120, update: 30 };
-const FIREWALL_HP   = [0, 60, 120, 220];  // index = niveau (1/2/3)
-const FIREWALL_UPGRADE_COST = 30;
+const ENEMY_TYPES={
+  virus: {hp:50, speed:1.2, dmgBase:10, dmgWall:8},
+  ddos:  {hp:120, speed:0.7, dmgBase:15, dmgWall:6},
+  cookie:{hp:35, speed:0.8, dmgBase:5, dmgWall:4},
+};
 
-/* ═══════════════════════════════════════════════════════
-   GAME — THÈMES DYNAMIQUES (prairie → cyber-dark)
-═══════════════════════════════════════════════════════ */
-const THEMES = [
-  { hp:100, bg:'#b8e068', cell0:'#a8d458', cell1:'#b0dc60', grid:'rgba(80,140,20,.25)',
-    hudBorder:'#6aaa20', panelBorder:'#6aaa20', hpColor:'#44dd44' },
-  { hp:80,  bg:'#d4b840', cell0:'#c8aa30', cell1:'#d0b438', grid:'rgba(140,100,10,.3)',
-    hudBorder:'#aa8810', panelBorder:'#aa8810', hpColor:'#eecc22' },
-  { hp:60,  bg:'#7a8c6a', cell0:'#6a7c5a', cell1:'#728464', grid:'rgba(40,60,30,.35)',
-    hudBorder:'#445530', panelBorder:'#445530', hpColor:'#aacc66' },
-  { hp:40,  bg:'#2a3a3a', cell0:'#22302e', cell1:'#263434', grid:'rgba(20,50,40,.4)',
-    hudBorder:'#1a3030', panelBorder:'#1a3030', hpColor:'#44ccaa' },
-  { hp:20,  bg:'#111a28', cell0:'#0f1520', cell1:'#121824', grid:'rgba(20,40,80,.4)',
-    hudBorder:'#1a2860', panelBorder:'#1a2860', hpColor:'#ff8844' },
-  { hp:0,   bg:'#070910', cell0:'#09090f', cell1:'#0c0d18', grid:'rgba(180,20,20,.25)',
-    hudBorder:'#660a0a', panelBorder:'#660a0a', hpColor:'#ff3333' },
+const THEMES=[
+  {hp:100, bg:'#b8e068', cell0:'#a8d458', cell1:'#b0dc60', grid:'rgba(80,140,20,.25)',
+   hudBorder:'#6aaa20', panelBorder:'#6aaa20',
+   hpColor:'#44dd44'},
+  {hp:80, bg:'#d4b840', cell0:'#c8aa30', cell1:'#d0b438', grid:'rgba(140,100,10,.3)',
+   hudBorder:'#aa8810', panelBorder:'#aa8810',
+   hpColor:'#eecc22'},
+  {hp:60, bg:'#7a8c6a', cell0:'#6a7c5a', cell1:'#728464', grid:'rgba(40,60,30,.35)',
+   hudBorder:'#445530', panelBorder:'#445530',
+   hpColor:'#aacc66'},
+  {hp:40, bg:'#2a3a3a', cell0:'#22302e', cell1:'#263434', grid:'rgba(20,50,40,.4)',
+   hudBorder:'#1a3030', panelBorder:'#1a3030',
+   hpColor:'#44ccaa'},
+  {hp:20, bg:'#111a28', cell0:'#0f1520', cell1:'#121824', grid:'rgba(20,40,80,.4)',
+   hudBorder:'#1a2860', panelBorder:'#1a2860',
+   hpColor:'#ff8844'},
+  {hp:0, bg:'#070910', cell0:'#09090f', cell1:'#0c0d18', grid:'rgba(180,20,20,.25)',
+   hudBorder:'#660a0a', panelBorder:'#660a0a',
+   hpColor:'#ff3333'},
 ];
 
-function lerp(a, b, t) { return a + (b - a) * t; }
-function hexToRgb(h) {
-  return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+function lerp(a,b,t){return a+(b-a)*t;}
+function hexToRgb(h){
+  const r=parseInt(h.slice(1,3),16), g=parseInt(h.slice(3,5),16), b=parseInt(h.slice(5,7),16);
+  return [r,g,b];
 }
-function lerpHex(h1, h2, t) {
-  const [r1,g1,b1] = hexToRgb(h1), [r2,g2,b2] = hexToRgb(h2);
+function lerpHex(h1,h2,t){
+  const [r1,g1,b1]=hexToRgb(h1), [r2,g2,b2]=hexToRgb(h2);
   return `rgb(${Math.round(lerp(r1,r2,t))},${Math.round(lerp(g1,g2,t))},${Math.round(lerp(b1,b2,t))})`;
 }
-function getTheme(hpPct) {
-  if (hpPct >= 100) return THEMES[0];
-  if (hpPct <= 0)   return THEMES[THEMES.length - 1];
-  let lo = THEMES[THEMES.length-1], hi = THEMES[0];
-  for (let i = 0; i < THEMES.length - 1; i++) {
-    if (hpPct <= THEMES[i].hp && hpPct >= THEMES[i+1].hp) {
-      hi = THEMES[i]; lo = THEMES[i+1]; break;
+
+function getTheme(hpPct){
+  let lo=THEMES[THEMES.length-1], hi=THEMES[0];
+  for(let i=0;i<THEMES.length-1;i++){
+    if(hpPct<=THEMES[i].hp && hpPct>=THEMES[i+1].hp){
+      hi=THEMES[i]; lo=THEMES[i+1]; break;
     }
   }
-  const t = (hpPct - lo.hp) / (hi.hp - lo.hp);
+  if(hpPct>=100)return THEMES[0];
+  if(hpPct<=0)return THEMES[THEMES.length-1];
+  const range=hi.hp-lo.hp;
+  const t=range===0?0:(hpPct-lo.hp)/range;
   return {
-    bg:          lerpHex(lo.bg,          hi.bg,          t),
-    cell0:       lerpHex(lo.cell0,       hi.cell0,       t),
-    cell1:       lerpHex(lo.cell1,       hi.cell1,       t),
-    grid:        hi.grid,
-    hudBorder:   lerpHex(lo.hudBorder,   hi.hudBorder,   t),
-    panelBorder: lerpHex(lo.panelBorder, hi.panelBorder, t),
-    hpColor:     lerpHex(lo.hpColor,     hi.hpColor,     t),
+    bg:lerpHex(lo.bg,hi.bg,t),
+    cell0:lerpHex(lo.cell0,hi.cell0,t),
+    cell1:lerpHex(lo.cell1,hi.cell1,t),
+    grid:hi.grid,
+    hudBorder:lerpHex(lo.hudBorder,hi.hudBorder,t),
+    panelBorder:lerpHex(lo.panelBorder,hi.panelBorder,t),
+    hpColor:lerpHex(lo.hpColor,hi.hpColor,t),
   };
 }
 
-/* ═══════════════════════════════════════════════════════
-   GAME — CANVAS & RESIZE
-═══════════════════════════════════════════════════════ */
-const gc  = document.getElementById('game-canvas');
-const gctx = gc.getContext('2d');
-const gwrap = document.getElementById('game-wrap');
+let tick=0;
 
-function resizeGame() {
-  const aw = gwrap.clientWidth - 2;
-  const ah = gwrap.clientHeight - 2;
-  const cs = Math.floor(Math.min(aw, ah) / COLS);
-  gc.width = gc.height = cs * COLS;
-}
-window.addEventListener('resize', resizeGame);
-
-function S() { return gc.width / COLS; }
-
-/* ═══════════════════════════════════════════════════════
-   GAME — FLEURS & HERBE (décor prairie)
-═══════════════════════════════════════════════════════ */
-const FLOWER_CELLS = [
-  {c:0,r:0},{c:2,r:0},{c:1,r:1},{c:0,r:2},{c:2,r:2},
-  {c:11,r:0},{c:12,r:0},{c:12,r:1},{c:11,r:2},
-  {c:0,r:10},{c:0,r:12},{c:1,r:11},{c:2,r:11},
-  {c:10,r:10},{c:12,r:10},{c:11,r:11},{c:12,r:12},
+const FLOWERS=[
+  {c:0,r:0},{c:1,r:1},{c:2,r:0},{c:0,r:2},{c:2,r:2},
+  {c:11,r:0},{c:12,r:1},{c:11,r:2},{c:12,r:0},
+  {c:0,r:10},{c:1,r:11},{c:0,r:12},{c:2,r:11},
+  {c:10,r:10},{c:11,r:11},{c:12,r:10},{c:12,r:12},
   {c:1,r:5},{c:1,r:7},{c:11,r:5},{c:11,r:7},
-  {c:5,r:1},{c:6,r:0},{c:7,r:1},{c:5,r:11},{c:7,r:12},
+  {c:5,r:1},{c:6,r:0},{c:7,r:1},{c:6,r:11},{c:7,r:12},{c:5,r:12},
 ];
-const FLOWER_COLORS = ['#ffee44','#ff88cc','#ffffff','#ffaa44','#ccff88','#ff6699'];
+const FLOWER_COLORS=['#ffee44','#ff88cc','#ffffff','#ffaa44','#ccff88','#ff6699'];
 
-function drawFlower(x, y, s, seed, alpha) {
-  if (alpha <= 0) return;
-  const sway = Math.sin(G.tick * .03 + seed) * .04;
-  const cx = x + s * .5 + sway * s, cy = y + s * .5;
-  const pr = Math.max(1, Math.floor(s / 8));
-  const col = FLOWER_COLORS[seed % FLOWER_COLORS.length];
-  gctx.globalAlpha = Math.min(1, alpha) * .9;
-  gctx.fillStyle = col;
-  gctx.fillRect(cx - pr*2.5, cy - pr*.5, pr*2, pr);
-  gctx.fillRect(cx + pr*.5,  cy - pr*.5, pr*2, pr);
-  gctx.fillRect(cx - pr*.5,  cy - pr*2.5, pr, pr*2);
-  gctx.fillRect(cx - pr*.5,  cy + pr*.5,  pr, pr*2);
-  gctx.fillStyle = '#ffdd44';
-  gctx.fillRect(cx - pr*.5, cy - pr*.5, pr, pr);
-  gctx.fillStyle = '#44aa22'; gctx.globalAlpha = Math.min(1, alpha) * .7;
-  gctx.fillRect(cx - pr*.5, cy + pr*1.5, pr, pr*2);
-  gctx.globalAlpha = 1;
+function drawFlower(x,y,s,seed,alpha){
+  if(alpha<=0)return;
+  const sway=Math.sin(tick*.03+seed)*.04;
+  const cx=x+s*.5+sway*s, cy=y+s*.5;
+  const pr=Math.max(1,Math.floor(s/8));
+  const col=FLOWER_COLORS[seed%FLOWER_COLORS.length];
+  const a=Math.min(1,alpha);
+  ctx.globalAlpha=a*.9;
+  ctx.fillStyle=col;
+  ctx.fillRect(cx-pr*2.5,cy-pr*.5,pr*2,pr);
+  ctx.fillRect(cx+pr*.5,cy-pr*.5,pr*2,pr);
+  ctx.fillRect(cx-pr*.5,cy-pr*2.5,pr,pr*2);
+  ctx.fillRect(cx-pr*.5,cy+pr*.5,pr,pr*2);
+  ctx.fillStyle='#ffdd44';
+  ctx.fillRect(cx-pr*.5,cy-pr*.5,pr,pr);
+  ctx.fillStyle='#44aa22';
+  ctx.globalAlpha=a*.7;
+  ctx.fillRect(cx-pr*.5,cy+pr*1.5,pr,pr*2);
+  ctx.globalAlpha=1;
 }
 
-function drawGrass(x, y, s, seed, alpha) {
-  if (alpha <= 0) return;
-  gctx.globalAlpha = alpha * .5;
-  gctx.fillStyle = '#5ab040';
-  const pr = Math.max(1, Math.floor(s / 10));
-  const sway = Math.sin(G.tick * .025 + seed) * .03 * s;
-  for (let i = 0; i < 3; i++) {
-    const bx = x + s * (.25 + i * .25) + sway;
-    gctx.fillRect(bx, y + s*.5, pr, s*.5);
-    gctx.fillRect(bx + pr*.5*(i%2?1:-1), y + s*.25, pr, s*.28);
+function drawGrass(x,y,s,seed,alpha){
+  if(alpha<=0)return;
+  ctx.globalAlpha=alpha*.5;
+  ctx.fillStyle='#5ab040';
+  const pr=Math.max(1,Math.floor(s/10));
+  const sway=Math.sin(tick*.025+seed)*.03*s;
+  for(let i=0;i<3;i++){
+    const bx=x+s*(.25+i*.25)+sway;
+    ctx.fillRect(bx,y+s*.5,pr,s*.5);
+    ctx.fillRect(bx+pr*.5*(i%2?1:-1),y+s*.25,pr,s*.28);
   }
-  gctx.globalAlpha = 1;
+  ctx.globalAlpha=1;
 }
 
-/* ═══════════════════════════════════════════════════════
-   GAME — DESSIN DE LA BASE (maison / PC)
-═══════════════════════════════════════════════════════ */
-function drawBase(col, row, s, theme) {
-  const x = col * s, y = row * s;
-  const w = s * 3, h = s * 3;
-
-  // Fond de la base
-  gctx.fillStyle = '#0a1a2e';
-  gctx.fillRect(x, y, w, h);
-
-  // Bordure lumineuse
-  gctx.strokeStyle = '#2255aa';
-  gctx.lineWidth = Math.max(2, s * .07);
-  gctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-
-  // Écran PC (centre)
-  const sx = x + s * .55, sy = y + s * .45;
-  const sw = s * 1.9, sh = s * 1.4;
-  gctx.fillStyle = '#0d2040';
-  gctx.fillRect(sx, sy, sw, sh);
-  gctx.strokeStyle = '#1a3a6a';
-  gctx.lineWidth = 1;
-  gctx.strokeRect(sx, sy, sw, sh);
-
-  // Lueur de l'écran
-  gctx.fillStyle = '#0a4080';
-  gctx.fillRect(sx + 2, sy + 2, sw - 4, sh - 4);
-
-  // Lignes de code sur l'écran (pixel art)
-  const lineColors = ['#22aaff', '#44ff88', '#ffdd44', '#22aaff', '#ff4488'];
-  const lineW = [.6, .8, .5, .7, .4];
-  for (let i = 0; i < 5; i++) {
-    gctx.fillStyle = lineColors[i];
-    gctx.globalAlpha = .7 + .3 * Math.sin(G.tick * .05 + i);
-    gctx.fillRect(sx + 4, sy + 4 + i * (sh - 8) / 5, sw * lineW[i] - 8, Math.max(1, s * .06));
+function drawFW(x,y,s,dmg,level){
+  const pw=Math.max(1,Math.round(s/10));
+  const isSunny=gameState.hp>70;
+  const fwA=isSunny?'#8B6914':(dmg>.55?'#4a180a':'#b03a12');
+  const fwB=isSunny?'#a07c22':'#d85022';
+  const fwC=isSunny?'#6a500e':'#8a2a0a';
+  ctx.fillStyle=fwA;
+  ctx.fillRect(x,y,s,s);
+  const bH=s/4;
+  for(let r=0;r<4;r++){
+    const off=(r%2===0)?0:s*.25;
+    for(let b=-1;b<3;b++){
+      const bx=x+b*(s*.5)+off, by=y+r*bH;
+      const cx2=Math.max(bx+pw,x), cw=Math.min(bx+s*.5-pw,x+s)-cx2;
+      if(cw>0){ctx.fillStyle=r%2===0?fwB:fwC;ctx.fillRect(cx2,by+pw,cw,bH-pw*2);}
+    }
   }
-  gctx.globalAlpha = 1;
-
-  // Pied du moniteur
-  const mx = x + s * 1.15, my = y + s * 1.9;
-  gctx.fillStyle = '#0d2040';
-  gctx.fillRect(mx, my, s * .7, s * .18);
-  gctx.fillRect(mx - s*.1, my + s*.16, s * .9, s * .08);
-
-  // Icône bouclier (au-dessus de l'écran)
-  const shx = x + s * 1.35, shy = y + s * .1;
-  gctx.fillStyle = '#1a66cc';
-  gctx.globalAlpha = .9;
-  gctx.beginPath();
-  gctx.moveTo(shx + s*.15, shy);
-  gctx.lineTo(shx + s*.3,  shy + s*.05);
-  gctx.lineTo(shx + s*.3,  shy + s*.22);
-  gctx.lineTo(shx + s*.15, shy + s*.3);
-  gctx.lineTo(shx,         shy + s*.22);
-  gctx.lineTo(shx,         shy + s*.05);
-  gctx.closePath();
-  gctx.fill();
-  gctx.fillStyle = '#55aaff';
-  gctx.font = `bold ${Math.max(6, s*.18)}px monospace`;
-  gctx.textAlign = 'center';
-  gctx.fillText('🔒', shx + s*.15, shy + s*.22);
-  gctx.globalAlpha = 1;
-  gctx.textAlign = 'left';
+  if(dmg>0){
+    ctx.fillStyle=`rgba(0,0,0,${dmg*.6})`;
+    ctx.fillRect(x,y,s,s*dmg);
+    if(dmg>.25){
+      ctx.strokeStyle='rgba(0,0,0,.7)';
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(x+s*.3,y+2);
+      ctx.lineTo(x+s*.52,y+s*dmg*.85);
+      ctx.moveTo(x+s*.62,y+s*.08);
+      ctx.lineTo(x+s*.44,y+s*dmg*.7);
+      ctx.stroke();
+    }
+  }
 }
 
-/* ═══════════════════════════════════════════════════════
-   GAME — RENDU DES DÉFENSES
-═══════════════════════════════════════════════════════ */
+function drawHouse(x,y,s,hr,hc){
+  const hvA=gameState.hp>60?'#2a4a22':'#1e3420';
+  const hvB=gameState.hp>60?'#1e3c18':'#162818';
+  const winAlpha=gameState.hp>60?.5+.3*Math.sin(tick*.04+hc):.55+.45*Math.sin(tick*.04+hc);
+  if(hr===0){
+    ctx.fillStyle=hvB;
+    ctx.fillRect(x,y,s,s);
+    const tw=Math.max(2,Math.floor(s/5));
+    ctx.fillStyle=hvA;
+    for(let i=0;i<s;i+=tw*2)ctx.fillRect(x+i,y+s*.25,tw,s*.75);
+    if(hc===2){ctx.fillStyle='#5a3520';ctx.fillRect(x+s*.65,y,s*.14,s*.46);}
+  }else if(hr===1){
+    ctx.fillStyle=hvA;
+    ctx.fillRect(x,y,s,s);
+    if(hc!==1){
+      ctx.fillStyle=`rgba(68,238,136,${winAlpha})`;
+      ctx.fillRect(x+s*.24,y+s*.18,s*.52,s*.48);
+      ctx.fillStyle='#081408';
+      ctx.fillRect(x+s*.49,y+s*.18,s*.04,s*.48);
+      ctx.fillRect(x+s*.24,y+s*.4,s*.52,s*.04);
+    }else{
+      ctx.fillStyle=`rgba(68,238,136,${.35+.35*Math.sin(tick*.05)})`;
+      ctx.fillRect(x+s*.32,y+s*.22,s*.36,s*.55);
+    }
+  }else{
+    ctx.fillStyle=hvA;
+    ctx.fillRect(x,y,s,s*.88);
+    ctx.fillStyle=gameState.hp>60?'#2a5028':'#1a3a1a';
+    ctx.fillRect(x,y+s*.88,s,s*.12);
+    if(hc===1){
+      ctx.fillStyle='#281408';
+      ctx.fillRect(x+s*.3,y+s*.28,s*.4,s*.6);
+      ctx.fillStyle='#ffcc44';
+      ctx.fillRect(x+s*.61,y+s*.52,s*.06,s*.06);
+    }
+  }
+}
 
-// Couleurs firewall par niveau
-const FW_COLORS = [
-  null,
-  { base:'#b07830', brick:'#d49840', dark:'#8a5a20', mortar:'#e8c060' }, // niv.1 — brun pâle
-  { base:'#cc5500', brick:'#ee7722', dark:'#993300', mortar:'#ffaa44' }, // niv.2 — orange vif
-  { base:'#880000', brick:'#bb2200', dark:'#550000', mortar:'#ff4400' }, // niv.3 — rouge intense
-];
+function drawBackup(x,y,s){
+  ctx.fillStyle='#2a0e46';
+  ctx.fillRect(x+s*.07,y+s*.04,s*.86,s*.92);
+  ctx.fillStyle='#441870';
+  ctx.fillRect(x+s*.12,y+s*.08,s*.76,s*.8);
+  for(let i=0;i<3;i++){
+    const dy=y+s*(.12+i*.24);
+    ctx.fillStyle='#04050c';
+    ctx.fillRect(x+s*.17,dy,s*.66,s*.2);
+    ctx.fillStyle=i===0?`rgba(51,221,136,${.55+.45*Math.sin(tick*.08+i*1.5)})`:i===1?'#aa44dd':'#333';
+    ctx.fillRect(x+s*.67,dy+s*.05,s*.09,s*.1);
+    ctx.fillStyle='#181828';
+    ctx.fillRect(x+s*.19,dy+s*.04,s*.42,s*.12);
+  }
+  ctx.fillStyle='#33dd88';
+  ctx.font=`bold ${Math.max(5,Math.floor(s*.14))}px monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('BKP',x+s*.5,y+s*.96);
+}
 
-function drawFirewall(x, y, s, level, hpRatio) {
-  const fc = FW_COLORS[level];
-  const brickH = Math.max(3, Math.floor(s / 4));
-  const rows   = level;           // 1 rangée niv.1, 2 niv.2, 3 niv.3
-  const startY = y + s - rows * brickH;
+function drawAV(x,y,s,angle){
+  const cx=x+s/2, cy=y+s/2;
+  ctx.fillStyle='#0e2e60';
+  ctx.fillRect(x+s*.16,y+s*.52,s*.68,s*.44);
+  ctx.fillStyle='#1a4888';
+  ctx.fillRect(x+s*.2,y+s*.55,s*.6,s*.32);
+  ctx.beginPath();
+  ctx.arc(cx,cy,s*.36,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#2860a0';
+  ctx.beginPath();
+  ctx.arc(cx-s*.06,cy-s*.06,s*.25,0,Math.PI*2);
+  ctx.fill();
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(angle);
+  ctx.fillStyle='#3080be';
+  ctx.fillRect(s*.04,-s*.055,s*.46,s*.11);
+  ctx.fillStyle='#40d8ff';
+  ctx.fillRect(s*.4,-s*.04,s*.12,s*.08);
+  ctx.restore();
+  ctx.fillStyle=`rgba(64,216,255,${.55+.45*Math.sin(tick*.1+x)})`;
+  ctx.beginPath();
+  ctx.arc(cx,cy,s*.1,0,Math.PI*2);
+  ctx.fill();
+}
 
-  // Fond de la cellule (partie visible au-dessus des briques)
-  gctx.fillStyle = fc.dark;
-  gctx.fillRect(x, startY, s, rows * brickH);
+function drawCookieE(x,y,s,seed){
+  const bob=Math.sin(tick*.06+seed)*s*.06;
+  const cx=x+s/2, cy=y+s/2+bob, r=s*.35;
+  ctx.fillStyle='#7a3e10';
+  ctx.beginPath();
+  ctx.arc(cx+1,cy+1,r,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#b86820';
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#3a1a06';
+  [[.26,.3],[.6,.46],[.2,.64],[.56,.2],[.42,.66]].forEach(([fx,fy])=>{
+    ctx.fillRect(cx-r+fx*r*2-s*.05,cy-r+fy*r*2-s*.05,s*.1,s*.08);
+  });
+  ctx.fillStyle='#ff1100';
+  ctx.fillRect(cx-r*.38,cy-r*.14,s*.1,s*.09);
+  ctx.fillRect(cx+r*.12,cy-r*.14,s*.1,s*.09);
+  ctx.fillStyle='#000';
+  ctx.fillRect(cx-r*.3,cy-r*.08,s*.05,s*.05);
+  ctx.fillRect(cx+r*.2,cy-r*.08,s*.05,s*.05);
+}
 
-  // Rangées de briques
-  for (let row = 0; row < rows; row++) {
-    const by = startY + row * brickH;
-    const offset = (row % 2) * Math.floor(s / 4);
-    const brickW = Math.floor(s / 2);
-    for (let bx = x - offset; bx < x + s; bx += brickW) {
-      const clipX = Math.max(bx, x);
-      const clipW = Math.min(bx + brickW - 2, x + s - 1) - clipX;
-      if (clipW <= 0) continue;
-      gctx.fillStyle = fc.brick;
-      gctx.fillRect(clipX, by + 1, clipW, brickH - 2);
-      // ligne de mortier
-      gctx.fillStyle = fc.mortar;
-      gctx.fillRect(clipX, by, clipW, 1);
+function drawVirusE(x,y,s,seed){
+  const p=.9+.1*Math.sin(tick*.08+seed);
+  const cx=x+s/2, cy=y+s/2, r=s*.3*p;
+  ctx.fillStyle='#b81a00';
+  for(let i=0;i<8;i++){
+    const a=(i/8)*Math.PI*2+tick*.015;
+    const sl=s*.13;
+    ctx.save();
+    ctx.translate(cx+Math.cos(a)*r*.88,cy+Math.sin(a)*r*.88);
+    ctx.rotate(a);
+    ctx.fillRect(-sl*.2,-sl,sl*.4,sl);
+    ctx.restore();
+  }
+  ctx.fillStyle='#b81a00';
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#ff3a1a';
+  ctx.beginPath();
+  ctx.arc(cx-r*.18,cy-r*.18,r*.72,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#ffee00';
+  ctx.beginPath();
+  ctx.arc(cx,cy,r*.34,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#000';
+  ctx.beginPath();
+  ctx.arc(cx+r*.12,cy,r*.15,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawDDoSE(x,y,s,seed){
+  const bob=Math.sin(tick*.1+seed)*s*.07;
+  const cx=x+s/2, cy=y+s/2+bob;
+  ctx.fillStyle='#550028';
+  ctx.fillRect(cx-s*.28,cy-s*.28,s*.56,s*.56);
+  ctx.fillStyle='#880044';
+  ctx.fillRect(cx-s*.22,cy-s*.3,s*.44,s*.46);
+  ctx.fillStyle='#cc0066';
+  ctx.fillRect(cx-s*.13,cy-s*.24,s*.26,s*.1);
+  ctx.fillRect(cx-s*.13,cy+s*.08,s*.26,s*.1);
+  ctx.fillRect(cx+s*.07,cy-s*.14,s*.1,s*.22);
+  ctx.fillStyle=`rgba(255,80,150,${.25+.25*Math.sin(tick*.14+seed)})`;
+  ctx.fillRect(cx-s*.22,cy-s*.22,s*.44,s*.44);
+}
+
+function resize(){
+  const aw=wrap.clientWidth-4, ah=wrap.clientHeight-4;
+  const cs=Math.floor(Math.min(aw,ah)/COLS);
+  canvas.width=canvas.height=cs*COLS;
+}
+
+resize();
+window.addEventListener('resize',resize);
+
+function S(){return canvas.width/COLS;}
+
+function getWallCells(){
+  const walls=new Set();
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      if(gameState.grid[r][c]===1)walls.add(`${c},${r}`);
+    }
+  }
+  return walls;
+}
+
+function computePath(startC, startR){
+  const walls=getWallCells();
+  const target=new Set();
+  for(let r=5;r<=7;r++){
+    for(let c=5;c<=7;c++){
+      target.add(`${c},${r}`);
     }
   }
 
-  // Dégâts (overlay sombre proportionnel aux HP perdus)
-  if (hpRatio < 1) {
-    gctx.fillStyle = `rgba(0,0,0,${(1 - hpRatio) * .6})`;
-    gctx.fillRect(x, startY, s, rows * brickH);
-    // Craquelures si > 30% dégâts
-    if (hpRatio < .7) {
-      gctx.strokeStyle = 'rgba(0,0,0,.7)'; gctx.lineWidth = 1;
-      gctx.beginPath();
-      gctx.moveTo(x + s*.3, startY + 1);
-      gctx.lineTo(x + s*.5, startY + brickH * rows * .8);
-      gctx.stroke();
+  const queue=[[startC,startR]];
+  const visited=new Set([`${startC},${startR}`]);
+  const parent={};
+
+  while(queue.length>0){
+    const [c,r]=queue.shift();
+    if(target.has(`${c},${r}`)){
+      const path=[];
+      let curr=`${c},${r}`;
+      while(parent[curr]){
+        const [pc,pr]=parent[curr].split(',').map(Number);
+        path.unshift({c:pc, r:pr});
+        curr=`${pc},${pr}`;
+      }
+      return path.length>0?path:[{c,r}];
     }
-  }
 
-  // Indicateur de niveau (petit chiffre en bas à droite)
-  const pr = Math.max(5, Math.floor(s * .22));
-  gctx.fillStyle = fc.mortar;
-  gctx.font = `bold ${pr}px monospace`;
-  gctx.textAlign = 'right';
-  gctx.fillText(level, x + s - 2, y + s - 2);
-  gctx.textAlign = 'left';
-}
-
-function drawAntivirus(x, y, s) {
-  const cx = x + s / 2, cy = y + s / 2;
-  const r  = s * .3;
-  // Base circulaire
-  gctx.fillStyle = '#1a3a1a';
-  gctx.beginPath(); gctx.arc(cx, cy + s*.1, r, 0, Math.PI*2); gctx.fill();
-  // Canon
-  gctx.fillStyle = '#44aa44';
-  const angle = -Math.PI / 2; // pointe vers le haut
-  const len = s * .38;
-  const barrelW = Math.max(2, s * .08);
-  gctx.save();
-  gctx.translate(cx, cy + s*.1);
-  gctx.rotate(angle);
-  gctx.fillRect(-barrelW/2, -len, barrelW, len);
-  gctx.restore();
-  // Dôme
-  gctx.fillStyle = '#22cc22';
-  gctx.beginPath(); gctx.arc(cx, cy + s*.1, r * .7, 0, Math.PI*2); gctx.fill();
-  // Croix rouge au centre
-  gctx.fillStyle = '#ff4444';
-  gctx.fillRect(cx - s*.04, cy + s*.1 - s*.14, s*.08, s*.28);
-  gctx.fillRect(cx - s*.14, cy + s*.1 - s*.04, s*.28, s*.08);
-}
-
-function drawBackup(x, y, s) {
-  // Disque dur / serveur
-  const bx = x + s*.15, by = y + s*.2, bw = s*.7, bh = s*.6;
-  gctx.fillStyle = '#1a2a4a';
-  gctx.fillRect(bx, by, bw, bh);
-  gctx.strokeStyle = '#3355aa'; gctx.lineWidth = 1.5;
-  gctx.strokeRect(bx, by, bw, bh);
-  // Rayures serveur
-  for (let i = 0; i < 3; i++) {
-    const ly = by + bh * (.2 + i * .25);
-    gctx.fillStyle = i === 0 ? '#44aaff' : '#223366';
-    gctx.fillRect(bx + 3, ly, bw - 6, Math.max(2, s*.08));
-  }
-  // LED verte
-  gctx.fillStyle = '#44ff44';
-  gctx.beginPath(); gctx.arc(bx + bw - s*.1, by + bh*.5, s*.05, 0, Math.PI*2); gctx.fill();
-  // Icône 💾 simplifiée — label
-  gctx.fillStyle = '#3366aa';
-  gctx.font = `${Math.max(8, s*.25)}px monospace`;
-  gctx.textAlign = 'center';
-  gctx.fillText('BAK', x + s/2, by + bh*.65);
-  gctx.textAlign = 'left';
-}
-
-function drawDefense(x, y, s, def) {
-  switch (def.type) {
-    case 'firewall': drawFirewall(x, y, s, def.level, def.hp / def.maxHp); break;
-    case 'antivirus': drawAntivirus(x, y, s); break;
-    case 'backup':    drawBackup(x, y, s);    break;
-  }
-}
-
-/* ── HUD points ── */
-function updatePointsHUD() {
-  document.getElementById('g-points').textContent = G.points + ' 🔐';
-}
-
-function flashPoints() {
-  G.pointsFlash = 20; // 20 frames de flash rouge
-}
-
-/* ── Placement / upgrade ── */
-function tryPlace(c, r) {
-  if (!G.running) return;
-  const key = defKey(c, r);
-  const existing = defenses[key];
-  const sel = G.selectedDef;
-
-  // ── UPDATE : améliore la défense ciblée ──
-  if (sel === 'update') {
-    if (!existing) return;
-    if (existing.type !== 'firewall' && existing.type !== 'antivirus') return;
-    if (existing.level >= 3) return;
-    if (G.points < FIREWALL_UPGRADE_COST) { flashPoints(); return; }
-    existing.level++;
-    existing.maxHp = FIREWALL_HP[existing.level];
-    existing.hp    = existing.maxHp;
-    G.points -= FIREWALL_UPGRADE_COST;
-    updatePointsHUD();
-    return;
-  }
-
-  // ── FIREWALL sur firewall existant → upgrade ──
-  if (sel === 'firewall' && existing && existing.type === 'firewall') {
-    if (existing.level >= 3) return;
-    if (G.points < FIREWALL_UPGRADE_COST) { flashPoints(); return; }
-    existing.level++;
-    existing.maxHp = FIREWALL_HP[existing.level];
-    existing.hp    = existing.maxHp;
-    G.points -= FIREWALL_UPGRADE_COST;
-    updatePointsHUD();
-    return;
-  }
-
-  // ── Cellule déjà occupée ──
-  if (existing) return;
-
-  // ── Placement d'une nouvelle défense ──
-  const cost = DEFENSE_COSTS[sel];
-  if (G.points < cost) { flashPoints(); return; }
-
-  const hp = sel === 'firewall' ? FIREWALL_HP[1] : (sel === 'antivirus' ? 80 : 150);
-  defenses[key] = { type: sel, level: 1, hp, maxHp: hp };
-  G.points -= cost;
-  updatePointsHUD();
-}
-
-/* ═══════════════════════════════════════════════════════
-   GAME — BOUCLE DE RENDU
-═══════════════════════════════════════════════════════ */
-function renderGame() {
-  const s = S();
-  if (!s) return;
-  const th = getTheme(G.hp);
-
-  // Fond
-  gctx.fillStyle = th.bg;
-  gctx.fillRect(0, 0, gc.width, gc.height);
-
-  // Cellules + décor
-  const flowerAlpha = Math.max(0, Math.min(1, (G.hp - 60) / 40));
-  const grassAlpha  = Math.max(0, Math.min(1, (G.hp - 20) / 40));
-  const flowerSet   = new Set(FLOWER_CELLS.map(f => `${f.c},${f.r}`));
-
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const cell = grid[r][c];
-      if (cell === 'H') continue; // dessiné séparément
-
-      const x = c * s, y = r * s;
-      const even = (r + c) % 2 === 0;
-      gctx.fillStyle = even ? th.cell0 : th.cell1;
-      gctx.fillRect(x, y, s, s);
-
-      // Décor nature
-      if (cell === 0) {
-        const key = `${c},${r}`;
-        if (flowerSet.has(key)) {
-          const seed = (c * 7 + r * 13) % FLOWER_COLORS.length;
-          drawFlower(x, y, s, seed, flowerAlpha);
-        } else if (grassAlpha > 0 && (c + r) % 3 === 0) {
-          drawGrass(x, y, s, c * r, grassAlpha);
-        }
+    for(let [dc,dr] of [[0,1],[1,0],[0,-1],[-1,0]]){
+      const nc=c+dc, nr=r+dr;
+      if(nc>=0&&nc<COLS&&nr>=0&&nr<ROWS&&!walls.has(`${nc},${nr}`)&&!visited.has(`${nc},${nr}`)){
+        visited.add(`${nc},${nr}`);
+        parent[`${nc},${nr}`]=`${c},${r}`;
+        queue.push([nc,nr]);
       }
     }
   }
 
-  // Base 3×3 au centre
-  drawBase(BASE_COL, BASE_ROW, s, th);
+  return null;
+}
 
-  // Défenses posées
-  for (const [key, def] of Object.entries(defenses)) {
-    const [dc, dr] = key.split(',').map(Number);
-    drawDefense(dc * s, dr * s, s, def);
+function addPoints(n){
+  gameState.points+=n;
+}
+
+function updateThemeUI(){
+  const th=getTheme(gameState.hp);
+  document.body.style.background=th.bg;
+  document.getElementById('hud').style.borderBottomColor=th.hudBorder;
+  document.getElementById('panel').style.borderTopColor=th.panelBorder;
+  const hpfill=document.getElementById('hpfill');
+  hpfill.style.background=gameState.hp>60?th.hpColor:gameState.hp>30?'linear-gradient(90deg,#cc8800,#ffbb00)':'linear-gradient(90deg,#aa1100,#ff3300)';
+  hpfill.style.width=gameState.hp+'%';
+  document.getElementById('hpval').textContent=gameState.hp.toFixed(0)+'%';
+  document.getElementById('hpval').style.color=th.hpColor;
+}
+
+function placeDefense(c, r){
+  if(gameState.grid[r][c]!==0)return false;
+  if(HOUSE_CELLS.has(`${c},${r}`))return false;
+  if(gameState.points<DEFENSE_DEFS[gameState.selectedDefense].cost)return false;
+
+  const def=gameState.selectedDefense;
+  gameState.points-=DEFENSE_DEFS[def].cost;
+
+  if(def==='FW'){
+    gameState.grid[r][c]=1;
+    gameState.defenses[`${c},${r}`]={type:'FW',level:1,hp:DEFENSE_DEFS['FW'].hp[0]};
+  }else if(def==='AV'){
+    gameState.grid[r][c]=2;
+    gameState.defenses[`${c},${r}`]={type:'AV',level:1,hp:DEFENSE_DEFS['AV'].hp[0]};
+    gameState.turrets[`${c},${r}`]={angle:0};
+  }else if(def==='BKP'){
+    gameState.grid[r][c]=3;
+    gameState.defenses[`${c},${r}`]={type:'BKP',level:1,hp:DEFENSE_DEFS['BKP'].hp[0]};
   }
 
-  // Lignes de grille
-  gctx.strokeStyle = th.grid;
-  gctx.lineWidth = 1;
-  for (let i = 0; i <= COLS; i++) {
-    gctx.beginPath(); gctx.moveTo(i*s, 0); gctx.lineTo(i*s, gc.height); gctx.stroke();
-    gctx.beginPath(); gctx.moveTo(0, i*s); gctx.lineTo(gc.width, i*s); gctx.stroke();
+  return true;
+}
+
+function updateEnemies(dt){
+  for(let i=gameState.enemies.length-1;i>=0;i--){
+    const e=gameState.enemies[i];
+
+    if(!e.path || e.pathIdx>=e.path.length){
+      e.path=computePath(Math.floor(e.x), Math.floor(e.y));
+      e.pathIdx=0;
+    }
+
+    if(e.path&&e.pathIdx<e.path.length){
+      const node=e.path[e.pathIdx];
+      const dx=node.c-e.x, dy=node.r-e.y;
+      const d=Math.hypot(dx,dy);
+
+      if(d<0.08){
+        e.pathIdx++;
+      }else{
+        e.x+=dx/d*e.speed*dt;
+        e.y+=dy/d*e.speed*dt;
+      }
+    }
+
+    if(HOUSE_CELLS.has(`${Math.floor(e.x)},${Math.floor(e.y)}`)){
+      gameState.hp-=e.dmgBase;
+      gameState.enemies.splice(i,1);
+      if(gameState.hp<=0)gameState.isGameOver=true;
+      continue;
+    }
+
+    const turrets=Object.entries(gameState.defenses).filter(([_,d])=>d.type==='AV');
+    for(let [key,def] of turrets){
+      const [tc,tr]=key.split(',').map(Number);
+      const dist=Math.hypot(e.x-tc, e.y-tr);
+      if(dist<=4){
+        e.hp-=25/60;
+        gameState.turrets[key].angle=Math.atan2(e.y-tr, e.x-tc);
+
+        if(e.hp<=0){
+          gameState.enemies.splice(i,1);
+          addPoints(10);
+        }
+        break;
+      }
+    }
+  }
+}
+
+function updateWaves(dt){
+  if(gameState.waveState==='idle'){
+    gameState.wavePrep-=dt;
+    if(gameState.wavePrep<=0){
+      gameState.waveNum++;
+
+      if(gameState.waveNum>=1)gameState.unlockedDefenses['AV']=true;
+      if(gameState.waveNum>=2)gameState.unlockedDefenses['BKP']=true;
+      if(gameState.waveNum>=3)gameState.unlockedDefenses['CLEAN']=true;
+
+      gameState.waveState='spawning';
+      spawnEnemies(gameState.waveNum);
+    }
+  }else if(gameState.waveState==='battle'){
+    if(gameState.enemies.length===0){
+      gameState.waveState='idle';
+      gameState.wavePrep=8;
+    }
+  }
+}
+
+function spawnEnemies(waveNum){
+  const specs={
+    1:[{t:'virus',c:5}],
+    2:[{t:'virus',c:4},{t:'ddos',c:5}],
+    3:[{t:'virus',c:3},{t:'ddos',c:4},{t:'cookie',c:4}],
+  };
+  const spec=specs[waveNum]||[];
+  let spawnIdx=0;
+
+  function doSpawn(){
+    if(spawnIdx>=spec.length){
+      gameState.waveState='battle';
+      return;
+    }
+
+    const s=spec[spawnIdx];
+    const edges=[
+      {c:0, r:Math.floor(Math.random()*ROWS)},
+      {c:COLS-1, r:Math.floor(Math.random()*ROWS)},
+      {r:0, c:Math.floor(Math.random()*COLS)},
+      {r:ROWS-1, c:Math.floor(Math.random()*COLS)},
+    ];
+    const edge=edges[Math.floor(Math.random()*edges.length)];
+
+    const en={
+      x:edge.c||0.5, y:edge.r||0.5,
+      type:s.t, hp:ENEMY_TYPES[s.t].hp, maxHp:ENEMY_TYPES[s.t].hp,
+      speed:ENEMY_TYPES[s.t].speed/60, dmgBase:ENEMY_TYPES[s.t].dmgBase,
+      dmgWall:ENEMY_TYPES[s.t].dmgWall, pathIdx:0, path:null,
+    };
+
+    gameState.enemies.push(en);
+    spawnIdx++;
   }
 
-  // Surbrillance hover
-  if (G.hoverCell) {
-    const { c, r } = G.hoverCell;
-    const canPlace = !defenses[defKey(c,r)] || G.selectedDef === 'update' || G.selectedDef === 'firewall';
-    gctx.fillStyle = canPlace ? 'rgba(255,220,0,.18)' : 'rgba(255,60,60,.12)';
-    gctx.fillRect(c*s, r*s, s, s);
-    gctx.strokeStyle = canPlace ? '#ffdd44' : '#ff4444';
-    gctx.lineWidth = 2;
-    gctx.strokeRect(c*s+1, r*s+1, s-2, s-2);
-  }
-
-  // Flash rouge sur le compteur de points
-  if (G.pointsFlash > 0) {
-    const el = document.getElementById('g-points');
-    el.style.color = G.pointsFlash % 4 < 2 ? '#ff2222' : '#ffdd44';
-    G.pointsFlash--;
-    if (G.pointsFlash === 0) el.style.color = '#ffdd44';
-  }
-
-  // HUD dynamique
-  applyGameTheme(th);
-  G.tick++;
+  const spawnInterval=setInterval(()=>{
+    doSpawn();
+    if(spawnIdx>=spec.length)clearInterval(spawnInterval);
+  }, 2000);
 }
 
-function applyGameTheme(th) {
-  document.getElementById('hud').style.borderBottomColor        = th.hudBorder;
-  document.getElementById('bottom-bar').style.borderTopColor    = th.panelBorder;
-  const hpf = document.getElementById('g-hpfill');
-  hpf.style.width      = G.hp + '%';
-  hpf.style.background = th.hpColor;
-  document.getElementById('g-hpval').style.color = th.hpColor;
-  document.getElementById('game').style.background = th.bg;
-}
+function initDefenseButtons(){
+  const btns=document.getElementById('defense-buttons');
+  btns.innerHTML='';
 
-/* ═══════════════════════════════════════════════════════
-   GAME — LOOP
-═══════════════════════════════════════════════════════ */
-let gameRaf;
-function gameLoop() {
-  if (!G.paused) renderGame();
-  gameRaf = requestAnimationFrame(gameLoop);
-}
+  const defs=[
+    {key:'FW', icon:'🧱', cost:40},
+    {key:'AV', icon:'🔫', cost:80},
+    {key:'BKP', icon:'💾', cost:120},
+    {key:'CLEAN', icon:'⬆️', cost:180},
+  ];
 
-/* ═══════════════════════════════════════════════════════
-   GAME — INTERACTIONS (tap/clic sur grille)
-═══════════════════════════════════════════════════════ */
-G.hoverCell = null;
+  defs.forEach(d=>{
+    const btn=document.createElement('div');
+    btn.className='pbtn '+(gameState.selectedDefense===d.key?'sel':'');
+    btn.setAttribute('data-def',d.key);
 
-gc.addEventListener('pointermove', e => {
-  const rect = gc.getBoundingClientRect();
-  const s = S();
-  const c = Math.floor((e.clientX - rect.left)  / s);
-  const r = Math.floor((e.clientY - rect.top)   / s);
-  if (c >= 0 && c < COLS && r >= 0 && r < ROWS) G.hoverCell = { c, r };
-  else G.hoverCell = null;
-});
-gc.addEventListener('pointerleave', () => { G.hoverCell = null; });
+    const disabled=!gameState.unlockedDefenses[d.key];
+    if(disabled)btn.classList.add('disabled');
 
-gc.addEventListener('pointerdown', e => {
-  if (G.paused) return;
-  const rect = gc.getBoundingClientRect();
-  const s = S();
-  const c = Math.floor((e.clientX - rect.left) / s);
-  const r = Math.floor((e.clientY - rect.top)  / s);
-  if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return;
-  if (grid[r][c] === 'H') return;
-  tryPlace(c, r);
-});
-
-/* ── OVERLAY (pause + défenses / quiz) ── */
-const overlay   = document.getElementById('overlay');
-const ovTitle   = document.getElementById('ov-title');
-const ovContent = document.getElementById('ov-content');
-
-const DEF_HTML = `
-<div class="pbtns">
-  <div class="pbtn sel" data-defense="firewall">
-    <div class="pi">🧱</div><div class="pn">Firewall</div><div class="pc">40🔐</div>
-  </div>
-  <div class="pbtn locked" data-defense="antivirus">
-    <div class="pi">🔫</div><div class="pn">Antivirus</div><div class="pc">80🔐</div>
-  </div>
-  <div class="pbtn locked" data-defense="backup">
-    <div class="pi">💾</div><div class="pn">Backup</div><div class="pc">120🔐</div>
-  </div>
-  <div class="pbtn locked" data-defense="update">
-    <div class="pi">⬆️</div><div class="pn">Update</div><div class="pc">30🔐</div>
-  </div>
-</div>`;
-
-/* ═══════════════════════════════════════════════════════
-   QUIZ — 15 questions Vrai/Faux (FR / NL / EN)
-═══════════════════════════════════════════════════════ */
-const QUESTIONS = {
-  FR: [
-    { q: 'Un mot de passe comme "123456" est sécurisé.', a: false,
-      e: '"123456" est l\'un des mots de passe les plus piratés au monde. Utilise une combinaison de lettres, chiffres et symboles !' },
-    { q: 'Mettre à jour ses applications protège contre les virus.', a: true,
-      e: 'Les mises à jour corrigent des failles de sécurité. Ne les ignore jamais !' },
-    { q: 'Un antivirus seul suffit pour être totalement protégé.', a: false,
-      e: 'Aucun outil seul ne garantit une protection totale. Il faut combiner antivirus, mises à jour et bons réflexes.' },
-    { q: 'Les cookies peuvent tracer tes activités en ligne.', a: true,
-      e: 'Les cookies enregistrent ton comportement sur les sites web. Tu peux les supprimer dans ton navigateur.' },
-    { q: 'Il est sûr d\'ouvrir tous les emails que tu reçois.', a: false,
-      e: 'Les emails de phishing imitent de vraies entreprises pour voler tes informations. Vérifie toujours l\'expéditeur !' },
-    { q: 'Faire des sauvegardes régulières protège contre le ransomware.', a: true,
-      e: 'Avec une sauvegarde récente, tu peux restaurer tes données sans payer de rançon.' },
-    { q: 'Tous les hackers ont de mauvaises intentions.', a: false,
-      e: 'Les "white hat hackers" cherchent des failles pour aider les entreprises à se protéger. Ils sont légaux !' },
-    { q: 'Le Wi-Fi public est aussi sécurisé que ton réseau à la maison.', a: false,
-      e: 'Sur un Wi-Fi public, d\'autres peuvent intercepter tes données. Utilise un VPN ou évite les sites sensibles.' },
-    { q: 'L\'authentification à deux facteurs (2FA) renforce la sécurité.', a: true,
-      e: 'Même si quelqu\'un connaît ton mot de passe, le 2FA exige une deuxième vérification.' },
-    { q: 'Un ransomware chiffre tes fichiers et demande une rançon.', a: true,
-      e: 'C\'est exactement ce que fait un ransomware. Payer ne garantit pas de récupérer ses fichiers !' },
-    { q: 'Partager son mot de passe avec un ami de confiance est sans risque.', a: false,
-      e: 'Même une personne de confiance peut se faire pirater. Ne partage jamais ton mot de passe !' },
-    { q: 'Un Zero-day est une faille déjà connue et corrigée.', a: false,
-      e: 'Un Zero-day est une faille inconnue du fabricant, sans correction disponible — très dangereuse.' },
-    { q: 'Les réseaux sociaux peuvent collecter et utiliser tes données personnelles.', a: true,
-      e: 'Beaucoup de services "gratuits" se financent en monétisant tes données. Lis les conditions d\'utilisation !' },
-    { q: 'Télécharger un logiciel depuis n\'importe quel site est risqué.', a: true,
-      e: 'Les sites non officiels peuvent distribuer des logiciels modifiés contenant des virus.' },
-    { q: 'Une attaque DDoS peut rendre un site web inaccessible.', a: true,
-      e: 'Un DDoS envoie des millions de requêtes pour saturer et faire tomber un serveur.' },
-  ],
-  NL: [
-    { q: 'Een wachtwoord zoals "123456" is veilig.', a: false,
-      e: '"123456" is een van de meest gehackte wachtwoorden ter wereld. Gebruik een combinatie van letters, cijfers en symbolen!' },
-    { q: 'Je apps updaten beschermt tegen virussen.', a: true,
-      e: 'Updates herstellen beveiligingslekken. Sla ze nooit over!' },
-    { q: 'Eén antivirusprogramma is voldoende voor volledige bescherming.', a: false,
-      e: 'Geen enkel hulpmiddel alleen garandeert volledige bescherming. Combineer antivirus, updates en goed gedrag.' },
-    { q: 'Cookies kunnen je online activiteiten bijhouden.', a: true,
-      e: 'Cookies registreren je gedrag op websites. Je kunt ze verwijderen via je browser.' },
-    { q: 'Het is veilig om alle e-mails die je ontvangt te openen.', a: false,
-      e: 'Phishing-e-mails imiteren echte bedrijven om je gegevens te stelen. Controleer altijd de afzender!' },
-    { q: 'Regelmatige back-ups beschermen tegen ransomware.', a: true,
-      e: 'Met een recente back-up kun je je gegevens herstellen zonder losgeld te betalen.' },
-    { q: 'Alle hackers hebben slechte bedoelingen.', a: false,
-      e: '"White hat hackers" zoeken naar lekken om bedrijven te helpen zichzelf te beschermen. Dat is legaal!' },
-    { q: 'Openbare Wi-Fi is even veilig als je thuisnetwerk.', a: false,
-      e: 'Op openbare Wi-Fi kunnen anderen je gegevens onderscheppen. Gebruik een VPN!' },
-    { q: 'Tweefactorauthenticatie (2FA) verhoogt de beveiliging.', a: true,
-      e: 'Zelfs als iemand je wachtwoord kent, vereist 2FA een tweede verificatie.' },
-    { q: 'Ransomware versleutelt je bestanden en eist losgeld.', a: true,
-      e: 'Dat is precies wat ransomware doet. Betalen garandeert niet dat je je bestanden terugkrijgt!' },
-    { q: 'Je wachtwoord delen met een vertrouwde vriend is veilig.', a: false,
-      e: 'Zelfs een vertrouwde vriend kan gehackt worden. Deel nooit je wachtwoord!' },
-    { q: 'Een zero-day is een al bekende en opgeloste kwetsbaarheid.', a: false,
-      e: 'Een zero-day is een lek dat de fabrikant nog niet kent — er is nog geen oplossing beschikbaar.' },
-    { q: 'Sociale media kunnen je persoonlijke gegevens verzamelen en gebruiken.', a: true,
-      e: 'Veel "gratis" diensten financieren zichzelf door je gegevens te vermarkten.' },
-    { q: 'Software downloaden van willekeurige websites is riskant.', a: true,
-      e: 'Niet-officiële sites kunnen aangepaste software verspreiden die virussen bevat.' },
-    { q: 'Een DDoS-aanval kan een website ontoegankelijk maken.', a: true,
-      e: 'Een DDoS stuurt miljoenen verzoeken om een server te overbelasten en neer te halen.' },
-  ],
-  EN: [
-    { q: 'A password like "123456" is secure.', a: false,
-      e: '"123456" is one of the most hacked passwords in the world. Use a mix of letters, numbers and symbols!' },
-    { q: 'Updating your apps helps protect against viruses.', a: true,
-      e: 'Updates patch security vulnerabilities. Never skip them!' },
-    { q: 'One antivirus program is enough for complete protection.', a: false,
-      e: 'No single tool guarantees total protection. Combine antivirus, updates and good habits.' },
-    { q: 'Cookies can track your online activities.', a: true,
-      e: 'Cookies record your behaviour on websites. You can delete them in your browser settings.' },
-    { q: 'It is safe to open every email you receive.', a: false,
-      e: 'Phishing emails mimic real companies to steal your information. Always check the sender!' },
-    { q: 'Regular backups protect against ransomware.', a: true,
-      e: 'With a recent backup, you can restore your data without paying a ransom.' },
-    { q: 'All hackers have bad intentions.', a: false,
-      e: '"White hat hackers" find vulnerabilities to help companies protect themselves. It\'s legal!' },
-    { q: 'Public Wi-Fi is as secure as your home network.', a: false,
-      e: 'On public Wi-Fi, others can intercept your data. Use a VPN or avoid sensitive sites.' },
-    { q: 'Two-factor authentication (2FA) improves security.', a: true,
-      e: 'Even if someone knows your password, 2FA requires a second verification step.' },
-    { q: 'Ransomware encrypts your files and demands a ransom.', a: true,
-      e: 'That is exactly what ransomware does. Paying does not guarantee you\'ll get your files back!' },
-    { q: 'Sharing your password with a trusted friend is harmless.', a: false,
-      e: 'Even a trusted friend can be hacked. Never share your password!' },
-    { q: 'A zero-day is a known and already fixed vulnerability.', a: false,
-      e: 'A zero-day is a flaw unknown to the manufacturer — no fix is available yet, very dangerous.' },
-    { q: 'Social media can collect and use your personal data.', a: true,
-      e: 'Many "free" services fund themselves by monetising your data. Read the terms of use!' },
-    { q: 'Downloading software from any website is risky.', a: true,
-      e: 'Unofficial sites may distribute modified software containing viruses.' },
-    { q: 'A DDoS attack can make a website unavailable.', a: true,
-      e: 'A DDoS sends millions of requests to overwhelm and take down a server.' },
-  ],
-};
-
-/* ── État quiz ── */
-let quizQueue = [];
-let quizCurrent = null;
-
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function nextQuestion() {
-  if (quizQueue.length === 0) quizQueue = shuffleArray(QUESTIONS[currentLang]);
-  quizCurrent = quizQueue.shift();
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const UI = {
-    FR: { vrai:'✓ VRAI', faux:'✗ FAUX', correct:'Bonne réponse !', wrong:'Pas tout à fait…', next:'Question suivante →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
-    NL: { vrai:'✓ WAAR', faux:'✗ VALS', correct:'Goed gedaan !', wrong:'Niet helemaal…', next:'Volgende vraag →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
-    EN: { vrai:'✓ TRUE', faux:'✗ FALSE', correct:'Correct !', wrong:'Not quite…', next:'Next question →', reward:'+ 30 🔐', consolation:'+ 5 🔐' },
-  }[currentLang];
-
-  ovContent.innerHTML = `
-    <div id="quiz-q" style="
-      font-size:13px; color:#ccddff; text-align:center;
-      line-height:1.6; margin-bottom:16px; min-height:48px;
-    ">${quizCurrent.q}</div>
-    <div style="display:flex; gap:10px;">
-      <button id="qbtn-true" style="
-        flex:1; padding:12px 4px; font:bold 12px monospace;
-        letter-spacing:1px; background:rgba(0,180,60,.15);
-        border:2px solid #22aa44; color:#44ff88;
-        border-radius:4px; cursor:pointer; transition:background .15s;
-      ">${UI.vrai}</button>
-      <button id="qbtn-false" style="
-        flex:1; padding:12px 4px; font:bold 12px monospace;
-        letter-spacing:1px; background:rgba(180,30,30,.15);
-        border:2px solid #aa2222; color:#ff6666;
-        border-radius:4px; cursor:pointer; transition:background .15s;
-      ">${UI.faux}</button>
-    </div>
-    <div id="quiz-feedback" style="margin-top:12px; min-height:40px;"></div>
-  `;
-
-  document.getElementById('qbtn-true').addEventListener('click',  () => answerQuiz(true));
-  document.getElementById('qbtn-false').addEventListener('click', () => answerQuiz(false));
-}
-
-function answerQuiz(answer) {
-  const correct = answer === quizCurrent.a;
-  const gain    = correct ? 30 : 5;
-  G.points += gain;
-  updatePointsHUD();
-
-  const UI = {
-    FR: { correct:'✅ Bonne réponse !', wrong:'❌ Pas tout à fait…', next:'Question suivante →', reward:'+30 🔐', consolation:'+5 🔐' },
-    NL: { correct:'✅ Goed gedaan !',   wrong:'❌ Niet helemaal…',   next:'Volgende vraag →',    reward:'+30 🔐', consolation:'+5 🔐' },
-    EN: { correct:'✅ Correct !',        wrong:'❌ Not quite…',       next:'Next question →',     reward:'+30 🔐', consolation:'+5 🔐' },
-  }[currentLang];
-
-  // Désactiver les boutons
-  ['qbtn-true','qbtn-false'].forEach(id => {
-    const b = document.getElementById(id);
-    if (b) { b.disabled = true; b.style.opacity = '.4'; }
-  });
-
-  const fb = document.getElementById('quiz-feedback');
-  fb.innerHTML = `
-    <div style="text-align:center;">
-      <div style="font:bold 13px monospace; color:${correct?'#44ff88':'#ff6644'}; margin-bottom:6px;">
-        ${correct ? UI.correct : UI.wrong}
-        <span style="color:#ffdd44; margin-left:8px;">${correct ? UI.reward : UI.consolation}</span>
-      </div>
-      <div style="font-size:11px; color:#889; line-height:1.5; margin-bottom:10px;">
-        ${quizCurrent.e}
-      </div>
-      <button id="quiz-next" style="
-        font:bold 10px monospace; letter-spacing:1px;
-        background:rgba(100,150,255,.15); border:1px solid #3355aa;
-        color:#aabbff; padding:7px 16px; border-radius:3px; cursor:pointer;
-      ">${UI.next}</button>
-    </div>`;
-
-  document.getElementById('quiz-next').addEventListener('click', nextQuestion);
-}
-
-function openOverlay(type) {
-  G.paused = true;
-  if (type === 'def') {
-    ovTitle.innerHTML   = '🎒 <span data-ui="btn-def">Défenses</span>';
-    ovContent.innerHTML = DEF_HTML;
-    // Rétablir la sélection active
-    ovContent.querySelectorAll('.pbtn:not(.locked)').forEach(btn => {
-      btn.classList.toggle('sel', btn.dataset.defense === G.selectedDef);
-      btn.addEventListener('click', () => {
-        ovContent.querySelectorAll('.pbtn').forEach(b => b.classList.remove('sel'));
-        btn.classList.add('sel');
-        G.selectedDef = btn.dataset.defense;
-        closeOverlay();
-      });
+    const name=TEXTS[lang][DEFENSE_DEFS[d.key].name]||d.key;
+    btn.innerHTML=`<div class="pi">${d.icon}</div><div class="pn">${name}</div><div class="pc">${d.cost}🔐</div>`;
+    btn.addEventListener('click',()=>{
+      if(!disabled){
+        gameState.selectedDefense=d.key;
+        updateDefenseButtons();
+      }
     });
-  } else {
-    ovTitle.innerHTML = '🪙 <span data-ui="btn-quiz">Gagner des points</span>';
-    ovContent.innerHTML = '';
-    nextQuestion();
+
+    btns.appendChild(btn);
+  });
+}
+
+function updateDefenseButtons(){
+  document.querySelectorAll('.pbtn').forEach(btn=>{
+    const def=btn.getAttribute('data-def');
+    btn.classList.toggle('sel', gameState.selectedDefense===def);
+    const cost=DEFENSE_DEFS[def].cost;
+    btn.classList.toggle('disabled', gameState.points<cost || !gameState.unlockedDefenses[def]);
+  });
+}
+
+function nextQuiz(){
+  gameState.currentQuizIdx=(gameState.currentQuizIdx+1)%TEXTS[lang].quiz.length;
+  gameState.quizAnswered=false;
+  gameState.quizFeedback='';
+  updateQuiz();
+}
+
+function updateQuiz(){
+  const q=TEXTS[lang].quiz[gameState.currentQuizIdx];
+  document.getElementById('quiz-question').textContent=q.q;
+  document.getElementById('quiz-feedback').textContent='';
+}
+
+function answerQuiz(ans){
+  if(gameState.quizAnswered)return;
+  gameState.quizAnswered=true;
+
+  const q=TEXTS[lang].quiz[gameState.currentQuizIdx];
+  const correct=ans===q.a;
+  const pts=correct?30:5;
+  addPoints(pts);
+
+  gameState.quizFeedback=(correct?'✓ ':'✗ ')+q.e;
+  document.getElementById('quiz-feedback').textContent=gameState.quizFeedback;
+
+  setTimeout(()=>nextQuiz(), 2000);
+}
+
+function setCookie(name, value){
+  document.cookie=`${name}=${value};path=/;max-age=31536000`;
+}
+
+function getCookie(name){
+  const match=document.cookie.match(new RegExp('(^|;) *'+name+'=([^;]*)'));
+  return match?match[2]:'fr';
+}
+
+function setupIntro(){
+  lang=getCookie('lang')||'fr';
+
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.getAttribute('data-lang')===lang);
+    btn.addEventListener('click',()=>{
+      lang=btn.getAttribute('data-lang');
+      setCookie('lang',lang);
+      document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-lang')===lang));
+      document.getElementById('crawl-text').textContent=TEXTS[lang].crawl;
+    });
+  });
+
+  document.getElementById('crawl-text').textContent=TEXTS[lang].crawl;
+
+  const starsDiv=document.getElementById('stars');
+  starsDiv.innerHTML='';
+  for(let i=0;i<100;i++){
+    const star=document.createElement('div');
+    star.className='star';
+    star.style.left=Math.random()*100+'%';
+    star.style.top=Math.random()*100+'%';
+    star.style.animationDelay=(Math.random()*3)+'s';
+    starsDiv.appendChild(star);
   }
-  overlay.classList.add('open');
+
+  document.getElementById('skip-intro').addEventListener('click',()=>{
+    introScreen.style.display='none';
+    gameScreen.style.display='flex';
+    startGame();
+  });
+
+  setTimeout(()=>{
+    introScreen.style.display='none';
+    gameScreen.style.display='flex';
+    startGame();
+  }, 9000);
 }
 
-function closeOverlay() {
-  overlay.classList.remove('open');
-  G.paused = false;
+function startGame(){
+  gameState.waveNum=0;
+  gameState.waveState='idle';
+  gameState.wavePrep=5;
+  gameState.hp=100;
+  gameState.points=100;
+  gameState.gameTime=0;
+  gameState.isGameOver=false;
+  gameState.enemies=[];
+  gameState.defenses={};
+  gameState.grid=Array(ROWS).fill(null).map(()=>Array(COLS).fill(0));
+  gameState.selectedDefense='FW';
+  gameState.unlockedDefenses={FW:true, AV:false, BKP:false, CLEAN:false};
+
+  initDefenseButtons();
+  updateThemeUI();
+  nextQuiz();
+
+  document.querySelectorAll('.ptab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.ptab-content').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const tab=t.getAttribute('data-tab');
+      document.getElementById('tab-'+tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('quiz-true').addEventListener('click',()=>answerQuiz(true));
+  document.getElementById('quiz-false').addEventListener('click',()=>answerQuiz(false));
+
+  canvas.addEventListener('click',(e)=>{
+    const rect=canvas.getBoundingClientRect();
+    const s=S();
+    const c=Math.floor((e.clientX-rect.left)/s);
+    const r=Math.floor((e.clientY-rect.top)/s);
+
+    placeDefense(c,r);
+    updateDefenseButtons();
+  });
+
+  canvas.addEventListener('touchstart',(e)=>{
+    const touch=e.touches[0];
+    const rect=canvas.getBoundingClientRect();
+    const s=S();
+    const c=Math.floor((touch.clientX-rect.left)/s);
+    const r=Math.floor((touch.clientY-rect.top)/s);
+
+    placeDefense(c,r);
+    updateDefenseButtons();
+  }, {passive:true});
 }
 
-document.getElementById('btn-def').addEventListener('click',  () => openOverlay('def'));
-document.getElementById('btn-quiz').addEventListener('click', () => openOverlay('quiz'));
-document.getElementById('ov-close').addEventListener('click', closeOverlay);
-// Clic fond overlay = fermer
-overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+function draw(){
+  const s=S();
+  const th=getTheme(gameState.hp);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-/* ── Sélection défense ── */
-document.querySelectorAll('.pbtn:not(.locked)').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.pbtn').forEach(b => b.classList.remove('sel'));
-    btn.classList.add('sel');
-    G.selectedDef = btn.dataset.defense;
-  });
-});
+  const nature=Math.max(0,Math.min(1,(gameState.hp-20)/80));
+  const flowerAlpha=Math.max(0,(gameState.hp-60)/40);
+  const grassAlpha=Math.max(0,(gameState.hp-30)/50);
 
-/* ── Langue dans le HUD ── */
-document.querySelectorAll('.g-lb').forEach(b => {
-  b.addEventListener('click', () => {
-    applyLang(b.dataset.glang);
-    document.querySelectorAll('.g-lb').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-  });
-});
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      ctx.fillStyle=(r+c)%2===0?th.cell0:th.cell1;
+      ctx.fillRect(c*s,r*s,s,s);
+    }
+  }
 
-/* ═══════════════════════════════════════════════════════
-   GAME — DÉMARRAGE (déclenché par endIntro)
-═══════════════════════════════════════════════════════ */
-function startGame() {
-  resizeGame();
-  G.running = true;
-  G.startTime = Date.now();
-  updatePointsHUD();
-  // Synchro langue dans le HUD
-  document.querySelectorAll('.g-lb').forEach(b => {
-    b.classList.toggle('on', b.dataset.glang === currentLang);
+  if(nature>0){
+    FLOWERS.forEach((f,i)=>{
+      if(f.r<ROWS&&f.c<COLS&&gameState.grid[f.r][f.c]===0){
+        if(flowerAlpha>0)drawFlower(f.c*s,f.r*s,s,i,flowerAlpha);
+        else if(grassAlpha>0)drawGrass(f.c*s,f.r*s,s,i,grassAlpha);
+      }
+    });
+  }
+
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const g=gameState.grid[r][c];
+      if(g===1){
+        const def=gameState.defenses[`${c},${r}`];
+        const maxHp=DEFENSE_DEFS['FW'].hp[def.level-1];
+        const dmg=1-(def.hp/maxHp);
+        drawFW(c*s,r*s,s,dmg,def.level);
+      }else if(g===2){
+        const tur=gameState.turrets[`${c},${r}`];
+        drawAV(c*s,r*s,s,tur?.angle||0);
+      }else if(g===3){
+        drawBackup(c*s,r*s,s);
+      }else if(HOUSE_CELLS.has(`${c},${r}`)){
+        const hr=r-5, hc=c-5;
+        drawHouse(c*s,r*s,s,hr,hc);
+      }
+    }
+  }
+
+  gameState.enemies.forEach((e,i)=>{
+    const x=e.x*s, y=e.y*s;
+    if(e.type==='cookie')drawCookieE(x-s/2,y-s/2,s,i);
+    else if(e.type==='virus')drawVirusE(x-s/2,y-s/2,s,i);
+    else if(e.type==='ddos')drawDDoSE(x-s/2,y-s/2,s,i);
+
+    const hpFrac=e.hp/e.maxHp;
+    ctx.fillStyle='rgba(0,0,0,.55)';
+    ctx.fillRect(x-s*.4,y-s*.58,s*.8,s*.09);
+    ctx.fillStyle='#44ff88';
+    ctx.fillRect(x-s*.4,y-s*.58,s*.8*hpFrac,s*.09);
   });
-  gameLoop();
-  // Timer de survie
-  setInterval(() => {
-    if (!G.running) return;
-    const s = Math.floor((Date.now() - G.startTime) / 1000);
-    const m = Math.floor(s / 60), sec = s % 60;
-    document.getElementById('g-timer').textContent =
-      m + ':' + String(sec).padStart(2, '0');
-  }, 1000);
+
+  if(nature<1){
+    const vg=ctx.createRadialGradient(
+      canvas.width*.5,canvas.height*.5,canvas.width*.22,
+      canvas.width*.5,canvas.height*.5,canvas.width*.7
+    );
+    vg.addColorStop(0,'rgba(0,0,0,0)');
+    vg.addColorStop(1,`rgba(0,0,0,${(1-nature)*.5})`);
+    ctx.fillStyle=vg;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
 }
 
-// startGame est appelé directement depuis endIntro
+function update(dt){
+  updateEnemies(dt);
+  updateWaves(dt);
+  updateDefenseButtons();
+}
+
+let lastTime=Date.now();
+
+function gameLoop(){
+  const now=Date.now();
+  const dt=(now-lastTime)/1000;
+  lastTime=now;
+
+  tick++;
+  update(dt);
+  draw();
+
+  document.getElementById('points').textContent=Math.floor(gameState.points);
+  document.getElementById('wave').textContent=String(gameState.waveNum).padStart(2,'0');
+  document.getElementById('hpval').textContent=gameState.hp.toFixed(0)+'%';
+
+  gameState.gameTime+=dt;
+  const m=Math.floor(gameState.gameTime/60);
+  const s=Math.floor(gameState.gameTime%60);
+  document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;
+
+  if(gameState.isGameOver){
+    gameScreen.style.display='none';
+    gameoverScreen.style.display='flex';
+    document.getElementById('gameover-title').textContent=TEXTS[lang].gameoverTitle;
+    document.getElementById('gameover-time').textContent=`${m}:${String(s).padStart(2,'0')}`;
+    document.getElementById('gameover-wave').textContent=gameState.waveNum;
+    document.getElementById('gameover-message').textContent=TEXTS[lang].gameoverMsg;
+    document.getElementById('restart-btn').textContent=TEXTS[lang].restartBtn;
+    document.getElementById('restart-btn').onclick=()=>{
+      gameoverScreen.style.display='none';
+      introScreen.style.display='flex';
+      setupIntro();
+    };
+    return;
+  }
+
+  updateThemeUI();
+  requestAnimationFrame(gameLoop);
+}
+
+setupIntro();
+requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>

@@ -110,40 +110,7 @@
     }
     .step-btn:active { background: rgba(0,255,208,0.08); }
 
-    /* ══ SCREEN 2 : Génération ID ════════════════════════════ */
-    .gen-icon { font-size: 56px; margin-bottom: 16px; }
-
-    .id-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 32px 24px; text-align: center;
-      width: 100%; max-width: 380px; margin-bottom: 20px;
-    }
-    .id-label {
-      font-family: 'Share Tech Mono', monospace; font-size: 11px;
-      color: var(--muted); text-transform: uppercase; letter-spacing: 3px;
-      margin-bottom: 12px;
-    }
-    .id-code {
-      font-family: 'Share Tech Mono', monospace; font-size: 56px;
-      font-weight: bold; color: var(--accent3);
-      text-shadow: 0 0 24px rgba(255,204,0,0.5);
-      letter-spacing: 8px; line-height: 1;
-      animation: id-appear 0.6s cubic-bezier(.34,1.56,.64,1);
-    }
-    @keyframes id-appear {
-      from { transform: scale(0.5); opacity: 0; }
-      to   { transform: scale(1);   opacity: 1; }
-    }
-    .id-sub {
-      font-size: 13px; color: var(--muted); margin-top: 10px;
-    }
-
-    .step-btn.orange {
-      border-color: var(--accent3); color: var(--accent3);
-    }
-    .step-btn.orange:active { background: rgba(255,204,0,0.08); }
-
-    /* ══ SCREEN 3 : Leçon Cookie ═════════════════════════════ */
+    /* ══ SCREEN 2 : Leçon Cookie ═════════════════════════════ */
     .cookie-icon { font-size: 64px; margin-bottom: 16px; }
 
     .lesson-block {
@@ -170,13 +137,13 @@
       line-height: 1.6; margin-bottom: 20px;
     }
 
-    /* ══ SCREEN 4 : Déjà enregistré ══════════════════════════ */
+    /* ══ SCREEN 3 : Déjà enregistré ══════════════════════════ */
     .check-icon { font-size: 72px; margin-bottom: 16px; }
     .team-badge {
-      font-family: 'Share Tech Mono', monospace; font-size: 42px;
+      font-family: 'Share Tech Mono', monospace; font-size: 28px;
       font-weight: bold; color: var(--accent3);
       text-shadow: 0 0 24px rgba(255,204,0,0.5);
-      letter-spacing: 8px; margin: 16px 0;
+      letter-spacing: 4px; margin: 16px 0;
     }
     .reset-link {
       font-family: 'Share Tech Mono', monospace; font-size: 12px;
@@ -214,7 +181,8 @@
     <div class="check-icon">✅</div>
     <div class="main-title" id="ka-title"></div>
     <div class="main-sub"   id="ka-sub"></div>
-    <div class="team-badge cq-team-id"></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;" id="ka-team-label"></div>
+    <div class="team-badge" id="ka-team-name"></div>
     <div class="lesson-block" style="text-align:center;">
       <div class="lesson-body" id="ka-body"></div>
     </div>
@@ -224,6 +192,7 @@
       <div class="frag-row"><span class="frag-name">phishing.html</span><span class="frag-code">CYB-B7</span> <span class="frag-type" id="ft-trap2"></span></div>
       <div class="frag-row"><span class="frag-name">lockpicking</span>  <span class="frag-code">CYB-C1</span> <span class="frag-type" id="ft-room"></span></div>
     </div>
+    <button class="step-btn" id="ka-continue" onclick="goToTeamSelect()" style="margin-bottom:12px;"></button>
     <div class="reset-link" id="ka-reset" onclick="resetTeam()"></div>
   </div>
 
@@ -243,23 +212,10 @@
         <span class="wifi-val wifi-pass" id="w-pass-val">Password1234</span>
       </div>
     </div>
-    <button class="step-btn" id="w-btn" onclick="goToScreen('screen-generate')"></button>
+    <button class="step-btn" id="w-btn" onclick="goToScreen('screen-cookie')"></button>
   </div>
 
-  <!-- ── SCREEN 2 : Génération ID ── -->
-  <div class="screen" id="screen-generate">
-    <div class="gen-icon">🎲</div>
-    <div class="main-title" id="g-title"></div>
-    <div class="main-sub"   id="g-sub"></div>
-    <div class="id-card">
-      <div class="id-label" id="g-id-label"></div>
-      <div class="id-code"  id="g-id-code">----</div>
-      <div class="id-sub"   id="g-id-sub"></div>
-    </div>
-    <button class="step-btn orange" id="g-btn" onclick="confirmAndContinue()"></button>
-  </div>
-
-  <!-- ── SCREEN 3 : Leçon Cookie ── -->
+  <!-- ── SCREEN 2 : Leçon Cookie ── -->
   <div class="screen" id="screen-cookie">
     <div class="cookie-icon">🍪</div>
     <div class="main-title" id="c-title"></div>
@@ -270,7 +226,7 @@
     </div>
     <div class="cookie-demo" id="c-demo"></div>
     <div class="warn-banner" id="c-warn"></div>
-    <button class="step-btn" id="c-btn" onclick="goToScreen('screen-known')"></button>
+    <button class="step-btn" id="c-btn" onclick="goToTeamSelect()"></button>
   </div>
 
   <!-- tracking module -->
@@ -282,89 +238,83 @@
       fr: {
         /* WiFi screen */
         wTitle:  "Bienvenue dans CyberQuest !",
-        wSub:    "étape 1 sur 2 — connexion wifi",
+        wSub:    "étape 1 — connexion wifi",
         wLabel:  "— connecte-toi à ce réseau —",
         wPassKey:"Mot de passe",
         wBtn:    "✅ Je suis connecté(e) — continuer",
-        /* Generate screen */
-        gTitle:  "Ton identifiant équipe",
-        gSub:    "généré aléatoirement pour toi",
-        gIdLabel:"numéro d'équipe",
-        gIdSub:  "Note-le ! Tu en auras besoin à la fin.",
-        gBtn:    "🚀 Lancer la chasse au trésor",
         /* Cookie screen */
         cTitle:  "Un cookie vient d'être créé 🍪",
-        cSub:    "ce qu'on a posé sur ton appareil",
+        cSub:    "ce qu'on va poser sur ton appareil",
         cWhatTitle: "C'est quoi un cookie ?",
-        cWhatBody:  "Un cookie est un petit fichier texte qu'un site web dépose dans ton navigateur. Il permet au site de \"se souvenir\" de toi. Ici on stocke ton numéro d'équipe — mais sur un vrai site, les cookies peuvent contenir des données de session, des préférences, ou même servir à te tracer entre plusieurs sites.",
+        cWhatBody:  "Un cookie est un petit fichier texte qu'un site web dépose dans ton navigateur. Il permet au site de \"se souvenir\" de toi. Ici il stockera ton équipe — mais sur un vrai site, les cookies peuvent contenir des données de session, des préférences, ou même servir à te tracer entre plusieurs sites.",
         cWarn:   "⚠️ Chaque site que tu visites aujourd'hui lira ce cookie pour savoir qui tu es. C'est exactement comme ça que le tracking publicitaire fonctionne sur internet.",
-        cBtn:    "🗺️ Voir la carte et démarrer",
+        cBtn:    "🧑‍💻 Choisir mon équipe →",
         /* Already known */
         kaTitle: "Déjà enregistré(e) !",
         kaSub:   "ton équipe est toujours active",
+        kaTeam:  "Ton équipe :",
         kaBody:  "Ton cookie est toujours présent dans ton navigateur. Tu peux reprendre la chasse là où tu t'es arrêté(e).",
         kaFragsTitle: "Fragments à collecter :",
         ftTrap:  "🪤 piège",
         ftRoom:  "🔓 salle",
-        kaReset: "[ Réinitialiser mon équipe ]",
+        kaContinue: "▶ Continuer la chasse",
+        kaReset: "[ Changer d'équipe ]",
       },
       nl: {
         wTitle:  "Welkom bij CyberQuest!",
-        wSub:    "stap 1 van 2 — wifi-verbinding",
+        wSub:    "stap 1 — wifi-verbinding",
         wLabel:  "— verbind je met dit netwerk —",
         wPassKey:"Wachtwoord",
         wBtn:    "✅ Ik ben verbonden — verder",
-        gTitle:  "Jouw team-ID",
-        gSub:    "willekeurig voor jou gegenereerd",
-        gIdLabel:"team-nummer",
-        gIdSub:  "Onthoud het! Je hebt het nodig aan het einde.",
-        gBtn:    "🚀 Start de schattenjacht",
-        cTitle:  "Er is zojuist een cookie aangemaakt 🍪",
-        cSub:    "wat we op je apparaat hebben geplaatst",
+        cTitle:  "Er wordt een cookie aangemaakt 🍪",
+        cSub:    "wat we op je apparaat plaatsen",
         cWhatTitle: "Wat is een cookie?",
-        cWhatBody:  "Een cookie is een klein tekstbestand dat een website in je browser plaatst. Hiermee kan de site je 'onthouden'. Hier slaan we je team-nummer op — maar op een echte site kunnen cookies sessiegegevens, voorkeuren of zelfs tracking over meerdere sites bevatten.",
+        cWhatBody:  "Een cookie is een klein tekstbestand dat een website in je browser plaatst. Hiermee kan de site je 'onthouden'. Hier slaan we je team op — maar op een echte site kunnen cookies sessiegegevens, voorkeuren of zelfs tracking over meerdere sites bevatten.",
         cWarn:   "⚠️ Elke site die je vandaag bezoekt leest dit cookie om te weten wie je bent. Zo werkt reclame-tracking op het internet.",
-        cBtn:    "🗺️ Bekijk de kaart en start",
+        cBtn:    "🧑‍💻 Kies mijn team →",
         kaTitle: "Al geregistreerd!",
         kaSub:   "je team is nog steeds actief",
+        kaTeam:  "Jouw team:",
         kaBody:  "Je cookie is nog aanwezig in je browser. Je kunt de jacht hervatten waar je gebleven was.",
         kaFragsTitle: "Te verzamelen fragmenten:",
         ftTrap:  "🪤 val",
         ftRoom:  "🔓 zaal",
-        kaReset: "[ Mijn team opnieuw instellen ]",
+        kaContinue: "▶ Doorgaan met de jacht",
+        kaReset: "[ Van team wisselen ]",
       },
       en: {
         wTitle:  "Welcome to CyberQuest!",
-        wSub:    "step 1 of 2 — wifi connection",
+        wSub:    "step 1 — wifi connection",
         wLabel:  "— connect to this network —",
         wPassKey:"Password",
         wBtn:    "✅ I'm connected — continue",
-        gTitle:  "Your team ID",
-        gSub:    "randomly generated for you",
-        gIdLabel:"team number",
-        gIdSub:  "Write it down! You'll need it at the end.",
-        gBtn:    "🚀 Start the treasure hunt",
-        cTitle:  "A cookie was just created 🍪",
-        cSub:    "what we placed on your device",
+        cTitle:  "A cookie is about to be created 🍪",
+        cSub:    "what we will place on your device",
         cWhatTitle: "What is a cookie?",
-        cWhatBody:  "A cookie is a small text file that a website places in your browser. It allows the site to 'remember' you. Here we store your team number — but on a real site, cookies can contain session data, preferences, or even be used to track you across multiple sites.",
+        cWhatBody:  "A cookie is a small text file that a website places in your browser. It allows the site to 'remember' you. Here it will store your team — but on a real site, cookies can contain session data, preferences, or even be used to track you across multiple sites.",
         cWarn:   "⚠️ Every site you visit today will read this cookie to know who you are. This is exactly how advertising tracking works on the internet.",
-        cBtn:    "🗺️ See the map and start",
+        cBtn:    "🧑‍💻 Choose my team →",
         kaTitle: "Already registered!",
         kaSub:   "your team is still active",
+        kaTeam:  "Your team:",
         kaBody:  "Your cookie is still present in your browser. You can resume the hunt where you left off.",
         kaFragsTitle: "Fragments to collect:",
         ftTrap:  "🪤 trap",
         ftRoom:  "🔓 room",
-        kaReset: "[ Reset my team ]",
+        kaContinue: "▶ Continue the hunt",
+        kaReset: "[ Change team ]",
       }
     };
 
     var lang = 'fr';
-    var assignedId = null;
 
     /* ── Utils ── */
     function s(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; }
+
+    function getCookie(name) {
+      var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? decodeURIComponent(m[2]) : null;
+    }
 
     function goToScreen(id) {
       document.querySelectorAll('.screen').forEach(function(el) { el.classList.remove('active'); });
@@ -374,30 +324,23 @@
 
     function setLang(l) { lang = l; render(); }
 
-    /* ── Random 4-digit ID ── */
-    function generateId() {
-      return String(Math.floor(1000 + Math.random() * 9000));
+    /* ── Redirection vers team-select ── */
+    function goToTeamSelect() {
+      window.location.href = '/team-select?lang=' + lang;
     }
 
-    /* ── Confirm ID, set cookie, go to cookie lesson ── */
-    function confirmAndContinue() {
-      if (!assignedId) return;
-      CyberTrack.setTeamId(assignedId);
-      CyberTrack.track('init', 'start');
-      goToScreen('screen-cookie');
-      render(); // refresh cookie demo with real ID
-    }
-
-    /* ── Reset (animateur / debug) ── */
+    /* ── Reset ── */
     function resetTeam() {
-      document.cookie = 'cqid=; path=/; max-age=0';
+      ['cq_uuid', 'cq_team', 'cq_lang', 'cqid'].forEach(function(name) {
+        document.cookie = name + '=; path=/; max-age=0';
+      });
       location.reload();
     }
 
     /* ── Render ── */
     function render() {
-      var t  = T[lang];
-      var id = CyberTrack.getTeamId();
+      var t       = T[lang];
+      var team_id = getCookie('cq_team');
 
       /* WiFi */
       s('w-title',    t.wTitle);
@@ -406,55 +349,55 @@
       s('w-pass-key', t.wPassKey);
       s('w-btn',      t.wBtn);
 
-      /* Generate */
-      s('g-title',   t.gTitle);
-      s('g-sub',     t.gSub);
-      s('g-id-label',t.gIdLabel);
-      s('g-id-sub',  t.gIdSub);
-      s('g-btn',     t.gBtn);
-      if (assignedId) s('g-id-code', assignedId);
-
       /* Cookie lesson */
-      s('c-title',       t.cTitle);
-      s('c-sub',         t.cSub);
-      s('c-what-title',  t.cWhatTitle);
-      s('c-what-body',   t.cWhatBody);
-      s('c-warn',        t.cWarn);
-      s('c-btn',         t.cBtn);
-      var displayId = id || assignedId || '????';
-      s('c-demo', 'Set-Cookie: cqid=' + displayId + '; path=/; max-age=86400');
+      s('c-title',      t.cTitle);
+      s('c-sub',        t.cSub);
+      s('c-what-title', t.cWhatTitle);
+      s('c-what-body',  t.cWhatBody);
+      s('c-warn',       t.cWarn);
+      s('c-btn',        t.cBtn);
+      // Montre un exemple de ce qui sera posé après le choix d'équipe
+      s('c-demo', 'Set-Cookie: cq_team=<ton-équipe>; cq_lang=' + lang + '; path=/; max-age=86400');
 
       /* Already known */
       s('ka-title',      t.kaTitle);
       s('ka-sub',        t.kaSub);
+      s('ka-team-label', t.kaTeam);
       s('ka-body',       t.kaBody);
       s('ka-frags-title',t.kaFragsTitle);
       s('ft-trap',       t.ftTrap);
       s('ft-trap2',      t.ftTrap);
       s('ft-room',       t.ftRoom);
+      s('ka-continue',   t.kaContinue);
       s('ka-reset',      t.kaReset);
+      // Affiche le nom de l'équipe choisie
+      var badge = document.getElementById('ka-team-name');
+      if (badge) badge.textContent = team_id || '—';
 
       /* Lang buttons */
       ['fr','nl','en'].forEach(function(l2) {
         var b = document.getElementById('btn-' + l2);
         if (b) b.classList.toggle('active', l2 === lang);
       });
-
-      /* Inject team badge */
-      CyberTrack.injectTeamBadge();
     }
 
     /* ── Boot ── */
     (function boot() {
-      var existingId = CyberTrack.getTeamId();
-      if (existingId) {
-        /* Already registered */
+      // Détecte la langue depuis cookie ou navigateur
+      var savedLang = getCookie('cq_lang');
+      if (savedLang && T[savedLang]) lang = savedLang;
+      else {
+        var bl = (navigator.language || '').substring(0, 2).toLowerCase();
+        if (T[bl]) lang = bl;
+      }
+
+      var team_id = getCookie('cq_team');
+      if (team_id) {
+        // Déjà enregistré via team-select
         render();
         goToScreen('screen-known');
-        CyberTrack.track('init', 'return');
       } else {
-        /* Fresh start */
-        assignedId = generateId();
+        // Première visite
         render();
         goToScreen('screen-wifi');
       }

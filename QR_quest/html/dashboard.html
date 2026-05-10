@@ -258,17 +258,21 @@
         + '<div class="cell-icon">' + (icons[status]||'?') + '</div>' + t + '</div>';
     }
 
-    /* Build / refresh the grid */
-    function buildGrid(events) {
-      /* Group by team */
-      var teams = {};
+    /* Build / refresh the grid
+       teams  = { team_id: { uuid, team_num, lang, ... } }  ← teams.json
+       events = [ { id, exo, status, timestamp, ... } ]     ← events.json
+    */
+    function buildGrid(teams, events) {
+      /* Index des events par équipe */
+      var evByTeam = {};
       events.forEach(function(e) {
         if (!e.id || e.exo === 'init') return;
-        if (!teams[e.id]) teams[e.id] = {};
-        if (!teams[e.id][e.exo]) teams[e.id][e.exo] = [];
-        teams[e.id][e.exo].push(e);
+        if (!evByTeam[e.id]) evByTeam[e.id] = {};
+        if (!evByTeam[e.id][e.exo]) evByTeam[e.id][e.exo] = [];
+        evByTeam[e.id][e.exo].push(e);
       });
 
+      /* Source de vérité : toutes les équipes enregistrées */
       var teamIds = Object.keys(teams);
       if (teamIds.length === 0) {
         document.getElementById('empty-state').style.display = 'block';
@@ -278,17 +282,22 @@
       document.getElementById('empty-state').style.display = 'none';
       document.getElementById('grid-table').style.display = 'table';
 
+      /* Tri par numéro d'équipe */
+      teamIds.sort(function(a, b) {
+        return (teams[a].team_num || 0) - (teams[b].team_num || 0);
+      });
+
       var tbody = document.getElementById('grid-body');
       tbody.innerHTML = '';
-      teamIds.sort().forEach(function(tid) {
+      teamIds.forEach(function(tid) {
         var tr = document.createElement('tr');
         var tdTeam = document.createElement('td');
         tdTeam.className = 'team-cell';
-        tdTeam.textContent = '# ' + tid;
+        tdTeam.textContent = '#' + teams[tid].team_num + ' ' + tid;
         tr.appendChild(tdTeam);
 
         ACTIVITIES.forEach(function(act) {
-          var evList = teams[tid][act] || [];
+          var evList = (evByTeam[tid] && evByTeam[tid][act]) || [];
           var status = bestStatus(evList);
           var lastTime = evList.length ? evList[evList.length - 1].timestamp : null;
           var td = document.createElement('td');
@@ -300,13 +309,11 @@
     }
 
     /* Stats */
-    function updateStats(events) {
-      var teams   = new Set();
+    function updateStats(teams, events) {
       var frags   = new Set();
       var gotchas = 0, leurres = 0;
 
       events.forEach(function(e) {
-        if (e.id) teams.add(e.id);
         if ((e.exo === 'mirror' || e.exo === 'phishing') && e.status === 'gotcha') {
           frags.add(e.id + '_' + e.exo);
           gotchas++;
@@ -319,7 +326,7 @@
         }
       });
 
-      document.getElementById('stat-teams').textContent  = teams.size;
+      document.getElementById('stat-teams').textContent  = Object.keys(teams).length;
       document.getElementById('stat-frags').textContent  = frags.size;
       document.getElementById('stat-gotcha').textContent = gotchas;
       document.getElementById('stat-leurre').textContent = leurres;
@@ -339,13 +346,12 @@
         var time = e.timestamp ? e.timestamp.slice(11, 19) : '??:??:??';
         div.innerHTML =
           '<span class="feed-time">' + time + '</span>' +
-          '<span class="feed-team">#' + (e.id || '???') + '</span>' +
+          '<span class="feed-team">' + (e.id || '???') + '</span>' +
           '<span class="feed-exo">'  + (e.exo || '?') + '</span>' +
           '<span class="feed-status ' + (e.status||'') + '">' + (e.status||'?') + '</span>';
         feed.insertBefore(div, feed.firstChild);
       });
 
-      /* Keep only last 50 entries */
       while (feed.children.length > 50) feed.removeChild(feed.lastChild);
     }
 
@@ -354,13 +360,16 @@
       fetch('/dashboard/data', { cache: 'no-store' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
+          var teams  = data.teams  || {};
+          var events = data.events || [];
           document.getElementById('status-dot').className = 'status-dot';
-          document.getElementById('hdr-sub').textContent = 'En direct — ' + data.length + ' événements';
+          document.getElementById('hdr-sub').textContent =
+            'En direct — ' + Object.keys(teams).length + ' équipes · ' + events.length + ' événements';
           document.getElementById('last-update').textContent =
             'Mise à jour ' + new Date().toLocaleTimeString();
-          buildGrid(data);
-          updateStats(data);
-          updateFeed(data);
+          buildGrid(teams, events);
+          updateStats(teams, events);
+          updateFeed(events);
         })
         .catch(function() {
           document.getElementById('status-dot').className = 'status-dot offline';

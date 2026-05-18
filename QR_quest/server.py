@@ -28,9 +28,10 @@ from flask import Flask, jsonify, send_from_directory, Response, request, redire
 # ── Config ────────────────────────────────────────────────────────────
 BASE_DIR    = Path(__file__).parent
 HTML_DIR    = BASE_DIR / "html"
-EVENTS_FILE = BASE_DIR / "events.json"
-TEAMS_FILE  = BASE_DIR / "teams.json"      # équipes enregistrées pour la session
-PHOTOS_DIR  = BASE_DIR / "photos"          # photos "Vous" uploadées
+EVENTS_FILE    = BASE_DIR / "events.json"
+TEAMS_FILE     = BASE_DIR / "teams.json"            # équipes enregistrées pour la session
+CHAMPIONS_FILE = BASE_DIR / "champions_scores.json" # scores du jeu Champions
+PHOTOS_DIR     = BASE_DIR / "photos"                # photos "Vous" uploadées
 
 PORT = 80 if os.geteuid() == 0 else 8080   # 80 si root, 8080 sinon
 
@@ -70,6 +71,98 @@ def save_teams(teams):
         json.dumps(teams, indent=2, ensure_ascii=False),
         encoding='utf-8'
     )
+
+def check_uuid(team_id: str):
+    """
+    Vérifie que le cookie cq_uuid correspond à l'équipe enregistrée.
+
+    Retourne None si tout est OK.
+    Retourne une Response 412 (Precondition Failed) si :
+      - le cookie cq_uuid est absent
+      - l'équipe est inconnue (session nettoyée entre-temps)
+      - l'UUID ne correspond pas (vieille session)
+
+    Usage dans une route :
+        err = check_uuid(team_id)
+        if err: return err
+    """
+    uuid_cookie = request.cookies.get('cq_uuid', '').strip()
+    if not uuid_cookie:
+        return jsonify({'error': 'missing_uuid'}), 412
+    teams = load_teams()
+    team  = teams.get(team_id)
+    if not team:
+        return jsonify({'error': 'unknown_team'}), 412
+    if team.get('uuid') != uuid_cookie:
+        return jsonify({'error': 'session_expired'}), 412
+    return None
+
+# ── Helpers — champions ───────────────────────────────────────────────
+def load_champions():
+    if CHAMPIONS_FILE.exists():
+        try:
+            return json.loads(CHAMPIONS_FILE.read_text(encoding='utf-8'))
+        except Exception:
+            return []
+    return []
+
+def save_champions(scores):
+    CHAMPIONS_FILE.write_text(
+        json.dumps(scores, indent=2, ensure_ascii=False),
+        encoding='utf-8'
+    )
+
+# ── Lobby Champions (in-memory, session locale) ───────────────────────
+# State machine : 'waiting' → 'countdown' → 'playing' → 'waiting'
+_champ_lobby: dict = {
+    'teams':         {},    # team_id → {team_id, last_seen, status, score}
+    'state':         'waiting',
+    'countdown_end': None,  # timestamp Unix (float)
+    'playing_teams': [],    # équipes présentes au moment du START
+}
+_champ_lock = threading.Lock()
+_LOBBY_TTL  = 12   # secondes avant de considérer une équipe déconnectée
+_COUNTDOWN  = 4    # secondes de compte à rebours avant le départ
+
+
+def _prune_lobby():
+    """Retire les équipes silencieuses depuis > _LOBBY_TTL s. !! Appeler sous lock !!"""
+    import time as _time
+    now   = _time.time()
+    stale = [tid for tid, t in _champ_lobby['teams'].items()
+             if now - t['last_seen'] > _LOBBY_TTL]
+    for tid in stale:
+        del _champ_lobby['teams'][tid]
+
+
+def _check_countdown():
+    """Passe de countdown → playing si le délai est écoulé. !! Appeler sous lock !!"""
+    import time as _time
+    if (_champ_lobby['state'] == 'countdown'
+            and _champ_lobby['countdown_end']
+            and _time.time() >= _champ_lobby['countdown_end']):
+        _champ_lobby['state'] = 'playing'
+
+
+def _check_all_done():
+    """Si toutes les équipes playing ont fini → repasse en waiting. !! Appeler sous lock !!"""
+    playing = set(_champ_lobby['playing_teams'])
+    if not playing:
+        return
+    done_statuses = {'eliminated', 'victory'}
+    all_done = all(
+        _champ_lobby['teams'].get(tid, {}).get('status') in done_statuses
+        for tid in playing
+    )
+    if all_done:
+        _champ_lobby['state']         = 'waiting'
+        _champ_lobby['countdown_end'] = None
+        _champ_lobby['playing_teams'] = []
+        # Remettre les équipes encore présentes en 'waiting'
+        for t in _champ_lobby['teams'].values():
+            if t['status'] in done_statuses:
+                t['status'] = 'waiting'
+                t['score']  = None
 
 # ── Avatar map ───────────────────────────────────────────────────────
 AVATARS_DIR = BASE_DIR / "images" / "Avatar"
@@ -218,9 +311,16 @@ def dashboard_data():
 
 @app.route('/dashboard/reset', methods=['POST'])
 def dashboard_reset():
-    """Efface tous les événements ET remet les équipes à zéro."""
+    """Efface tous les événements ET remet les équipes + scores Champions à zéro."""
     EVENTS_FILE.write_text('[]', encoding='utf-8')
     TEAMS_FILE.write_text('{}', encoding='utf-8')
+    CHAMPIONS_FILE.write_text('[]', encoding='utf-8')
+    # Remet le lobby Champions à zéro
+    with _champ_lock:
+        _champ_lobby['teams']         = {}
+        _champ_lobby['state']         = 'waiting'
+        _champ_lobby['countdown_end'] = None
+        _champ_lobby['playing_teams'] = []
     # Supprime les photos de la session
     if PHOTOS_DIR.exists():
         for f in PHOTOS_DIR.glob('*.jpg'):
@@ -256,6 +356,211 @@ def team_select_page():
 def serve_photo(filename):
     """Sert les photos 'Vous' uploadées pendant la session."""
     return send_from_directory(str(PHOTOS_DIR), filename)
+
+@app.route('/champions')
+def champions_page():
+    return send_from_directory(str(HTML_DIR), 'champions.html')
+
+@app.route('/champions/score', methods=['POST'])
+def champions_score_post():
+    """
+    Enregistre le score d'une équipe après une partie Champions.
+    Corps JSON : { team_id, score, questions_answered, lives_remaining, status, retry }
+    status : 'eliminated' | 'victory'
+    """
+    data               = request.get_json(silent=True) or {}
+    team_id            = data.get('team_id', '').strip()
+    score              = int(data.get('score', 0))
+    questions_answered = int(data.get('questions_answered', 0))
+    lives_remaining    = int(data.get('lives_remaining', 0))
+    status             = data.get('status', 'eliminated')
+    retry              = int(data.get('retry', 0))
+
+    if not team_id:
+        return jsonify({'error': 'missing team_id'}), 400
+
+    err = check_uuid(team_id)
+    if err: return err
+
+    scores = load_champions()
+    scores.append({
+        'team_id':            team_id,
+        'score':              score,
+        'questions_answered': questions_answered,
+        'lives_remaining':    lives_remaining,
+        'status':             status,
+        'retry':              retry,
+        'timestamp':          datetime.now().isoformat(timespec='seconds'),
+    })
+    save_champions(scores)
+    print(f"[CHAMP] {team_id:<20} | score={score:>5} | {status} | retry={retry}")
+
+    resp = jsonify({'ok': True})
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@app.route('/teams/reset', methods=['POST'])
+def teams_reset():
+    """Nettoie les équipes (teams.json) sans toucher aux events ni aux scores Champions."""
+    TEAMS_FILE.write_text('{}', encoding='utf-8')
+    # Supprime aussi les photos liées aux équipes
+    if PHOTOS_DIR.exists():
+        for f in PHOTOS_DIR.glob('*.jpg'):
+            f.unlink(missing_ok=True)
+    # Vide le lobby Champions (les équipes ne sont plus valides)
+    with _champ_lock:
+        _champ_lobby['teams']         = {}
+        _champ_lobby['state']         = 'waiting'
+        _champ_lobby['countdown_end'] = None
+        _champ_lobby['playing_teams'] = []
+    print('[RESET] Équipes nettoyées (events et scores conservés)')
+    return jsonify({'ok': True})
+
+
+@app.route('/champions/scores/reset', methods=['POST'])
+def champions_scores_reset():
+    """Efface uniquement les scores Champions (events et équipes conservés)."""
+    CHAMPIONS_FILE.write_text('[]', encoding='utf-8')
+    print('[RESET] Scores Champions effacés')
+    return jsonify({'ok': True})
+
+
+@app.route('/champions/scores')
+def champions_scores_get():
+    """Retourne l'historique complet des scores Champions (pour le leaderboard)."""
+    resp = jsonify(load_champions())
+    resp.headers['Cache-Control'] = 'no-store'
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+# ── Lobby Champions ───────────────────────────────────────────────────
+
+@app.route('/champions/lobby/state')
+def champ_lobby_state():
+    """
+    Polling des clients (~toutes les 2 s).
+    Retourne : { state, countdown_end, teams: [{team_id, status, score}] }
+    """
+    import time as _time
+    with _champ_lock:
+        _prune_lobby()
+        _check_countdown()
+
+        resp = jsonify({
+            'state':         _champ_lobby['state'],
+            'countdown_end': _champ_lobby['countdown_end'],
+            'teams': [
+                {k: v for k, v in t.items() if k != 'last_seen'}
+                for t in _champ_lobby['teams'].values()
+            ],
+        })
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
+
+@app.route('/champions/lobby/heartbeat', methods=['POST'])
+def champ_lobby_heartbeat():
+    """
+    L'équipe signale sa présence (envoyé toutes les 3 s).
+    Corps JSON : { team_id, status, score? }
+    """
+    import time as _time
+    data    = request.get_json(silent=True) or {}
+    team_id = data.get('team_id', '').strip()
+    status  = data.get('status', 'waiting')   # waiting|playing|eliminated|victory
+    score   = data.get('score', None)
+
+    if not team_id:
+        return jsonify({'error': 'missing team_id'}), 400
+
+    err = check_uuid(team_id)
+    if err: return err
+
+    with _champ_lock:
+        now = _time.time()
+        if team_id not in _champ_lobby['teams']:
+            _champ_lobby['teams'][team_id] = {
+                'team_id':   team_id,
+                'last_seen': now,
+                'status':    status,
+                'score':     score,
+            }
+        else:
+            t = _champ_lobby['teams'][team_id]
+            t['last_seen'] = now
+            # Ne jamais rétrograder 'playing' → 'waiting' via heartbeat :
+            # le statut 'playing' est posé par /start et doit rester jusqu'à
+            # ce que la partie se termine (eliminated / victory).
+            if not (t.get('status') == 'playing' and status == 'waiting'):
+                t['status'] = status
+            if score is not None:
+                t['score'] = score
+
+        _check_countdown()
+        state = _champ_lobby['state']
+
+    return jsonify({'ok': True, 'state': state})
+
+
+@app.route('/champions/lobby/start', methods=['POST'])
+def champ_lobby_start():
+    """
+    Lance le compte à rebours si >= 2 équipes présentes.
+    Corps JSON : { team_id }
+    """
+    import time as _time
+    data    = request.get_json(silent=True) or {}
+    team_id = data.get('team_id', '').strip()
+
+    if not team_id:
+        return jsonify({'error': 'missing team_id'}), 400
+
+    err = check_uuid(team_id)
+    if err: return err
+
+    with _champ_lock:
+        _prune_lobby()
+        active = list(_champ_lobby['teams'].keys())
+
+        if len(active) < 2:
+            return jsonify({'error': 'not_enough_teams'}), 400
+        if _champ_lobby['state'] != 'waiting':
+            return jsonify({'error': 'already_started'}), 409
+
+        _champ_lobby['state']         = 'countdown'
+        _champ_lobby['countdown_end'] = _time.time() + _COUNTDOWN
+        _champ_lobby['playing_teams'] = active[:]
+        for tid in active:
+            _champ_lobby['teams'][tid]['status'] = 'playing'
+
+    print(f"[CHAMP] Countdown started by {team_id} — {len(active)} équipes")
+    return jsonify({'ok': True, 'countdown_end': _champ_lobby['countdown_end']})
+
+
+@app.route('/champions/lobby/done', methods=['POST'])
+def champ_lobby_done():
+    """
+    L'équipe signale la fin de sa partie (éliminée ou victoire).
+    Corps JSON : { team_id, status, score }
+    """
+    data    = request.get_json(silent=True) or {}
+    team_id = data.get('team_id', '').strip()
+    status  = data.get('status', 'eliminated')
+    score   = int(data.get('score', 0))
+
+    if not team_id:
+        return jsonify({'error': 'missing team_id'}), 400
+
+    err = check_uuid(team_id)
+    if err: return err
+
+    with _champ_lock:
+        if team_id in _champ_lobby['teams']:
+            _champ_lobby['teams'][team_id]['status'] = status
+            _champ_lobby['teams'][team_id]['score']  = score
+        _check_all_done()
+
+    return jsonify({'ok': True})
 
 @app.route('/<path:filename>')
 def static_files(filename):
@@ -888,6 +1193,8 @@ if __name__ == '__main__':
         EVENTS_FILE.write_text('[]', encoding='utf-8')
     if not TEAMS_FILE.exists():
         TEAMS_FILE.write_text('{}', encoding='utf-8')
+    if not CHAMPIONS_FILE.exists():
+        CHAMPIONS_FILE.write_text('[]', encoding='utf-8')
     PHOTOS_DIR.mkdir(exist_ok=True)
 
     # Precharge les 3 listes de frequence au demarrage (evite latence premier eleve)

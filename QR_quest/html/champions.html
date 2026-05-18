@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#070b14">
+  <title>⚡ Champions — CyberQuest</title>
+  <style>
+    /* ══ Variables ══════════════════════════════════════════════════ */
+    :root {
+      --bg:    #070b14;
+      --surf:  #0d1526;
+      --surf2: #162040;
+      --cyan:  #00e5ff;
+      --green: #00e676;
+      --red:   #ff1744;
+      --yel:   #ffd600;
+      --purp:  #d500f9;
+      --text:  #e8f4fd;
+      --dim:   #546e7a;
+      --r:     16px;
+      --w:     500px;
+    }
+
+    /* ══ Reset ══════════════════════════════════════════════════════ */
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    body::before {                          /* grille cyber */
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,229,255,.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.022) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    /* ══ App container ══════════════════════════════════════════════ */
+    #app { height: 100dvh; height: 100vh; position: relative; overflow: hidden; }
+
+    /* ══ Screens ════════════════════════════════════════════════════ */
+    .screen {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px 18px; gap: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+      overflow-y: auto; overflow-x: hidden;
+    }
+    .screen.active { opacity: 1; pointer-events: all; }
+
+    /* ══ Countdown overlay (par-dessus tout) ════════════════════════ */
+    #countdown-overlay {
+      position: fixed; inset: 0; z-index: 90;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      background: rgba(7,11,20,.88);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #countdown-overlay.active { opacity: 1; pointer-events: all; }
+    #countdown-num {
+      font-size: clamp(6rem, 28vw, 14rem);
+      font-weight: 900; line-height: 1;
+      color: var(--cyan);
+      filter: drop-shadow(0 0 40px rgba(0,229,255,.6));
+    }
+    .cd-sub { font-size: 1.1rem; letter-spacing: .2em; color: var(--dim); text-transform: uppercase; }
+
+    /* ══ Confetti canvas ════════════════════════════════════════════ */
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+
+    /* ══ Typography ════════════════════════════════════════════════ */
+    .big-title {
+      font-size: clamp(2rem, 8.5vw, 3.5rem);
+      font-weight: 900; letter-spacing: .12em; text-transform: uppercase; line-height: 1;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purp) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(0,229,255,.3));
+    }
+    .sub { font-size: .84rem; color: var(--dim); text-align: center; letter-spacing: .05em; }
+
+    /* ══ Team badge ════════════════════════════════════════════════ */
+    .team-badge {
+      width: 100%; max-width: var(--w);
+      background: var(--surf2); border: 2px solid var(--cyan); border-radius: var(--r);
+      padding: 12px 24px;
+      font-size: 1.4rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--cyan); text-align: center;
+      box-shadow: 0 0 20px rgba(0,229,255,.16), inset 0 0 16px rgba(0,229,255,.05);
+    }
+    .team-badge.elim  { border-color: var(--red);   color: var(--red);   box-shadow: 0 0 20px rgba(255,23,68,.16); }
+    .team-badge.vic   { border-color: var(--yel);   color: var(--yel);   box-shadow: 0 0 20px rgba(255,214,0,.16); }
+
+    /* ══ Card ══════════════════════════════════════════════════════ */
+    .card {
+      width: 100%; max-width: var(--w);
+      background: var(--surf); border: 1px solid var(--surf2);
+      border-radius: var(--r); padding: 16px;
+    }
+
+    /* ══ Team list (lobby) ══════════════════════════════════════════ */
+    .team-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--surf2);
+      font-size: .95rem;
+    }
+    .team-row:last-child { border-bottom: none; }
+    .team-dot  { font-size: 1.1rem; min-width: 24px; text-align: center; }
+    .team-name { flex: 1; font-weight: 600; }
+    .team-score-cell { font-size: .85rem; color: var(--yel); font-weight: 700;
+                       font-variant-numeric: tabular-nums; }
+    .team-row.me .team-name { color: var(--cyan); }
+
+    /* ══ Buttons ═══════════════════════════════════════════════════ */
+    .btn {
+      display: block; width: 100%; max-width: var(--w);
+      padding: 17px; border: none; border-radius: var(--r);
+      font-size: 1.05rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+      cursor: pointer; transition: transform .12s, box-shadow .12s, opacity .2s;
+      -webkit-user-select: none; user-select: none;
+    }
+    .btn:active:not(:disabled) { transform: scale(.96); }
+    .btn:disabled { opacity: .38; cursor: default; }
+    .btn-cyan  { background: linear-gradient(135deg,#00acc1,#00e5ff); color:#070b14; box-shadow: 0 4px 20px rgba(0,229,255,.28); }
+    .btn-green { background: linear-gradient(135deg,#00796b,#00e676); color:#070b14; box-shadow: 0 4px 20px rgba(0,230,118,.28); }
+    .btn-red   { background: linear-gradient(135deg,#b71c1c,#ff1744); color:#fff;    box-shadow: 0 4px 20px rgba(255,23,68,.28); }
+    .btn-ghost { background: var(--surf2); color: var(--dim); border: 1px solid var(--surf2); }
+
+    /* Answer 2-col */
+    .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: var(--w); }
+    .ans-grid .btn { padding: 22px 8px; font-size: clamp(.9rem, 3.5vw, 1.1rem); }
+
+    /* ══ Score big ════════════════════════════════════════════════ */
+    .score-big {
+      font-size: clamp(2.5rem, 10vw, 4.5rem); font-weight: 900;
+      color: var(--yel); font-variant-numeric: tabular-nums; line-height: 1;
+      filter: drop-shadow(0 0 14px rgba(255,214,0,.35));
+    }
+
+    /* ══ Lives ════════════════════════════════════════════════════ */
+    .lives { display: flex; gap: 10px; font-size: 1.9rem; }
+    .life { transition: transform .25s, filter .25s; }
+    .life.lost { filter: grayscale(1) opacity(.2); transform: scale(.75); }
+
+    /* ══ Vies fixes — haut droite ══════════════════════════════════ */
+    #fixed-lives {
+      position: fixed; top: 12px; right: 14px; z-index: 60;
+      display: none;           /* visible seulement pendant la partie */
+      gap: 7px; font-size: 1.55rem;
+      filter: drop-shadow(0 0 6px rgba(255,23,68,.4));
+    }
+
+    /* ══ Timer track ═══════════════════════════════════════════════ */
+    #timer-track { width: 100%; max-width: var(--w); height: 7px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
+    #timer-bar   { height: 100%; width: 100%; border-radius: 4px;
+                   background: linear-gradient(90deg, var(--red), var(--yel), var(--cyan)); }
+    #timer-bar.warn { background: var(--red); }
+
+    /* ══ HUD (question screen) ════════════════════════════════════ */
+    .hud { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: var(--w); }
+    .hud-l { display: flex; flex-direction: column; gap: 2px; }
+    .hud-qnum  { font-size: .8rem; color: var(--dim); font-weight: 600; }
+    .hud-score { font-size: 1.05rem; font-weight: 800; color: var(--yel); }
+    .hud-timer { font-size: 1.45rem; font-weight: 900; color: var(--cyan);
+                 min-width: 36px; text-align: right; font-variant-numeric: tabular-nums;
+                 transition: color .3s; }
+    .hud-timer.warn { color: var(--red); }
+    .cat-chip { display: inline-flex; align-items: center; gap: 6px;
+                background: var(--surf2); border-radius: 20px; padding: 5px 14px;
+                font-size: .76rem; color: var(--dim); letter-spacing: .04em; }
+    .q-text { font-size: clamp(.96rem, 3.8vw, 1.2rem); line-height: 1.6; font-weight: 500;
+              text-align: center; width: 100%; max-width: var(--w); }
+
+    /* ══ Feedback ═════════════════════════════════════════════════ */
+    .fb-icon    { font-size: clamp(3.5rem, 13vw, 5rem); animation: pop .4s cubic-bezier(.34,1.56,.64,1) both; }
+    .fb-verdict { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 900;
+                  letter-spacing: .1em; text-transform: uppercase; }
+    .fb-verdict.ok      { color: var(--green); }
+    .fb-verdict.ko      { color: var(--red);   }
+    .fb-verdict.timeout { color: var(--yel);   }
+    .fb-pts  { font-size: .98rem; font-weight: 700; }
+    .fb-expl { font-size: .86rem; line-height: 1.6; color: var(--dim); text-align: center; }
+    .fb-prog { width: 100%; max-width: var(--w); height: 3px; background: var(--surf2); border-radius: 2px; overflow: hidden; }
+    .fb-bar  { height: 100%; border-radius: 2px; background: var(--cyan); width: 100%; }
+
+    /* ══ End screens ══════════════════════════════════════════════ */
+    .end-icon  { font-size: clamp(3.5rem, 13vw, 5.5rem); }
+    .end-title { font-size: clamp(1.7rem, 7vw, 2.8rem); font-weight: 900;
+                 letter-spacing: .08em; text-transform: uppercase; }
+    .elim-title { color: var(--red); animation: shake .5s ease both; }
+    .vic-title  {
+      background: linear-gradient(135deg, var(--yel), var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stars { font-size: 1.6rem; letter-spacing: 6px; }
+    .return-bar { width: 100%; max-width: var(--w); height: 4px;
+                  background: var(--surf2); border-radius: 2px; overflow: hidden; }
+    .return-fill { height: 100%; border-radius: 2px; background: var(--cyan); width: 100%; }
+
+    /* ══ Animations ═══════════════════════════════════════════════ */
+    @keyframes pop   { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      15% { transform: translateX(-9px) rotate(-3deg); } 30% { transform: translateX(9px) rotate(3deg); }
+      50% { transform: translateX(-6px) rotate(-2deg); } 70% { transform: translateX(5px) rotate(2deg); }
+      85% { transform: translateX(-3px); }
+    }
+    @keyframes vic-pop {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      60%  { transform: scale(1.2) rotate(5deg); }
+      to   { transform: scale(1) rotate(0); }
+    }
+    @keyframes cd-pulse {
+      0%   { transform: scale(1.6); opacity: 0; filter: drop-shadow(0 0 60px rgba(0,229,255,1)); }
+      60%  { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .cd-anim { animation: cd-pulse .7s cubic-bezier(.34,1.2,.64,1) both; }
+    .vic-icon { font-size: clamp(3.5rem, 13vw, 5.5rem); animation: vic-pop 1s cubic-bezier(.34,1.56,.64,1) both; }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+<div id="countdown-overlay">
+  <div id="countdown-num">4</div>
+  <div class="cd-sub" id="cd-sub">Prêt…</div>
+</div>
+
+<!-- Vies fixes haut-droite, visibles pendant question + feedback -->
+<div id="fixed-lives"></div>
+
+<div id="app">
+
+  <!-- ══ LOBBY ══════════════════════════════════════════════════ -->
+  <div id="s-lobby" class="screen active">
+    <div class="big-title" id="lb-title">⚡ CHAMPIONS</div>
+    <div class="team-badge" id="lb-badge">…</div>
+
+    <!-- Score retour (affiché seulement après une partie) -->
+    <div id="lb-score-wrap" style="display:none; text-align:center;">
+      <div class="score-big" id="lb-own-score">0</div>
+      <p class="sub" id="lb-own-label">points</p>
+    </div>
+
+    <!-- Liste équipes -->
+    <div class="card" id="lb-team-card">
+      <div id="lb-teams"><p class="sub" style="text-align:center;">…</p></div>
+    </div>
+
+    <p class="sub" id="lb-status">Chargement…</p>
+    <button class="btn btn-cyan" id="btn-start" disabled>▶ DÉMARRER</button>
+  </div>
+
+  <!-- ══ QUESTION ════════════════════════════════════════════════ -->
+  <div id="s-question" class="screen">
+    <div id="timer-track"><div id="timer-bar"></div></div>
+    <div class="hud">
+      <div class="hud-l">
+        <div class="hud-qnum"  id="hud-qnum">Q 1/60</div>
+        <div class="hud-score" id="hud-score">0 pts</div>
+      </div>
+      <div class="hud-timer" id="hud-timer">20</div>
+    </div>
+    <div class="cat-chip" id="q-cat">🤖 Catégorie</div>
+    <div class="q-text"   id="q-text">Question…</div>
+    <div class="ans-grid">
+      <button class="btn btn-green" id="btn-true">✓ VRAI</button>
+      <button class="btn btn-red"   id="btn-false">✗ FAUX</button>
+    </div>
+  </div>
+
+  <!-- ══ FEEDBACK ════════════════════════════════════════════════ -->
+  <div id="s-feedback" class="screen">
+    <div class="fb-icon"    id="fb-icon">✅</div>
+    <div class="fb-verdict" id="fb-verdict">CORRECT !</div>
+    <div class="fb-pts"     id="fb-pts">+30 pts</div>
+    <div class="card"><p class="fb-expl" id="fb-expl"></p></div>
+    <div class="fb-prog"><div class="fb-bar" id="fb-bar"></div></div>
+    <p class="sub" id="fb-tap">Appuie pour continuer →</p>
+  </div>
+
+  <!-- ══ ÉLIMINÉ ═════════════════════════════════════════════════ -->
+  <div id="s-elim" class="screen">
+    <div class="end-icon" style="animation:shake .5s ease both;">💀</div>
+    <div class="end-title elim-title" id="el-title">ÉLIMINÉ !</div>
+    <div style="text-align:center;">
+      <div class="score-big" id="el-score">0</div>
+      <p class="sub" id="el-label">points</p>
+    </div>
+    <p class="sub" id="el-sub">Retour au salon…</p>
+    <div class="return-bar"><div class="return-fill" id="el-bar"></div></div>
+    <button class="btn btn-ghost" id="btn-el-back">↩ Retour au salon</button>
+  </div>
+
+  <!-- ══ VICTOIRE ════════════════════════════════════════════════ -->
+  <div id="s-victory" class="screen">
+    <div class="vic-icon">🏆</div>
+    <div class="end-title vic-title" id="vic-title">CHAMPION !</div>
+    <div style="text-align:center;">
+      <div class="score-big" id="vic-score">0</div>
+      <p class="sub" id="vic-label">points</p>
+    </div>
+    <div class="stars" id="vic-stars">⭐⭐⭐</div>
+    <p class="sub" id="vic-sub">Retour au salon…</p>
+    <div class="return-bar"><div class="return-fill" id="vic-bar"></div></div>
+    <button class="btn btn-ghost" id="btn-vic-back">↩ Retour au salon</button>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   TRANSLATIONS
+════════════════════════════════════════════════════════════════ */
+const LANGS = {
+  fr: {
+    title:        '⚡ CHAMPIONS',
+    t_true:       '✓ VRAI',    t_false:      '✗ FAUX',
+    pts:          n => `${n} pts`,
+    qnum:         (i,n) => `Q ${i}/${n}`,
+    correct:      'CORRECT !', wrong:        'FAUX !',   timeout:  'TEMPS ÉCOULÉ !',
+    pts_gain:     n => `+${n} pts ⚡`,
+    life_lost:    '−1 vie 💔',
+    tap:          'Appuie pour continuer →',
+    elim:         'ÉLIMINÉ !', vic:          'CHAMPION !',
+    slabel:       'points',
+    back:         '↩ Retour au salon',
+    lb_wait1:     'En attente d\'adversaires…',
+    lb_waitN:     n => `${n} équipes connectées`,
+    lb_ready:     n => `${n} équipes prêtes · Lance la partie !`,
+    lb_start:     '▶ DÉMARRER',
+    lb_playing:   'Partie en cours…',
+    lb_cd:        s => `Partie dans ${s}…`,
+    lb_return_sub:s => `Retour au salon dans ${s}s`,
+    lb_elim_sub:  'Tu as été éliminé(e)',
+    lb_vic_sub:   'Tu as gagné !',
+    no_team:      'Équipe introuvable, redirection…',
+    status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
+  },
+  nl: {
+    title:        '⚡ KAMPIOENEN',
+    t_true:       '✓ WAAR',    t_false:      '✗ ONJUIST',
+    pts:          n => `${n} pts`,
+    qnum:         (i,n) => `V ${i}/${n}`,
+    correct:      'CORRECT !', wrong:        'FOUT !',   timeout:  'TIJD OP !',
+    pts_gain:     n => `+${n} pts ⚡`,
+    life_lost:    '−1 leven 💔',
+    tap:          'Tik om verder te gaan →',
+    elim:         'UITGESCHAKELD !', vic:    'KAMPIOEN !',
+    slabel:       'punten',
+    back:         '↩ Terug naar wachtkamer',
+    lb_wait1:     'Wachten op tegenstanders…',
+    lb_waitN:     n => `${n} teams verbonden`,
+    lb_ready:     n => `${n} teams klaar · Start het spel !`,
+    lb_start:     '▶ STARTEN',
+    lb_playing:   'Spel bezig…',
+    lb_cd:        s => `Spel begint over ${s}…`,
+    lb_return_sub:s => `Terug naar wachtkamer in ${s}s`,
+    lb_elim_sub:  'Je bent uitgeschakeld',
+    lb_vic_sub:   'Je hebt gewonnen !',
+    no_team:      'Team niet gevonden, doorsturen…',
+    status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
+  },
+  en: {
+    title:        '⚡ CHAMPIONS',
+    t_true:       '✓ TRUE',    t_false:      '✗ FALSE',
+    pts:          n => `${n} pts`,
+    qnum:         (i,n) => `Q ${i}/${n}`,
+    correct:      'CORRECT !', wrong:        'WRONG !',  timeout:  'TIME\'S UP !',
+    pts_gain:     n => `+${n} pts ⚡`,
+    life_lost:    '−1 life 💔',
+    tap:          'Tap to continue →',
+    elim:         'ELIMINATED !', vic:       'CHAMPION !',
+    slabel:       'points',
+    back:         '↩ Back to lobby',
+    lb_wait1:     'Waiting for opponents…',
+    lb_waitN:     n => `${n} teams connected`,
+    lb_ready:     n => `${n} teams ready · Start the game !`,
+    lb_start:     '▶ START',
+    lb_playing:   'Game in progress…',
+    lb_cd:        s => `Game starts in ${s}…`,
+    lb_return_sub:s => `Back to lobby in ${s}s`,
+    lb_elim_sub:  'You were eliminated',
+    lb_vic_sub:   'You won !',
+    no_team:      'Team not found, redirecting…',
+    status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════════════════════════ */
+const TIMER_S   = 20;
+const MAX_LIVES = 3;
+const PTS_BASE  = 10;
+const PTS_TIME  = 2;
+const FB_DELAY  = 2600;   // ms avant auto-avance feedback
+const RETURN_MS = 5000;   // ms avant retour au salon après fin de partie
+const POLL_MS   = 2200;   // intervalle polling lobby
+const HB_MS     = 3000;   // intervalle heartbeat
+
+/* ════════════════════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const getCookie = name => {
+  const m = document.cookie.match(new RegExp('(?:^| )' + name + '=([^;]+)'));
+  return m ? decodeURIComponent(m[1]) : null;
+};
+
+/* Wrapper fetch : redirige vers /team-select sur 412 (session expirée / inconnue) */
+async function safeFetch(url, opts) {
+  const res = await fetch(url, opts);
+  if (res.status === 412) {
+    // Effacer les cookies de session obsolètes
+    ['cq_team','cq_uuid'].forEach(n => {
+      document.cookie = n + '=; Max-Age=0; path=/';
+    });
+    window.location.href = '/team-select';
+    throw new Error('session_expired');   // stoppe la suite de l'appelant
+  }
+  return res;
+}
+const shuffle = arr => {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+};
+const display = id => id.replace(/-/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+const GAME_SCREENS = new Set(['s-question', 's-feedback']);
+const showScreen = id => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  // Vies fixes : visibles seulement sur les écrans de jeu
+  $('fixed-lives').style.display = GAME_SCREENS.has(id) ? 'flex' : 'none';
+};
+
+/* ════════════════════════════════════════════════════════════════
+   GAME STATE
+════════════════════════════════════════════════════════════════ */
+let G = {
+  qs:          [],
+  idx:         0,
+  lives:       MAX_LIVES,
+  score:       0,
+  answered:    false,
+  timerInt:    null,
+  timeLeft:    TIMER_S,
+  fbTO:        null,
+  // Lobby
+  teamId:      null,
+  lang:        'fr',
+  lobbyInt:    null,    // poll + heartbeat interval
+  hbInt:       null,    // heartbeat pendant la partie
+  myStatus:    'waiting',
+  hasPlayed:   false,
+  startTO:     null,    // setTimeout pour lancer la partie après countdown
+  phase:       'lobby', // 'lobby' | 'playing'
+};
+let T = LANGS.fr;
+
+/* ════════════════════════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════════════════════════ */
+async function boot() {
+  G.teamId = getCookie('cq_team');
+  const raw = (getCookie('cq_lang')||'fr').toLowerCase();
+  G.lang    = LANGS[raw] ? raw : 'fr';
+  T         = LANGS[G.lang];
+
+  $('lb-title').textContent   = T.title;
+  $('btn-start').textContent  = T.lb_start;
+  $('btn-true').textContent   = T.t_true;
+  $('btn-false').textContent  = T.t_false;
+  $('el-title').textContent   = T.elim;
+  $('el-label').textContent   = T.slabel;
+  $('vic-title').textContent  = T.vic;
+  $('vic-label').textContent  = T.slabel;
+  [$('btn-el-back'),$('btn-vic-back')].forEach(b => b.textContent = T.back);
+
+  if (!G.teamId) {
+    $('lb-badge').textContent  = T.no_team;
+    $('lb-badge').style.color  = 'var(--red)';
+    $('lb-status').textContent = '';
+    setTimeout(() => { window.location.href = '/team-select'; }, 3000);
+    return;
+  }
+
+  $('lb-badge').textContent = display(G.teamId);
+
+  // Charger questions
+  try {
+    const res  = await fetch(`/champions/${G.lang}.json`);
+    const data = await res.json();
+    const all  = [];
+    for (const [,cat] of Object.entries(data))
+      for (const q of cat.questions)
+        all.push({...q, catIcon: cat.icon, catTitle: cat.title});
+    G.qs = shuffle(all);
+  } catch(e) { console.error('Questions load failed', e); }
+
+  // Boutons
+  $('btn-start').addEventListener('click',  onStart);
+  $('btn-true').addEventListener('click',   () => answer(true));
+  $('btn-false').addEventListener('click',  () => answer(false));
+  $('btn-el-back').addEventListener('click', goLobby);
+  $('btn-vic-back').addEventListener('click', goLobby);
+  $('s-feedback').addEventListener('click',  nextFromFeedback);
+
+  // Démarrer le lobby
+  goLobby();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LOBBY
+════════════════════════════════════════════════════════════════ */
+function goLobby() {
+  G.phase = 'lobby';
+  clearTimeout(G.startTO);
+  stopGameHeartbeat();
+  showScreen('s-lobby');
+  startLobbyLoop();
+}
+
+function startLobbyLoop() {
+  stopLobbyLoop();
+  heartbeat(); pollLobby();  // immédiat
+  G.lobbyInt = setInterval(() => { heartbeat(); pollLobby(); }, POLL_MS);
+}
+
+function stopLobbyLoop() {
+  clearInterval(G.lobbyInt);
+  G.lobbyInt = null;
+}
+
+async function heartbeat() {
+  try {
+    await safeFetch('/champions/lobby/heartbeat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        team_id: G.teamId,
+        status:  G.myStatus,
+        score:   G.hasPlayed ? G.score : null,
+      }),
+    });
+  } catch(e) {}
+}
+
+async function pollLobby() {
+  try {
+    const res  = await fetch('/champions/lobby/state');
+    const data = await res.json();
+    renderLobby(data);
+    handleLobbyState(data);
+  } catch(e) {}
+}
+
+function renderLobby(data) {
+  const teams = data.teams || [];
+  const state = data.state || 'waiting';
+  const cdEnd = data.countdown_end || null;
+
+  // Badget de l'équipe courante (couleur selon statut)
+  const badge = $('lb-badge');
+  badge.className = 'team-badge';
+  if      (G.myStatus === 'eliminated') badge.classList.add('elim');
+  else if (G.myStatus === 'victory')    badge.classList.add('vic');
+
+  // Score propre si retour de partie
+  if (G.hasPlayed) {
+    $('lb-score-wrap').style.display = 'block';
+    $('lb-own-score').textContent    = G.score.toLocaleString();
+    $('lb-own-label').textContent    = T.slabel;
+  }
+
+  // Liste équipes
+  const container = $('lb-teams');
+  if (!teams.length) {
+    container.innerHTML = `<p class="sub" style="text-align:center">…</p>`;
+  } else {
+    container.innerHTML = teams.map(t => {
+      const isMe = t.team_id === G.teamId;
+      const dot  = t.status === 'playing'    ? T.status_p
+                 : t.status === 'eliminated' ? T.status_e
+                 : t.status === 'victory'    ? T.status_v : T.status_w;
+      const sc   = (t.score != null) ? `<span class="team-score-cell">${Number(t.score).toLocaleString()} pts</span>` : '';
+      return `<div class="team-row${isMe?' me':''}">
+        <span class="team-dot">${dot}</span>
+        <span class="team-name">${display(t.team_id)}${isMe?' ◀':''}</span>
+        ${sc}
+      </div>`;
+    }).join('');
+  }
+
+  // Message statut + bouton
+  const btnStart = $('btn-start');
+  if (state === 'countdown' && cdEnd) {
+    const rem = Math.max(0, Math.ceil(cdEnd - Date.now()/1000));
+    $('lb-status').textContent = T.lb_cd(rem);
+    btnStart.disabled = true;
+  } else if (state === 'playing') {
+    $('lb-status').textContent = T.lb_playing;
+    btnStart.disabled = true;
+  } else {
+    const n = teams.length;
+    $('lb-status').textContent = n < 2 ? T.lb_wait1
+                                : G.myStatus === 'waiting' ? T.lb_ready(n)
+                                : T.lb_waitN(n);
+    const canStart = n >= 2 && G.myStatus === 'waiting';
+    btnStart.disabled = !canStart;
+  }
+}
+
+function handleLobbyState(data) {
+  if (G.phase !== 'lobby') return;
+  const state  = data.state || 'waiting';
+  const cdEnd  = data.countdown_end || null;
+  const myTeam = (data.teams||[]).find(t => t.team_id === G.teamId);
+  const myServerStatus = myTeam?.status || 'waiting';
+
+  // Synchro locale : si le serveur nous marque 'playing', on aligne G.myStatus
+  // pour que les heartbeats suivants n'écrasent plus le statut côté serveur.
+  if (myServerStatus === 'playing' && G.myStatus === 'waiting') {
+    G.myStatus = 'playing';
+  }
+
+  // Démarrer seulement si le serveur nous a inclus dans cette partie
+  const weAreIn = myServerStatus === 'playing' || G.myStatus === 'playing';
+
+  if (weAreIn && state === 'playing') {
+    // Le countdown est écoulé côté serveur → on part immédiatement
+    triggerGameStart();
+
+  } else if (weAreIn && state === 'countdown' && cdEnd) {
+    // Afficher le décompte et programmer le départ local
+    showCountdown(cdEnd);
+    if (!G.startTO) {   // ne replanifier que si pas déjà planifié
+      const delay = cdEnd * 1000 - Date.now();
+      G.startTO = setTimeout(triggerGameStart, Math.max(0, delay));
+    }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   COUNTDOWN OVERLAY
+════════════════════════════════════════════════════════════════ */
+let cdDisplayInt = null;
+
+function showCountdown(cdEnd) {
+  clearInterval(cdDisplayInt);
+  const overlay = $('countdown-overlay');
+  overlay.classList.add('active');
+
+  function tick() {
+    const rem = Math.max(0, Math.ceil(cdEnd - Date.now()/1000));
+    const numEl = $('countdown-num');
+    numEl.textContent = rem > 0 ? rem : '▶';
+    // Re-animer
+    numEl.classList.remove('cd-anim');
+    numEl.offsetWidth;
+    numEl.classList.add('cd-anim');
+    $('cd-sub').textContent = T.lb_cd(rem);
+  }
+  tick();
+  cdDisplayInt = setInterval(() => {
+    const rem = Math.max(0, Math.ceil(cdEnd - Date.now()/1000));
+    tick();
+    if (rem <= 0) clearInterval(cdDisplayInt);
+  }, 500);
+}
+
+function hideCountdown() {
+  clearInterval(cdDisplayInt);
+  $('countdown-overlay').classList.remove('active');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   START
+════════════════════════════════════════════════════════════════ */
+async function onStart() {
+  $('btn-start').disabled = true;
+  try {
+    await safeFetch('/champions/lobby/start', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ team_id: G.teamId }),
+    });
+    // La réponse du poll suivant déclenchera le countdown + départ
+  } catch(e) {
+    $('btn-start').disabled = false;
+  }
+}
+
+function triggerGameStart() {
+  if (G.phase === 'playing') return; // déjà lancé
+  G.phase    = 'playing';
+  G.myStatus = 'playing';
+  stopLobbyLoop();
+  clearTimeout(G.startTO);
+  clearInterval(cdDisplayInt);
+  hideCountdown();
+  startGame();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEARTBEAT PENDANT LA PARTIE
+════════════════════════════════════════════════════════════════ */
+function startGameHeartbeat() {
+  stopGameHeartbeat();
+  G.hbInt = setInterval(() => {
+    fetch('/champions/lobby/heartbeat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ team_id: G.teamId, status: 'playing', score: null }),
+    }).catch(()=>{});
+  }, HB_MS);
+}
+function stopGameHeartbeat() {
+  clearInterval(G.hbInt);
+  G.hbInt = null;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   GAME FLOW
+════════════════════════════════════════════════════════════════ */
+function startGame() {
+  G.idx      = 0;
+  G.lives    = MAX_LIVES;
+  G.score    = 0;
+  G.qs       = shuffle(G.qs);
+  G.hasPlayed = true;
+  startGameHeartbeat();
+  showQ();
+}
+
+function showQ() {
+  G.answered = false;
+  const q = G.qs[G.idx];
+  $('hud-qnum').textContent  = T.qnum(G.idx+1, G.qs.length);
+  $('hud-score').textContent = T.pts(G.score);
+  renderLivesHud();
+  $('q-cat').textContent  = `${q.catIcon}  ${q.catTitle}`;
+  $('q-text').textContent = q.question;
+  showScreen('s-question');
+  startTimer();
+}
+
+function renderLivesHud() {
+  const c = $('fixed-lives'); c.innerHTML = '';
+  for (let i=0; i<MAX_LIVES; i++) {
+    const s = document.createElement('span');
+    s.className = 'life' + (i >= G.lives ? ' lost' : '');
+    s.textContent = '❤️';
+    c.appendChild(s);
+  }
+}
+
+/* ── Timer ──────────────────────────────────────────── */
+function startTimer() {
+  G.timeLeft = TIMER_S;
+  clearInterval(G.timerInt);
+  const bar = $('timer-bar');
+  bar.classList.remove('warn');
+  bar.style.transition = 'none'; bar.style.width = '100%'; bar.offsetHeight;
+  bar.style.transition = `width ${TIMER_S}s linear`; bar.style.width = '0%';
+  updateTimerDisplay();
+  G.timerInt = setInterval(() => {
+    G.timeLeft--;
+    updateTimerDisplay();
+    if (G.timeLeft <= 5) bar.classList.add('warn');
+    if (G.timeLeft <= 0) { clearInterval(G.timerInt); answer(null); }
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(G.timerInt);
+  const bar = $('timer-bar');
+  bar.style.transition = 'none';
+  bar.style.width = getComputedStyle(bar).width;
+}
+function updateTimerDisplay() {
+  const el = $('hud-timer');
+  el.textContent = G.timeLeft;
+  el.classList.toggle('warn', G.timeLeft <= 5);
+}
+
+/* ── Réponse ────────────────────────────────────────── */
+function answer(userAns) {
+  if (G.answered) return;
+  G.answered = true;
+  stopTimer();
+
+  const q          = G.qs[G.idx];
+  const isTimeout  = userAns === null;
+  const isCorrect  = !isTimeout && (userAns === q.answer);
+  let ptsGained    = 0;
+  let verdict, ptsText, fbCls;
+
+  if (isCorrect) {
+    ptsGained = PTS_BASE + G.timeLeft * PTS_TIME;
+    G.score  += ptsGained;
+    verdict   = T.correct; ptsText = T.pts_gain(ptsGained); fbCls = 'ok';
+    $('fb-icon').textContent = '✅'; $('fb-pts').style.color = 'var(--yel)';
+  } else if (isTimeout) {
+    G.lives--;
+    verdict = T.timeout; ptsText = T.life_lost; fbCls = 'timeout';
+    $('fb-icon').textContent = '⏰'; $('fb-pts').style.color = 'var(--red)';
+  } else {
+    G.lives--;
+    verdict = T.wrong; ptsText = T.life_lost; fbCls = 'ko';
+    $('fb-icon').textContent = '❌'; $('fb-pts').style.color = 'var(--red)';
+  }
+
+  const icon = $('fb-icon');
+  icon.style.animation = 'none'; icon.offsetWidth;
+  icon.style.animation = 'pop .4s cubic-bezier(.34,1.56,.64,1) both';
+
+  const vEl = $('fb-verdict');
+  vEl.textContent = verdict; vEl.className = 'fb-verdict ' + fbCls;
+  $('fb-pts').textContent  = ptsText;
+  $('fb-expl').textContent = q.explanation || '';
+  $('fb-tap').textContent  = T.tap;
+
+  const bar = $('fb-bar');
+  bar.style.transition = 'none'; bar.style.width = '100%'; bar.offsetHeight;
+  bar.style.transition = `width ${FB_DELAY}ms linear`; bar.style.width = '0%';
+
+  showScreen('s-feedback');
+  G.fbTO = setTimeout(nextFromFeedback, FB_DELAY);
+}
+
+function nextFromFeedback() {
+  clearTimeout(G.fbTO); G.fbTO = null;
+  $('s-feedback').removeEventListener('click', nextFromFeedback);
+  requestAnimationFrame(() => $('s-feedback').addEventListener('click', nextFromFeedback));
+
+  if (G.lives <= 0)               { endGame('eliminated'); return; }
+  if (G.idx + 1 >= G.qs.length)  { endGame('victory');    return; }
+  G.idx++;
+  showQ();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FIN DE PARTIE → retour lobby
+════════════════════════════════════════════════════════════════ */
+async function endGame(status) {
+  stopGameHeartbeat();
+  G.myStatus = status;
+  G.hasPlayed = true;
+  G.phase     = 'lobby';   // on retourne au lobby
+
+  // Signaler au serveur
+  await postDone(status);
+  await postScore(status);
+
+  const maxPossible = G.qs.length * (PTS_BASE + TIMER_S * PTS_TIME);
+
+  if (status === 'eliminated') {
+    $('el-score').textContent = G.score.toLocaleString();
+    $('el-sub').textContent   = T.lb_return_sub(Math.ceil(RETURN_MS/1000));
+    animReturnBar('el-bar', RETURN_MS);
+    showScreen('s-elim');
+    G.startTO = setTimeout(goLobby, RETURN_MS);
+
+  } else { // victory
+    $('vic-score').textContent = G.score.toLocaleString();
+    const ratio = G.score / maxPossible;
+    $('vic-stars').textContent = ratio > .80 ? '⭐⭐⭐' : ratio > .50 ? '⭐⭐' : '⭐';
+    $('vic-sub').textContent   = T.lb_return_sub(Math.ceil(RETURN_MS/1000));
+    animReturnBar('vic-bar', RETURN_MS);
+    showScreen('s-victory');
+    launchConfetti();
+    G.startTO = setTimeout(goLobby, RETURN_MS);
+  }
+}
+
+function animReturnBar(barId, ms) {
+  const bar = $(barId);
+  bar.style.transition = 'none'; bar.style.width = '100%'; bar.offsetHeight;
+  bar.style.transition = `width ${ms}ms linear`; bar.style.width = '0%';
+}
+
+/* ════════════════════════════════════════════════════════════════
+   API
+════════════════════════════════════════════════════════════════ */
+async function postDone(status) {
+  try {
+    await safeFetch('/champions/lobby/done', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ team_id: G.teamId, status, score: G.score }),
+    });
+  } catch(e) {}
+}
+
+async function postScore(status) {
+  try {
+    await safeFetch('/champions/score', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        team_id:            G.teamId,
+        score:              G.score,
+        questions_answered: G.idx + 1,
+        lives_remaining:    G.lives,
+        status,
+        retry:              0,
+      }),
+    });
+  } catch(e) {}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════════════════════════════ */
+function launchConfetti() {
+  const canvas = $('confetti');
+  const ctx    = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#00e5ff','#00e676','#ffd600','#d500f9','#ff4081','#fff'];
+  const pieces = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width, y: Math.random()*-canvas.height*.5 - 10,
+    w: Math.random()*11+4, h: Math.random()*5+3,
+    r: Math.random()*Math.PI*2, dr: (Math.random()-.5)*.18,
+    vy: Math.random()*3+1.5, vx: (Math.random()-.5)*1.8,
+    c: colors[Math.floor(Math.random()*colors.length)],
+  }));
+  let frame = 0; const MAX = 210;
+  (function draw() {
+    if (frame++ > MAX) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const alpha = Math.max(0, 1 - frame/MAX);
+    for (const p of pieces) {
+      p.x += p.vx; p.y += p.vy + frame*.012; p.r += p.dr;
+      if (p.y > canvas.height+10) { p.y=-10; p.x=Math.random()*canvas.width; }
+      ctx.save(); ctx.globalAlpha=alpha; ctx.translate(p.x,p.y); ctx.rotate(p.r);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  })();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   GO
+════════════════════════════════════════════════════════════════ */
+boot();
+</script>
+</body>
+</html>

@@ -65,6 +65,68 @@
     }
     .btn-reset:hover { background: rgba(255,59,107,0.1); }
 
+    .btn-action {
+      background: transparent; font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; padding: 6px 14px; border-radius: 6px;
+      cursor: pointer; -webkit-appearance: none; letter-spacing: 1px;
+    }
+    .btn-action.blue  { border: 1px solid var(--blue);   color: var(--blue); }
+    .btn-action.blue:hover  { background: rgba(68,138,255,0.12); }
+    .btn-action.yel   { border: 1px solid var(--yellow);  color: var(--yellow); }
+    .btn-action.yel:hover   { background: rgba(255,204,0,0.12); }
+
+    /* ── Champions section ── */
+    .champ-section {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+    }
+    .champ-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .champ-title {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+    }
+    .lobby-pills {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .lobby-pill {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .lobby-pill.waiting    { border-color: rgba(255,204,0,.4);  color: var(--yellow); }
+    .lobby-pill.playing    { border-color: rgba(0,255,208,.4);  color: var(--accent); }
+    .lobby-pill.eliminated { border-color: rgba(255,59,107,.4); color: var(--red); }
+    .lobby-pill.victory    { border-color: rgba(0,230,118,.4);  color: var(--green); }
+    .lobby-state-badge {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      padding: 3px 12px; border-radius: 4px; letter-spacing: 1px;
+    }
+    .lobby-state-badge.waiting    { background: rgba(255,204,0,.1);  color: var(--yellow); }
+    .lobby-state-badge.countdown  { background: rgba(0,255,208,.1);  color: var(--accent); animation: blink 1s infinite; }
+    .lobby-state-badge.playing    { background: rgba(0,230,118,.1);  color: var(--green); }
+
+    .champ-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+    .champ-table th {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+      padding: 4px 10px; text-align: left; background: none; border-radius: 0;
+    }
+    .champ-table td {
+      padding: 7px 10px; background: var(--card); font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+    }
+    .champ-table td:first-child { border-radius: 6px 0 0 6px; }
+    .champ-table td:last-child  { border-radius: 0 6px 6px 0; }
+    .champ-rank  { color: var(--muted); width: 32px; }
+    .champ-team  { color: var(--yellow); }
+    .champ-score { color: var(--accent); font-weight: bold; text-align: right; }
+    .champ-status-v { color: var(--green); }
+    .champ-status-e { color: var(--red); }
+    .champ-empty { text-align: center; color: var(--muted); font-family: 'Share Tech Mono', monospace;
+                   font-size: 12px; padding: 16px; }
+
     /* ── Stats bar ── */
     .stats-bar {
       display: flex; gap: 12px; padding: 16px 24px;
@@ -176,7 +238,9 @@
     </div>
     <div class="hdr-right">
       <span class="last-update" id="last-update">—</span>
-      <button class="btn-reset" onclick="resetData()">⚠️ RESET</button>
+      <button class="btn-action blue" onclick="resetTeams()">🧹 ÉQUIPES</button>
+      <button class="btn-action yel"  onclick="resetScores()">🏆 SCORES</button>
+      <button class="btn-reset"       onclick="resetData()">⚠️ RESET TOUT</button>
     </div>
   </header>
 
@@ -228,6 +292,30 @@
     <div class="leg-item"><div class="leg-dot" style="background:rgba(255,59,107,0.5)"></div> Piégé / Gotcha</div>
     <div class="leg-item"><div class="leg-dot" style="background:rgba(0,230,118,0.4)"></div> Fragment collecté</div>
     <div class="leg-item"><div class="leg-dot" style="background:rgba(255,204,0,0.4)"></div> Leurre mordu</div>
+  </div>
+
+  <!-- Champions section -->
+  <div class="champ-section">
+    <div class="champ-header">
+      <span class="champ-title">⚡ Champions Quiz</span>
+      <span class="lobby-state-badge waiting" id="lobby-state-badge">● LOBBY</span>
+    </div>
+    <div class="lobby-pills" id="lobby-pills"></div>
+    <div id="champ-scores-wrap">
+      <div class="champ-empty" id="champ-empty">Aucune partie jouée pour l'instant.</div>
+      <table class="champ-table" id="champ-table" style="display:none;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Équipe</th>
+            <th>Meilleur score</th>
+            <th>Statut</th>
+            <th>Parties</th>
+          </tr>
+        </thead>
+        <tbody id="champ-body"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Event feed -->
@@ -378,14 +466,90 @@
     }
 
     function resetData() {
-      if (!confirm('Effacer TOUS les événements ? Action irréversible.')) return;
+      if (!confirm('Effacer TOUT (équipes, événements, scores Champions) ?\nAction irréversible.')) return;
       fetch('/dashboard/reset', { method: 'POST' })
-        .then(function() { knownCount = 0; poll(); });
+        .then(function() { knownCount = 0; poll(); pollChampions(); });
+    }
+
+    function resetTeams() {
+      if (!confirm('Nettoyer les équipes ?\n(Les événements et scores Champions sont conservés.)')) return;
+      fetch('/teams/reset', { method: 'POST' })
+        .then(function() { poll(); });
+    }
+
+    function resetScores() {
+      if (!confirm('Effacer les scores Champions ?\n(Les équipes et événements sont conservés.)')) return;
+      fetch('/champions/scores/reset', { method: 'POST' })
+        .then(function() { pollChampions(); });
+    }
+
+    /* ── Champions polling ─────────────────────────────────────── */
+    var medals = ['🥇','🥈','🥉','4.','5.','6.','7.','8.'];
+
+    function pollChampions() {
+      Promise.all([
+        fetch('/champions/scores',       { cache: 'no-store' }).then(function(r){ return r.json(); }),
+        fetch('/champions/lobby/state',  { cache: 'no-store' }).then(function(r){ return r.json(); }),
+      ]).then(function(results) {
+        updateChampScores(results[0]);
+        updateChampLobby(results[1]);
+      }).catch(function(){});
+    }
+
+    function updateChampLobby(data) {
+      var state  = data.state  || 'waiting';
+      var teams  = data.teams  || [];
+      var badge  = document.getElementById('lobby-state-badge');
+      var labels = { waiting: '● LOBBY', countdown: '⏳ DÉPART…', playing: '▶ EN JEU' };
+      badge.textContent  = labels[state] || state;
+      badge.className    = 'lobby-state-badge ' + state;
+
+      var pills = document.getElementById('lobby-pills');
+      if (!teams.length) { pills.innerHTML = '<span style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--muted)">Aucune équipe dans le lobby</span>'; return; }
+      var icons = { waiting:'🟡', playing:'🎮', eliminated:'💀', victory:'🏆' };
+      pills.innerHTML = teams.map(function(t) {
+        var sc = t.score != null ? ' — ' + Number(t.score).toLocaleString() + ' pts' : '';
+        return '<span class="lobby-pill ' + (t.status||'waiting') + '">'
+          + (icons[t.status]||'🟡') + ' ' + t.team_id + sc + '</span>';
+      }).join('');
+    }
+
+    function updateChampScores(scores) {
+      var empty = document.getElementById('champ-empty');
+      var table = document.getElementById('champ-table');
+      if (!scores || !scores.length) {
+        empty.style.display = 'block'; table.style.display = 'none'; return;
+      }
+      // Meilleur score par équipe
+      var best = {};
+      scores.forEach(function(s) {
+        if (!best[s.team_id] || s.score > best[s.team_id].score) best[s.team_id] = s;
+        best[s.team_id].count = (best[s.team_id].count || 0) + 1;
+      });
+      var sorted = Object.values(best).sort(function(a,b){ return b.score - a.score; });
+
+      var tbody = document.getElementById('champ-body');
+      tbody.innerHTML = '';
+      sorted.forEach(function(s, i) {
+        var tr = document.createElement('tr');
+        var statusIcon = s.status === 'victory' ? '<span class="champ-status-v">🏆</span>'
+                                                 : '<span class="champ-status-e">💀</span>';
+        tr.innerHTML =
+          '<td class="champ-rank">' + (medals[i] || (i+1)+'.') + '</td>' +
+          '<td class="champ-team">' + s.team_id + '</td>' +
+          '<td class="champ-score">' + Number(s.score).toLocaleString() + ' pts</td>' +
+          '<td>' + statusIcon + '</td>' +
+          '<td style="color:var(--muted);text-align:center">' + (s.count||1) + '</td>';
+        tbody.appendChild(tr);
+      });
+      empty.style.display = 'none'; table.style.display = 'table';
     }
 
     /* Boot */
     poll();
+    pollChampions();
     setInterval(poll, POLL_MS);
+    setInterval(pollChampions, 4000);
   </script>
 </body>
 </html>

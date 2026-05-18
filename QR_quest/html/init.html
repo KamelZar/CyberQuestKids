@@ -151,6 +151,58 @@
       text-decoration: underline; text-underline-offset: 3px;
     }
 
+    /* ══ SCREEN VIDEO ════════════════════════════════════════ */
+    #screen-video {
+      background: #000;
+      padding: 0;
+      justify-content: center;
+    }
+    #screen-video.active { display: flex; }
+
+    .video-wrap {
+      position: relative;
+      width: 100%; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: #000;
+    }
+    #intro-video {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .video-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55);
+      transition: opacity 0.4s;
+    }
+    .video-overlay.hidden { opacity: 0; pointer-events: none; }
+    .play-btn {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(0,255,208,0.15);
+      border: 3px solid var(--accent);
+      color: var(--accent); font-size: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; margin-bottom: 20px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .play-btn:active { background: rgba(0,255,208,0.3); }
+    .play-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .skip-btn {
+      position: absolute; bottom: 24px; right: 16px;
+      background: rgba(0,0,0,0.6); border: 1px solid var(--muted);
+      color: var(--muted); font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; letter-spacing: 2px; padding: 8px 16px;
+      border-radius: 8px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .skip-btn:active { background: rgba(255,255,255,0.1); }
+
     /* Fragments reminder */
     .frags-card {
       background: var(--card); border: 1px solid var(--border);
@@ -229,6 +281,25 @@
     <button class="step-btn" id="c-btn" onclick="goToTeamSelect()"></button>
   </div>
 
+  <!-- ── SCREEN VIDEO ── -->
+  <div class="screen" id="screen-video">
+    <div class="video-wrap">
+      <video id="intro-video"
+             preload="auto"
+             playsinline
+             webkit-playsinline>
+        <source id="video-src" src="" type="video/mp4" />
+      </video>
+      <!-- overlay : play button + label -->
+      <div class="video-overlay" id="video-overlay">
+        <div class="play-btn" id="play-btn">&#9654;</div>
+        <div class="play-label" id="play-label">PLAY</div>
+      </div>
+      <!-- skip toujours visible -->
+      <button class="skip-btn" id="v-skip" onclick="goToWorkshop()">SKIP ▶▶</button>
+    </div>
+  </div>
+
   <!-- tracking module -->
   <script src="/_track.js"></script>
 
@@ -236,6 +307,8 @@
     /* ── i18n ─────────────────────────────────────────────── */
     var T = {
       fr: {
+        vPlay:   "APPUYER POUR LANCER",
+        vSkip:   "PASSER ▶▶",
         /* WiFi screen */
         wTitle:  "Bienvenue dans CyberQuest !",
         wSub:    "étape 1 — connexion wifi",
@@ -261,6 +334,8 @@
         kaReset: "[ Changer d'équipe ]",
       },
       nl: {
+        vPlay:   "TIKKEN OM TE SPELEN",
+        vSkip:   "OVERSLAAN ▶▶",
         wTitle:  "Welkom bij CyberQuest!",
         wSub:    "stap 1 — wifi-verbinding",
         wLabel:  "— verbind je met dit netwerk —",
@@ -283,6 +358,8 @@
         kaReset: "[ Van team wisselen ]",
       },
       en: {
+        vPlay:   "TAP TO PLAY",
+        vSkip:   "SKIP ▶▶",
         wTitle:  "Welcome to CyberQuest!",
         wSub:    "step 1 — wifi connection",
         wLabel:  "— connect to this network —",
@@ -327,6 +404,72 @@
     /* ── Redirection vers team-select ── */
     function goToTeamSelect() {
       window.location.href = '/team-select?lang=' + lang;
+    }
+
+    /* ── Redirection vers le workshop (après vidéo) ── */
+    function goToWorkshop() {
+      window.location.href = '/workshop?lang=' + lang;
+    }
+
+    /* ── Screen vidéo ── */
+    function initVideoScreen() {
+      var t    = T[lang];
+      var lang_uc = lang.toUpperCase();                       // fr → FR
+      var src  = '/video/TRAILER_' + lang_uc + '.mp4';
+
+      var video   = document.getElementById('intro-video');
+      var srcEl   = document.getElementById('video-src');
+      var overlay = document.getElementById('video-overlay');
+      var playBtn = document.getElementById('play-btn');
+      var label   = document.getElementById('play-label');
+      var skipBtn = document.getElementById('v-skip');
+
+      // Labels i18n
+      if (label)   label.textContent  = t.vPlay || 'PLAY';
+      if (skipBtn) skipBtn.textContent = t.vSkip || 'SKIP ▶▶';
+
+      // Source
+      if (srcEl) srcEl.setAttribute('src', src);
+      if (video) video.load();
+
+      // Fin de vidéo → redirection
+      if (video) {
+        video.addEventListener('ended', function() { goToWorkshop(); });
+      }
+
+      // Play button → play + fullscreen
+      if (playBtn) {
+        playBtn.addEventListener('click', function() {
+          overlay.classList.add('hidden');
+
+          // Lance la lecture
+          var playPromise = video.play();
+
+          // Tente le fullscreen (Android Chrome, desktop)
+          function tryFullscreen() {
+            var el = document.documentElement;
+            if (video.requestFullscreen) {
+              video.requestFullscreen().catch(function(){});
+            } else if (video.webkitRequestFullscreen) {
+              video.webkitRequestFullscreen();
+            } else if (video.webkitEnterFullscreen) {
+              // iOS Safari — fonctionne sans playsinline quand déclenché par l'utilisateur
+              video.webkitEnterFullscreen();
+            }
+          }
+
+          if (playPromise !== undefined) {
+            playPromise.then(function() {
+              tryFullscreen();
+            }).catch(function(err) {
+              // Autoplay bloqué : réaffiche l'overlay
+              overlay.classList.remove('hidden');
+            });
+          } else {
+            tryFullscreen();
+          }
+        });
+      }
     }
 
     /* ── Reset ── */
@@ -383,22 +526,30 @@
 
     /* ── Boot ── */
     (function boot() {
-      // Détecte la langue depuis cookie ou navigateur
-      var savedLang = getCookie('cq_lang');
+      // Détecte la langue depuis cookie, param URL ou navigateur
+      var urlParams = new URLSearchParams(window.location.search);
+      var savedLang = getCookie('cq_lang') || urlParams.get('lang');
       if (savedLang && T[savedLang]) lang = savedLang;
       else {
         var bl = (navigator.language || '').substring(0, 2).toLowerCase();
         if (T[bl]) lang = bl;
       }
 
+      render();
+
+      // Cas 1 : retour de team-select après inscription → afficher la vidéo
+      if (urlParams.get('video') === '1') {
+        goToScreen('screen-video');
+        initVideoScreen();
+        return;
+      }
+
       var team_id = getCookie('cq_team');
       if (team_id) {
-        // Déjà enregistré via team-select
-        render();
+        // Cas 2 : déjà enregistré via team-select
         goToScreen('screen-known');
       } else {
-        // Première visite
-        render();
+        // Cas 3 : première visite
         goToScreen('screen-wifi');
       }
     })();

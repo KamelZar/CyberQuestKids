@@ -357,6 +357,13 @@ def serve_photo(filename):
     """Sert les photos 'Vous' uploadées pendant la session."""
     return send_from_directory(str(PHOTOS_DIR), filename)
 
+VIDEO_DIR = BASE_DIR / "video"
+
+@app.route('/video/<filename>')
+def serve_video(filename):
+    """Sert les trailers d'intro (TRAILER_FR.mp4, TRAILER_NL.mp4, TRAILER_EN.mp4)."""
+    return send_from_directory(str(VIDEO_DIR), filename)
+
 @app.route('/champions')
 def champions_page():
     return send_from_directory(str(HTML_DIR), 'champions.html')

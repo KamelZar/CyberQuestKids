@@ -948,9 +948,9 @@ function showSuccess(data) {
 
   document.getElementById('success-overlay').classList.add('show');
 
-  // Redirect to waiting/workshop page after 3s
+  // Redirige vers la vidéo d'intro (init.html?video=1) puis workshop
   setTimeout(function() {
-    window.location.href = '/workshop?lang=' + lang;
+    window.location.href = '/init?video=1&lang=' + lang;
   }, 3000);
 }
 

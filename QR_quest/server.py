@@ -10,16 +10,20 @@ Le serveur écoute sur 0.0.0.0 pour être accessible depuis le réseau local.
 """
 
 import base64
+import itertools
 import json
 import os
+import queue as _queue
 import re
 import socket
+import string
 import sys
+import threading
 import uuid
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, send_from_directory, Response, request, redirect
+from flask import Flask, jsonify, send_from_directory, Response, request, redirect, stream_with_context
 
 # ── Config ────────────────────────────────────────────────────────────
 BASE_DIR    = Path(__file__).parent
@@ -258,6 +262,626 @@ def static_files(filename):
     """Sert tous les fichiers du dossier html/."""
     return send_from_directory(str(HTML_DIR), filename)
 
+# ── Password Check — outil pédagogique ────────────────────────────────
+# Architecture : le hash SHA-256 est calculé côté navigateur (Web Crypto API).
+# Le serveur ne reçoit jamais le mot de passe en clair, seulement son hash.
+
+_jobs: dict       = {}
+_jobs_lock        = threading.Lock()
+_DICT_BASE        = BASE_DIR.parent / 'Html'
+_DICTS            = [
+    ('rockyou-75', _DICT_BASE / 'rockyou-75.txt'),
+    ('10-million', _DICT_BASE / '10-million.txt'),
+]
+_MAX_BF_LEN = 12  # brute force jusqu'à N chars ; au-delà → résistant
+_FREQ_DIR    = HTML_DIR / 'frequencyWords'   # fr.txt / nl.txt / en.txt
+_FREQ_CACHE: dict = {}  # lang -> {longueur: [mots]} -- charge une fois au demarrage
+
+
+def _load_freq_by_len(lang: str) -> dict:
+    """
+    Charge TOUS les mots d un fichier de frequence OpenSubtitles.
+    Retourne {longueur: [mots...]} pour lookup O(1) par longueur.
+    """
+    import unicodedata as _ud
+
+    path = _FREQ_DIR / f'{lang}.txt'
+    if not path.exists():
+        print(f'[FREQ] {lang}.txt introuvable dans {_FREQ_DIR}')
+        return {}
+
+    by_len: dict = {}
+    seen: set = set()
+    total = 0
+    try:
+        with open(str(path), encoding='utf-8', errors='replace') as fh:
+            for line in fh:
+                parts = line.strip().split(' ')
+                if not parts:
+                    continue
+                word = parts[0].lower()
+                if len(word) < 3:
+                    continue
+
+                # Mots composes avec tiret (loup-garou -> loupgarou)
+                if '-' in word:
+                    merged = word.replace('-', '')
+                    if (len(merged) >= 3
+                            and not any(c in merged for c in ("'", "’", ' '))
+                            and all(_ud.category(c).startswith('L') for c in merged)):
+                        if merged not in seen:
+                            by_len.setdefault(len(merged), []).append(merged)
+                            seen.add(merged)
+                            total += 1
+                    continue
+
+                if any(c in word for c in ("‘", "’", ' ',
+                       '0','1','2','3','4','5','6','7','8','9')):
+                    continue
+                if not all(_ud.category(c).startswith('L') for c in word):
+                    continue
+
+                if word not in seen:
+                    by_len.setdefault(len(word), []).append(word)
+                    seen.add(word)
+                    total += 1
+
+                # Variante sans accents (ete -> ete, prenom -> prenom)
+                flat = _ud.normalize('NFD', word)
+                flat = ''.join(c for c in flat if _ud.category(c) != 'Mn')
+                if flat != word and flat not in seen:
+                    by_len.setdefault(len(flat), []).append(flat)
+                    seen.add(flat)
+                    total += 1
+
+    except OSError as exc:
+        print(f'[FREQ] Erreur lecture {path}: {exc}')
+
+    print(f'[FREQ] {lang} : {total} mots charges ({len(by_len)} longueurs differentes)')
+    return by_len
+
+
+def _get_freq_by_len(lang: str) -> dict:
+    """Retourne le cache {longueur: [mots]} pour la langue (charge une fois)."""
+    if lang not in _FREQ_CACHE:
+        _FREQ_CACHE[lang] = _load_freq_by_len(lang)
+    return _FREQ_CACHE[lang]
+
+
+# ── Mots de base personnalisés (contexte FR/NL/BE) ────────────────────
+# Ces mots ne sont pas forcément dans le top du rockyou, mais sont
+# typiques du public cible (11-15 ans, Belgique francophone/néerlandophone).
+_CUSTOM_BASES = [
+    # Famille / proches
+    'maman','papa','mamie','papi','frere','soeur','famille','bebe',
+    # Animaux
+    'chien','chat','lapin','oiseau','poisson','cheval','hamster',
+    # Nature / quotidien
+    'soleil','lune','etoile','fleur','jardin','maison','ecole',
+    # Mots FR courants mal perçus comme "forts"
+    'amour','coeur','secret','motdepasse','bonjour','salut','coucou',
+    'football','basket','tennis','gaming','minecraft','fortnite','roblox',
+    # Géographie BE/FR
+    'belgique','bruxelles','liege','gand','anvers','paris','france',
+    # Mots NL courants
+    'mama','papa','hond','kat','school','wachtwoord','geheim','belgie',
+    'brussel','antwerpen','gent','voetbal','hallo','dag',
+    # Prénoms populaires Belgique
+    'sarah','emma','lea','alice','marie','camille','manon','chloe','lena',
+    'lucas','thomas','hugo','noah','paul','nicolas','pierre','axel','rayan',
+    # Termes "cyber" que les jeunes pensent forts
+    'hacker','cyber','admin','ninja','dragon','phoenix','shadow','master',
+    'hunter','killer','legend','gamer','player','warrior','cobra','titan',
+    # Patterns classiques
+    'azerty','qwerty','iloveyou','jetaime','superman','batman','spiderman',
+    'pokemon','naruto','onepiece','letsgo','welcome','password','passw0rd',
+]
+
+# ── Suppléments culturels par langue (public 11-15 ans, Belgique 2026) ──
+_EXTRA_FR = [
+    # ⚽ Football belge & français
+    'anderlecht','standard','brugge','genk','charleroi','gent','cercle',
+    'psg','marseille','lyon','monaco','lens','rennes','nantes','lorient',
+    # 🌟 Joueurs / figures
+    'mbappe','ronaldo','messi','benzema','neymar','lukaku','hazard','courtois',
+    # 🎵 Musique FR/BE (populaire 2024-2026)
+    'angele','stromae','orelsan','nekfeu','ninho','damso','hamza','sch',
+    'aya','louane','vitaa','slimane','jul','leto','lacrim','rohff',
+    # 🎤 K-pop (énorme chez les ados francophones)
+    'bts','blackpink','twice','aespa','newjeans','ive','seventeen',
+    'stray','txt','enhypen','le sserafim','nmixx','itzy',
+    'jungkook','taehyung','jimin','suga','rm','jin','jhope',
+    'lisa','jennie','rose','jisoo','winter','karina','giselle','ningning',
+    # 🎮 Gaming / personnages
+    'valorant','apex','warzone','fivem','minecraft','roblox','fortnite',
+    'mario','luigi','zelda','link','pikachu','sonic','kirby','crewmate',
+    'creeper','herobrine','steve','goku','vegeta',
+    # 📺 Séries / manga / animé
+    'squidgame','lupin','miraculous','asterix','tintin','spirou',
+    'naruto','sasuke','luffy','zoro','ichigo','eren','levi',
+    'gojo','itadori','tanjiro','nezuko','zenitsu',
+    'demonslayer','jujutsu','attacktitan','onepiece',
+    # 🗺️ Villes belges FR
+    'namur','mons','liege','tournai','verviers','bastogne',
+    'dinant','spa','ardennes','charleroi',
+    # 💬 Slang ados FR 2026
+    'wesh','ouf','stylee','swag','slay','drip','vibe','chill','ratio',
+    # 🍫 Références belges
+    'chocolat','gaufre','nutella','kebab','speculoos',
+]
+
+_EXTRA_NL = [
+    # ⚽ Football belge & néerlandais
+    'clubbrugge','anderlecht','gent','genk','mechelen','cercle',
+    'beerschot','antwerp','lommel','stvv',
+    'ajax','psv','feyenoord','twente',
+    # 🌟 Joueurs belges
+    'lukaku','courtois','hazard','tielemans','doku','theate','onana',
+    # 🎵 Musique NL/BE
+    'angele','k3','nachtwacht','goldband','josylvio','die antwoord',
+    'niels','metejoor','bazart','novastar',
+    # 🎤 K-pop (même engouement côté flamand)
+    'bts','blackpink','twice','aespa','newjeans','ive','seventeen',
+    'stray','jungkook','taehyung','jimin','lisa','jennie','rose',
+    # 🎮 Gaming
+    'valorant','apex','warzone','minecraft','roblox','fortnite','fivem',
+    'mario','pikachu','zelda','creeper','herobrine',
+    # 📺 Émissions / séries NL/BE
+    'nachtwacht','ketnet','kampioenen','bumba','plop','piraat',
+    'samson','gert','piet','jolien',
+    # 🗺️ Villes belges NL
+    'oostende','kortrijk','roeselare','hasselt','turnhout',
+    'mechelen','leuven','aalst','dendermonde','sint-niklaas',
+    # 💬 Slang ados NL 2026
+    'vet','gaaf','sick','tof','lekker','chill','lit','fire','snappen',
+    # 🍟 Références flamandes
+    'frieten','wafel','speculoos','chocomel','stroopwafel',
+]
+
+_EXTRA_EN = [
+    # ⚽ Premier League / international
+    'arsenal','chelsea','liverpool','manchester','city','united','tottenham',
+    'barcelona','realmadrid','juventus','intermilan','bayern',
+    # 🌟 Joueurs international
+    'haaland','salah','kane','bellingham','rashford','saka','vinicius',
+    # 🎵 Musique EN (teen 2024-2026)
+    'taylor','swift','billie','eilish','olivia','rodrigo','ariana','grande',
+    'weeknd','drake','travis','kanye','sabrina','carpenter','chappell','roan',
+    'dua','lipa','halsey','shawn','mendes','harry','styles',
+    # 🎤 K-pop (EN crossover)
+    'bts','blackpink','twice','aespa','newjeans','ive','suga','jungkook',
+    'lisa','jennie','winter','karina',
+    # 🎮 Gaming / FPS / RPG
+    'valorant','warzone','pubg','overwatch','league','apex','gta','fivem',
+    'eldenring','elden','baldur','minecraft','roblox','fortnite',
+    'masterchief','kratos','geralt','alyx','lara','ezio','joel','ellie',
+    'creeper','herobrine','steve','mario','pikachu','sonic',
+    # 🧙 Harry Potter
+    'harry','hermione','ron','dumbledore','voldemort','hogwarts',
+    'gryffindor','slytherin','hufflepuff','ravenclaw','snape','malfoy',
+    # 🚀 Star Wars / Marvel
+    'vader','yoda','jedi','skywalker','mandalorian','grogu',
+    'ironman','thanos','thor','spiderman','deadpool','wolverine','loki',
+    # 💬 Slang EN ados 2026
+    'rizz','slay','bussin','sigma','ohio','goat','ngl','nocap',
+    'drip','vibe','banger','ratio','lowkey',
+    # 🎬 Shows / fandoms
+    'stranger','things','wednesday','squidgame','arcane','edgerunners',
+    'mandalorian','andor','peaky','blinders',
+]
+
+# Index rapide : lang → liste supplémentaire (culture / pop)
+_LANG_EXTRAS: dict = {'fr': _EXTRA_FR, 'nl': _EXTRA_NL, 'en': _EXTRA_EN}
+
+
+# ── Moteur de mutations ────────────────────────────────────────────────
+def _apply_rules(word: str) -> set:
+    """
+    Génère ~1 000 variantes d'un mot de base par règles de mutation.
+    Couvre : leet speak (léger + complet), capitalize, UPPER,
+             suffixes numériques, années, symboles et leurs combinaisons.
+    """
+    w = word.strip()
+    if not w or len(w) > 20:
+        return set()
+
+    wl = w.lower()
+    wc = wl.capitalize()
+    wu = wl.upper()
+
+    def _lm(s):   # leet minimal  : juste a→@  (sans s, e, o)
+        return s.replace('a','@').replace('A','@')
+
+    def _lo(s):   # leet doux    : a→@  e→3  o→0  (sans s→$)
+        return (s.replace('a','@').replace('A','@')
+                 .replace('e','3').replace('E','3')
+                 .replace('o','0').replace('O','0'))
+
+    def _ls(s):   # leet léger   : a→@  e→3  o→0  s→$
+        return (_lo(s).replace('s','$').replace('S','$'))
+
+    def _lh(s):   # leet complet : + i→1  t→7  l→1  b→8  g→9
+        return (_ls(s).replace('i','1').replace('I','1')
+                       .replace('t','7').replace('T','7')
+                       .replace('l','1').replace('L','1')
+                       .replace('b','8').replace('B','8')
+                       .replace('g','9').replace('G','9'))
+
+    def _l4(s):   # leet alt     : a→4  e→3  o→0  s→$  i→!  (style "hacker")
+        return (s.replace('a','4').replace('A','4')
+                 .replace('e','3').replace('E','3')
+                 .replace('o','0').replace('O','0')
+                 .replace('s','$').replace('S','$')
+                 .replace('i','!').replace('I','!'))
+
+    def _l5(s):   # leet doux v2 : a→4  e→3  o→0  i→!  (sans s→$)
+        return (s.replace('a','4').replace('A','4')
+                 .replace('e','3').replace('E','3')
+                 .replace('o','0').replace('O','0')
+                 .replace('i','!').replace('I','!'))
+
+    bases = [
+        wl,           # password
+        wc,           # Password
+        wu,           # PASSWORD
+        _lm(wl),      # p@ssword         ← juste a→@
+        _lm(wc),      # P@ssword         ← très courant
+        _lo(wl),      # p@ssw0rd         ← sans s→$
+        _lo(wc),      # P@ssw0rd
+        _ls(wl),      # p@$$word
+        _lh(wl),      # p@$$w0rd
+        _ls(wc),      # P@$$word
+        _lh(wc),      # P@$$w0rd
+        _lh(wu),      # P@$$W0RD         ← le "classique"
+        _l4(wl),      # p4$$w0rd
+        _l4(wc),      # P4$$w0rd
+        _l4(wu),      # P4$$W0RD
+        _l5(wl),      # s0l3!l           ← sans s→$ (couvre soleil, etc.)
+        _l5(wc),      # S0l3!l
+        wl[::-1],     # drowssap         (reverse)
+    ]
+
+    # Suffixes issus des analyses réelles de fuites de données
+    _NUM = ['1','2','3','11','12','21','23','42','69','00','01','99',
+            '007','100','123','321','456','789','666','999','000',
+            '1234','4321','1111','2222','9999','12345']
+    _SYM = ['!','!!','!!!','?','@','#','$','.','*','&','_']
+    _YRS = [str(y) for y in range(1970, 2027)]
+    _CMB = ['123!','1234!','12345!','123@','123#','1!','2!',
+            '1234@','2024!','2025!','2026!','!123','@2024']
+
+    suffixes = [''] + _NUM + _SYM + _YRS + _CMB \
+             + [y+'!' for y in _YRS[20:]]   # années récentes + !
+
+    result = set()
+    for base in bases:
+        if base:
+            for suf in suffixes:
+                result.add(base + suf)
+    result.add(wl + wl)   # passwordpassword
+
+    # ── Préfixes : années + nombres AVANT la base ──────────────────
+    # Couvre : "2024Maman", "123Password", "01Soleil", "99Dragon!"
+    # Appliqués uniquement sur les 3 formes sans leet (évite l'explosion)
+    _PFX_YRS = [str(y) for y in range(1990, 2027)]
+    _PFX_NUM = ['1','2','3','00','01','07','12','21','23','42','69','99','123','007']
+    for base in (wl, wc, wu):
+        for pfx in _PFX_YRS + _PFX_NUM:
+            result.add(pfx + base)          # 2024maman / 2024Maman / 2024MAMAN
+            result.add(pfx + base + '!')    # 2024Maman!  ← pattern très répandu
+
+    return result
+
+
+def _run_pw_check(target_hash: str, q: '_queue.Queue',
+                  lang: str = 'fr', max_len: int = 0):
+    """
+    Tourne dans un thread daemon. Envoie des events JSON dans la queue.
+
+    max_len > 0 : longueur exacte du mot de passe connue côté client.
+                  Chaque phase ne teste QUE les candidats de cette longueur →
+                  gains massifs (brute force = 1 longueur au lieu de 1..8).
+    max_len = 0 : longueur inconnue, comportement classique (aucun filtre).
+    """
+    import hashlib, time
+
+    TIMEOUT  = 60
+    start    = time.time()
+    deadline = start + TIMEOUT
+    total    = 0
+    found    = False
+
+    def _h(s):
+        return hashlib.sha256(s.encode('utf-8', errors='replace')).hexdigest()
+
+    # ── Phase 1 : dictionnaire ─────────────────────────────────────
+    q.put({'phase': 'start', 'max_len': max_len})
+
+    for dict_name, path in _DICTS:
+        if not path.exists():
+            q.put({'phase': 'dict_missing', 'dict': dict_name})
+            continue
+        q.put({'phase': 'dict', 'dict': dict_name, 'attempts': total, 'elapsed': 0})
+        try:
+            with open(str(path), 'r', encoding='utf-8', errors='replace') as fh:
+                for line in fh:
+                    if time.time() >= deadline:
+                        break
+                    candidate = line.rstrip('\n')
+                    # Optimisation : sauter les mots de mauvaise longueur
+                    if max_len > 0 and len(candidate) != max_len:
+                        continue
+                    total += 1
+                    if total % 20_000 == 0:
+                        q.put({'phase': 'dict', 'dict': dict_name,
+                               'attempts': total,
+                               'elapsed': round(time.time() - start, 1)})
+                    if _h(candidate) == target_hash:
+                        found = True
+                        break
+        except OSError as exc:
+            q.put({'phase': 'error', 'msg': str(exc)})
+
+        if found or time.time() >= deadline:
+            break
+
+    elapsed = round(time.time() - start, 1)
+    if found:
+        q.put({'done': True, 'found': True, 'method': 'dictionary',
+               'attempts': total, 'elapsed': elapsed})
+        return
+    if time.time() >= deadline:
+        q.put({'done': True, 'found': False, 'attempts': total, 'elapsed': TIMEOUT})
+        return
+
+    # -- Phase 1.5 : mutations -------------------------------------------------
+    # ── Phase 1.5 : mutations (approche stratifiée) ───────────────────
+    # Principe : chercher par ordre décroissant de longueur de mot de base,
+    # de max_len (overhead 0) jusqu'à max_len-4 (overhead 4 max).
+    # → les patterns les plus probables (mot long, peu de suffixe) passent en premier.
+    # → early exit dès qu'on trouve, les rounds suivants ne s'exécutent pas.
+    _MAX_RULES_OVERHEAD = 4  # suffixe/préfixe max testé
+
+    lang_extras = _LANG_EXTRAS.get(lang, _EXTRA_FR)
+    other_langs  = [l for l in ('fr', 'nl', 'en') if l != lang]
+
+    # Pré-bucketer rockyou (top 15K) par longueur de mot
+    rk_by_len: dict = {}
+    rk_path = _DICT_BASE / 'rockyou-75.txt'
+    if rk_path.exists():
+        try:
+            with open(str(rk_path), 'r', encoding='utf-8', errors='replace') as fh:
+                for i, line in enumerate(fh):
+                    if i >= 15_000:
+                        break
+                    w = line.rstrip('\n').strip()
+                    if w:
+                        bl = len(w.lower())
+                        rk_by_len.setdefault(bl, []).append(w)
+        except OSError:
+            pass
+
+    # Pré-bucketer extras culturels + bases universelles par longueur
+    extra_by_len: dict = {}
+    for w in list(lang_extras) + list(_CUSTOM_BASES):
+        extra_by_len.setdefault(len(w.lower()), []).append(w)
+
+    def _add_exact(sources, seen_round, iterable, target_len):
+        """Ajoute les mots de longueur exacte target_len, dédupliqués."""
+        for w in iterable:
+            wl = w.lower()
+            if len(wl) == target_len and wl not in seen_round:
+                sources.append(w)
+                seen_round.add(wl)
+
+    # Bornes de la boucle stratifiée
+    if max_len > 0:
+        bl_min = max(1, max_len - _MAX_RULES_OVERHEAD)
+        bl_max = max_len
+    else:
+        bl_min = bl_max = None   # sans filtre : boucle plate ci-dessous
+
+    q.put({'phase': 'rules', 'stage': 'start', 'attempts': total})
+
+    if max_len > 0:
+        # ── Boucle stratifiée ──────────────────────────────────────────
+        for base_len in range(bl_max, bl_min - 1, -1):
+            if time.time() >= deadline:
+                break
+
+            sources: list = []
+            seen_round: set = set()
+            for l_lang in [lang] + other_langs:
+                _add_exact(sources, seen_round,
+                           _get_freq_by_len(l_lang).get(base_len, []), base_len)
+            _add_exact(sources, seen_round, extra_by_len.get(base_len, []), base_len)
+            _add_exact(sources, seen_round, rk_by_len.get(base_len, []), base_len)
+
+            q.put({'phase': 'rules', 'stage': 'round',
+                   'base_len': base_len, 'overhead': max_len - base_len,
+                   'sources': len(sources), 'attempts': total})
+
+            for idx, word in enumerate(sources):
+                if time.time() >= deadline:
+                    break
+                if idx % 500 == 0 and idx > 0:
+                    q.put({'phase': 'rules', 'stage': 'progress',
+                           'word': word, 'attempts': total,
+                           'elapsed': round(time.time() - start, 1)})
+                for variant in _apply_rules(word):
+                    if len(variant) != max_len:
+                        continue
+                    total += 1
+                    if _h(variant) == target_hash:
+                        q.put({'done': True, 'found': True, 'method': 'rules',
+                               'base_word': word,
+                               'attempts': total,
+                               'elapsed': round(time.time() - start, 1)})
+                        return
+    else:
+        # ── Sans max_len : boucle plate sur tous les mots ─────────────
+        rule_sources: list = []
+        seen_set: set = set()
+
+        def _add_words(iterable):
+            for w in iterable:
+                wl = w.lower()
+                if wl not in seen_set:
+                    rule_sources.append(w)
+                    seen_set.add(wl)
+
+        for l_lang in [lang] + other_langs:
+            _add_words([w for bucket in _get_freq_by_len(l_lang).values() for w in bucket])
+        _add_words(lang_extras)
+        _add_words(_CUSTOM_BASES)
+        _add_words([w for bucket in rk_by_len.values() for w in bucket])
+
+        for idx, word in enumerate(rule_sources):
+            if time.time() >= deadline:
+                break
+            if idx % 500 == 0 and idx > 0:
+                q.put({'phase': 'rules', 'stage': 'progress',
+                       'word': word, 'attempts': total,
+                       'elapsed': round(time.time() - start, 1),
+                       'pct': round(idx / len(rule_sources) * 100)})
+            for variant in _apply_rules(word):
+                total += 1
+                if _h(variant) == target_hash:
+                    q.put({'done': True, 'found': True, 'method': 'rules',
+                           'base_word': word,
+                           'attempts': total,
+                           'elapsed': round(time.time() - start, 1)})
+                    return
+
+    elapsed = round(time.time() - start, 1)
+    if time.time() >= deadline:
+        q.put({'done': True, 'found': False, 'attempts': total, 'elapsed': elapsed})
+        return
+
+    # ── Phase 2 : brute force ──────────────────────────────────────
+    # Si la longueur est connue et dépasse _MAX_BF_LEN, inutile d'essayer
+    if max_len > _MAX_BF_LEN:
+        q.put({'done': True, 'found': False, 'attempts': total, 'elapsed': elapsed})
+        return
+
+    charsets = [
+        ('a-z',      string.ascii_lowercase),
+        ('a-z0-9',   string.ascii_lowercase + string.digits),
+        ('alphanum', string.ascii_letters   + string.digits),
+        ('full',     string.ascii_letters   + string.digits + string.punctuation),
+    ]
+
+    # Si longueur connue → tester uniquement cette longueur (gain énorme)
+    bf_start = max_len if max_len > 0 else 1
+    bf_end   = max_len if max_len > 0 else _MAX_BF_LEN
+
+    stop = False
+    for length in range(bf_start, bf_end + 1):
+        if stop:
+            break
+        for cs_name, charset in charsets:
+            if time.time() >= deadline:
+                stop = True
+                break
+            q.put({'phase': 'brute', 'length': length, 'charset': cs_name,
+                   'attempts': total, 'elapsed': round(time.time() - start, 1)})
+            for combo in itertools.product(charset, repeat=length):
+                if time.time() >= deadline:
+                    stop = True
+                    break
+                total += 1
+                if total % 100_000 == 0:
+                    q.put({'phase': 'brute', 'length': length, 'charset': cs_name,
+                           'attempts': total, 'elapsed': round(time.time() - start, 1)})
+                if _h(''.join(combo)) == target_hash:
+                    found = True
+                    stop  = True
+                    break
+            if stop:
+                break
+
+    elapsed = round(time.time() - start, 1)
+    if found:
+        q.put({'done': True, 'found': True, 'method': 'brute-force',
+               'attempts': total, 'elapsed': elapsed})
+    else:
+        q.put({'done': True, 'found': False, 'attempts': total, 'elapsed': elapsed})
+
+
+@app.route('/poster')
+def poster_page():
+    """Sert le poster interactif depuis la racine du projet."""
+    return send_from_directory(str(BASE_DIR.parent), 'password-poster.html')
+
+
+@app.route('/password-check')
+def password_check_page():
+    return send_from_directory(str(HTML_DIR), 'password-check.html')
+
+
+@app.route('/password-check/start', methods=['POST'])
+def password_check_start():
+    data        = request.get_json(silent=True) or {}
+    target_hash = data.get('hash', '').lower().strip()
+    lang        = data.get('lang', 'fr').lower().strip()
+    if lang not in _LANG_EXTRAS:
+        lang = 'fr'
+
+    # Longueur du mot de passe (capturée côté client avant effacement)
+    # 0 = inconnue → comportement classique (aucun filtre de longueur)
+    try:
+        max_len = max(0, int(data.get('len', 0)))
+    except (TypeError, ValueError):
+        max_len = 0
+
+    if not re.match(r'^[a-f0-9]{64}$', target_hash):
+        return jsonify({'error': 'invalid_hash'}), 400
+
+    with _jobs_lock:
+        if len(_jobs) >= 5:           # max 5 analyses simultanées (serveur local)
+            return jsonify({'error': 'server_busy'}), 503
+        job_id = str(uuid.uuid4())[:12]
+        q: '_queue.Queue' = _queue.Queue()
+        _jobs[job_id] = q
+
+    threading.Thread(target=_run_pw_check, args=(target_hash, q, lang, max_len),
+                     daemon=True).start()
+    return jsonify({'job_id': job_id})
+
+
+@app.route('/password-check/<job_id>/stream')
+def password_check_stream(job_id):
+    with _jobs_lock:
+        q = _jobs.get(job_id)
+    if q is None:
+        return jsonify({'error': 'unknown_job'}), 404
+
+    def _generate():
+        try:
+            while True:
+                try:
+                    msg = q.get(timeout=70)
+                    yield f"data: {json.dumps(msg)}\n\n"
+                    if msg.get('done'):
+                        break
+                except _queue.Empty:
+                    yield f"data: {json.dumps({'done': True, 'found': False, 'timeout': True, 'attempts': 0, 'elapsed': 60})}\n\n"
+                    break
+        finally:
+            with _jobs_lock:
+                _jobs.pop(job_id, None)
+
+    return Response(
+        stream_with_context(_generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control':      'no-cache',
+            'X-Accel-Buffering':  'no',
+            'Access-Control-Allow-Origin': '*',
+        },
+    )
+
+
 # ── Démarrage ─────────────────────────────────────────────────────────
 if __name__ == '__main__':
     if not EVENTS_FILE.exists():
@@ -265,6 +889,12 @@ if __name__ == '__main__':
     if not TEAMS_FILE.exists():
         TEAMS_FILE.write_text('{}', encoding='utf-8')
     PHOTOS_DIR.mkdir(exist_ok=True)
+
+    # Precharge les 3 listes de frequence au demarrage (evite latence premier eleve)
+    print('[FREQ] Prechargement des listes de frequence...')
+    for _lang in ('fr', 'nl', 'en'):
+        _get_freq_by_len(_lang)
+    print('[FREQ] Pret.')
 
     local_ip = get_local_ip()
 
@@ -287,4 +917,5 @@ if __name__ == '__main__':
         port=PORT,
         debug=(len(sys.argv) > 1 and sys.argv[1] == '--debug'),
         use_reloader=False,
+        threaded=True,        # nécessaire pour SSE + brute force en parallèle
     )

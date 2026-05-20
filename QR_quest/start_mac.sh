@@ -10,7 +10,7 @@
 
 PORT=8080
 DASHBOARD="http://localhost:$PORT/dashboard"
-POSTER="file://$(cd "$(dirname "$0")"; pwd)/poster-init.html"
+POSTER="http://localhost:$PORT/init-poster"
 PID_FILE="$(dirname "$0")/.cyberquest.pid"
 
 # ── Fonctions ─────────────────────────────────

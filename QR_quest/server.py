@@ -1125,6 +1125,19 @@ def poster_page():
     """Sert le poster interactif depuis la racine du projet."""
     return send_from_directory(str(BASE_DIR.parent), 'password-poster.html')
 
+@app.route('/init-poster')
+def init_poster_page():
+    """Sert l'affiche d'initialisation (avec QR codes) via Flask."""
+    return send_from_directory(str(BASE_DIR), 'poster-init.html')
+
+@app.route('/api/server-url')
+def api_server_url():
+    """Retourne l'URL LAN du serveur pour que poster-init.html la pré-remplisse."""
+    ip   = get_local_ip()
+    resp = jsonify({'url': f'http://{ip}:{PORT}/init'})
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
 
 @app.route('/password-check')
 def password_check_page():

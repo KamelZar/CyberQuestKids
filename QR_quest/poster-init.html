@@ -479,9 +479,19 @@
       }
     }
 
-    /* Auto-generate on load */
+    /* Auto-generate on load — pré-remplit l'URL avec l'IP LAN du serveur */
     window.addEventListener('load', function() {
-      generate();
+      fetch('/api/server-url')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.url) {
+            document.getElementById('cfg-url').value = data.url;
+          }
+        })
+        .catch(function() { /* fallback : valeur par défaut du champ */ })
+        .finally(function() {
+          generate();
+        });
     });
   </script>
 </body>

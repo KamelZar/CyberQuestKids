@@ -11,7 +11,7 @@ REM ─────────────────────────�
 set PORT=8080
 set DASHBOARD=http://localhost:%PORT%/dashboard
 set SCRIPT_DIR=%~dp0
-set POSTER=file:///%SCRIPT_DIR%poster-init.html
+set POSTER=http://localhost:%PORT%/init-poster
 set PID_FILE=%SCRIPT_DIR%.cyberquest.pid
 
 echo.
@@ -32,23 +32,38 @@ echo Usage: start_windows.bat [--start ^| --stop ^| --restart]
 pause
 exit /b 1
 
-REM ── STOP ─────────────────────────────────────
+REM ── STOP (label + fonction appelable) ────────
 :DO_STOP
-if not exist "%PID_FILE%" (
-    echo ⚠️  Aucun serveur en cours ^(pas de fichier PID^)
-    goto END
-)
-set /p SAVED_PID=<"%PID_FILE%"
-echo 🛑 Arrêt du serveur ^(PID %SAVED_PID%^)...
-taskkill /PID %SAVED_PID% /F >nul 2>&1
-del "%PID_FILE%"
-echo ✅ Serveur arrêté
+call :DO_STOP_FN
 goto END
+
+:DO_STOP_FN
+REM 1. Essaie via le fichier PID
+if exist "%PID_FILE%" (
+    set /p SAVED_PID=<"%PID_FILE%"
+    tasklist /FI "PID eq %SAVED_PID%" 2>nul | find "%SAVED_PID%" >nul
+    if not errorlevel 1 (
+        echo 🛑 Serveur arrêté ^(PID %SAVED_PID%^)
+        taskkill /PID %SAVED_PID% /F >nul 2>&1
+    )
+    del "%PID_FILE%"
+)
+
+REM 2. Filet de sécurité : tue tout process qui occupe le port (démarré manuellement)
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| find ":%PORT% "') do (
+    if not "%%a"=="0" (
+        echo 🛑 Process résiduel sur le port %PORT% tué ^(PID %%a^)
+        taskkill /PID %%a /F >nul 2>&1
+    )
+)
+
+echo ✅ Port %PORT% libéré
+goto :EOF
 
 REM ── RESTART ──────────────────────────────────
 :DO_RESTART
 call :DO_STOP_FN
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 goto DO_START
 
 REM ── START ─────────────────────────────────────
@@ -79,14 +94,15 @@ if errorlevel 1 (
     pip install flask
 )
 
-REM Démarrage Flask dans une fenêtre séparée, récupération du PID
+REM Démarrage Flask en arrière-plan
 echo 🚀 Démarrage du serveur Flask sur le port %PORT%...
-start "CyberQuest Server" /B python "%SCRIPT_DIR%server.py"
+start /B python "%SCRIPT_DIR%server.py"
 
-REM Récupération du PID du processus python lancé
-timeout /t 2 /nobreak >nul
-for /f "tokens=2" %%i in ('tasklist /FI "WINDOWTITLE eq CyberQuest Server" /FO list ^| find "PID"') do (
+REM Récupération du PID via PowerShell (fiable, sans dépendance au titre de fenêtre)
+timeout /t 1 /nobreak >nul
+for /f %%i in ('powershell -NoProfile -Command "Get-Process python | Sort-Object StartTime -Descending | Select-Object -First 1 -ExpandProperty Id"') do (
     echo %%i> "%PID_FILE%"
+    set SERVER_PID=%%i
 )
 
 REM Attente que Flask soit prêt
@@ -105,7 +121,7 @@ start "" "%DASHBOARD%"
 start "" "%POSTER%"
 
 echo.
-echo ✅ Serveur démarré
+echo ✅ Serveur démarré ^(PID %SERVER_PID%^)
 echo    Dashboard : %DASHBOARD%
 echo    Arrêt     : start_windows.bat --stop
 echo.

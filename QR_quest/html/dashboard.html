@@ -217,6 +217,45 @@
     .feed-status.return  { color: var(--muted); }
     .feed-status.trap    { color: var(--yellow); }
 
+    /* ── Phishing section ── */
+    .phish-section {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+    }
+    .phish-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .phish-title {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+    }
+    .phish-count-badge {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      padding: 3px 12px; border-radius: 4px; letter-spacing: 1px;
+      background: rgba(255,59,107,.12); color: var(--red); border: 1px solid rgba(255,59,107,.3);
+    }
+    .phish-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+    .phish-table th {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+      padding: 4px 10px; text-align: left;
+    }
+    .phish-table td {
+      padding: 7px 10px; background: var(--card);
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+    }
+    .phish-table td:first-child { border-radius: 6px 0 0 6px; }
+    .phish-table td:last-child  { border-radius: 0 6px 6px 0; }
+    .phish-src   { font-size: 16px; text-align: center; width: 40px; }
+    .phish-email { color: var(--accent); }
+    .phish-pw    { color: var(--yellow); }
+    .phish-bank  { color: #e040fb; }
+    .phish-extra { color: var(--muted); }
+    .phish-time  { color: var(--muted); font-size: 11px; }
+    .phish-empty { text-align: center; color: var(--muted); font-family: 'Share Tech Mono', monospace;
+                   font-size: 12px; padding: 16px; }
+    .stat-chip.phish .stat-num { color: #e040fb; }
+
     /* ── Empty state ── */
     .empty {
       text-align: center; padding: 48px 24px;
@@ -261,6 +300,10 @@
     <div class="stat-chip leurre">
       <div class="stat-num" id="stat-leurre">0</div>
       <div class="stat-lbl">Leurres<br>mordus</div>
+    </div>
+    <div class="stat-chip phish">
+      <div class="stat-num" id="stat-phish">0</div>
+      <div class="stat-lbl">🎣 Phishés</div>
     </div>
   </div>
 
@@ -316,6 +359,29 @@
         <tbody id="champ-body"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Phishing victims section -->
+  <div class="phish-section">
+    <div class="phish-header">
+      <span class="phish-title">🎣 Victimes du phishing</span>
+      <span class="phish-count-badge" id="phish-count-badge">0 victime(s)</span>
+    </div>
+    <div id="phish-empty" class="phish-empty">Aucune victime pour l'instant…</div>
+    <table class="phish-table" id="phish-table" style="display:none;">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Source</th>
+          <th>Identifiant</th>
+          <th>MDP (longueur)</th>
+          <th>Banque</th>
+          <th>École</th>
+          <th>Heure</th>
+        </tr>
+      </thead>
+      <tbody id="phish-body"></tbody>
+    </table>
   </div>
 
   <!-- Event feed -->
@@ -418,6 +484,9 @@
       document.getElementById('stat-frags').textContent  = frags.size;
       document.getElementById('stat-gotcha').textContent = gotchas;
       document.getElementById('stat-leurre').textContent = leurres;
+
+      var phishCount = events.filter(function(e) { return e.type === 'phishing_victim'; }).length;
+      document.getElementById('stat-phish').textContent = phishCount;
     }
 
     /* Event feed */
@@ -443,6 +512,39 @@
       while (feed.children.length > 50) feed.removeChild(feed.lastChild);
     }
 
+    /* Phishing victims table */
+    var SRC_ICON = { roblox:'🎮', instagram:'📸', google:'🔍', tiktok:'🎵', signup:'📝' };
+
+    function updatePhishing(events) {
+      var victims = events.filter(function(e) { return e.type === 'phishing_victim'; });
+      var badge = document.getElementById('phish-count-badge');
+      badge.textContent = victims.length + ' victime' + (victims.length > 1 ? 's' : '');
+
+      var empty = document.getElementById('phish-empty');
+      var table = document.getElementById('phish-table');
+      if (!victims.length) {
+        empty.style.display = 'block'; table.style.display = 'none'; return;
+      }
+      empty.style.display = 'none'; table.style.display = 'table';
+
+      var tbody = document.getElementById('phish-body');
+      tbody.innerHTML = '';
+      victims.slice().reverse().forEach(function(e) {
+        var tr = document.createElement('tr');
+        var icon = SRC_ICON[e.source] || '🎣';
+        var time = e.timestamp ? e.timestamp.slice(11, 16) : '—';
+        tr.innerHTML =
+          '<td class="phish-src">' + icon + '</td>' +
+          '<td class="phish-extra">' + (e.source || '—') + '</td>' +
+          '<td class="phish-email">' + (e.email || '—') + '</td>' +
+          '<td class="phish-pw">' + (e.pw_length != null ? e.pw_length + ' car.' : '—') + '</td>' +
+          '<td class="phish-bank">'  + (e.bank   || '—') + '</td>' +
+          '<td class="phish-extra">' + (e.school || '—') + '</td>' +
+          '<td class="phish-time">'  + time + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
     /* Polling */
     function poll() {
       fetch('/dashboard/data', { cache: 'no-store' })
@@ -458,6 +560,7 @@
           buildGrid(teams, events);
           updateStats(teams, events);
           updateFeed(events);
+          updatePhishing(events);
         })
         .catch(function() {
           document.getElementById('status-dot').className = 'status-dot offline';

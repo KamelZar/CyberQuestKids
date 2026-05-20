@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexaPlay — Créer un compte</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0f0;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a0a2e, #0f0f1a);
+      border-bottom: 2px solid #6c3fc5;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { font-size: 28px; font-weight: 900; color: #a855f7; letter-spacing: -1px; }
+    .logo span { color: #e040fb; }
+    .tagline { font-size: 12px; color: #6b6b9a; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ── Hero banner ── */
+    .hero {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1b3e 100%);
+      padding: 28px 24px;
+      text-align: center;
+      border-bottom: 1px solid #1e1e3a;
+    }
+    .hero h1 { font-size: clamp(20px, 4vw, 28px); color: #c084fc; margin-bottom: 8px; }
+    .hero p  { font-size: 14px; color: #7c7ca8; }
+    .badge {
+      display: inline-block; margin-top: 10px;
+      background: linear-gradient(90deg, #7c3aed, #e040fb);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px; letter-spacing: 1px;
+    }
+
+    /* ── Form container ── */
+    .form-wrap {
+      max-width: 520px;
+      margin: 32px auto;
+      background: #13132a;
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      padding: 32px 28px;
+    }
+    .form-title {
+      font-size: 20px; font-weight: 700; color: #e0e0f0;
+      margin-bottom: 6px;
+    }
+    .form-sub {
+      font-size: 13px; color: #5a5a7a; margin-bottom: 28px;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #7070a0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    label .required { color: #e040fb; margin-left: 2px; }
+    input, select {
+      width: 100%;
+      background: #0d0d20;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #e0e0f0;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #7c3aed;
+    }
+    select option { background: #0d0d20; }
+
+    .section-label {
+      font-size: 11px;
+      color: #3a3a5a;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 24px 0 14px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #3a3a5a;
+      margin-top: 4px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      background: linear-gradient(135deg, #7c3aed, #e040fb);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      -webkit-appearance: none;
+      transition: opacity 0.2s;
+    }
+    .submit-btn:active { opacity: 0.85; }
+
+    .login-link {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #5a5a7a;
+    }
+    .login-link a {
+      color: #a855f7;
+      text-decoration: none;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .terms {
+      font-size: 11px;
+      color: #3a3a5a;
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 11px;
+      color: #2a2a4a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="logo">Nexa<span>Play</span></div>
+      <div class="tagline">Gaming Platform</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>🎮 Rejoins la communauté NexaPlay</h1>
+    <p>Plus de 2 millions de joueurs — tournois quotidiens — accès gratuit</p>
+    <div class="badge">✨ COMPTE GRATUIT — REJOINS MAINTENANT</div>
+  </div>
+
+  <div class="form-wrap">
+    <div class="form-title">Créer mon compte</div>
+    <div class="form-sub">Tous les champs marqués * sont obligatoires pour la vérification.</div>
+
+    <form id="signup-form" action="#" method="post" autocomplete="off">
+
+      <!-- Identité -->
+      <div class="section-label">Identité</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Prénom <span class="required">*</span></label>
+          <input type="text" name="firstname" placeholder="Thomas" required />
+        </div>
+        <div class="field-group">
+          <label>Nom <span class="required">*</span></label>
+          <input type="text" name="lastname" placeholder="Dupont" required />
+        </div>
+      </div>
+
+      <!-- Compte -->
+      <div class="section-label">Connexion</div>
+      <div class="field-group">
+        <label>Adresse e-mail <span class="required">*</span></label>
+        <input type="email" name="email" placeholder="thomas@gmail.com" required />
+      </div>
+      <div class="field-group">
+        <label>Mot de passe <span class="required">*</span></label>
+        <input type="password" name="password" placeholder="••••••••" required />
+      </div>
+      <div class="field-group">
+        <label>Confirmer le mot de passe <span class="required">*</span></label>
+        <input type="password" name="password2" placeholder="••••••••" required />
+      </div>
+
+      <!-- Infos personnelles -->
+      <div class="section-label">Informations personnelles</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Date de naissance <span class="required">*</span></label>
+          <input type="date" name="birthdate" required />
+          <div class="hint">Vérification d'âge obligatoire</div>
+        </div>
+        <div class="field-group">
+          <label>Genre <span class="required">*</span></label>
+          <select name="gender" required>
+            <option value="">— Sélectionner —</option>
+            <option value="M">Masculin</option>
+            <option value="F">Féminin</option>
+            <option value="X">Autre</option>
+            <option value="N">Préfère ne pas dire</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Numéro de téléphone <span class="required">*</span></label>
+        <input type="tel" name="phone" placeholder="+32 470 00 00 00" required />
+        <div class="hint">Pour la récupération de compte et les alertes tournois</div>
+      </div>
+
+      <!-- Adresse -->
+      <div class="section-label">Adresse</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Rue &amp; numéro <span class="required">*</span></label>
+          <input type="text" name="street" placeholder="Rue de la Loi 42" required />
+        </div>
+        <div class="field-group">
+          <label>Code postal <span class="required">*</span></label>
+          <input type="text" name="zipcode" placeholder="1000" required />
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Ville <span class="required">*</span></label>
+        <input type="text" name="city" placeholder="Bruxelles" required />
+      </div>
+
+      <!-- Infos scolaires / bancaires -->
+      <div class="section-label">Vérification &amp; Récompenses</div>
+      <div class="field-group">
+        <label>Nom de ton école <span class="required">*</span></label>
+        <input type="text" name="school" placeholder="Athénée Royal de..." required />
+        <div class="hint">Pour les tournois inter-écoles et les réductions étudiantes</div>
+      </div>
+
+      <div class="field-group">
+        <label>Ta banque <span class="required">*</span></label>
+        <select name="bank" required>
+          <option value="">— Sélectionner ta banque —</option>
+          <option value="ING">ING</option>
+          <option value="KBC">KBC</option>
+          <option value="BNP">BNP Paribas Fortis</option>
+          <option value="Belfius">Belfius</option>
+          <option value="Revolut">Revolut</option>
+          <option value="Argenta">Argenta</option>
+          <option value="Crelan">Crelan</option>
+          <option value="Autre">Autre</option>
+        </select>
+        <div class="hint">Nécessaire pour les remboursements de tournois et prix en cash</div>
+      </div>
+
+      <button type="submit" class="submit-btn">🚀 Créer mon compte</button>
+    </form>
+
+    <div class="login-link">
+      Déjà un compte ? <a href="#" onclick="return false;">Se connecter</a>
+    </div>
+
+    <div class="terms" id="terms-block">
+      En créant un compte, vous acceptez nos
+      <a href="#" id="terms-link" style="color:#a855f7;text-decoration:underline;cursor:pointer">Conditions d'utilisation</a>
+      et notre
+      <a href="#" id="privacy-link" style="color:#a855f7;text-decoration:underline;cursor:pointer">Politique de confidentialité</a>.
+      Vos données sont partagées avec nos partenaires publicitaires.
+    </div>
+  </div>
+
+  <div class="footer">© 2025 NexaPlay Gaming SAS — Tous droits réservés</div>
+
+  <script>
+    /* ── Helpers ─────────────────────────────────────────────── */
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getLang() {
+      /* 1. Cookie posé par la page login (cas normal) */
+      var m = document.cookie.match('(^|;)\\s*cq_lang\\s*=\\s*([^;]+)');
+      if (m) {
+        var c = decodeURIComponent(m[2]);
+        if (['fr','nl','en'].indexOf(c) >= 0) return c;
+      }
+      /* 2. Fallback détection navigateur (si accès direct à /phishing/signup) */
+      var langs = (navigator.languages && navigator.languages.length)
+        ? Array.from(navigator.languages) : [navigator.language || 'fr'];
+      for (var i = 0; i < langs.length; i++) {
+        var l = langs[i].substring(0, 2).toLowerCase();
+        if (l === 'fr' || l === 'nl' || l === 'en') {
+          document.cookie = 'cq_lang=' + l + ';path=/;max-age=86400';
+          return l;
+        }
+      }
+      document.cookie = 'cq_lang=fr;path=/;max-age=86400';
+      return 'fr';
+    }
+
+    var IS_PORTAL = new URLSearchParams(window.location.search).get('portal') === '1';
+
+    /* ── Traductions signup ──────────────────────────────────── */
+    var SIGNUP_T = {
+      fr: {
+        title:    'Vous venez de tout donner !',
+        line1:    'Regardez ce que vous avez saisi sur ce formulaire…',
+        back:     '← Retour',
+        redirect: 'Redirection dans',
+        redirect2:'secondes…',
+        lbl:      ['Identifiant','Longueur MDP','Initiales','Tél. (fin)','Code postal','Banque','École'],
+        bravo_title: '🏆 Bravo, bon réflexe !',
+        bravo_line1: 'Tu as pris le temps de lire avant de cliquer.',
+        bravo_line2: 'Je te laisse passer pour aujourd\'hui.',
+        bravo_btn:   '→ Continuer',
+      },
+      nl: {
+        title:    'Je hebt alles weggegeven!',
+        line1:    'Kijk wat je allemaal hebt ingevuld op dit formulier…',
+        back:     '← Terug',
+        redirect: 'Doorsturen over',
+        redirect2:'seconden…',
+        lbl:      ['Identifiant','Lengte wachtwoord','Initialen','Tel. (einde)','Postcode','Bank','School'],
+        bravo_title: '🏆 Goed gedaan, goede reflex!',
+        bravo_line1: 'Je nam de tijd om te lezen voor je klikte.',
+        bravo_line2: 'Ik laat je voor vandaag door.',
+        bravo_btn:   '→ Doorgaan',
+      },
+      en: {
+        title:    'You just gave everything away!',
+        line1:    'Look at what you entered in this form…',
+        back:     '← Back',
+        redirect: 'Redirecting in',
+        redirect2:'seconds…',
+        lbl:      ['Identifier','Password length','Initials','Phone (end)','Postal code','Bank','School'],
+        bravo_title: '🏆 Well done, good reflex!',
+        bravo_line1: 'You took the time to read before clicking.',
+        bravo_line2: 'I\'ll let you through for today.',
+        bravo_btn:   '→ Continue',
+      },
+    };
+
+    /* ── Overlay "Bravo, bon réflexe" ────────────────────────── */
+    function showBravoOverlay() {
+      var lang = getLang();
+      var t = SIGNUP_T[lang] || SIGNUP_T.fr;
+
+      /* Tracking serveur */
+      fetch('/phishing/terms-click', {
+        method:  'POST',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ lang: lang, source: 'signup' })
+      }).catch(function(){});
+
+      var html = '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🏆</div>'
+        + '<div style="font-size:clamp(20px,5vw,32px);font-weight:900;color:#4ade80;'
+        +   'margin-bottom:12px;max-width:540px;line-height:1.2">' + esc(t.bravo_title) + '</div>'
+        + '<div style="font-size:15px;color:#86efac;margin-bottom:8px;max-width:460px">' + esc(t.bravo_line1) + '</div>'
+        + '<div style="font-size:15px;color:#86efac;margin-bottom:32px;max-width:460px">' + esc(t.bravo_line2) + '</div>';
+
+      if (IS_PORTAL) {
+        html += '<div id="bravo-countdown" style="font-family:monospace;font-size:14px;'
+          + 'color:#4ade80;letter-spacing:1px"></div>';
+      } else {
+        html += '<button onclick="history.back()" style="background:transparent;'
+          + 'border:1px solid #4ade80;color:#4ade80;font-family:monospace;font-size:13px;'
+          + 'letter-spacing:2px;padding:12px 28px;border-radius:10px;cursor:pointer;'
+          + 'text-transform:uppercase;-webkit-appearance:none">' + esc(t.bravo_btn) + '</button>';
+      }
+
+      var o = document.createElement('div');
+      o.style.cssText = 'position:fixed;inset:0;z-index:2147483647;'
+        + 'background:linear-gradient(135deg,#021a0c,#031a10);'
+        + 'color:#e8eaf2;display:flex;flex-direction:column;align-items:center;'
+        + 'justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow-y:auto';
+      o.innerHTML = html;
+      document.body.appendChild(o);
+
+      if (IS_PORTAL) {
+        var secs = 5;
+        var cdEl = document.getElementById('bravo-countdown');
+        function tick() {
+          if (!cdEl) return;
+          cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
+          if (secs <= 0) { window.location.href = '/init'; return; }
+          secs--;
+          setTimeout(tick, 1000);
+        }
+        tick();
+      }
+    }
+
+    /* ── Liens légaux → Bravo overlay ───────────────────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+      ['terms-link','privacy-link'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          showBravoOverlay();
+        });
+      });
+    });
+
+    /* ── Surcharge submit signup : collecte étendue ──────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+      var form = document.getElementById('signup-form');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        var get = function (n) {
+          var el = form.querySelector('[name="' + n + '"]');
+          return el ? (el.value || '').trim() : '';
+        };
+
+        var email   = get('email');
+        var pwLen   = (get('password') || '').length;
+        var phone   = get('phone');
+        var zipcode = get('zipcode');
+        var bank    = get('bank');
+        var school  = get('school');
+        var fn      = get('firstname');
+        var ln      = get('lastname');
+        var gender  = get('gender');
+        var lang    = getLang();
+
+        function anonEmail(v) {
+          if (!v) return '***';
+          var at = v.indexOf('@');
+          return at < 0 ? v.charAt(0)+'***' : v.charAt(0)+'***'+v.substring(at);
+        }
+        function anonPhone(v) {
+          var d = v.replace(/\D/g,'');
+          return d.length >= 2 ? '**'+d.slice(-2) : '**';
+        }
+        function initials(f, l) {
+          return (f ? f.charAt(0).toUpperCase() : '?') + '.'
+               + (l ? l.charAt(0).toUpperCase() : '?') + '.';
+        }
+
+        fetch('/phishing/catch', {
+          method:  'POST',
+          headers: {'Content-Type': 'application/json'},
+          body:    JSON.stringify({
+            email:     email,
+            pw_length: pwLen,
+            source:    'signup',
+            lang:      lang,
+            initials:  initials(fn, ln),
+            phone_end: anonPhone(phone),
+            zipcode:   zipcode,
+            bank:      bank,
+            school:    school,
+            gender:    gender,
+          })
+        }).catch(function(){});
+
+        showSignupGotcha(anonEmail(email), pwLen, initials(fn, ln),
+                         anonPhone(phone), zipcode, bank, school, lang);
+      }, true);
+    });
+
+    /* ── Overlay "Gotcha" enrichi ────────────────────────────── */
+    function showSignupGotcha(anonId, pwLen, initials, phoneEnd, zip, bank, school, lang) {
+      var t = SIGNUP_T[lang] || SIGNUP_T.fr;
+      var rows = [anonId, pwLen+' car.', initials, phoneEnd, zip, bank, school];
+
+      var html = '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🎣</div>'
+        + '<div style="font-size:clamp(18px,4vw,30px);font-weight:900;color:#ff3b6b;'
+        +   'margin-bottom:12px;max-width:560px">' + esc(t.title) + '</div>'
+        + '<div style="font-size:14px;color:#8892a4;margin-bottom:24px;max-width:500px">' + esc(t.line1) + '</div>'
+        + '<div style="background:#111520;border:1px solid #1e2535;border-radius:14px;'
+        +   'padding:20px 24px;max-width:440px;width:100%;margin-bottom:28px;text-align:left">';
+
+      t.lbl.forEach(function(lbl, i) {
+        html += '<div style="display:flex;justify-content:space-between;padding:8px 0;'
+          + (i < t.lbl.length-1 ? 'border-bottom:1px solid #1a2035;' : '')
+          + 'font-family:monospace;font-size:13px">'
+          + '<span style="color:#5a6580">' + esc(lbl) + '</span>'
+          + '<span style="color:' + (i===5?'#ffcc00':i===0?'#00ffd0':'#e8eaf2') + '">'
+          + esc(String(rows[i] || '—')) + '</span></div>';
+      });
+
+      if (IS_PORTAL) {
+        html += '</div><div id="portal-countdown" style="font-family:monospace;font-size:14px;'
+          + 'color:#00ffd0;letter-spacing:1px;margin-top:4px"></div>';
+      } else {
+        html += '</div><button onclick="history.back()" style="background:transparent;'
+          + 'border:1px solid #00ffd0;color:#00ffd0;font-family:monospace;font-size:13px;'
+          + 'letter-spacing:2px;padding:12px 28px;border-radius:10px;cursor:pointer;'
+          + 'text-transform:uppercase;-webkit-appearance:none">' + esc(t.back) + '</button>';
+      }
+
+      var o = document.createElement('div');
+      o.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0a0c10;'
+        + 'color:#e8eaf2;display:flex;flex-direction:column;align-items:center;'
+        + 'justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow-y:auto';
+      o.innerHTML = html;
+      document.body.appendChild(o);
+
+      if (IS_PORTAL) {
+        var secs = 6;
+        var cdEl = document.getElementById('portal-countdown');
+        function tick() {
+          if (!cdEl) return;
+          cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
+          if (secs <= 0) { window.location.href = '/init'; return; }
+          secs--;
+          setTimeout(tick, 1000);
+        }
+        tick();
+      }
+    }
+  </script>
+</body>
+</html>

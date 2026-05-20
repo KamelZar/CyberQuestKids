@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexaPlay — Connexion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0f0;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a0a2e, #0f0f1a);
+      border-bottom: 2px solid #6c3fc5;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { font-size: 28px; font-weight: 900; color: #a855f7; letter-spacing: -1px; }
+    .logo span { color: #e040fb; }
+    .tagline { font-size: 12px; color: #6b6b9a; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ── WiFi notice ── */
+    .wifi-notice {
+      background: linear-gradient(135deg, #071220, #0a1828);
+      border-bottom: 1px solid #1a3a5c;
+      padding: 11px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #6ab4ff;
+      line-height: 1.55;
+    }
+    .wifi-notice strong { color: #a8d8ff; font-weight: 700; }
+
+    /* ── Hero banner ── */
+    .hero {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1b3e 100%);
+      padding: 28px 24px;
+      text-align: center;
+      border-bottom: 1px solid #1e1e3a;
+    }
+    .hero h1 { font-size: clamp(20px, 4vw, 28px); color: #c084fc; margin-bottom: 8px; }
+    .hero p  { font-size: 14px; color: #7c7ca8; }
+    .badge {
+      display: inline-block; margin-top: 10px;
+      background: linear-gradient(90deg, #7c3aed, #e040fb);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px; letter-spacing: 1px;
+    }
+
+    /* ── Form container ── */
+    .form-wrap {
+      max-width: 440px;
+      margin: 40px auto;
+      background: #13132a;
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      padding: 36px 32px;
+    }
+    .form-title {
+      font-size: 20px; font-weight: 700; color: #e0e0f0;
+      margin-bottom: 6px;
+    }
+    .form-sub {
+      font-size: 13px; color: #5a5a7a; margin-bottom: 28px;
+    }
+    .field-group { margin-bottom: 18px; }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #7070a0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      background: #0d0d20;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: #e0e0f0;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus { outline: none; border-color: #7c3aed; }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      background: linear-gradient(135deg, #7c3aed, #e040fb);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      -webkit-appearance: none;
+      transition: opacity 0.2s;
+    }
+    .submit-btn:active { opacity: 0.85; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+      color: #2a2a4a;
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a4a;
+    }
+
+    .create-btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      border: 1px solid #6c3fc5;
+      border-radius: 10px;
+      color: #a855f7;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      -webkit-appearance: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .create-btn:hover { background: #1a0a2e; color: #c084fc; }
+
+    .terms {
+      font-size: 11px;
+      color: #3a3a5a;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+    .terms a { color: #5a5a7a; text-decoration: none; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 11px;
+      color: #2a2a4a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="logo">Nexa<span>Play</span></div>
+      <div class="tagline">Gaming Platform</div>
+    </div>
+  </div>
+
+  <div class="wifi-notice" id="wifi-notice">
+    🛜 <span id="wifi-notice-text">Chargement…</span>
+  </div>
+
+  <div class="hero">
+    <h1>🎮 Bienvenue sur NexaPlay</h1>
+    <p>Plus de 2 millions de joueurs — tournois quotidiens — accès gratuit</p>
+    <div class="badge" id="hero-badge">✨ CONNECTEZ-VOUS POUR ACCÉDER AU RÉSEAU</div>
+  </div>
+
+  <div class="form-wrap">
+    <div class="form-title" id="form-title">Se connecter</div>
+    <div class="form-sub" id="form-sub">Utilisez votre compte NexaPlay pour accéder au réseau.</div>
+
+    <form id="login-form" action="#" method="post" autocomplete="off">
+      <div class="field-group">
+        <label>Adresse e-mail</label>
+        <input type="email" name="email" placeholder="thomas@gmail.com" required />
+      </div>
+      <div class="field-group">
+        <label>Mot de passe</label>
+        <input type="password" name="password" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="submit-btn" id="submit-btn">→ Se connecter</button>
+    </form>
+
+    <div class="divider" id="divider-or">OU</div>
+
+    <a href="#" class="create-btn" id="create-account-btn">✦ Créer un compte NexaPlay</a>
+
+    <div class="terms" id="terms-block">
+      En vous connectant, vous acceptez nos
+      <a href="#" id="terms-link">Conditions d'utilisation</a>
+      et notre <a href="#" id="privacy-link">Politique de confidentialité</a>.
+    </div>
+  </div>
+
+  <div class="footer">© 2025 NexaPlay Gaming SAS — Tous droits réservés</div>
+
+  <script>
+    /* ── Helpers ─────────────────────────────────────────────── */
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function getLang() {
+      /* 1. Cookie déjà posé ? (retour depuis signup par ex.) */
+      var m = document.cookie.match('(^|;)\\s*cq_lang\\s*=\\s*([^;]+)');
+      if (m) {
+        var c = decodeURIComponent(m[2]);
+        if (['fr','nl','en'].indexOf(c) >= 0) return c;
+      }
+      /* 2. Détection navigateur (navigator.languages > navigator.language) */
+      var langs = (navigator.languages && navigator.languages.length)
+        ? Array.from(navigator.languages) : [navigator.language || 'fr'];
+      for (var i = 0; i < langs.length; i++) {
+        var l = langs[i].substring(0, 2).toLowerCase();
+        if (l === 'fr' || l === 'nl' || l === 'en') {
+          /* Pose le cookie pour tout le flow suivant */
+          document.cookie = 'cq_lang=' + l + ';path=/;max-age=86400';
+          return l;
+        }
+      }
+      document.cookie = 'cq_lang=fr;path=/;max-age=86400';
+      return 'fr';
+    }
+
+    var IS_PORTAL = new URLSearchParams(window.location.search).get('portal') === '1';
+
+    /* ── Traductions ─────────────────────────────────────────── */
+    var T = {
+      fr: {
+        wifi:       'Pour rejoindre le réseau WiFi et accéder à Internet et aux activités, connectez-vous ou créez un compte via notre partenaire <strong>NexaPlay</strong>.',
+        badge:      '✨ CONNECTEZ-VOUS POUR ACCÉDER AU RÉSEAU',
+        form_title: 'Se connecter',
+        form_sub:   'Utilisez votre compte NexaPlay pour accéder au réseau.',
+        submit:     '→ Se connecter',
+        create:     '✦ Créer un compte NexaPlay',
+        or:         'OU',
+        terms_txt:  'En vous connectant, vous acceptez nos',
+        terms_lnk:  'Conditions d\'utilisation',
+        priv_lnk:   'Politique de confidentialité',
+        and:        'et notre',
+        /* gotcha */
+        title:      'Vous venez de vous faire phisher !',
+        line1:      'Votre identifiant et mot de passe viennent d\'être capturés.',
+        line2:      'Sur un vrai site malveillant, un inconnu les aurait maintenant.',
+        collected:  '— ce que nous avons récupéré —',
+        lbl_id:     'Identifiant',
+        lbl_pw:     'Longueur du mot de passe',
+        chars:      'caractères',
+        back:       '← Retour',
+        redirect:   'Redirection dans',
+        redirect2:  'secondes…',
+        /* bravo */
+        bravo_title: '🏆 Bravo, bon réflexe !',
+        bravo_line1: 'Tu as pris le temps de lire avant de cliquer.',
+        bravo_line2: 'Je te laisse passer pour aujourd\'hui.',
+        bravo_btn:   '→ Continuer',
+      },
+      nl: {
+        wifi:       'Om verbinding te maken met het WiFi-netwerk en toegang te krijgen tot internet en de activiteiten, log in of maak een account aan via onze partner <strong>NexaPlay</strong>.',
+        badge:      '✨ LOG IN OM TOEGANG TE KRIJGEN TOT HET NETWERK',
+        form_title: 'Inloggen',
+        form_sub:   'Gebruik je NexaPlay-account om toegang te krijgen tot het netwerk.',
+        submit:     '→ Inloggen',
+        create:     '✦ NexaPlay-account aanmaken',
+        or:         'OF',
+        terms_txt:  'Door in te loggen ga je akkoord met onze',
+        terms_lnk:  'Gebruiksvoorwaarden',
+        priv_lnk:   'Privacybeleid',
+        and:        'en ons',
+        title:      'Je bent zojuist gephisht!',
+        line1:      'Je gebruikersnaam en wachtwoord zijn zojuist onderschept.',
+        line2:      'Op een echte malafide site zou een onbekende ze nu in handen hebben.',
+        collected:  '— wat we hebben verzameld —',
+        lbl_id:     'Gebruikersnaam',
+        lbl_pw:     'Lengte van het wachtwoord',
+        chars:      'tekens',
+        back:       '← Terug',
+        redirect:   'Doorsturen over',
+        redirect2:  'seconden…',
+        bravo_title: '🏆 Goed gedaan, goede reflex!',
+        bravo_line1: 'Je nam de tijd om te lezen voor je klikte.',
+        bravo_line2: 'Ik laat je voor vandaag door.',
+        bravo_btn:   '→ Doorgaan',
+      },
+      en: {
+        wifi:       'To join the WiFi network and access the Internet and the activities, log in or create an account via our partner <strong>NexaPlay</strong>.',
+        badge:      '✨ LOG IN TO ACCESS THE NETWORK',
+        form_title: 'Log in',
+        form_sub:   'Use your NexaPlay account to access the network.',
+        submit:     '→ Log in',
+        create:     '✦ Create a NexaPlay account',
+        or:         'OR',
+        terms_txt:  'By logging in you agree to our',
+        terms_lnk:  'Terms of Use',
+        priv_lnk:   'Privacy Policy',
+        and:        'and our',
+        title:      'You just got phished!',
+        line1:      'Your login and password were just captured.',
+        line2:      'On a real malicious site, a stranger would now have them.',
+        collected:  '— what we collected —',
+        lbl_id:     'Username',
+        lbl_pw:     'Password length',
+        chars:      'characters',
+        back:       '← Back',
+        redirect:   'Redirecting in',
+        redirect2:  'seconds…',
+        bravo_title: '🏆 Well done, good reflex!',
+        bravo_line1: 'You took the time to read before clicking.',
+        bravo_line2: 'I\'ll let you through for today.',
+        bravo_btn:   '→ Continue',
+      },
+    };
+
+    /* ── Applique les traductions au DOM ─────────────────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+      var lang = getLang();
+      var t = T[lang] || T.fr;
+
+      document.getElementById('wifi-notice-text').innerHTML = t.wifi;
+      document.getElementById('hero-badge').textContent     = t.badge;
+      document.getElementById('form-title').textContent     = t.form_title;
+      document.getElementById('form-sub').textContent       = t.form_sub;
+      document.getElementById('submit-btn').textContent     = t.submit;
+      document.getElementById('create-account-btn').textContent = t.create;
+      document.getElementById('divider-or').textContent     = t.or;
+      document.getElementById('terms-block').innerHTML =
+        t.terms_txt + ' <a href="#" id="terms-link">' + esc(t.terms_lnk) + '</a> '
+        + t.and + ' <a href="#" id="privacy-link">' + esc(t.priv_lnk) + '</a>.';
+
+      /* Liens légaux → Bravo overlay */
+      ['terms-link','privacy-link'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('click', function (e) {
+          e.preventDefault(); e.stopPropagation();
+          showBravoOverlay(lang, t);
+        });
+      });
+
+      /* Bouton "Créer un compte" → signup (portal param propagé) */
+      var createBtn = document.getElementById('create-account-btn');
+      if (createBtn) {
+        createBtn.href = IS_PORTAL ? '/phishing/signup?portal=1' : '/phishing/signup';
+        createBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.location.href = createBtn.href;
+        });
+      }
+
+      /* Interception formulaire login */
+      var form = document.getElementById('login-form');
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault(); e.stopImmediatePropagation();
+
+        var emailEl = form.querySelector('input[type="email"], input[name="email"]');
+        var passEl  = form.querySelector('input[type="password"]');
+        var emailVal = emailEl ? (emailEl.value || '').trim() : '';
+        var pwLen    = passEl  ? (passEl.value  || '').length  : 0;
+
+        function anonEmail(v) {
+          if (!v) return '***';
+          var at = v.indexOf('@');
+          return at < 0 ? v.charAt(0)+'***' : v.charAt(0)+'***'+v.substring(at);
+        }
+
+        fetch('/phishing/catch', {
+          method:  'POST',
+          headers: {'Content-Type': 'application/json'},
+          body:    JSON.stringify({ email: emailVal, pw_length: pwLen, source: 'login', lang: lang })
+        }).catch(function(){});
+
+        showLoginGotcha(anonEmail(emailVal), pwLen, lang, t);
+      }, true);
+    });
+
+    /* ── Overlay gotcha login ────────────────────────────────── */
+    function showLoginGotcha(anonId, pwLen, lang, t) {
+      var html =
+        '<div style="font-size:clamp(56px,12vw,88px);margin-bottom:8px">🎣</div>'
+        + '<div style="font-size:clamp(20px,5vw,34px);font-weight:900;color:#ff3b6b;'
+        +   'margin-bottom:14px;max-width:560px;line-height:1.2">' + esc(t.title) + '</div>'
+        + '<div style="max-width:520px;font-size:15px;color:#8892a4;line-height:1.7;margin-bottom:28px">'
+        +   esc(t.line1) + '<br>' + esc(t.line2) + '</div>'
+        + '<div style="background:#111520;border:1px solid #1e2535;border-radius:14px;'
+        +   'padding:22px 28px;max-width:420px;width:100%;margin-bottom:32px;text-align:left">'
+        +   '<div style="font-family:monospace;font-size:10px;color:#3a4260;text-transform:uppercase;'
+        +     'letter-spacing:2px;margin-bottom:14px;text-align:center">' + esc(t.collected) + '</div>'
+        +   '<div style="display:flex;justify-content:space-between;padding:10px 0;'
+        +     'border-bottom:1px solid #1a2035;font-family:monospace;font-size:14px">'
+        +     '<span style="color:#5a6580">' + esc(t.lbl_id) + '</span>'
+        +     '<span style="color:#00ffd0;word-break:break-all">' + esc(anonId) + '</span></div>'
+        +   '<div style="display:flex;justify-content:space-between;padding:10px 0;'
+        +     'font-family:monospace;font-size:14px">'
+        +     '<span style="color:#5a6580">' + esc(t.lbl_pw) + '</span>'
+        +     '<span style="color:#ffcc00">' + pwLen + ' ' + esc(t.chars) + '</span></div>'
+        + '</div>';
+
+      if (IS_PORTAL) {
+        html += '<div id="portal-countdown" style="font-family:monospace;font-size:14px;'
+          + 'color:#00ffd0;letter-spacing:1px"></div>';
+      } else {
+        html += '<button onclick="history.back()" style="background:transparent;'
+          + 'border:1px solid #00ffd0;color:#00ffd0;font-family:monospace;font-size:13px;'
+          + 'letter-spacing:2px;padding:12px 28px;border-radius:10px;cursor:pointer;'
+          + 'text-transform:uppercase;-webkit-appearance:none">' + esc(t.back) + '</button>';
+      }
+
+      var o = document.createElement('div');
+      o.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0a0c10;'
+        + 'color:#e8eaf2;display:flex;flex-direction:column;align-items:center;'
+        + 'justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow-y:auto';
+      o.innerHTML = html;
+      document.body.appendChild(o);
+
+      if (IS_PORTAL) {
+        var secs = 6;
+        var cdEl = document.getElementById('portal-countdown');
+        function tick() {
+          if (!cdEl) return;
+          cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
+          if (secs <= 0) { window.location.href = '/init'; return; }
+          secs--;
+          setTimeout(tick, 1000);
+        }
+        tick();
+      }
+    }
+
+    /* ── Overlay "Bravo, bon réflexe" ────────────────────────── */
+    function showBravoOverlay(lang, t) {
+      fetch('/phishing/terms-click', {
+        method:  'POST',
+        headers: {'Content-Type': 'application/json'},
+        body:    JSON.stringify({ lang: lang, source: 'login' })
+      }).catch(function(){});
+
+      var html =
+        '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🏆</div>'
+        + '<div style="font-size:clamp(20px,5vw,32px);font-weight:900;color:#4ade80;'
+        +   'margin-bottom:12px;max-width:540px;line-height:1.2">' + esc(t.bravo_title) + '</div>'
+        + '<div style="font-size:15px;color:#86efac;margin-bottom:8px;max-width:460px">' + esc(t.bravo_line1) + '</div>'
+        + '<div style="font-size:15px;color:#86efac;margin-bottom:32px;max-width:460px">' + esc(t.bravo_line2) + '</div>';
+
+      if (IS_PORTAL) {
+        html += '<div id="bravo-countdown" style="font-family:monospace;font-size:14px;'
+          + 'color:#4ade80;letter-spacing:1px"></div>';
+      } else {
+        html += '<button onclick="history.back()" style="background:transparent;'
+          + 'border:1px solid #4ade80;color:#4ade80;font-family:monospace;font-size:13px;'
+          + 'letter-spacing:2px;padding:12px 28px;border-radius:10px;cursor:pointer;'
+          + 'text-transform:uppercase;-webkit-appearance:none">' + esc(t.bravo_btn) + '</button>';
+      }
+
+      var o = document.createElement('div');
+      o.style.cssText = 'position:fixed;inset:0;z-index:2147483647;'
+        + 'background:linear-gradient(135deg,#021a0c,#031a10);'
+        + 'color:#e8eaf2;display:flex;flex-direction:column;align-items:center;'
+        + 'justify-content:center;padding:24px;font-family:sans-serif;text-align:center;overflow-y:auto';
+      o.innerHTML = html;
+      document.body.appendChild(o);
+
+      if (IS_PORTAL) {
+        var secs = 5;
+        var cdEl = document.getElementById('bravo-countdown');
+        function tick() {
+          if (!cdEl) return;
+          cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
+          if (secs <= 0) { window.location.href = '/init'; return; }
+          secs--;
+          setTimeout(tick, 1000);
+        }
+        tick();
+      }
+    }
+  </script>
+</body>
+</html>

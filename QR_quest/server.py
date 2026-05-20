@@ -33,7 +33,10 @@ TEAMS_FILE     = BASE_DIR / "teams.json"            # équipes enregistrées pou
 CHAMPIONS_FILE = BASE_DIR / "champions_scores.json" # scores du jeu Champions
 PHOTOS_DIR     = BASE_DIR / "photos"                # photos "Vous" uploadées
 
-PORT = 80 if os.geteuid() == 0 else 8080   # 80 si root, 8080 sinon
+try:
+    PORT = 80 if os.geteuid() == 0 else 8080   # Unix : 80 si root, 8080 sinon
+except AttributeError:
+    PORT = 8080   # Windows : pas de notion de root, toujours 8080
 
 # ── App ───────────────────────────────────────────────────────────────
 app = Flask(__name__, static_folder=str(HTML_DIR))
@@ -1124,6 +1127,110 @@ def _run_pw_check(target_hash: str, q: '_queue.Queue',
 def poster_page():
     """Sert le poster interactif depuis la racine du projet."""
     return send_from_directory(str(BASE_DIR.parent), 'password-poster.html')
+
+@app.route('/phishing/catch', methods=['POST'])
+def phishing_catch():
+    """Reçoit les credentials anonymisés depuis les pages de phishing pédagogique."""
+    data   = request.get_json(silent=True) or {}
+    email  = data.get('email', '').strip()[:120]
+    pw_len = max(0, int(data.get('pw_length', 0)))
+    source = data.get('source', 'unknown')[:20]
+    lang   = data.get('lang', 'fr')[:2]
+
+    def anon_email(e):
+        at = e.find('@')
+        if not e:        return '***'
+        if at < 0:       return e[:1] + '***'
+        return e[:1] + '***' + e[at:]
+
+    event = {
+        'type':      'phishing_victim',
+        'source':    source,
+        'email':     anon_email(email),
+        'pw_length': pw_len,
+        'lang':      lang,
+        'timestamp': datetime.now().isoformat(timespec='seconds'),
+        'ip':        request.remote_addr,
+    }
+    # Champs supplémentaires signup (déjà anonymisés côté client)
+    for field in ('initials', 'phone_end', 'zipcode', 'bank', 'school', 'gender'):
+        val = data.get(field, '')
+        if val:
+            event[field] = str(val)[:40]
+
+    append_event(event)
+    print(f"[PHISH] {source:<12} | {anon_email(email):<25} | pw_len={pw_len}")
+
+    resp = jsonify({'ok': True})
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
+@app.route('/phishing/terms-click', methods=['POST'])
+def phishing_terms_click():
+    """Enregistre qu'un participant a cliqué sur les CGU / Politique avant de soumettre."""
+    data   = request.get_json(silent=True) or {}
+    lang   = data.get('lang', 'fr')[:2]
+    source = data.get('source', 'signup')[:20]
+
+    event = {
+        'type':      'terms_click',
+        'source':    source,
+        'lang':      lang,
+        'timestamp': datetime.now().isoformat(timespec='seconds'),
+        'ip':        request.remote_addr,
+    }
+    append_event(event)
+    print(f"[TERMS] ✅ bon réflexe — {request.remote_addr} ({lang})")
+
+    resp = jsonify({'ok': True})
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
+@app.route('/captive')
+def captive_portal():
+    """Point d'entrée du captive portal — redirige vers NexaPlay login en mode portal."""
+    return redirect('/phishing/login?portal=1')
+
+# ── Sondes OS captive portal ──────────────────────────────────────────
+# iOS / macOS détectent un captive portal si ces URLs ne retournent pas
+# le contenu attendu → on redirige vers /captive.
+
+@app.route('/hotspot-detect.html')          # iOS / macOS
+@app.route('/library/test/success.html')    # iOS ancien
+@app.route('/generate_204')                 # Android Chrome
+@app.route('/gen_204')                      # Android fallback
+@app.route('/connecttest.txt')              # Windows 10/11
+@app.route('/ncsi.txt')                     # Windows NCSI
+@app.route('/redirect')                     # Android générique
+def captive_probe():
+    """Intercepte les sondes de détection captive portal des différents OS."""
+    return redirect('/captive', code=302)
+
+@app.route('/phishing/roblox')
+def phishing_roblox():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'roblox'), 'login.html')
+
+@app.route('/phishing/instagram')
+def phishing_instagram():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'instagram'), 'login.html')
+
+@app.route('/phishing/google')
+def phishing_google():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'google'), 'login.html')
+
+@app.route('/phishing/tiktok')
+def phishing_tiktok():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'tiktok'), 'login.html')
+
+@app.route('/phishing/login')
+def phishing_login():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'login'), 'index.html')
+
+@app.route('/phishing/signup')
+def phishing_signup():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'signup'), 'index.html')
 
 @app.route('/init-poster')
 def init_poster_page():

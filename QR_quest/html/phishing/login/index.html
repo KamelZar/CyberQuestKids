@@ -393,7 +393,7 @@
     /* ── Overlay gotcha login ────────────────────────────────── */
     function showLoginGotcha(anonId, pwLen, lang, t) {
       var html =
-        '<div style="font-size:clamp(56px,12vw,88px);margin-bottom:8px">🎣</div>'
+        '<img src="/images/PHISHING_GOTCHA.png" alt="Gotcha" style="width:clamp(120px,28vw,200px);margin-bottom:16px;border-radius:12px" />'
         + '<div style="font-size:clamp(20px,5vw,34px);font-weight:900;color:#ff3b6b;'
         +   'margin-bottom:14px;max-width:560px;line-height:1.2">' + esc(t.title) + '</div>'
         + '<div style="max-width:520px;font-size:15px;color:#8892a4;line-height:1.7;margin-bottom:28px">'
@@ -452,7 +452,7 @@
       }).catch(function(){});
 
       var html =
-        '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🏆</div>'
+        '<img src="/images/PHISHING_EXPERT.png" alt="Expert" style="width:clamp(120px,28vw,200px);margin-bottom:16px;border-radius:12px" />'
         + '<div style="font-size:clamp(20px,5vw,32px);font-weight:900;color:#4ade80;'
         +   'margin-bottom:12px;max-width:540px;line-height:1.2">' + esc(t.bravo_title) + '</div>'
         + '<div style="font-size:15px;color:#86efac;margin-bottom:8px;max-width:460px">' + esc(t.bravo_line1) + '</div>'

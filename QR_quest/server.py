@@ -351,6 +351,11 @@ def serve_avatar(team_id):
         return '', 404
     return send_from_directory(str(AVATARS_DIR), filename)
 
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    """Sert les images statiques depuis QR_quest/images/."""
+    return send_from_directory(str(BASE_DIR / 'images'), filename)
+
 @app.route('/team-select')
 def team_select_page():
     return send_from_directory(str(HTML_DIR), 'team-select.html')

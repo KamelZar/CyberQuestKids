@@ -373,7 +373,7 @@
         body:    JSON.stringify({ lang: lang, source: 'signup' })
       }).catch(function(){});
 
-      var html = '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🏆</div>'
+      var html = '<img src="/images/PHISHING_EXPERT.png" alt="Expert" style="width:clamp(120px,28vw,200px);margin-bottom:16px;border-radius:12px" />'
         + '<div style="font-size:clamp(20px,5vw,32px);font-weight:900;color:#4ade80;'
         +   'margin-bottom:12px;max-width:540px;line-height:1.2">' + esc(t.bravo_title) + '</div>'
         + '<div style="font-size:15px;color:#86efac;margin-bottom:8px;max-width:460px">' + esc(t.bravo_line1) + '</div>'
@@ -490,7 +490,7 @@
       var t = SIGNUP_T[lang] || SIGNUP_T.fr;
       var rows = [anonId, pwLen+' car.', initials, phoneEnd, zip, bank, school];
 
-      var html = '<div style="font-size:clamp(50px,10vw,80px);margin-bottom:8px">🎣</div>'
+      var html = '<img src="/images/PHISHING_GOTCHA.png" alt="Gotcha" style="width:clamp(120px,28vw,200px);margin-bottom:16px;border-radius:12px" />'
         + '<div style="font-size:clamp(18px,4vw,30px);font-weight:900;color:#ff3b6b;'
         +   'margin-bottom:12px;max-width:560px">' + esc(t.title) + '</div>'
         + '<div style="font-size:14px;color:#8892a4;margin-bottom:24px;max-width:500px">' + esc(t.line1) + '</div>'

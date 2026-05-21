@@ -71,7 +71,7 @@
       + 'padding:24px;font-family:sans-serif;text-align:center;overflow-y:auto;';
 
     o.innerHTML =
-      '<div style="font-size:clamp(56px,12vw,88px);margin-bottom:8px">' + t.fish + '</div>'
+      '<img src="/images/PHISHING_GOTCHA.png" alt="Gotcha" style="width:clamp(120px,28vw,200px);margin-bottom:16px;border-radius:12px" />'
     + '<div style="font-size:clamp(20px,5vw,34px);font-weight:900;color:#ff3b6b;'
     +   'margin-bottom:14px;max-width:560px;line-height:1.2">' + esc(t.title) + '</div>'
     + '<div style="max-width:520px;font-size:15px;color:#8892a4;line-height:1.7;margin-bottom:28px">'

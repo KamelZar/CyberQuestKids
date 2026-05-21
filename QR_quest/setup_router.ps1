@@ -101,7 +101,41 @@ Invoke-RouterCmd `
     $persist `
     "Persistance dans /etc/firewall.user"
 
-# ── 5. Démarrer le serveur Flask ──────────────────────────────────────────────
+# ── 5. Port proxy Windows : 80 → FlaskPort ───────────────────────────────────
+# Le trafic WiFi est bridge en L2 sur le routeur : iptables DNAT ne s'applique
+# pas. Flask tourne sur 8080 mais les téléphones frappent le port 80.
+# Solution : proxy local sur le PC Windows qui redirige :80 → :8080.
+Write-Step "Configuration port proxy Windows (80 → $FlaskPort)"
+
+# Vérifier qu'on tourne bien en admin (netsh portproxy exige les droits admin)
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+    [Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Warn "Droits administrateur requis pour le port proxy."
+    Write-Warn "Relance setup_router.bat en faisant clic droit → Exécuter en tant qu'administrateur."
+    Write-Warn "La config routeur est OK - seul le proxy port 80 a été ignoré."
+} else {
+    # Supprimer l'ancienne règle si elle existe (idempotent)
+    netsh interface portproxy delete v4tov4 listenport=80 listenaddress=0.0.0.0 2>$null | Out-Null
+
+    # Ajouter le proxy 80 → FlaskPort
+    netsh interface portproxy add v4tov4 `
+        listenport=80 listenaddress=0.0.0.0 `
+        connectport=$FlaskPort connectaddress=127.0.0.1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Echec netsh portproxy"
+    } else {
+        Write-OK "Port proxy 80 → $FlaskPort actif"
+    }
+
+    # Règle firewall Windows (autoriser port 80 entrant)
+    netsh advfirewall firewall delete rule name="CyberQuest-port80" 2>$null | Out-Null
+    netsh advfirewall firewall add rule `
+        name="CyberQuest-port80" protocol=TCP dir=in localport=80 action=allow | Out-Null
+    Write-OK "Règle firewall Windows port 80 ajoutée"
+}
+
+# ── 6. Démarrer le serveur Flask ──────────────────────────────────────────────
 Write-Step "Démarrage du serveur Flask"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $batPath   = Join-Path $scriptDir "start_windows.bat"

@@ -43,9 +43,9 @@ function Invoke-RouterCmd {
 # MAIN
 # =============================================================================
 Write-Host ""
-Write-Host "╔══════════════════════════════════════════╗" -ForegroundColor Magenta
-Write-Host "║     CyberQuestKids — Setup routeur       ║" -ForegroundColor Magenta
-Write-Host "╚══════════════════════════════════════════╝" -ForegroundColor Magenta
+Write-Host "==========================================" -ForegroundColor Magenta
+Write-Host "     CyberQuestKids -- Setup routeur      " -ForegroundColor Magenta
+Write-Host "==========================================" -ForegroundColor Magenta
 
 # ── 0. Vérifier que SSH est dispo ─────────────────────────────────────────────
 Write-Step "Vérification des prérequis"
@@ -116,11 +116,11 @@ if (Test-Path $batPath) {
 
 # ── Résumé ────────────────────────────────────────────────────────────────────
 Write-Host ""
-Write-Host "╔══════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "║           Setup terminé !                ║" -ForegroundColor Green
-Write-Host "╠══════════════════════════════════════════╣" -ForegroundColor Green
-Write-Host "║  Serveur Flask : http://$FlaskIP`:$FlaskPort" -ForegroundColor Green
-Write-Host "║  Routeur admin : http://$RouterIP" -ForegroundColor Green
-Write-Host "║  Dashboard     : http://$FlaskIP`:$FlaskPort/dashboard" -ForegroundColor Green
-Write-Host "╚══════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host "==========================================" -ForegroundColor Green
+Write-Host "           Setup termine !                " -ForegroundColor Green
+Write-Host "------------------------------------------" -ForegroundColor Green
+Write-Host "  Serveur Flask : http://$FlaskIP`:$FlaskPort" -ForegroundColor Green
+Write-Host "  Routeur admin : http://$RouterIP" -ForegroundColor Green
+Write-Host "  Dashboard     : http://$FlaskIP`:$FlaskPort/dashboard" -ForegroundColor Green
+Write-Host "==========================================" -ForegroundColor Green
 Write-Host ""

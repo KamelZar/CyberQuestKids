@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>CyberQuest — Le Chemin</title>
+  <style>
+    :root {
+      --bg:          #0e0b04;
+      --stone:       #2c2010;
+      --stone2:      #3a2c14;
+      --stone3:      #4e3c1c;
+      --stone-hi:    #6a5228;
+      --sand:        #c4a062;
+      --sand-dim:    #8a6e3a;
+      --gold:        #d4960e;
+      --gold-bright: #f5c842;
+      --torch:       #e07820;
+      --torch-dim:   #7a3c08;
+      --moss:        #3a5220;
+      --red:         #aa2200;
+      --red-glow:    #ff4400;
+      --text:        #e0c88a;
+      --muted:       #7a6040;
+      --accent:      #c8a050;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    html, body {
+      height:100%; overflow:hidden; user-select:none;
+      background:var(--bg); color:var(--text);
+      font-family:'Segoe UI', Arial, sans-serif;
+    }
+
+    /* ── Grain texture overlay ── */
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:9998;
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity:.5;
+    }
+
+    /* ── Layout ── */
+    .page { display:flex; flex-direction:column; height:100vh; align-items:center;
+            justify-content:space-between; }
+
+    /* ── Description text ── */
+    .desc-text {
+      flex-shrink:0;
+      font-size:12px; font-style:italic; color:var(--sand-dim);
+      text-align:center; padding:6px 18px 2px;
+      letter-spacing:.3px; line-height:1.45;
+    }
+
+    /* ── D-pad ── */
+    .dpad-wrap {
+      flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+      gap:4px; padding:6px 0 10px;
+    }
+    .dpad-row { display:flex; gap:4px; align-items:center; }
+    .dpad-btn {
+      width:48px; height:48px; border-radius:10px;
+      border:2px solid var(--stone-hi);
+      background:linear-gradient(145deg,#2c2010,#1e1608);
+      color:var(--sand); font-size:20px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:transform .1s, box-shadow .15s, opacity .2s;
+      box-shadow:0 2px 6px rgba(0,0,0,.5);
+    }
+    .dpad-btn:not(.dpad-off):active { transform:scale(.88); }
+    .dpad-btn.dpad-off {
+      opacity:.25; cursor:default; border-color:var(--stone3);
+      box-shadow:none;
+    }
+    .dpad-back { font-size:17px; }
+
+    /* ── Header ── */
+    header {
+      width:100%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:9px 14px;
+      background:#150f05;
+      border-bottom:2px solid var(--stone-hi);
+    }
+    .hdr-title { font-size:14px; font-weight:800; color:var(--sand); letter-spacing:2px; text-transform:uppercase; }
+    .lang-btns { display:flex; gap:5px; }
+    .lang-btn {
+      font-size:10px; font-weight:700; padding:4px 7px;
+      border:1px solid var(--stone3); border-radius:3px;
+      background:var(--stone2); color:var(--muted); cursor:pointer;
+      transition:border-color .15s, color .15s;
+    }
+    .lang-btn.active { border-color:var(--gold); color:var(--gold); }
+
+    /* ── Temple arch ── */
+    .arch-wrap {
+      flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+      padding:5px 0 2px;
+    }
+    .arch-svg  { width:150px; height:44px; display:block; }
+    .arch-label {
+      font-size:10px; font-weight:900; letter-spacing:4px; text-transform:uppercase;
+      color:var(--gold-bright);
+      text-shadow:0 0 10px var(--gold), 0 0 20px var(--torch);
+      margin-top:-3px;
+    }
+
+    /* ── Floor ── */
+    .floor-wrap { flex-shrink:0; padding:0 6px; }
+    #floor { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+
+    /* ── Base tile ── */
+    .tile {
+      aspect-ratio:1; border-radius:4px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      position:relative; cursor:default;
+      transition:transform .12s, box-shadow .2s, background .3s, border-color .3s;
+      border:2px solid transparent;
+      overflow:hidden;
+    }
+    /* Carved bevel effect on all stone tiles */
+    .tile::after {
+      content:''; position:absolute; inset:0; pointer-events:none; border-radius:2px;
+      background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 50%,rgba(0,0,0,.2) 100%);
+    }
+    .tile-icon  { font-size:18px; line-height:1; pointer-events:none; position:relative; z-index:1; }
+    .tile-label { font-size:6px; color:rgba(255,220,140,.5); margin-top:1px;
+                  pointer-events:none; text-align:center; width:100%;
+                  overflow:hidden; white-space:nowrap; padding:0 2px;
+                  position:relative; z-index:1; }
+
+    /* ═══ TILE STATES ═══ */
+
+    /* Off — cells not part of template (background texture) */
+    .t-off {
+      background:var(--stone);
+      border-color:#1e1608;
+      box-shadow:inset 0 0 4px rgba(0,0,0,.6);
+    }
+
+    /* Hidden — part of template but not yet revealed */
+    .t-hidden {
+      background:var(--stone2);
+      border-color:var(--stone3);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.4);
+      cursor:default;
+    }
+
+    /* Reachable — adjacent to current, cursor seul (pas d'animation qui révèle) */
+    .t-reachable {
+      background:var(--stone2);
+      border-color:var(--stone3);
+      cursor:pointer;
+    }
+    .t-reachable:hover {
+      background:var(--stone3);
+      border-color:var(--stone-hi);
+    }
+    .t-reachable:active { transform:scale(.91); }
+
+    /* Current — player is here, torch light */
+    .t-current {
+      background:linear-gradient(145deg,#4a3010,#3a2208);
+      border-color:var(--torch);
+      box-shadow:0 0 18px var(--torch), 0 0 35px rgba(224,120,32,.4);
+      animation:torch-pulse 1.6s infinite;
+    }
+
+    /* Visited safe — revealed, warm stone */
+    .t-visited {
+      background:linear-gradient(145deg,#3e2c10,#2e200a);
+      border-color:var(--stone-hi);
+      box-shadow:inset 0 0 6px rgba(0,0,0,.5);
+      cursor:default;
+    }
+
+    /* Dead hidden — not yet reached */
+    .t-dead { background:var(--stone2); border-color:var(--stone3); }
+
+    /* Dead hit — player walked here */
+    .t-dead-hit {
+      background:linear-gradient(145deg,#2a0a00,#1a0600);
+      border-color:var(--red);
+      box-shadow:0 0 12px var(--red-glow);
+      animation:shake .35s;
+    }
+
+    /* Champions — always visible, golden temple gate */
+    .t-champ {
+      background:linear-gradient(145deg,#3a2800,#241800);
+      border-color:var(--gold);
+      box-shadow:0 0 14px var(--gold), inset 0 0 8px rgba(212,150,14,.2);
+    }
+    .t-champ.t-reachable {
+      box-shadow:0 0 22px var(--gold-bright), 0 0 40px rgba(245,200,66,.3);
+      animation:gold-pulse .8s infinite alternate;
+      cursor:pointer;
+    }
+
+    /* Start — always visible */
+    .t-start {
+      background:linear-gradient(145deg,#1e3010,#142208);
+      border-color:var(--moss);
+      box-shadow:0 0 10px rgba(58,82,32,.6);
+    }
+    .t-start.t-current {
+      border-color:var(--torch);
+      box-shadow:0 0 18px var(--torch);
+      animation:torch-pulse 1.6s infinite;
+    }
+
+    /* Won */
+    .t-won { animation:temple-win 1s infinite; }
+
+    /* ── Animations ── */
+    @keyframes flicker {
+      0%,100%{ box-shadow:0 0 8px rgba(224,120,32,.35),inset 0 0 5px rgba(224,120,32,.1); }
+      30%    { box-shadow:0 0 12px rgba(224,120,32,.6),inset 0 0 8px rgba(224,120,32,.15); }
+      60%    { box-shadow:0 0 6px rgba(224,120,32,.25),inset 0 0 3px rgba(224,120,32,.08); }
+    }
+    @keyframes torch-pulse {
+      0%,100%{ box-shadow:0 0 16px var(--torch),0 0 30px rgba(224,120,32,.35); }
+      50%    { box-shadow:0 0 26px var(--torch),0 0 50px rgba(224,120,32,.5),0 0 70px rgba(224,120,32,.15); }
+    }
+    @keyframes gold-pulse {
+      from{ box-shadow:0 0 16px var(--gold),0 0 30px rgba(212,150,14,.3); transform:scale(1); }
+      to  { box-shadow:0 0 28px var(--gold-bright),0 0 50px rgba(245,200,66,.4); transform:scale(1.04); }
+    }
+    @keyframes shake {
+      0%  { transform:translateX(0) rotate(0); }
+      20% { transform:translateX(-5px) rotate(-2deg); }
+      40% { transform:translateX(5px) rotate(2deg); }
+      60% { transform:translateX(-3px) rotate(-1deg); }
+      80% { transform:translateX(3px) rotate(1deg); }
+      100%{ transform:translateX(0) rotate(0); }
+    }
+    @keyframes reveal {
+      0%  { transform:scale(.7) rotateY(90deg); opacity:0; }
+      60% { transform:scale(1.05) rotateY(-5deg); opacity:1; }
+      100%{ transform:scale(1) rotateY(0); opacity:1; }
+    }
+    @keyframes temple-win {
+      0%  { border-color:#cc6600; box-shadow:0 0 20px #cc660099; }
+      25% { border-color:var(--gold-bright); box-shadow:0 0 28px #ffd70099; }
+      50% { border-color:#eecc66; box-shadow:0 0 22px #eecc6699; }
+      75% { border-color:var(--torch); box-shadow:0 0 26px #e0782099; }
+      100%{ border-color:#cc6600; box-shadow:0 0 20px #cc660099; }
+    }
+
+    /* ── Personnage courant ── */
+    .char-icon {
+      position:absolute; font-size:18px; line-height:1;
+      pointer-events:none; z-index:2;
+      filter:drop-shadow(0 0 6px var(--torch));
+      animation:char-bob 1.2s infinite ease-in-out;
+    }
+    @keyframes char-bob {
+      0%,100% { transform:translateY(0); }
+      50%     { transform:translateY(-3px); }
+    }
+
+    /* Reveal flash */
+    .tile.revealing { animation:reveal .35s ease-out; }
+
+    /* ── Hint ── */
+    .hint {
+      flex-shrink:0; font-size:11px; color:var(--muted);
+      padding:6px 14px 4px; text-align:center; min-height:26px;
+    }
+    .hint::before { content:'🔦 '; }
+
+    /* ── Question overlay ── */
+    .overlay {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(5,3,1,.92);
+      align-items:center; justify-content:center;
+    }
+    .overlay.show { display:flex; }
+    .modal {
+      width:min(92vw,360px);
+      background:linear-gradient(160deg,#1e1608,#150f04);
+      border:2px solid var(--stone-hi); border-radius:12px;
+      padding:18px; display:flex; flex-direction:column; gap:12px;
+      box-shadow:0 0 30px rgba(200,160,80,.15);
+    }
+    .modal-badge {
+      font-size:9px; font-weight:700; text-transform:uppercase;
+      letter-spacing:1.5px; color:var(--sand);
+    }
+    .modal-q { font-size:14px; line-height:1.55; color:var(--text); min-height:52px; }
+    .modal-btns { display:flex; gap:10px; }
+    .modal-btn {
+      flex:1; padding:13px 0; border:2px solid transparent; border-radius:8px;
+      font-size:14px; font-weight:800; cursor:pointer;
+      transition:transform .1s, box-shadow .15s;
+    }
+    .modal-btn:active { transform:scale(.93); }
+    .btn-true  { background:#1e3010; border-color:#4a8020; color:#90d060; }
+    .btn-true:hover  { box-shadow:0 0 10px #4a802080; }
+    .btn-false { background:#2a1008; border-color:#8a2010; color:#e05030; }
+    .btn-false:hover { box-shadow:0 0 10px #8a201080; }
+    .modal-expl {
+      display:none; font-size:12px; line-height:1.5; padding:10px 12px;
+      border-radius:8px;
+    }
+    .expl-ok  { background:#1a2e0a; border:1px solid #4a8020; color:#90d060; }
+    .expl-ko  { background:#2a1008; border:1px solid #8a2010; color:#e08060; }
+    .modal-continue {
+      display:none; padding:12px; border:2px solid var(--gold); border-radius:8px;
+      background:transparent; color:var(--gold-bright); font-size:13px; font-weight:700;
+      cursor:pointer; letter-spacing:1px;
+      transition:background .15s;
+    }
+    .modal-continue:hover { background:rgba(212,150,14,.1); }
+
+    /* ── Message overlay ── */
+    .msg-ov {
+      display:none; position:fixed; inset:0; z-index:210;
+      background:rgba(5,3,1,.94);
+      align-items:center; justify-content:center;
+    }
+    .msg-ov.show { display:flex; }
+    .msg-box {
+      width:min(88vw,340px);
+      background:linear-gradient(160deg,#1e1608,#150f04);
+      border:2px solid var(--stone-hi); border-radius:12px;
+      padding:24px 20px;
+      display:flex; flex-direction:column; align-items:center;
+      gap:12px; text-align:center;
+      box-shadow:0 0 40px rgba(200,160,80,.12);
+    }
+    .msg-icon  { font-size:44px; }
+    .msg-title { font-size:17px; font-weight:800; color:var(--text); }
+    .msg-text  { font-size:12px; color:var(--muted); line-height:1.6; }
+    .msg-ok {
+      padding:12px 32px;
+      border:2px solid var(--gold); border-radius:8px;
+      background:transparent; color:var(--gold-bright);
+      font-size:13px; font-weight:700; cursor:pointer; letter-spacing:1px;
+      transition:background .15s;
+    }
+    .msg-ok:hover { background:rgba(212,150,14,.12); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="hdr-title" id="hdr-title">⛩ Le Chemin</div>
+    <div class="lang-btns">
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('nl')">NL</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </header>
+
+  <div class="desc-text" id="desc-text"></div>
+
+  <!-- Temple arch above champions -->
+  <div class="arch-wrap">
+    <svg class="arch-svg" viewBox="0 0 150 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Pillars -->
+      <rect x="8"  y="20" width="6" height="22" fill="#5c4520" rx="1"/>
+      <rect x="136" y="20" width="6" height="22" fill="#5c4520" rx="1"/>
+      <!-- Arch -->
+      <path d="M14 42 Q75 2 136 42" stroke="url(#tg)" stroke-width="4"
+            fill="none" stroke-linecap="round"/>
+      <!-- Keystone detail -->
+      <polygon points="75,6 69,16 81,16" fill="#d4960e" opacity=".7"/>
+      <!-- Trophy -->
+      <text x="75" y="32" text-anchor="middle" font-size="17" dominant-baseline="middle">🏆</text>
+      <!-- Engravings -->
+      <line x1="8"  y1="26" x2="14" y2="26" stroke="#7a5e2a" stroke-width="1"/>
+      <line x1="136" y1="26" x2="142" y2="26" stroke="#7a5e2a" stroke-width="1"/>
+      <defs>
+        <linearGradient id="tg" x1="0" y1="0" x2="150" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#7a5e2a"/>
+          <stop offset="35%"  stop-color="#d4960e"/>
+          <stop offset="50%"  stop-color="#f5c842"/>
+          <stop offset="65%"  stop-color="#d4960e"/>
+          <stop offset="100%" stop-color="#7a5e2a"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="arch-label" id="arch-label">Champions</div>
+  </div>
+
+  <div class="floor-wrap">
+    <div id="floor"></div>
+  </div>
+
+  <div class="hint" id="hint"></div>
+
+  <!-- D-pad navigation -->
+  <div class="dpad-wrap">
+    <button class="dpad-btn dpad-off" id="dpad-up"    onclick="tryMove(0,-1)">↑</button>
+    <div class="dpad-row">
+      <button class="dpad-btn dpad-off" id="dpad-left"  onclick="tryMove(-1,0)">←</button>
+      <button class="dpad-btn dpad-back dpad-off" id="dpad-back" onclick="goBack()">↩</button>
+      <button class="dpad-btn dpad-off" id="dpad-right" onclick="tryMove(1,0)">→</button>
+    </div>
+    <button class="dpad-btn dpad-off" id="dpad-down"  onclick="tryMove(0,1)">↓</button>
+  </div>
+
+</div>
+
+<!-- Question overlay -->
+<div class="overlay" id="q-ov">
+  <div class="modal">
+    <div class="modal-badge" id="q-badge">🗿 Bifurcation sacrée</div>
+    <div class="modal-q"     id="q-text"></div>
+    <div class="modal-btns"  id="q-btns">
+      <button class="modal-btn btn-true"  id="btn-true"  onclick="answerQ(true)"></button>
+      <button class="modal-btn btn-false" id="btn-false" onclick="answerQ(false)"></button>
+    </div>
+    <div class="modal-expl"     id="q-expl"></div>
+    <button class="modal-continue" id="q-cont" onclick="dismissQ()">▶ &nbsp;<span id="q-cont-lbl"></span></button>
+  </div>
+</div>
+
+<!-- Message overlay -->
+<div class="msg-ov" id="msg-ov">
+  <div class="msg-box">
+    <div class="msg-icon"  id="msg-icon"></div>
+    <div class="msg-title" id="msg-title"></div>
+    <div class="msg-text"  id="msg-text"></div>
+    <button class="msg-ok" id="msg-ok" onclick="dismissMsg()"></button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════════
+const T = {
+  fr:{
+    title:'⛩ Le Chemin', arch:'Champions',
+    desc:'Traverse la salle du temple au plus vite pour participer à l\'épreuve finale',
+    hint:'Clique sur une pierre qui brille pour avancer',
+    hintFork:'Une question garde ce carrefour — réponds pour choisir ton chemin',
+    hintWait:'Lis l\'explication, puis continue',
+    badge:'🗿 Bifurcation sacrée — Question du temple',
+    trueBtn:'VRAI ✓', falseBtn:'FAUX ✗', contBtn:'Continuer',
+    ok:'Compris', wonOk:'🏆 Entrer dans l\'arène',
+    deadIcon:'🪨', deadTitle:'Impasse !',
+    deadText:'Cette pierre ne mène nulle part. Retourne au carrefour et tente l\'autre voie.',
+    trapIcon:'🎣', trapTitle:'Piégé !',
+    trapText:'Tu avais fourni tes identifiants ici. Ce passage est bloqué — trouve un autre chemin vers la victoire.',
+    safeIcon:'🧠', safeTitle:'Bien joué !',
+    safeText:'Tu avais reconnu ce piège ! La pierre reste solide. Tu avances.',
+    wonIcon:'🏆', wonTitle:'Temple conquis !',
+    wonText:'Tu as trouvé le chemin sacré. L\'arène des Champions t\'attend.',
+    startLbl:'DÉPART', champLbl:'🏆',
+  },
+  nl:{
+    title:'⛩ Het Pad', arch:'Kampioenen',
+    desc:'Doorkruis de tempelzaal zo snel mogelijk om deel te nemen aan de finale proef',
+    hint:'Tik op een oplichtende steen om verder te gaan',
+    hintFork:'Een vraag bewaakt dit kruispunt — antwoord om je pad te kiezen',
+    hintWait:'Lees de uitleg, dan verder',
+    badge:'🗿 Heilige splitsing — Tempelvraaag',
+    trueBtn:'WAAR ✓', falseBtn:'VALS ✗', contBtn:'Verder',
+    ok:'Begrepen', wonOk:'🏆 Betreed de arena',
+    deadIcon:'🪨', deadTitle:'Doodlopend pad!',
+    deadText:'Deze steen leidt nergens naartoe. Ga terug naar het kruispunt en probeer de andere weg.',
+    trapIcon:'🎣', trapTitle:'In de val!',
+    trapText:'Je had hier je gegevens ingevoerd. Deze doorgang is geblokkeerd — vind een andere weg naar de overwinning.',
+    safeIcon:'🧠', safeTitle:'Goed gedaan!',
+    safeText:'Je had deze val herkend! De steen houdt stand. Je gaat verder.',
+    wonIcon:'🏆', wonTitle:'Tempel veroverd!',
+    wonText:'Je vond het heilige pad. De Kampioenenarena wacht op je.',
+    startLbl:'START', champLbl:'🏆',
+  },
+  en:{
+    title:'⛩ The Path', arch:'Champions',
+    desc:'Cross the temple hall as fast as possible to take part in the final challenge',
+    hint:'Tap a glowing stone to move forward',
+    hintFork:'A question guards this crossroads — answer to choose your path',
+    hintWait:'Read the explanation, then continue',
+    badge:'🗿 Sacred crossroads — Temple question',
+    trueBtn:'TRUE ✓', falseBtn:'FALSE ✗', contBtn:'Continue',
+    ok:'Got it', wonOk:'🏆 Enter the arena',
+    deadIcon:'🪨', deadTitle:'Dead end!',
+    deadText:'This stone leads nowhere. Go back to the crossroads and try the other way.',
+    trapIcon:'🎣', trapTitle:'Trapped!',
+    trapText:'You submitted your credentials here before. This passage is blocked — find another path to victory.',
+    safeIcon:'🧠', safeTitle:'Well played!',
+    safeText:'You recognised this trap! The stone holds. You move forward.',
+    wonIcon:'🏆', wonTitle:'Temple conquered!',
+    wonText:'You found the sacred path. The Champions arena awaits.',
+    startLbl:'START', champLbl:'🏆',
+  },
+};
+
+// ═══════════════════════════════════════════════════════════
+// ACTIVITIES — ajouter ici pour enrichir le chemin
+// ═══════════════════════════════════════════════════════════
+const ACTIVITIES = [
+  { id:'mirror',    url:'/mirror',             icon:'🪤', trap:false,
+    label:{fr:'Miroir',       nl:'Spiegel',    en:'Mirror'} },
+  { id:'phishing',  url:'/phishing',            icon:'🎭', trap:false,
+    label:{fr:'Phishing',     nl:'Phishing',   en:'Phishing'} },
+  { id:'lockpick',  url:'/lockpicking',         icon:'🔓', trap:false,
+    label:{fr:'Crochetage',   nl:'Slot',       en:'Lock'} },
+  { id:'password',  url:'/password-check',      icon:'🔐', trap:false,
+    label:{fr:'Mot de passe', nl:'Wachtwoord', en:'Password'} },
+  { id:'roblox',    url:'/phishing/roblox',     icon:'🎮', trap:true,
+    label:{fr:'Roblox',       nl:'Roblox',     en:'Roblox'} },
+  { id:'instagram', url:'/phishing/instagram',  icon:'📸', trap:true,
+    label:{fr:'Instagram',    nl:'Instagram',  en:'Instagram'} },
+  { id:'google',    url:'/phishing/google',     icon:'🔍', trap:true,
+    label:{fr:'Google',       nl:'Google',     en:'Google'} },
+  { id:'tiktok',    url:'/phishing/tiktok',     icon:'🎵', trap:true,
+    label:{fr:'TikTok',       nl:'TikTok',     en:'TikTok'} },
+];
+
+// ═══════════════════════════════════════════════════════════
+// TEMPLATES — 7×7 grid (col 0-6, row 0-6)
+// Champions: (3,0) toujours | Start: (3,6) toujours
+// ═══════════════════════════════════════════════════════════
+const TEMPLATES = [
+  { // ── Template 0 : serpente à gauche ──
+    nodes:[
+      {id:'s',  c:3,r:6,kind:'start'},
+      {id:'a1', c:3,r:5,kind:'path'},
+      {id:'a2', c:2,r:5,kind:'path'},
+      {id:'a3', c:2,r:4,kind:'path'},
+      {id:'a4', c:2,r:3,kind:'path'},
+      {id:'a5', c:3,r:3,kind:'path'},
+      {id:'a6', c:4,r:3,kind:'path'},
+      {id:'a7', c:4,r:2,kind:'path'},
+      {id:'a8', c:3,r:2,kind:'path'},
+      {id:'ch', c:3,r:0,kind:'champ'},
+      {id:'d1', c:4,r:5,kind:'dead'},{id:'d2', c:5,r:5,kind:'dead'},
+      {id:'d3', c:1,r:3,kind:'dead'},{id:'d4', c:0,r:3,kind:'dead'},
+      {id:'d5', c:5,r:3,kind:'dead'},{id:'d6', c:6,r:3,kind:'dead'},
+    ],
+    edges:[
+      ['s','a1'],
+      ['a1','a2'],['a1','d1'], ['d1','d2'],
+      ['a2','a3'],['a3','a4'],
+      ['a4','a5'],['a4','d3'], ['d3','d4'],
+      ['a5','a6'],
+      ['a6','a7'],['a6','d5'], ['d5','d6'],
+      ['a7','a8'],['a8','ch'],
+    ],
+    forks:['a1','a4','a6'],
+  },
+  { // ── Template 1 : serpente à droite ──
+    nodes:[
+      {id:'s',  c:3,r:6,kind:'start'},
+      {id:'a1', c:3,r:5,kind:'path'},
+      {id:'a2', c:4,r:5,kind:'path'},
+      {id:'a3', c:4,r:4,kind:'path'},
+      {id:'a4', c:4,r:3,kind:'path'},
+      {id:'a5', c:3,r:3,kind:'path'},
+      {id:'a6', c:2,r:3,kind:'path'},
+      {id:'a7', c:2,r:2,kind:'path'},
+      {id:'a8', c:3,r:2,kind:'path'},
+      {id:'ch', c:3,r:0,kind:'champ'},
+      {id:'d1', c:2,r:5,kind:'dead'},{id:'d2', c:1,r:5,kind:'dead'},
+      {id:'d3', c:5,r:3,kind:'dead'},{id:'d4', c:6,r:3,kind:'dead'},
+      {id:'d5', c:1,r:3,kind:'dead'},{id:'d6', c:0,r:3,kind:'dead'},
+    ],
+    edges:[
+      ['s','a1'],
+      ['a1','a2'],['a1','d1'], ['d1','d2'],
+      ['a2','a3'],['a3','a4'],
+      ['a4','a5'],['a4','d3'], ['d3','d4'],
+      ['a5','a6'],
+      ['a6','a7'],['a6','d5'], ['d5','d6'],
+      ['a7','a8'],['a8','ch'],
+    ],
+    forks:['a1','a4','a6'],
+  },
+  { // ── Template 2 : zigzag central ──
+    nodes:[
+      {id:'s',  c:3,r:6,kind:'start'},
+      {id:'a1', c:2,r:6,kind:'path'},
+      {id:'a2', c:2,r:5,kind:'path'},
+      {id:'a3', c:3,r:5,kind:'path'},
+      {id:'a4', c:4,r:5,kind:'path'},
+      {id:'a5', c:4,r:4,kind:'path'},
+      {id:'a6', c:3,r:4,kind:'path'},
+      {id:'a7', c:3,r:3,kind:'path'},
+      {id:'a8', c:3,r:2,kind:'path'},
+      {id:'ch', c:3,r:0,kind:'champ'},
+      {id:'d1', c:4,r:6,kind:'dead'},{id:'d2', c:5,r:6,kind:'dead'},
+      {id:'d3', c:1,r:5,kind:'dead'},{id:'d4', c:0,r:5,kind:'dead'},
+      {id:'d5', c:5,r:4,kind:'dead'},{id:'d6', c:6,r:4,kind:'dead'},
+    ],
+    edges:[
+      ['s','a1'],['s','d1'],  ['d1','d2'],
+      ['a1','a2'],
+      ['a2','a3'],['a2','d3'],['d3','d4'],
+      ['a3','a4'],['a4','a5'],
+      ['a5','a6'],['a5','d5'],['d5','d6'],
+      ['a6','a7'],['a7','a8'],['a8','ch'],
+    ],
+    forks:['s','a2','a5'],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let lang        = 'fr';
+let teamId      = 'guest';
+let questions   = [];
+let phishCaught = new Set();
+let tpl         = null;
+let nodeMap     = {};
+let actMap      = {};
+let current     = 's';
+let visited     = new Set();  // nodes player stepped on
+let revealed    = new Set();  // nodes whose content is visible
+let deadHit     = new Set();
+let fork        = null;
+let wonPending  = false;
+let history     = [];
+
+// ═══════════════════════════════════════════════════════════
+// SEEDED RNG
+// ═══════════════════════════════════════════════════════════
+function makeRng(seed) {
+  let s = (seed ^ 0xdeadbeef) >>> 0 || 1;
+  return () => { s ^= s<<13; s ^= s>>17; s ^= s<<5; return (s>>>0)/4294967296; };
+}
+function hashStr(str) {
+  let h = 2166136261;
+  for (let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=(h*16777619)>>>0;}
+  return h;
+}
+function shuffle(arr, rng) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function getCookie(n){
+  const m=document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)'));
+  return m?decodeURIComponent(m[1]):'';
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+async function init() {
+  const cl = getCookie('cq_lang');
+  lang = ['fr','nl','en'].includes(cl) ? cl
+       : navigator.language.startsWith('nl') ? 'nl'
+       : navigator.language.startsWith('fr') ? 'fr' : 'en';
+  teamId = getCookie('cq_team') || 'guest';
+  applyLang();
+
+  try {
+    const r = await fetch(`/champions/${lang}.json`);
+    const data = await r.json();
+    for (const cat of Object.values(data))
+      for (const q of cat.questions) questions.push(q);
+  } catch(e) {}
+
+  try {
+    const r = await fetch('/dashboard/data');
+    const data = await r.json();
+    for (const ev of (data.events||[]))
+      if (ev.type==='phishing_victim' && ev.source)
+        phishCaught.add(ev.source.toLowerCase());
+  } catch(e) {}
+
+  buildMap();
+  renderFloor();
+  sizeTiles();
+
+  // Start: reveal start tile, mark as visited and current
+  visited.add('s');
+  revealed.add('s');
+  current = 's';
+  updateFloor();
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUILD MAP
+// ═══════════════════════════════════════════════════════════
+function buildMap() {
+  const rng  = makeRng(hashStr(teamId));
+  const tIdx = Math.floor(rng()*TEMPLATES.length);
+  tpl = TEMPLATES[tIdx];
+  nodeMap = {};
+  for (const n of tpl.nodes) nodeMap[n.id]={...n,nexts:[]};
+  for (const [f,t] of tpl.edges) if(nodeMap[f]) nodeMap[f].nexts.push(t);
+  const pathIds = tpl.nodes.filter(n=>n.kind==='path').map(n=>n.id);
+  const shuffled = shuffle(ACTIVITIES, rng).slice(0, pathIds.length);
+  pathIds.forEach((id,i)=>{ actMap[id]=shuffled[i]; });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER FLOOR — build DOM once
+// ═══════════════════════════════════════════════════════════
+function renderFloor() {
+  const fl = document.getElementById('floor');
+  fl.innerHTML = '';
+  const pos = {};
+  for (const n of tpl.nodes) pos[`${n.c},${n.r}`] = n.id;
+
+  for (let r=0;r<7;r++) {
+    for (let c=0;c<7;c++) {
+      const el  = document.createElement('div');
+      el.className = 'tile';
+      const nid = pos[`${c},${r}`];
+      if (nid) {
+        el.dataset.nid = nid;
+        const n   = nodeMap[nid];
+        const act = actMap[nid];
+        const icon = n.kind==='start'?'👣': n.kind==='champ'?'🏆': act?act.icon:'🪨';
+        el.innerHTML = `
+          <div class="tile-icon reveal-content" style="display:none">${icon}</div>
+          <div class="tile-icon stone-glyph">𓂀</div>
+          <div class="char-icon" style="display:none">🧗</div>
+        `;
+        if (n.kind==='start')
+          el.innerHTML += `<div class="tile-label reveal-content" id="lbl-s" style="display:none"></div>`;
+        el.addEventListener('click',()=>onTileClick(nid));
+      } else {
+        // Off-tile : même apparence que les pierres cachées — indiscernable
+        el.innerHTML = `<div class="tile-icon stone-glyph">𓂀</div>`;
+      }
+      fl.appendChild(el);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPDATE FLOOR
+// ═══════════════════════════════════════════════════════════
+function updateFloor() {
+  // All tiles reset
+  for (const n of tpl.nodes) {
+    const el = getEl(n.id);
+    if (!el) continue;
+    el.className = 'tile';
+
+    const isRevealed = revealed.has(n.id);
+    const isVisited  = visited.has(n.id);
+    const isDead     = deadHit.has(n.id);
+    const isCurrent  = n.id === current;
+
+    // Personnage sur la case courante (pas sur champ — l'animation won prime)
+    const showChar = isCurrent && n.kind !== 'champ';
+    el.querySelectorAll('.char-icon').forEach(c => c.style.display = showChar ? '' : 'none');
+
+    // Show/hide content — masqué quand le perso occupe la case
+    showContent(el, (isRevealed || n.kind==='start' || n.kind==='champ') && !showChar);
+
+    if (n.kind==='champ') {
+      el.classList.add('t-champ');
+    } else if (n.kind==='start') {
+      el.classList.add(isCurrent ? 't-start t-current' : 't-start');
+    } else if (isDead) {
+      el.classList.add('t-dead-hit');
+    } else if (isRevealed && isVisited) {
+      el.classList.add(isCurrent ? 't-current' : 't-visited');
+    } else {
+      el.classList.add('t-hidden');
+    }
+  }
+
+  // Non-node cells — même pierre que les cachées, juste non-interactive
+  document.querySelectorAll('.tile:not([data-nid])').forEach(el => {
+    el.className = 'tile t-off';
+    // innerHTML conservé (glyphe posé au renderFloor, ne pas effacer)
+  });
+
+  // Reachable (adjacent) tiles — only when no fork pending
+  if (!fork) {
+    const nexts = nodeMap[current]?.nexts || [];
+    for (const nid of nexts) {
+      const el = getEl(nid);
+      if (!el || deadHit.has(nid)) continue;
+      el.classList.remove('t-hidden','t-dead','t-champ');
+      el.classList.add(nodeMap[nid]?.kind==='champ' ? 't-champ' : 'tile');
+      el.classList.add('t-reachable');
+    }
+  } else if (fork.answered) {
+    // Only highlight the correct next tile
+    const el = getEl(fork.correctNext);
+    if (el) {
+      el.classList.remove('t-hidden','t-dead','t-champ');
+      el.classList.add(nodeMap[fork.correctNext]?.kind==='champ'?'t-champ':'tile');
+      el.classList.add('t-reachable');
+    }
+  }
+
+  // Labels
+  const lbl = document.getElementById('lbl-s');
+  if (lbl) lbl.textContent = T[lang].startLbl;
+
+  updateHint();
+  updateDpad();
+}
+
+function showContent(el, show) {
+  el.querySelectorAll('.reveal-content').forEach(c => c.style.display = show?'':'none');
+  el.querySelectorAll('.stone-glyph').forEach(c => c.style.display   = show?'none':'');
+}
+
+function getEl(nid) {
+  return document.querySelector(`.tile[data-nid="${nid}"]`);
+}
+function updateHint() {
+  const t    = T[lang];
+  const nexts= nodeMap[current]?.nexts||[];
+  const isFk = tpl.forks.includes(current) && nexts.length>1;
+  document.getElementById('hint').textContent =
+    fork && !fork.answered ? t.hintWait :
+    isFk                   ? t.hintFork :
+                             t.hint;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TILE CLICK
+// ═══════════════════════════════════════════════════════════
+function onTileClick(nid) {
+  const nexts = nodeMap[current]?.nexts || [];
+
+  // After fork: only correct tile is clickable
+  if (fork && fork.answered) {
+    if (nid !== fork.correctNext) return;
+    fork = null;
+    revealAndMove(nid);
+    return;
+  }
+  // Fork question not yet shown
+  if (tpl.forks.includes(current) && nexts.length>1 && !fork) {
+    if (!nexts.includes(nid)) return;
+    showQuestion();
+    return;
+  }
+  // Normal
+  if (!nexts.includes(nid)) return;
+  revealAndMove(nid);
+}
+
+// ═══════════════════════════════════════════════════════════
+// REVEAL + MOVE
+// ═══════════════════════════════════════════════════════════
+function revealAndMove(nid) {
+  const el = getEl(nid);
+  // Reveal content with animation
+  if (!revealed.has(nid)) {
+    revealed.add(nid);
+    showContent(el, true);
+    el.classList.add('revealing');
+    setTimeout(()=>el.classList.remove('revealing'), 400);
+  }
+  processMove(nid);
+}
+
+function processMove(nid) {
+  const n   = nodeMap[nid];
+  const act = actMap[nid];
+
+  if (n.kind==='dead') {
+    deadHit.add(nid);
+    updateFloor();
+    showMsg('dead');
+    return;
+  }
+  if (n.kind==='champ') {
+    history.push(current); visited.add(current); current = nid;
+    updateFloor();
+    getEl(nid)?.classList.add('t-won');
+    setTimeout(()=>showMsg('won'), 800);
+    return;
+  }
+  // Trap check
+  if (act?.trap && phishCaught.has(act.id)) {
+    deadHit.add(nid);
+    updateFloor();
+    showMsg('trap');
+    return;
+  }
+  history.push(current); visited.add(current); current = nid;
+  updateFloor();
+  if (act?.trap && !phishCaught.has(act.id)) { showMsg('safe'); }
+  if (act?.url && !act.trap) window.open(act.url,'_blank');
+}
+
+// ═══════════════════════════════════════════════════════════
+// D-PAD
+// ═══════════════════════════════════════════════════════════
+function tryMove(dc, dr) {
+  const cur = nodeMap[current];
+  const target = (cur?.nexts||[]).find(nid => {
+    const n = nodeMap[nid];
+    return n.c === cur.c + dc && n.r === cur.r + dr;
+  });
+  if (target) onTileClick(target);
+}
+
+function goBack() {
+  if (!history.length) return;
+  current = history.pop();
+  fork = null;
+  updateFloor();
+  updateDpad();
+}
+
+function updateDpad() {
+  const cur   = nodeMap[current];
+  const nexts = cur?.nexts || [];
+  [[-1,0,'left'],[1,0,'right'],[0,-1,'up'],[0,1,'down']].forEach(([dc,dr,dir]) => {
+    const ok = nexts.some(nid => {
+      const n = nodeMap[nid];
+      return n.c === cur.c+dc && n.r === cur.r+dr && !deadHit.has(nid);
+    });
+    document.getElementById('dpad-'+dir).classList.toggle('dpad-off', !ok);
+  });
+  document.getElementById('dpad-back').classList.toggle('dpad-off', !history.length);
+}
+
+// ═══════════════════════════════════════════════════════════
+// QUESTION
+// ═══════════════════════════════════════════════════════════
+function showQuestion() {
+  const nexts    = nodeMap[current]?.nexts || [];
+  const pathNext = nexts.find(n=>nodeMap[n]?.kind!=='dead');
+  const deadNext = nexts.find(n=>nodeMap[n]?.kind==='dead');
+  const q = questions.length ? questions[Math.floor(Math.random()*questions.length)] : null;
+  fork = { node:current, pathNext, deadNext, answered:false, correctNext:null, wrongNext:null, q };
+
+  const t = T[lang];
+  document.getElementById('q-badge').textContent    = t.badge;
+  document.getElementById('q-text').textContent     = q ? q.question : '…';
+  document.getElementById('btn-true').textContent   = t.trueBtn;
+  document.getElementById('btn-false').textContent  = t.falseBtn;
+  document.getElementById('q-cont-lbl').textContent = t.contBtn;
+  document.getElementById('q-expl').style.display   = 'none';
+  document.getElementById('q-cont').style.display   = 'none';
+  document.getElementById('q-btns').style.display   = 'flex';
+  document.getElementById('q-ov').classList.add('show');
+  updateHint();
+}
+
+function answerQ(answer) {
+  if (!fork||fork.answered) return;
+  const correct = fork.q ? answer===fork.q.answer : true;
+  fork.answered    = true;
+  fork.correctNext = correct ? fork.pathNext : fork.deadNext;
+  fork.wrongNext   = correct ? fork.deadNext  : fork.pathNext;
+
+  document.getElementById('q-btns').style.display = 'none';
+  const expl = document.getElementById('q-expl');
+  expl.style.display = 'block';
+  expl.className     = 'modal-expl '+(correct?'expl-ok':'expl-ko');
+  expl.textContent   = fork.q?.explanation || (correct?'✓ Correct !':'✗ Incorrect…');
+  document.getElementById('q-cont').style.display = 'block';
+}
+
+function dismissQ() {
+  document.getElementById('q-ov').classList.remove('show');
+  updateFloor(); // highlights only correctNext
+  updateHint();
+}
+
+// ═══════════════════════════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════════════════════════
+const MSGS = {
+  dead: t=>({icon:t.deadIcon, title:t.deadTitle, text:t.deadText, ok:t.ok,    go:null}),
+  trap: t=>({icon:t.trapIcon, title:t.trapTitle, text:t.trapText, ok:t.ok,    go:null}),
+  safe: t=>({icon:t.safeIcon, title:t.safeTitle, text:t.safeText, ok:t.ok,    go:null}),
+  won:  t=>({icon:t.wonIcon,  title:t.wonTitle,  text:t.wonText,  ok:t.wonOk, go:'/champions'}),
+};
+function showMsg(type) {
+  const d = MSGS[type](T[lang]);
+  document.getElementById('msg-icon').textContent  = d.icon;
+  document.getElementById('msg-title').textContent = d.title;
+  document.getElementById('msg-text').textContent  = d.text;
+  document.getElementById('msg-ok').textContent    = d.ok;
+  wonPending = !!d.go;
+  document.getElementById('msg-ov').classList.add('show');
+}
+function dismissMsg() {
+  document.getElementById('msg-ov').classList.remove('show');
+  if (wonPending) { wonPending=false; window.location.href='/champions'; }
+  updateFloor();
+}
+
+// ═══════════════════════════════════════════════════════════
+// LANG
+// ═══════════════════════════════════════════════════════════
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l;
+  document.cookie = `cq_lang=${l};path=/`;
+  questions = [];
+  fetch(`/champions/${l}.json`).then(r=>r.json()).then(data=>{
+    for(const cat of Object.values(data))
+      for(const q of cat.questions) questions.push(q);
+  }).catch(()=>{});
+  applyLang(); updateFloor();
+}
+function applyLang() {
+  const t = T[lang];
+  document.getElementById('hdr-title').textContent  = t.title;
+  document.getElementById('arch-label').textContent = t.arch;
+  document.getElementById('desc-text').textContent  = t.desc;
+  document.querySelectorAll('.lang-btn').forEach(b=>
+    b.classList.toggle('active', b.textContent.startsWith(lang.toUpperCase())));
+}
+
+// ═══════════════════════════════════════════════════════════
+// RESPONSIVE
+// ═══════════════════════════════════════════════════════════
+function sizeTiles() {
+  const gap=3, cols=7, pad=12;
+  const size=Math.floor((Math.min(window.innerWidth,500)-pad*2-gap*(cols-1))/cols);
+  const fl=document.getElementById('floor');
+  fl.style.cssText=`display:grid;grid-template-columns:repeat(${cols},${size}px);gap:${gap}px;`;
+  const iconSize = Math.floor(size*.4)+'px';
+  document.querySelectorAll('.tile').forEach(el=>{
+    el.style.width=size+'px'; el.style.height=size+'px';
+    // Tous les .tile-icon (reveal-content ET stone-glyph) reçoivent la même taille
+    el.querySelectorAll('.tile-icon, .char-icon').forEach(icon => {
+      icon.style.fontSize = iconSize;
+    });
+  });
+}
+window.addEventListener('resize', sizeTiles);
+
+// ── Clavier PC ──
+document.addEventListener('keydown', e => {
+  const map = { ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0] };
+  if (map[e.key]) { e.preventDefault(); tryMove(...map[e.key]); }
+  if (e.key==='Backspace') { e.preventDefault(); goBack(); }
+});
+
+// START
+init();
+</script>
+</body>
+</html>

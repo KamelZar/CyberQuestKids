@@ -68,9 +68,13 @@ def whitelist_ip(client_ip: str) -> None:
             import paramiko  # pip install paramiko
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            # GL.iNet (OpenWrt 18) n'offre que ssh-rsa (SHA-1 legacy).
+            # Paramiko moderne préfère rsa-sha2-256/512 → négociation échoue.
+            # On les désactive pour forcer le fallback sur ssh-rsa.
             ssh.connect(
                 ROUTER_IP, username='root', password=ROUTER_PASS,
-                timeout=5, look_for_keys=False, allow_agent=False
+                timeout=5, look_for_keys=False, allow_agent=False,
+                disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']}
             )
             # Idempotent : ajoute ACCEPT seulement si absent, en tête de chaîne
             check = f"iptables -C FORWARD -s {client_ip} -j ACCEPT 2>/dev/null"

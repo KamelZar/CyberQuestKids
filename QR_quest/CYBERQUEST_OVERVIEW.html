@@ -240,7 +240,7 @@
     <div class="doc-title">🛡️ CyberQuest — Vue d'ensemble du projet</div>
     <div class="doc-sub">Workshop cybersécurité · 11–15 ans · FR / NL / EN · Sessions multi-groupes</div>
   </div>
-  <div class="doc-badge">v2.0 — En développement</div>
+  <div class="doc-badge">v2.1 — En développement</div>
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -265,11 +265,12 @@
 
   <div class="flow-step">
     <div class="flow-num">2</div>
-    <div class="flow-title">Captive Portal</div>
+    <div class="flow-title">Captive Portal NexaPlay</div>
     <div class="flow-desc">
-      Choix de la langue (FR/NL/EN).<br>
-      Faux portail : Google / Apple / Facebook / Instagram.<br>
-      Peu importe le bouton → Gotcha.
+      Faux portail WiFi "NexaPlay".<br>
+      Langue détectée auto (FR/NL/EN).<br>
+      Soumet login <em>ou</em> signup → overlay gotcha trilingue.<br>
+      Clique CGU → "Bravo bon réflexe" → /init.
     </div>
     <span class="flow-tag tag-orange">PHISHING PÉDAGOGIQUE</span>
   </div>
@@ -278,10 +279,11 @@
     <div class="flow-num">3</div>
     <div class="flow-title">Page Gotcha</div>
     <div class="flow-desc">
-      Affiche ce qui a été collecté : OS, navigateur, langue, IP, heure.<br>
+      <em>À développer</em> — page dédiée <code>/gotcha</code><br>
+      Affichera : OS, navigateur, IP, langue, heure collectés passivement.<br>
       <em>"Tu es au bon endroit... :-)"</em>
     </div>
-    <span class="flow-tag tag-red">RÉVÉLATION</span>
+    <span class="flow-tag tag-red">❌ À FAIRE</span>
   </div>
 
   <div class="flow-step">
@@ -299,10 +301,11 @@
     <div class="flow-num">5</div>
     <div class="flow-title">Théorie + Démarrage</div>
     <div class="flow-desc">
-      Page d'attente jusqu'au signal animateur.<br>
+      <em>À développer</em> — page <code>/workshop</code><br>
+      Attente jusqu'au signal animateur (dashboard).<br>
       Bouton "Ouvrir le workshop" → tout s'ouvre simultanément.
     </div>
-    <span class="flow-tag tag-blue">VERROU ANIMATEUR</span>
+    <span class="flow-tag tag-red">❌ À FAIRE</span>
   </div>
 
   <div class="flow-step">
@@ -319,11 +322,11 @@
     <div class="flow-num">7</div>
     <div class="flow-title">Clôture</div>
     <div class="flow-desc">
-      Page projetée devant le groupe.<br>
-      Bilan réseau : temps connecté, pages vues, actions.<br>
+      <em>À développer</em> — page <code>/closing</code><br>
+      Projetée devant le groupe. Bilan réseau : temps connecté, pages vues, actions.<br>
       <em>"Tu n'es pas invisible."</em>
     </div>
-    <span class="flow-tag tag-orange">LEÇON FINALE</span>
+    <span class="flow-tag tag-red">❌ À FAIRE</span>
   </div>
 
 </div>
@@ -341,13 +344,18 @@
     </div>
     <ul class="todo-list">
       <li>
-        <div class="todo-box"></div>
-        <span class="todo-label"><strong>Captive portal</strong> — langue + faux portail</span>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Captive portal NexaPlay</strong> — login + signup, gotcha overlay, terms-click, sondes OS (iOS/Android/Windows)</span>
+        <span class="todo-prio prio-1">P1</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Pages phishing exercice</strong> — Roblox / Instagram / Google / TikTok + module <code>_phishing.js</code> partagé</span>
         <span class="todo-prio prio-1">P1</span>
       </li>
       <li>
         <div class="todo-box"></div>
-        <span class="todo-label"><strong>Page Gotcha</strong> — données collectées</span>
+        <span class="todo-label"><strong>Page Gotcha autonome</strong> — page dédiée affichant OS, navigateur, IP, heure (<code>/gotcha</code>)</span>
         <span class="todo-prio prio-1">P1</span>
       </li>
       <li>
@@ -366,13 +374,33 @@
         <span class="todo-prio prio-1">P1</span>
       </li>
       <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Jeu Champions</strong> — lobby multi-équipes, compte à rebours, scores, leaderboard (<code>/champions</code>)</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Password Check</strong> — outil pédagogique SHA-256, dictionnaire + mutations + brute force, SSE streaming (<code>/password-check</code>)</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Le Chemin</strong> — hub de navigation sol LED 7×7 style Indiana Jones, 3 templates aléatoires par équipe, bifurcations + questions champions, pièges phishing, arche Champions (<code>/chemin</code>)</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
         <div class="todo-box"></div>
-        <span class="todo-label"><strong>Verrou d'activation</strong> — bouton dashboard</span>
+        <span class="todo-label"><strong>Verrou d'activation</strong> — bouton dashboard → débloque <code>/workshop</code> pour tous</span>
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
         <div class="todo-box done"></div>
         <span class="todo-label"><strong>IP dynamique</strong> dans server.py — get_local_ip()</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box"></div>
+        <span class="todo-label"><strong>Page Workshop</strong> — page d'attente + démarrage simultané (<code>/workshop</code>)</span>
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
@@ -387,7 +415,7 @@
       </li>
       <li>
         <div class="todo-box"></div>
-        <span class="todo-label"><strong>Page de clôture</strong> — bilan à projeter</span>
+        <span class="todo-label"><strong>Page de clôture</strong> — bilan à projeter (<code>/closing</code>) : temps connectés, pages vues, actions</span>
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
@@ -503,17 +531,55 @@
 
       <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">ROUTES CLÉS</div>
       <div style="font-size:9px; font-family:'Courier New',monospace; line-height:1.8; background:#fff; border:1px solid var(--border); border-radius:6px; padding:6px 8px;">
-        GET  /                      → captive portal<br>
-        GET  /gotcha                → page gotcha<br>
-        GET  /team-select           → choix équipe<br>
-        GET  /teams/available       → noms libres (poll)<br>
-        POST /teams/register        → enregistrer équipe<br>
-        GET  /workshop              → page d'attente<br>
-        GET  /cyberquest/id/exo/st  → tracking pixel<br>
-        GET  /dashboard             → animateur live<br>
-        GET  /dashboard/data        → JSON events<br>
-        POST /dashboard/reset       → reset session<br>
-        GET  /closing               → bilan final
+        <span style="color:#007744;font-weight:700;">— Entrée &amp; captive portal —</span><br>
+        GET  /                        → redirect /init<br>
+        GET  /init                    → leçon cookie → team-select<br>
+        GET  /captive                 → redirect /phishing/login?portal=1<br>
+        GET  /hotspot-detect.html     → sonde iOS/macOS → /captive<br>
+        GET  /generate_204            → sonde Android → /captive<br>
+        GET  /connecttest.txt         → sonde Windows → /captive<br>
+        <span style="color:#cc2244;font-weight:700;">— Phishing pédagogique —</span><br>
+        GET  /phishing/login          → NexaPlay login (captive portal)<br>
+        GET  /phishing/signup         → NexaPlay signup<br>
+        POST /phishing/catch          → stocke victim anonymisé<br>
+        POST /phishing/terms-click    → stocke "bon réflexe"<br>
+        GET  /phishing/roblox         → faux login Roblox<br>
+        GET  /phishing/instagram      → faux login Instagram<br>
+        GET  /phishing/google         → faux login Google<br>
+        GET  /phishing/tiktok         → faux login TikTok<br>
+        <span style="color:#6633aa;font-weight:700;">— Équipes —</span><br>
+        GET  /team-select             → carrousel choix équipe<br>
+        GET  /teams/available         → noms pris (poll)<br>
+        POST /teams/register          → enregistrer équipe<br>
+        POST /teams/reset             → reset équipes seul<br>
+        GET  /avatar/&lt;id&gt;             → image avatar manga<br>
+        GET  /photos/&lt;filename&gt;       → photo "Vous"<br>
+        <span style="color:#007777;font-weight:700;">— Dashboard —</span><br>
+        GET  /dashboard               → animateur live<br>
+        GET  /dashboard/data          → JSON teams + events<br>
+        POST /dashboard/reset         → reset complet session<br>
+        <span style="color:#1a5fb4;font-weight:700;">— Champions —</span><br>
+        GET  /champions               → jeu Champions<br>
+        GET  /champions/scores        → leaderboard JSON<br>
+        POST /champions/score         → soumettre score<br>
+        POST /champions/scores/reset  → reset scores<br>
+        GET  /champions/lobby/state   → état lobby (poll)<br>
+        POST /champions/lobby/heartbeat → présence équipe<br>
+        POST /champions/lobby/start   → lancer countdown<br>
+        POST /champions/lobby/done    → fin de partie<br>
+        <span style="color:#cc8800;font-weight:700;">— Password Check —</span><br>
+        GET  /password-check          → outil mot de passe<br>
+        POST /password-check/start    → lance analyse (SHA-256)<br>
+        GET  /password-check/&lt;id&gt;/stream → SSE résultats live<br>
+        <span style="color:#007744;font-weight:700;">— Chemin —</span><br>
+        GET  /chemin                  → hub navigation sol LED<br>
+        <span style="color:#6c757d;font-weight:700;">— Tracking &amp; utilitaires —</span><br>
+        GET  /cyberquest/id/exo/st    → pixel tracking GIF<br>
+        GET  /api/server-url          → URL LAN dynamique<br>
+        GET  /init-poster             → affiche QR animateur<br>
+        <span style="color:#cc2244;">❌ GET  /gotcha                → page gotcha (à faire)</span><br>
+        <span style="color:#cc2244;">❌ GET  /workshop              → verrou animateur (à faire)</span><br>
+        <span style="color:#cc2244;">❌ GET  /closing               → bilan clôture (à faire)</span>
       </div>
 
       <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">SÉCURITÉ</div>
@@ -615,6 +681,85 @@
     </div>
 
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     OPTIONNEL — Notification "net send" moderne
+═══════════════════════════════════════════ -->
+<div class="section" style="margin-bottom:12px; border-color:#6633aa;">
+  <div class="section-title">
+    <div class="dot" style="background:#6633aa; border-radius:50%;"></div>
+    OPTIONNEL — "Net Send" moderne : notification push vers tous les téléphones
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+
+    <!-- Contexte -->
+    <div>
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Contexte</div>
+      <div style="font-size:10px; line-height:1.6; color:var(--text);">
+        Windows XP avait <code>net send *</code> (protocole NetBIOS) : un message s'imposait en popup modale sur toutes les machines du réseau.<br><br>
+        Désactivé depuis XP SP2 (2004) — spammeurs. Ne parle qu'aux machines Windows de toute façon.<br><br>
+        <strong>Équivalent moderne :</strong> SSE (Server-Sent Events) + overlay plein écran dans le navigateur. Même effet visuel, même réaction "imposée", mais sur les téléphones.
+      </div>
+    </div>
+
+    <!-- Mécanique -->
+    <div>
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Mécanique</div>
+      <div style="font-size:9px; font-family:'Courier New',monospace; line-height:1.9; background:#fff; border:1px solid var(--border); border-radius:6px; padding:6px 8px;">
+        <span style="color:#007777;">── Serveur Flask ──</span><br>
+        GET  /workshop/state<br>
+        &nbsp;&nbsp;→ { "open": false }<br><br>
+        POST /workshop/open  <span style="color:#6c757d;">(dashboard)</span><br>
+        &nbsp;&nbsp;→ flag in-memory = true<br><br>
+        <span style="color:#007777;">── Téléphones ──</span><br>
+        poll /workshop/state (1s)<br>
+        <span style="color:#6c757d;">ou SSE /workshop/stream</span><br><br>
+        open == true →<br>
+        &nbsp;&nbsp;vibrate + son + overlay<br>
+        &nbsp;&nbsp;→ redirect /champions
+      </div>
+    </div>
+
+    <!-- Effets côté téléphone -->
+    <div>
+      <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Effets côté téléphone</div>
+      <div style="font-size:10px; line-height:1.8; color:var(--text);">
+        <span style="color:#007744;">✅</span> <code>navigator.vibrate([200,100,200])</code><br>
+        <span style="color:#6c757d; font-size:9px;">Android Chrome — aucune permission requise</span><br><br>
+        <span style="color:#007744;">✅</span> Son d'alerte (<code>/mp3/intro.mp3</code>)<br>
+        <span style="color:#6c757d; font-size:9px;">Autorisé si l'utilisateur a déjà interagi</span><br><br>
+        <span style="color:#007744;">✅</span> Overlay plein écran animé<br>
+        <span style="color:#6c757d; font-size:9px;">"Le quiz commence !" — impossible à rater</span><br><br>
+        <span style="color:#cc2244;">❌</span> Notification OS (tiroir)<br>
+        <span style="color:#6c757d; font-size:9px;">Nécessite HTTPS + internet (Push API) — impossible en réseau local</span>
+      </div>
+      <div style="margin-top:8px; padding:6px 8px; border-radius:6px; background:#f0fffe; border:1px solid #b2dfdb; font-size:9px; color:#00695c; line-height:1.5;">
+        💡 <strong>Condition :</strong> la page <code>/workshop</code> doit être ouverte dans le navigateur. Si le téléphone est verrouillé → pas de vibration. En pratique les participants ont leur écran allumé pendant la session.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Flow visuel -->
+  <div style="margin-top:10px; border-top:1px solid var(--border); padding-top:8px;">
+    <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Flow animateur → téléphones</div>
+    <div style="display:flex; align-items:center; gap:6px; font-size:9px; font-family:'Courier New',monospace; flex-wrap:wrap;">
+      <span style="background:#e2d9f3;color:#432874;padding:3px 8px;border-radius:4px;font-weight:700;">Dashboard</span>
+      <span style="color:var(--accent);">▶</span>
+      <span style="background:#f8f9fa;border:1px solid var(--border);padding:3px 8px;border-radius:4px;">POST /workshop/open</span>
+      <span style="color:var(--accent);">▶</span>
+      <span style="background:#f8f9fa;border:1px solid var(--border);padding:3px 8px;border-radius:4px;">flag = true (mémoire)</span>
+      <span style="color:var(--accent);">▶</span>
+      <span style="background:#f8f9fa;border:1px solid var(--border);padding:3px 8px;border-radius:4px;">poll ou SSE détecte</span>
+      <span style="color:var(--accent);">▶</span>
+      <span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:4px;font-weight:700;">📳 vibrate + 🔊 son + overlay</span>
+      <span style="color:var(--accent);">▶</span>
+      <span style="background:#cce5ff;color:#004085;padding:3px 8px;border-radius:4px;font-weight:700;">→ /champions</span>
+    </div>
+  </div>
+
 </div>
 
 <!-- Footer -->

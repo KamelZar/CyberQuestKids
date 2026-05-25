@@ -360,6 +360,11 @@ def serve_image(filename):
 def team_select_page():
     return send_from_directory(str(HTML_DIR), 'team-select.html')
 
+@app.route('/chemin')
+def chemin_page():
+    """Hub de navigation — sol LED style Indiana Jones."""
+    return send_from_directory(str(HTML_DIR), 'chemin.html')
+
 @app.route('/photos/<filename>')
 def serve_photo(filename):
     """Sert les photos 'Vous' uploadées pendant la session."""

@@ -44,6 +44,16 @@ except AttributeError:
 ROUTER_IP = os.environ.get('ROUTER_IP', '192.168.8.1')
 SSH_KEY   = BASE_DIR / '.ssh' / 'cyberquest_key'   # générée par setup_router.bat
 
+
+def _get_local_ip() -> str:
+    """Détecte l'IP locale sur le même réseau que le routeur (sans connexion réelle)."""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect((ROUTER_IP, 80))
+            return s.getsockname()[0]
+    except Exception:
+        return '192.168.8.100'
+
 # IPs ayant complété le captive portal (session en cours, remis à zéro au redémarrage)
 _whitelisted_ips: set = set()
 _whitelist_lock = threading.Lock()
@@ -387,6 +397,64 @@ def dashboard_reset():
         for f in PHOTOS_DIR.glob('*.jpg'):
             f.unlink(missing_ok=True)
     return jsonify({'ok': True})
+
+def _ssh_router(cmd: str):
+    """Helper SSH vers le routeur — retourne (ok, stderr)."""
+    key = str(SSH_KEY)
+    if not SSH_KEY.exists():
+        return False, f'Clé SSH introuvable : {key}. Lance setup_router.bat.'
+    try:
+        result = subprocess.run(
+            [
+                'ssh',
+                '-i', key,
+                '-o', 'HostKeyAlgorithms=+ssh-rsa',
+                '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+                '-o', 'StrictHostKeyChecking=no',
+                '-o', 'ConnectTimeout=5',
+                '-o', 'BatchMode=yes',
+                f'root@{ROUTER_IP}',
+                cmd
+            ],
+            capture_output=True, timeout=10, text=True
+        )
+        return result.returncode == 0, result.stderr.strip()
+    except Exception as e:
+        return False, str(e)
+
+
+@app.route('/admin/forward', methods=['POST'])
+def admin_forward():
+    """Réactive le FORWARD DROP — captive portal remis en place."""
+    flask_ip = _get_local_ip()
+    check_accept = f"iptables -C FORWARD -i br-lan -d {flask_ip} -j ACCEPT 2>/dev/null"
+    check_drop   = f"iptables -C FORWARD -i br-lan -j DROP 2>/dev/null"
+    rule_accept  = f"iptables -I FORWARD 5 -i br-lan -d {flask_ip} -j ACCEPT"
+    rule_drop    = f"iptables -A FORWARD -i br-lan -j DROP"
+    cmd = f"{check_accept} || {rule_accept} ; {check_drop} || {rule_drop}"
+    ok, err = _ssh_router(cmd)
+    if ok:
+        # Vider la whitelist locale — les appareils devront repasser par le captive portal
+        with _whitelist_lock:
+            _whitelisted_ips.clear()
+        print("[FORWARD] Captive portal réactivé — whitelist vidée")
+        return jsonify({'ok': True})
+    print(f"[FORWARD] SSH échoué : {err}")
+    return jsonify({'ok': False, 'error': err})
+
+
+@app.route('/admin/passthrough', methods=['POST'])
+def admin_passthrough():
+    """
+    Supprime le FORWARD DROP → internet rétabli pour tous les participants.
+    Le DNS log (dnsmasq) reste actif → les sites visités continuent d'être tracés.
+    """
+    ok, err = _ssh_router('iptables -D FORWARD -i br-lan -j DROP 2>/dev/null || true')
+    if ok:
+        print("[PASSTHROUGH] Internet débloqué pour tous les participants")
+        return jsonify({'ok': True})
+    print(f"[PASSTHROUGH] SSH échoué : {err}")
+    return jsonify({'ok': False, 'error': err})
 
 # ── Pages HTML ────────────────────────────────────────────────────────
 @app.route('/')

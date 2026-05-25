@@ -74,6 +74,9 @@
     .btn-action.blue:hover  { background: rgba(68,138,255,0.12); }
     .btn-action.yel   { border: 1px solid var(--yellow);  color: var(--yellow); }
     .btn-action.yel:hover   { background: rgba(255,204,0,0.12); }
+    .btn-action.grn   { border: 1px solid var(--green);   color: var(--green); }
+    .btn-action.grn:hover   { background: rgba(0,230,118,0.12); }
+    .btn-action.grn[disabled] { opacity: 0.45; cursor: default; pointer-events: none; }
 
     /* ── Champions section ── */
     .champ-section {
@@ -277,6 +280,8 @@
     </div>
     <div class="hdr-right">
       <span class="last-update" id="last-update">—</span>
+      <button class="btn-action grn" id="btn-passthrough" onclick="passthrough()">🌐 INTERNET</button>
+      <button class="btn-action yel" id="btn-forward"     onclick="forward()">🔒 CAPTIVE</button>
       <button class="btn-action blue" onclick="resetTeams()">🧹 ÉQUIPES</button>
       <button class="btn-action yel"  onclick="resetScores()">🏆 SCORES</button>
       <button class="btn-reset"       onclick="resetData()">⚠️ RESET TOUT</button>
@@ -584,6 +589,53 @@
       if (!confirm('Effacer les scores Champions ?\n(Les équipes et événements sont conservés.)')) return;
       fetch('/champions/scores/reset', { method: 'POST' })
         .then(function() { pollChampions(); });
+    }
+
+    function forward() {
+      if (!confirm('Réactiver le captive portal ?\nInternet sera coupé pour tous les participants non encore whitelistés.')) return;
+      var btn = document.getElementById('btn-forward');
+      btn.textContent = '⏳ EN COURS…';
+      btn.disabled = true;
+      fetch('/admin/forward', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.ok) {
+            btn.textContent = '🔒 CAPTIVE';
+            btn.disabled = false;
+            document.getElementById('btn-passthrough').textContent = '🌐 INTERNET';
+            document.getElementById('btn-passthrough').disabled = false;
+          } else {
+            btn.textContent = '❌ ERREUR';
+            btn.disabled = false;
+            alert('Erreur : ' + (data.error || 'inconnue'));
+          }
+        })
+        .catch(function() {
+          btn.textContent = '❌ ERREUR';
+          btn.disabled = false;
+        });
+    }
+
+    function passthrough() {
+      if (!confirm('Débloquer internet pour tous les participants ?\nLe DNS log reste actif — les sites visités restent tracés.')) return;
+      var btn = document.getElementById('btn-passthrough');
+      btn.textContent = '⏳ EN COURS…';
+      btn.disabled = true;
+      fetch('/admin/passthrough', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.ok) {
+            btn.textContent = '✅ INTERNET ON';
+          } else {
+            btn.textContent = '❌ ERREUR';
+            btn.disabled = false;
+            alert('Erreur : ' + (data.error || 'inconnue'));
+          }
+        })
+        .catch(function() {
+          btn.textContent = '❌ ERREUR';
+          btn.disabled = false;
+        });
     }
 
     /* ── Champions polling ─────────────────────────────────────── */

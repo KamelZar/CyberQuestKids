@@ -96,7 +96,8 @@ if errorlevel 1 (
 
 REM Démarrage Flask en arrière-plan
 echo 🚀 Démarrage du serveur Flask sur le port %PORT%...
-start /B python "%SCRIPT_DIR%server.py"
+cd /d "%SCRIPT_DIR%"
+start /B python server.py 2>"%SCRIPT_DIR%flask_error.log"
 
 REM Récupération du PID via PowerShell (fiable, sans dépendance au titre de fenêtre)
 timeout /t 1 /nobreak >nul

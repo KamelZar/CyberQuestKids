@@ -36,7 +36,7 @@ PHOTOS_DIR     = BASE_DIR / "photos"                # photos "Vous" uploadées
 try:
     PORT = 80 if os.geteuid() == 0 else 8080   # Unix : 80 si root, 8080 sinon
 except AttributeError:
-    PORT = 80   # Windows : port 80 direct (pas de restriction root sur Windows)
+    PORT = 8080  # Windows : http.sys réserve le port 80, on utilise 8080
 
 # ── App ───────────────────────────────────────────────────────────────
 app = Flask(__name__, static_folder=str(HTML_DIR))

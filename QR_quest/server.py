@@ -17,6 +17,7 @@ import queue as _queue
 import re
 import socket
 import string
+import subprocess
 import sys
 import threading
 import uuid

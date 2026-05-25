@@ -129,7 +129,7 @@ function Invoke-SshKeySetup {
         -o PubkeyAcceptedKeyTypes=+ssh-rsa `
         -o StrictHostKeyChecking=no `
         "root@$RouterIP" `
-        "mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo '$pubKey' >> /root/.ssh/authorized_keys && sort -u /root/.ssh/authorized_keys -o /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys && echo DEPLOYED"
+        "mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo '$pubKey' >> /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys && mkdir -p /etc/dropbear && echo '$pubKey' >> /etc/dropbear/authorized_keys && chmod 600 /etc/dropbear/authorized_keys && echo DEPLOYED"
 
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Déploiement de la clé échoué"

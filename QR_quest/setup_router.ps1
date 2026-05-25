@@ -16,10 +16,12 @@ param(
     [int]   $FlaskPort = 8080
 )
 
-# ── Fichier de log ────────────────────────────────────────────────────────────
+# ── Fichier de log + clé SSH ──────────────────────────────────────────────────
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $LogFile   = Join-Path $scriptDir "setup_router.log"
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$SshDir    = Join-Path $scriptDir ".ssh"
+$KeyFile   = Join-Path $SshDir "cyberquest_key"
 
 function Write-Log ($msg) {
     $line = "[$(Get-Date -Format 'HH:mm:ss')] $msg"
@@ -52,10 +54,18 @@ function Invoke-RouterCmd {
     Write-Out "-> $Label"
     Write-Log "   CMD: $Cmd"
 
-    $output = & ssh -o HostKeyAlgorithms=+ssh-rsa `
-                    -o PubkeyAcceptedKeyTypes=+ssh-rsa `
-                    -o StrictHostKeyChecking=no `
-                    "root@$RouterIP" $Cmd 2>&1
+    # Utilise la clé SSH si disponible, sinon auth par mot de passe interactif
+    $sshArgs = @(
+        '-o', 'HostKeyAlgorithms=+ssh-rsa',
+        '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+        '-o', 'StrictHostKeyChecking=no'
+    )
+    if (Test-Path $KeyFile) {
+        $sshArgs += @('-i', $KeyFile, '-o', 'BatchMode=yes')
+    }
+    $sshArgs += @("root@$RouterIP", $Cmd)
+
+    $output = & ssh @sshArgs 2>&1
 
     foreach ($line in $output) { Write-Out "   $line" }
 
@@ -67,6 +77,67 @@ function Invoke-RouterCmd {
     return $output
 }
 
+# ── Générer la clé SSH et la déployer sur le routeur (une seule fois) ──────────
+function Invoke-SshKeySetup {
+    Write-Step "Clé SSH CyberQuest"
+
+    # Créer le dossier .ssh s'il n'existe pas
+    if (-not (Test-Path $SshDir)) {
+        New-Item -ItemType Directory -Path $SshDir | Out-Null
+    }
+
+    # Générer la paire de clés si absente
+    if (-not (Test-Path $KeyFile)) {
+        Write-Out "-> Génération de la paire de clés RSA..."
+        & ssh-keygen -t rsa -b 2048 -f $KeyFile -N '""' -q
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail "ssh-keygen a échoué"
+            exit 1
+        }
+        Write-OK "Clé générée : $KeyFile"
+    } else {
+        Write-OK "Clé existante réutilisée : $KeyFile"
+    }
+
+    # Vérifier si la clé est déjà sur le routeur
+    $pubKey = Get-Content "$KeyFile.pub" -Raw
+    $pubKey = $pubKey.Trim()
+
+    $testResult = & ssh `
+        -o HostKeyAlgorithms=+ssh-rsa `
+        -o PubkeyAcceptedKeyTypes=+ssh-rsa `
+        -o StrictHostKeyChecking=no `
+        -o BatchMode=yes `
+        -i $KeyFile `
+        "root@$RouterIP" "echo OK" 2>&1
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-OK "Clé déjà déployée sur le routeur — mot de passe non nécessaire"
+        return
+    }
+
+    # Déployer la clé publique — SSH demande le mot de passe UNE SEULE FOIS
+    Write-Out ""
+    Write-Host "    ┌─────────────────────────────────────────────────────┐" -ForegroundColor Yellow
+    Write-Host "    │  Entrez le mot de passe root du routeur GL.iNet     │" -ForegroundColor Yellow
+    Write-Host "    │  (une seule fois — plus jamais demandé ensuite)     │" -ForegroundColor Yellow
+    Write-Host "    └─────────────────────────────────────────────────────┘" -ForegroundColor Yellow
+    Write-Out ""
+
+    & ssh `
+        -o HostKeyAlgorithms=+ssh-rsa `
+        -o PubkeyAcceptedKeyTypes=+ssh-rsa `
+        -o StrictHostKeyChecking=no `
+        "root@$RouterIP" `
+        "mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo '$pubKey' >> /root/.ssh/authorized_keys && sort -u /root/.ssh/authorized_keys -o /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys && echo DEPLOYED"
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Déploiement de la clé échoué"
+        exit 1
+    }
+    Write-OK "Clé publique déployée sur le routeur — plus jamais de mot de passe"
+}
+
 # =============================================================================
 # ÉTAPES COMMUNES — prérequis + détection IP + SSH
 # =============================================================================
@@ -74,6 +145,10 @@ function Invoke-CommonInit {
     Write-Step "Vérification des prérequis"
     if (-not (Get-Command ssh -ErrorAction SilentlyContinue)) {
         Write-Fail "ssh introuvable. Active OpenSSH dans Paramètres → Applications → Fonctionnalités facultatives."
+        exit 1
+    }
+    if (-not (Get-Command ssh-keygen -ErrorAction SilentlyContinue)) {
+        Write-Fail "ssh-keygen introuvable. Active OpenSSH dans Paramètres → Applications → Fonctionnalités facultatives."
         exit 1
     }
     Write-OK "OpenSSH client disponible"
@@ -86,6 +161,8 @@ function Invoke-CommonInit {
     }
     Write-OK "IP Flask : $($script:FlaskIP)  (port $FlaskPort)"
     Write-Log "FlaskIP détectée : $($script:FlaskIP)"
+
+    Invoke-SshKeySetup
 
     Write-Step "Test de la connexion SSH vers le routeur ($RouterIP)"
     $sshTest = & ssh -o HostKeyAlgorithms=+ssh-rsa `

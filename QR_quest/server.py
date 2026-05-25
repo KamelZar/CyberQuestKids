@@ -39,10 +39,9 @@ except AttributeError:
     PORT = 8080  # Windows : http.sys réserve le port 80, on utilise 8080
 
 # ── Config routeur (captive portal whitelist) ─────────────────────────
-# Surchargeables via variables d'environnement :
-#   set ROUTER_IP=192.168.8.1 && set ROUTER_PASS=monmotdepasse
-ROUTER_IP   = os.environ.get('ROUTER_IP',   '192.168.8.1')
-ROUTER_PASS = os.environ.get('ROUTER_PASS', 'goodlife')   # mot de passe root GL.iNet
+# ROUTER_IP surchargeable via variable d'environnement : set ROUTER_IP=192.168.8.1
+ROUTER_IP = os.environ.get('ROUTER_IP', '192.168.8.1')
+SSH_KEY   = BASE_DIR / '.ssh' / 'cyberquest_key'   # générée par setup_router.bat
 
 # IPs ayant complété le captive portal (session en cours, remis à zéro au redémarrage)
 _whitelisted_ips: set = set()
@@ -54,7 +53,7 @@ def whitelist_ip(client_ip: str) -> None:
     Débloque internet pour une IP après le gotcha (phishing réussi ou bon réflexe CGU).
 
     1. Mémorise l'IP → captive_probe() retournera Success → OS ferme le captive browser
-    2. SSH sur le routeur → iptables ACCEPT avant le DROP → internet rétabli
+    2. SSH sur le routeur via clé RSA → iptables ACCEPT avant le DROP → internet rétabli
 
     Le SSH tourne en thread daemon pour ne pas bloquer la réponse Flask.
     """
@@ -64,27 +63,33 @@ def whitelist_ip(client_ip: str) -> None:
         _whitelisted_ips.add(client_ip)
 
     def _do_ssh():
+        key = str(SSH_KEY)
+        if not SSH_KEY.exists():
+            print(f"[WHITELIST] ⚠️  Clé SSH introuvable : {key}")
+            print(f"[WHITELIST]    Lance setup_router.bat pour la générer")
+            return
         try:
-            import paramiko  # pip install paramiko
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            # GL.iNet (OpenWrt 18) n'offre que ssh-rsa (SHA-1 legacy).
-            # Paramiko moderne préfère rsa-sha2-256/512 → négociation échoue.
-            # On les désactive pour forcer le fallback sur ssh-rsa.
-            ssh.connect(
-                ROUTER_IP, username='root', password=ROUTER_PASS,
-                timeout=5, look_for_keys=False, allow_agent=False,
-                disabled_algorithms={'pubkeys': ['rsa-sha2-256', 'rsa-sha2-512']}
-            )
             # Idempotent : ajoute ACCEPT seulement si absent, en tête de chaîne
             check = f"iptables -C FORWARD -s {client_ip} -j ACCEPT 2>/dev/null"
             rule  = f"iptables -I FORWARD -s {client_ip} -j ACCEPT"
-            _, stdout, _ = ssh.exec_command(f"{check} || {rule}")
-            stdout.channel.recv_exit_status()
-            ssh.close()
-            print(f"[WHITELIST] ✅  {client_ip} → internet débloqué")
-        except ImportError:
-            print(f"[WHITELIST] ⚠️  paramiko non installé — pip install paramiko")
+            result = subprocess.run(
+                [
+                    'ssh',
+                    '-i', key,
+                    '-o', 'HostKeyAlgorithms=+ssh-rsa',
+                    '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+                    '-o', 'StrictHostKeyChecking=no',
+                    '-o', 'ConnectTimeout=5',
+                    '-o', 'BatchMode=yes',   # jamais de prompt mot de passe
+                    f'root@{ROUTER_IP}',
+                    f'{check} || {rule}'
+                ],
+                capture_output=True, timeout=10, text=True
+            )
+            if result.returncode == 0:
+                print(f"[WHITELIST] ✅  {client_ip} → internet débloqué")
+            else:
+                print(f"[WHITELIST] ⚠️  SSH code {result.returncode}: {result.stderr.strip()}")
         except Exception as e:
             print(f"[WHITELIST] ⚠️  SSH échoué pour {client_ip}: {e}")
 

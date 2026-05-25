@@ -38,6 +38,54 @@ try:
 except AttributeError:
     PORT = 8080  # Windows : http.sys réserve le port 80, on utilise 8080
 
+# ── Config routeur (captive portal whitelist) ─────────────────────────
+# Surchargeables via variables d'environnement :
+#   set ROUTER_IP=192.168.8.1 && set ROUTER_PASS=monmotdepasse
+ROUTER_IP   = os.environ.get('ROUTER_IP',   '192.168.8.1')
+ROUTER_PASS = os.environ.get('ROUTER_PASS', 'goodlife')   # mot de passe root GL.iNet
+
+# IPs ayant complété le captive portal (session en cours, remis à zéro au redémarrage)
+_whitelisted_ips: set = set()
+_whitelist_lock = threading.Lock()
+
+
+def whitelist_ip(client_ip: str) -> None:
+    """
+    Débloque internet pour une IP après le gotcha (phishing réussi ou bon réflexe CGU).
+
+    1. Mémorise l'IP → captive_probe() retournera Success → OS ferme le captive browser
+    2. SSH sur le routeur → iptables ACCEPT avant le DROP → internet rétabli
+
+    Le SSH tourne en thread daemon pour ne pas bloquer la réponse Flask.
+    """
+    with _whitelist_lock:
+        if client_ip in _whitelisted_ips:
+            return  # déjà whitelisté, rien à faire
+        _whitelisted_ips.add(client_ip)
+
+    def _do_ssh():
+        try:
+            import paramiko  # pip install paramiko
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(
+                ROUTER_IP, username='root', password=ROUTER_PASS,
+                timeout=5, look_for_keys=False, allow_agent=False
+            )
+            # Idempotent : ajoute ACCEPT seulement si absent, en tête de chaîne
+            check = f"iptables -C FORWARD -s {client_ip} -j ACCEPT 2>/dev/null"
+            rule  = f"iptables -I FORWARD -s {client_ip} -j ACCEPT"
+            _, stdout, _ = ssh.exec_command(f"{check} || {rule}")
+            stdout.channel.recv_exit_status()
+            ssh.close()
+            print(f"[WHITELIST] ✅  {client_ip} → internet débloqué")
+        except ImportError:
+            print(f"[WHITELIST] ⚠️  paramiko non installé — pip install paramiko")
+        except Exception as e:
+            print(f"[WHITELIST] ⚠️  SSH échoué pour {client_ip}: {e}")
+
+    threading.Thread(target=_do_ssh, daemon=True).start()
+
 # ── App ───────────────────────────────────────────────────────────────
 app = Flask(__name__, static_folder=str(HTML_DIR))
 app.config['JSON_SORT_KEYS'] = False
@@ -1171,6 +1219,9 @@ def phishing_catch():
     append_event(event)
     print(f"[PHISH] {source:<12} | {anon_email(email):<25} | pw_len={pw_len}")
 
+    # Gotcha affiché → débloquer internet pour cet appareil
+    whitelist_ip(request.remote_addr)
+
     resp = jsonify({'ok': True})
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Cache-Control'] = 'no-store'
@@ -1192,6 +1243,9 @@ def phishing_terms_click():
     }
     append_event(event)
     print(f"[TERMS] ✅ bon réflexe — {request.remote_addr} ({lang})")
+
+    # Gotcha affiché (bon réflexe) → débloquer internet pour cet appareil
+    whitelist_ip(request.remote_addr)
 
     resp = jsonify({'ok': True})
     resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -1215,7 +1269,14 @@ def captive_portal():
 @app.route('/ncsi.txt')                     # Windows NCSI
 @app.route('/redirect')                     # Android générique
 def captive_probe():
-    """Intercepte les sondes de détection captive portal des différents OS."""
+    """
+    Intercepte les sondes de détection captive portal des différents OS.
+    - IP non whitelistée → redirect /captive (portal pas encore fait)
+    - IP whitelistée     → réponse Success  (OS ferme le captive browser)
+    """
+    if request.remote_addr in _whitelisted_ips:
+        # Signale à l'OS que le captive portal est satisfait
+        return '<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>', 200
     return redirect('/captive', code=302)
 
 @app.route('/phishing/roblox')

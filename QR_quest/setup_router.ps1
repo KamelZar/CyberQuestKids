@@ -57,7 +57,7 @@ function Invoke-RouterCmd {
     # Utilise la clé SSH si disponible, sinon auth par mot de passe interactif
     $sshArgs = @(
         '-o', 'HostKeyAlgorithms=+ssh-rsa',
-        '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+        '-o', 'PubkeyAcceptedAlgorithms=+ssh-rsa',
         '-o', 'StrictHostKeyChecking=no'
     )
     if (Test-Path $KeyFile) {
@@ -105,7 +105,7 @@ function Invoke-SshKeySetup {
 
     $testResult = & ssh `
         -o HostKeyAlgorithms=+ssh-rsa `
-        -o PubkeyAcceptedKeyTypes=+ssh-rsa `
+        -o PubkeyAcceptedAlgorithms=+ssh-rsa `
         -o StrictHostKeyChecking=no `
         -o BatchMode=yes `
         -i $KeyFile `
@@ -126,7 +126,7 @@ function Invoke-SshKeySetup {
 
     & ssh `
         -o HostKeyAlgorithms=+ssh-rsa `
-        -o PubkeyAcceptedKeyTypes=+ssh-rsa `
+        -o PubkeyAcceptedAlgorithms=+ssh-rsa `
         -o StrictHostKeyChecking=no `
         "root@$RouterIP" `
         "mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo '$pubKey' >> /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys && mkdir -p /etc/dropbear && echo '$pubKey' >> /etc/dropbear/authorized_keys && chmod 600 /etc/dropbear/authorized_keys && echo DEPLOYED"
@@ -166,7 +166,7 @@ function Invoke-CommonInit {
 
     Write-Step "Test de la connexion SSH vers le routeur ($RouterIP)"
     $sshTest = & ssh -o HostKeyAlgorithms=+ssh-rsa `
-                     -o PubkeyAcceptedKeyTypes=+ssh-rsa `
+                     -o PubkeyAcceptedAlgorithms=+ssh-rsa `
                      -o StrictHostKeyChecking=no `
                      -o ConnectTimeout=5 `
                      "root@$RouterIP" "echo SSH_OK" 2>&1

@@ -63,8 +63,11 @@ def whitelist_ip(client_ip: str) -> None:
     """
     Débloque internet pour une IP après le gotcha (phishing réussi ou bon réflexe CGU).
 
-    1. Mémorise l'IP → captive_probe() retournera Success → OS ferme le captive browser
-    2. SSH sur le routeur via clé RSA → iptables ACCEPT avant le DROP → internet rétabli
+    Trois règles iptables ajoutées via SSH (toutes idempotentes) :
+      1. FORWARD ACCEPT     : laisse transiter les paquets vers internet
+      2. PREROUTING RETURN  : bypasse le DNAT 80/443 → Flask pour ce client
+      3. DNS DNAT 8.8.8.8   : redirige les requêtes DNS vers Google DNS
+                              (bypasse le wildcard dnsmasq qui retourne 192.168.8.100)
 
     Le SSH tourne en thread daemon pour ne pas bloquer la réponse Flask.
     """
@@ -77,28 +80,47 @@ def whitelist_ip(client_ip: str) -> None:
         key = str(SSH_KEY)
         if not SSH_KEY.exists():
             print(f"[WHITELIST] ⚠️  Clé SSH introuvable : {key}")
-            print(f"[WHITELIST]    Lance setup_router.bat pour la générer")
+            print(f"[WHITELIST]    Lance setup_router.sh (Mac) ou setup_router.bat (Windows)")
             return
         try:
-            # Idempotent : ajoute ACCEPT seulement si absent, en tête de chaîne
-            check = f"iptables -C FORWARD -s {client_ip} -j ACCEPT 2>/dev/null"
-            rule  = f"iptables -I FORWARD -s {client_ip} -j ACCEPT"
+            # 1. FORWARD ACCEPT — laisse passer les paquets vers internet
+            fwd_check = f"iptables -C FORWARD -s {client_ip} -j ACCEPT 2>/dev/null"
+            fwd_rule  = f"iptables -I FORWARD -s {client_ip} -j ACCEPT"
+
+            # 2. PREROUTING RETURN — bypasse DNAT 80/443 pour ce client
+            #    Sans ça, HTTP/HTTPS est toujours redirigé vers Flask même après FORWARD ACCEPT
+            nat_check = f"iptables -t nat -C PREROUTING -s {client_ip} -j RETURN 2>/dev/null"
+            nat_rule  = f"iptables -t nat -I PREROUTING -s {client_ip} -j RETURN"
+
+            # 3. DNS DNAT → 8.8.8.8 — bypasse le wildcard dnsmasq
+            #    Sans ça, DNS retourne toujours 192.168.8.100 pour tous les domaines
+            dns_check = (f"iptables -t nat -C PREROUTING -s {client_ip} -p udp "
+                         f"--dport 53 -j DNAT --to-destination 8.8.8.8:53 2>/dev/null")
+            dns_rule  = (f"iptables -t nat -I PREROUTING -s {client_ip} -p udp "
+                         f"--dport 53 -j DNAT --to-destination 8.8.8.8:53")
+
+            cmd = (
+                f"{fwd_check} || {fwd_rule} ; "
+                f"{nat_check} || {nat_rule} ; "
+                f"{dns_check} || {dns_rule}"
+            )
+
             result = subprocess.run(
                 [
                     'ssh',
                     '-i', key,
                     '-o', 'HostKeyAlgorithms=+ssh-rsa',
-                    '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+                    '-o', 'PubkeyAcceptedAlgorithms=+ssh-rsa',
                     '-o', 'StrictHostKeyChecking=no',
                     '-o', 'ConnectTimeout=5',
                     '-o', 'BatchMode=yes',   # jamais de prompt mot de passe
                     f'root@{ROUTER_IP}',
-                    f'{check} || {rule}'
+                    cmd
                 ],
                 capture_output=True, timeout=10, text=True
             )
             if result.returncode == 0:
-                print(f"[WHITELIST] ✅  {client_ip} → internet débloqué")
+                print(f"[WHITELIST] ✅  {client_ip} → internet débloqué (FORWARD + DNAT bypass + DNS)")
             else:
                 print(f"[WHITELIST] ⚠️  SSH code {result.returncode}: {result.stderr.strip()}")
         except Exception as e:
@@ -409,7 +431,7 @@ def _ssh_router(cmd: str):
                 'ssh',
                 '-i', key,
                 '-o', 'HostKeyAlgorithms=+ssh-rsa',
-                '-o', 'PubkeyAcceptedKeyTypes=+ssh-rsa',
+                '-o', 'PubkeyAcceptedAlgorithms=+ssh-rsa',
                 '-o', 'StrictHostKeyChecking=no',
                 '-o', 'ConnectTimeout=5',
                 '-o', 'BatchMode=yes',
@@ -425,19 +447,40 @@ def _ssh_router(cmd: str):
 
 @app.route('/admin/forward', methods=['POST'])
 def admin_forward():
-    """Réactive le FORWARD DROP — captive portal remis en place."""
+    """
+    Réactive le captive portal (FORWARD DROP).
+    Nettoie les 3 règles iptables posées par whitelist_ip() pour chaque appareil :
+      - FORWARD ACCEPT -s <ip>
+      - PREROUTING RETURN -s <ip>
+      - PREROUTING DNS DNAT -s <ip>
+    """
     flask_ip = _get_local_ip()
+
+    # Capturer + vider la whitelist avant le SSH (atomique)
+    with _whitelist_lock:
+        ips_to_clean = list(_whitelisted_ips)
+        _whitelisted_ips.clear()
+
+    cmds = []
+
+    # Supprimer les règles whitelist pour chaque IP précédemment débloquée
+    for ip in ips_to_clean:
+        cmds.append(f"iptables -D FORWARD -s {ip} -j ACCEPT 2>/dev/null || true")
+        cmds.append(f"iptables -t nat -D PREROUTING -s {ip} -j RETURN 2>/dev/null || true")
+        cmds.append(f"iptables -t nat -D PREROUTING -s {ip} -p udp --dport 53 "
+                    f"-j DNAT --to-destination 8.8.8.8:53 2>/dev/null || true")
+
+    # Réactiver FORWARD DROP (idempotent)
     check_accept = f"iptables -C FORWARD -i br-lan -d {flask_ip} -j ACCEPT 2>/dev/null"
     check_drop   = f"iptables -C FORWARD -i br-lan -j DROP 2>/dev/null"
     rule_accept  = f"iptables -I FORWARD 5 -i br-lan -d {flask_ip} -j ACCEPT"
     rule_drop    = f"iptables -A FORWARD -i br-lan -j DROP"
-    cmd = f"{check_accept} || {rule_accept} ; {check_drop} || {rule_drop}"
-    ok, err = _ssh_router(cmd)
+    cmds.append(f"{check_accept} || {rule_accept}")
+    cmds.append(f"{check_drop}   || {rule_drop}")
+
+    ok, err = _ssh_router(" ; ".join(cmds))
     if ok:
-        # Vider la whitelist locale — les appareils devront repasser par le captive portal
-        with _whitelist_lock:
-            _whitelisted_ips.clear()
-        print("[FORWARD] Captive portal réactivé — whitelist vidée")
+        print(f"[FORWARD] Captive portal réactivé — {len(ips_to_clean)} IP(s) nettoyée(s)")
         return jsonify({'ok': True})
     print(f"[FORWARD] SSH échoué : {err}")
     return jsonify({'ok': False, 'error': err})

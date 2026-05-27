@@ -49,7 +49,7 @@ Deux modules distincts :
   - iptables FORWARD DROP inséré à la position 5 (avant `zone_lan_forward` de fw3) → captive portal fonctionnel sur iOS
   - DNAT port 80 + 443 → 8080 (Android)
   - SSH key auth : `ssh-keygen -t rsa -b 2048`, déployé sur `/root/.ssh/authorized_keys` ET `/etc/dropbear/authorized_keys` — plus jamais de mot de passe
-- `server.py` : whitelist IP par appareil — après gotcha (`/phishing/catch` ou `/phishing/terms-click`), `whitelist_ip(client_ip)` → `iptables -I FORWARD -s <ip> -j ACCEPT` via SSH + internet débloqué par appareil ; sondes OS retournent `Success` pour les IPs whitelistées → popup iOS se ferme
+- `server.py` : whitelist IP par appareil — après gotcha, `whitelist_ip(client_ip)` pose 3 règles iptables via SSH : (1) `FORWARD ACCEPT -s <ip>`, (2) `PREROUTING RETURN -s <ip>` (bypass DNAT 80/443), (3) `PREROUTING DNS DNAT -s <ip> → 8.8.8.8:53` (bypass dnsmasq wildcard) ; sondes OS retournent `Success` → popup iOS se ferme
 - `server.py` : `_ssh_router()` helper SSH partagé (subprocess + clé RSA, `HostKeyAlgorithms=+ssh-rsa`)
 - `server.py` : `/admin/forward` (réactive FORWARD DROP + vide whitelist) et `/admin/passthrough` (supprime FORWARD DROP → internet global)
 - `setup_router.ps1` : modes `--setup` / `--forward` / `--passthrough` ; déploiement clé SSH avec mot de passe une seule fois (Dropbear `/etc/dropbear/authorized_keys`) ; UCI dnsmasq ; iptables position 5 ; encodage UTF-8 BOM

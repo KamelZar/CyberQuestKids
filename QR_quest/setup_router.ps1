@@ -89,7 +89,7 @@ function Invoke-SshKeySetup {
     # Générer la paire de clés si absente
     if (-not (Test-Path $KeyFile)) {
         Write-Out "-> Génération de la paire de clés RSA..."
-        & ssh-keygen -t rsa -b 2048 -f $KeyFile -N '""' -q
+        & ssh-keygen -t rsa -b 2048 -m PEM -f $KeyFile -N "" -q
         if ($LASTEXITCODE -ne 0) {
             Write-Fail "ssh-keygen a échoué"
             exit 1
@@ -186,18 +186,16 @@ function Invoke-Dnsmasq {
     Write-Step "Configuration dnsmasq — tout le DNS → $($script:FlaskIP)"
     Write-Out "Effet : google.com, apple.com, etc. résoudront tous vers $($script:FlaskIP)"
     Write-Out "        (l'accès à $RouterIP par IP directe n'est PAS affecté)"
+    Write-Out "Méthode : UCI (OpenWrt ne charge pas /etc/dnsmasq.d/ par défaut)"
+
+    # Supprime l'ancienne entrée si elle existe déjà (idempotent)
+    Invoke-RouterCmd `
+        "uci -q del_list dhcp.@dnsmasq[0].address='/#/$($script:FlaskIP)' 2>/dev/null; uci add_list dhcp.@dnsmasq[0].address='/#/$($script:FlaskIP)' && uci set dhcp.@dnsmasq[0].logqueries='1' && uci set dhcp.@dnsmasq[0].logfacility='/tmp/dnsmasq.log' && uci commit dhcp && /etc/init.d/dnsmasq restart && echo 'dnsmasq UCI configuré'" `
+        "UCI dnsmasq : wildcard DNS + log DNS → /tmp/dnsmasq.log"
 
     Invoke-RouterCmd `
-        "mkdir -p /etc/dnsmasq.d && printf 'address=/#/$($script:FlaskIP)\nlog-queries\nlog-facility=/tmp/dnsmasq.log\n' > /etc/dnsmasq.d/captive.conf && cat /etc/dnsmasq.d/captive.conf" `
-        "Écriture /etc/dnsmasq.d/captive.conf (DNS wildcard + query logging)"
-
-    Invoke-RouterCmd `
-        "/etc/init.d/dnsmasq restart && echo 'dnsmasq redémarré'" `
-        "Redémarrage dnsmasq"
-
-    Invoke-RouterCmd `
-        "nslookup google.com 127.0.0.1 2>/dev/null | grep -E 'Address|answer' || echo '(nslookup absent — règle active quand même)'" `
-        "Vérification DNS (google.com doit pointer vers $($script:FlaskIP))" `
+        "uci get dhcp.@dnsmasq[0].address 2>/dev/null || echo '(absent)'" `
+        "Vérification UCI address" `
         -AllowFail
 }
 

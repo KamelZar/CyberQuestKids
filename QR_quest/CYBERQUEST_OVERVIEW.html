@@ -429,8 +429,8 @@
         <span class="todo-prio prio-3">P3</span>
       </li>
       <li>
-        <div class="todo-box"></div>
-        <span class="todo-label"><strong>DNS local</strong> (dnsmasq) captive portal</span>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>DNS local</strong> (dnsmasq UCI wildcard) + iptables FORWARD DROP pos.5 + whitelist IP par appareil après gotcha + SSH key auth (setup one-shot)</span>
         <span class="todo-prio prio-3">P3</span>
       </li>
       <li>
@@ -512,8 +512,8 @@
           <div class="arch-val">MacBook ou Windows<br>Hotspot WiFi local<br>Flask server.py</div>
         </div>
         <div class="arch-box">
-          <div class="arch-label">IP serveur</div>
-          <div class="arch-val">Windows: 192.168.137.1<br>Mac: 192.168.2.x<br>→ à rendre dynamique</div>
+          <div class="arch-label">IP serveur / Routeur</div>
+          <div class="arch-val">GL.iNet SFT1200 · 192.168.8.1<br>Serveur Flask · 192.168.8.100<br>get_local_ip() dynamique ✅</div>
         </div>
       </div>
 
@@ -558,6 +558,8 @@
         GET  /dashboard               → animateur live<br>
         GET  /dashboard/data          → JSON teams + events<br>
         POST /dashboard/reset         → reset complet session<br>
+        POST /admin/passthrough       → supprime FORWARD DROP (internet global)<br>
+        POST /admin/forward           → réactive FORWARD DROP + vide whitelist<br>
         <span style="color:#1a5fb4;font-weight:700;">— Champions —</span><br>
         GET  /champions               → jeu Champions<br>
         GET  /champions/scores        → leaderboard JSON<br>

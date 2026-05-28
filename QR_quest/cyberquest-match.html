@@ -1233,6 +1233,19 @@ function showEnd(){
   setTimeout(()=>{
     document.getElementById('end-bar-fill').style.width = pct + '%';
   }, 200);
+
+  // Submit score to workshop
+  _submitWorkshopScore('cyberquest-match', score);
+}
+
+function _submitWorkshopScore(activity, points) {
+  const teamId = (document.cookie.match('(?:^|;)\\s*cq_team=([^;]*)') || [])[1];
+  if (!teamId || points <= 0) return;
+  fetch('/workshop/score', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points }),
+  }).catch(() => {});
 }
 </script>
 </body>

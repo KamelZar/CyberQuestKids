@@ -435,7 +435,7 @@
         function tick() {
           if (!cdEl) return;
           cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
-          if (secs <= 0) { window.location.href = '/init'; return; }
+          if (secs <= 0) { window.location.href = '/gotcha'; return; }
           secs--;
           setTimeout(tick, 1000);
         }
@@ -482,7 +482,7 @@
         function tick() {
           if (!cdEl) return;
           cdEl.textContent = t.redirect + ' ' + secs + ' ' + t.redirect2;
-          if (secs <= 0) { window.location.href = '/init'; return; }
+          if (secs <= 0) { window.location.href = '/gotcha'; return; }
           secs--;
           setTimeout(tick, 1000);
         }

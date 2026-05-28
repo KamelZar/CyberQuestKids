@@ -37,8 +37,8 @@ Deux modules distincts :
 - `dashboard.html` : branché sur `teams.json` + `events.json`, équipes visibles dès inscription + section phishing victims (tableau source / email / mdp / banque / école / heure) + chip "🎣 Phishés"
 - `start_mac.sh` / `start_windows.bat` : `--start` / `--stop` / `--restart`, ouvre dashboard + poster, tue les process résiduels par port
 - Exercices : mirror, phishing, lockpicking (trackés)
-- `html/_phishing.js` : module partagé injecté sur Roblox / Instagram / Google / TikTok — interception formulaire, overlay gotcha trilingue, bouton retour flottant, désactivation liens "créer un compte"
-- Pages phishing : `phishing/roblox/login.html`, `phishing/instagram/login.html`, `phishing/google/login.html`, `phishing/tiktok/login.html`
+- `html/_phishing.js` : module partagé injecté sur Google — interception formulaire, overlay gotcha trilingue, bouton retour flottant, désactivation liens "créer un compte"
+- Pages phishing : `phishing/google/login.html` (Roblox, Instagram, TikTok supprimés — pages non crédibles)
 - `phishing/login/index.html` : page NexaPlay captive portal — bannière WiFi trilingue, email + mdp, lien "Créer un compte" → signup, overlay gotcha login, overlay "Bravo bon réflexe" sur liens CGU
 - `phishing/signup/index.html` : page NexaPlay signup — collecte étendue (prénom, nom, email, mdp, naissance, genre, téléphone, adresse, école, banque), overlay gotcha enrichi, overlay "Bravo bon réflexe" sur liens CGU
 - Langue détectée via `navigator.languages` sur login (avant que `cq_lang` existe) → cookie posé pour tout le flow ; signup lit ce cookie en priorité
@@ -61,18 +61,38 @@ Deux modules distincts :
 ## Flow captive portal (mai 2026)
 ```
 WiFi connect → OS probe interceptée → /captive → /phishing/login?portal=1
-  ├── Soumet login     → gotcha (email + mdp) → countdown 6s → /init
-  ├── Clique CGU       → overlay "Bravo bon réflexe" → countdown 5s → /init
+  ├── Soumet login     → gotcha (email + mdp) → countdown 6s → /gotcha
+  ├── Clique CGU       → overlay "Bravo bon réflexe" → countdown 5s → /gotcha
   └── Clique "Créer"   → /phishing/signup?portal=1
-        ├── Soumet signup → gotcha enrichi → countdown 6s → /init
-        └── Clique CGU    → overlay "Bravo bon réflexe" → countdown 5s → /init
-/init → leçon cookie → team-select (cookie cq_lang écrase la détection navigateur si changé)
+        ├── Soumet signup → gotcha enrichi → countdown 6s → /gotcha
+        └── Clique CGU    → overlay "Bravo bon réflexe" → countdown 5s → /gotcha
+/gotcha → révèle infos navigateur → "Suivant" → /init
+/init → leçon cookie → (vidéo) → /pret
+/pret → théorie GDPR → "Je suis prêt(e)" → /attente
+/attente → page d'attente (scan QR codes)
 ```
 
 - `chemin.html` : hub de navigation LED 7×7 — 3 templates aléatoires (seedés par `team_id`), bifurcations avec questions `champions/{lang}.json`, pièges phishing (détectés via `events.json`), arche Champions, FR/NL/EN
 - `server.py` : route `GET /chemin`
 
+- `gotcha.html` + route `/gotcha` : page post-captive portal — révèle passivement IP (server), OS, navigateur, écran, timezone, langues, batterie, réseau, RAM, CPU, touch, dark mode, DNT, cookies, GPU — 20 cards animées + bouton "Suivant" → `/init`
+- `server.py` : routes `/gotcha` + `/api/my-info` (retourne IP client)
+- `phishing/login/index.html` + `phishing/signup/index.html` : redirects countdown → `/gotcha` au lieu de `/init`
+- `pret.html` + route `/pret` : écran théorie GDPR — affiché après vidéo / sélection d'équipe — FR/NL/EN, animation téléphone, bouton "Je suis prêt(e)" → `/attente`
+- `attente.html` + route `/attente` : page d'attente sans redirect — badge équipe, animation dots, FR/NL/EN — les participants patientent avant de scanner les QR codes
+- `server.py` : session workshop in-memory (`_workshop_session`, `_session_lock`) — `POST /session/start`, `GET /session/state` ; timer 20 min, scoring bloqué après expiration
+- `server.py` : `POST /workshop/score` — point central de scoring, ajoute `workshop_score` dans `teams.json`, vérifie session active, log dans `events.json`
+- `server.py` : routes activités — `GET /activity/videos` (`html/video.html`), `/activity/videos/list` (filtré par lang), `POST /activity/videos/watch` + `/score` (time-gate 90%), `GET /activity/cyberquest-match|defense|do-not-press`, `GET /activity/page` (translations/{cq_lang}/page.html)
+- `html/video.html` : page activité vidéos — cards par topic, countdown visuel 90% durée, bouton scorer, anti-double-score, FR/NL/EN ; vidéo normale = 50 pts, bonus = 100 pts
+- `cyberquest-match.html` : `_submitWorkshopScore()` injecté dans `showEnd()` — envoie le score du jeu (0–200 pts) vers `/workshop/score`
+- `cyberquest-defense.html` : `_submitWorkshopScore()` injecté dans `showEndScreen()` — envoie `hp × 2` pts (max 200)
+- `do-not-press.html` : `_submitWorkshopScore()` injecté dans `showVictory()` — 150 pts + bonus vitesse (max +50 si < 60s)
+- `dashboard.html` : bouton ▶ START (`sessionStart()`), barre timer 20 min avec couleur (vert/orange/rouge), colonne 🏆 Score workshop dans la grille équipes
+
+- `missions.html` + route `GET /missions` : carnet de missions — liste personnalisée Agent + nom équipe, barrage animé des missions complétées, timer session, score live, FR/NL/EN
+- `server.py` : `GET /missions/status` — retourne `{done, workshop_score, session}` pour une équipe (polling 4s)
+
 ### À faire ❌
-- Page Gotcha (OS, navigateur, IP collectés passivement)
-- Verrou d'activation workshop depuis le dashboard
 - Page de clôture (bilan projeté en fin de session)
+- Page d'accueil activités pour les participants (liste des activités disponibles) (`/workshop`)
+- Scoring `page.html` (fake website) — à définir

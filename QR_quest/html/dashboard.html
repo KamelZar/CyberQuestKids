@@ -266,6 +266,49 @@
       color: var(--muted);
     }
     .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+
+    /* ── Session timer bar ── */
+    .session-bar {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 24px; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-wrap: wrap;
+    }
+    .session-status {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .session-status.active { color: var(--green); }
+    .session-status.expired { color: var(--red); }
+    .timer-track {
+      flex: 1; min-width: 120px; height: 6px; background: var(--border);
+      border-radius: 3px; overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%; background: var(--green);
+      transition: width 1s linear, background 0.5s;
+      border-radius: 3px;
+    }
+    .timer-fill.warning { background: var(--yellow); }
+    .timer-fill.danger  { background: var(--red); }
+    .timer-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: bold;
+      color: var(--accent); white-space: nowrap; min-width: 60px; text-align: right;
+    }
+    .timer-label.danger { color: var(--red); }
+
+    /* ── Workshop score in grid ── */
+    .ws-score-cell {
+      font-family: 'Share Tech Mono', monospace; font-size: 14px;
+      font-weight: bold; color: var(--accent); text-align: right;
+      padding: 6px 10px; background: var(--card); border-radius: 6px;
+      white-space: nowrap;
+    }
+    .ws-score-cell.zero { color: var(--muted); }
+    .btn-action.start { border: 1.5px solid var(--accent); color: #0a0c10;
+                        background: var(--accent); font-weight: 700; }
+    .btn-action.start:hover { background: #00d4aa; }
+    .btn-action.start.running { background: rgba(0,255,208,0.1); color: var(--accent); border-color: var(--accent); font-weight: 400; }
   </style>
 </head>
 <body>
@@ -280,6 +323,7 @@
     </div>
     <div class="hdr-right">
       <span class="last-update" id="last-update">—</span>
+      <button class="btn-action start" id="btn-start" onclick="sessionStart()">▶ START</button>
       <button class="btn-action grn" id="btn-passthrough" onclick="passthrough()">🌐 INTERNET</button>
       <button class="btn-action yel" id="btn-forward"     onclick="forward()">🔒 CAPTIVE</button>
       <button class="btn-action blue" onclick="resetTeams()">🧹 ÉQUIPES</button>
@@ -312,6 +356,15 @@
     </div>
   </div>
 
+  <!-- Session timer -->
+  <div class="session-bar" id="session-bar">
+    <span class="session-status" id="session-status">⏸ SESSION NON DÉMARRÉE</span>
+    <div class="timer-track">
+      <div class="timer-fill" id="timer-fill" style="width:100%"></div>
+    </div>
+    <span class="timer-label" id="timer-label">20:00</span>
+  </div>
+
   <!-- Grid -->
   <div class="grid-wrap">
     <div class="empty" id="empty-state">
@@ -322,6 +375,7 @@
       <thead>
         <tr>
           <th class="team-col">Équipe</th>
+          <th class="act-col" style="text-align:right;color:var(--accent)">🏆 Score</th>
           <th class="act-col">🪤 mirror</th>
           <th class="act-col">🎭 phishing</th>
           <th class="act-col">🔓 lockpick</th>
@@ -455,6 +509,13 @@
         tdTeam.textContent = '#' + teams[tid].team_num + ' ' + tid;
         tr.appendChild(tdTeam);
 
+        // Workshop score column
+        var wsScore = teams[tid].workshop_score || 0;
+        var tdScore = document.createElement('td');
+        tdScore.className = 'ws-score-cell' + (wsScore === 0 ? ' zero' : '');
+        tdScore.textContent = wsScore > 0 ? wsScore + ' pts' : '—';
+        tr.appendChild(tdScore);
+
         ACTIVITIES.forEach(function(act) {
           var evList = (evByTeam[tid] && evByTeam[tid][act]) || [];
           var status = bestStatus(evList);
@@ -550,6 +611,99 @@
       });
     }
 
+    /* ── Session timer ────────────────────────────────────────── */
+    var _timerInterval = null;
+    var _sessionStartedAt = null;
+    var _sessionDuration  = 1200;
+
+    function updateSession(session) {
+      if (!session) return;
+      var active  = session.active;
+      var rem     = session.time_remaining || 0;
+      var dur     = session.duration || 1200;
+
+      if (session.started_at && !_sessionStartedAt) {
+        // First time we learn it's started — start local interval
+        _sessionStartedAt = session.started_at;
+        _sessionDuration  = dur;
+        startLocalTimer();
+      }
+      if (!active && _timerInterval) {
+        clearInterval(_timerInterval);
+        _timerInterval = null;
+      }
+      renderTimer(active, rem, dur);
+
+      var btn = document.getElementById('btn-start');
+      if (active) {
+        btn.textContent = '▶ EN COURS';
+        btn.classList.add('running');
+      } else if (rem === 0 && _sessionStartedAt) {
+        btn.textContent = '⏹ TERMINÉ';
+        btn.classList.add('running');
+      }
+    }
+
+    function startLocalTimer() {
+      if (_timerInterval) clearInterval(_timerInterval);
+      _timerInterval = setInterval(function() {
+        var elapsed = (Date.now() / 1000) - _sessionStartedAt;
+        var rem = Math.max(0, _sessionDuration - elapsed);
+        renderTimer(rem > 0, Math.round(rem), _sessionDuration);
+        if (rem <= 0) { clearInterval(_timerInterval); _timerInterval = null; }
+      }, 1000);
+    }
+
+    function renderTimer(active, rem, dur) {
+      var pct = dur > 0 ? (rem / dur) * 100 : 0;
+      var fill   = document.getElementById('timer-fill');
+      var label  = document.getElementById('timer-label');
+      var status = document.getElementById('session-status');
+
+      var m = Math.floor(rem / 60);
+      var s = rem % 60;
+      label.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+      fill.style.width = pct + '%';
+      fill.className   = 'timer-fill';
+
+      if (!active && rem === 0 && _sessionStartedAt) {
+        status.textContent = '⏹ SESSION TERMINÉE';
+        status.className = 'session-status expired';
+        fill.style.width = '0%';
+        label.className  = 'timer-label danger';
+      } else if (active) {
+        status.textContent = '▶ SESSION EN COURS';
+        status.className = 'session-status active';
+        if (pct < 25) { fill.classList.add('danger');  label.className = 'timer-label danger'; }
+        else if (pct < 50) { fill.classList.add('warning'); label.className = 'timer-label'; }
+        else { label.className = 'timer-label'; }
+      } else {
+        status.textContent = '⏸ SESSION NON DÉMARRÉE';
+        status.className = 'session-status';
+        fill.style.width = '100%';
+        label.textContent = '20:00';
+        label.className = 'timer-label';
+      }
+    }
+
+    function sessionStart() {
+      if (!confirm('Démarrer la session ? Le timer de 20 minutes commence maintenant.')) return;
+      fetch('/session/start', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            _sessionStartedAt = d.started_at;
+            _sessionDuration  = d.duration;
+            startLocalTimer();
+            renderTimer(true, d.duration, d.duration);
+            var btn = document.getElementById('btn-start');
+            btn.textContent = '▶ EN COURS';
+            btn.classList.add('running');
+          }
+        });
+    }
+
     /* Polling */
     function poll() {
       fetch('/dashboard/data', { cache: 'no-store' })
@@ -566,6 +720,7 @@
           updateStats(teams, events);
           updateFeed(events);
           updatePhishing(events);
+          if (data.session && !_sessionStartedAt) updateSession(data.session);
         })
         .catch(function() {
           document.getElementById('status-dot').className = 'status-dot offline';

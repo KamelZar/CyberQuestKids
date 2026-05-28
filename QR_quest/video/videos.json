@@ -1,0 +1,72 @@
+[
+  {
+    "url": "https://www.youtube.com/shorts/NR5iyZ5Tn7I",
+    "langue": "FR",
+    "topic": "DEEPFAKE",
+    "duration": 100
+  },
+  {
+    "url": "https://www.youtube.com/shorts/1UdW1FwCtHs",
+    "langue": "FR",
+    "topic": "PHISHING",
+    "duration": 120
+  },
+  {
+    "url": "https://www.youtube.com/shorts/iByyKZ0eOSA",
+    "langue": "FR",
+    "topic": "GLOBAL",
+    "bonus": true,
+    "duration": 160
+  },
+  {
+    "url": "https://www.youtube.com/shorts/wofSA-4sHsY",
+    "langue": "FR",
+    "bonus": true,
+    "topic": "PASSWORD",
+    "duration": 120
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=4g_vYZJVw9s&list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB",
+    "langue": "FR",
+    "topic": "DEEPFAKE",
+    "duration": 60
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=KGghlPmebCY",
+    "langue": "EN",
+    "topic": "CONFIDENTIALITY",
+    "duration": 100
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=4g_vYZJVw9s&list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB",
+    "langue": "EN",
+    "topic": "DEEPFAKE",
+    "duration": 60
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=35caskf6YJg",
+    "langue": "EN",
+    "topic": "PHISHING",
+    "bonus": true,
+    "duration": 60
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=nmZouydABCo",
+    "langue": "NL",
+    "topic": "CONFIDENTIALITY",
+    "duration": 70
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=4g_vYZJVw9s&list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB",
+    "langue": "NL",
+    "topic": "DEEPFAKE",
+    "duration": 60
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=F7pYHN9iC9I",
+    "langue": "NL",
+    "topic": "CONFIDENTIALITY",
+    "duration": 140,
+    "bonus": true
+  }
+]

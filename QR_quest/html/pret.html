@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🎯 CyberQuest — Prêt ?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0a0a0f;
+      --card:    #13131d;
+      --border:  #2a2a3d;
+      --accent:  #00e5ff;
+      --green:   #00ff88;
+      --text:    #ffffff;
+      --muted:   #6b7280;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px 120px;
+      text-align: center;
+    }
+
+    /* ── Lock icon ── */
+    .lock-icon {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 24px;
+      animation: bounce 2.5s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* ── Title ── */
+    h1 {
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    /* ── Body text ── */
+    .theory-body {
+      font-size: clamp(15px, 4vw, 18px);
+      line-height: 1.65;
+      color: #d1d5db;
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+
+    .theory-body strong {
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    /* ── Phone animation ── */
+    .phone-hint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      max-width: 380px;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .phone-wrap {
+      position: relative;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-emoji {
+      font-size: 48px;
+      display: inline-block;
+      animation: tilt 1.8s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    @keyframes tilt {
+      0%   { transform: rotate(0deg); }
+      40%  { transform: rotate(-90deg) translateX(-10px); }
+      60%  { transform: rotate(-90deg) translateX(-10px); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .phone-text {
+      font-size: clamp(13px, 3.5vw, 15px);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Button ── */
+    .btn-wrap {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 16px;
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+    }
+
+    .btn-ready {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      display: block;
+      padding: 20px;
+      background: var(--green);
+      color: #000;
+      font-size: 19px;
+      font-weight: 900;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+
+    .btn-ready:active { transform: scale(0.97); opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <span class="lock-icon">🔒</span>
+  <h1 id="theory-title">…</h1>
+  <p class="theory-body" id="theory-body">…</p>
+
+  <div class="phone-hint">
+    <div class="phone-wrap">
+      <span class="phone-emoji">📱</span>
+    </div>
+    <p class="phone-text" id="theory-phone">…</p>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn-ready" id="btn-ready" onclick="goAttente()">…</button>
+  </div>
+
+<script>
+// ── Translations ──────────────────────────────────────────────────────────────
+const T = {
+  fr: {
+    title: 'Maintenant… un peu de théorie',
+    body:  'Avant de continuer avec les jeux et expériences, nous allons parler ensemble de <strong>GDPR</strong>, de vos droits, et de ce que ces données signifient vraiment.',
+    phone: 'Pose ton téléphone face vers le bas pour montrer que tu es attentif(ve) et prêt(e) 👇',
+    ready: 'Je suis prêt(e) ✓',
+  },
+  nl: {
+    title: 'Nu… een beetje theorie',
+    body:  'Voor we verdergaan met de spellen en ervaringen, praten we samen over <strong>GDPR</strong>, jouw rechten, en wat deze gegevens echt betekenen.',
+    phone: 'Leg je telefoon met het scherm naar beneden om te tonen dat je aandachtig en klaar bent 👇',
+    ready: 'Ik ben klaar ✓',
+  },
+  en: {
+    title: 'Now… a bit of theory',
+    body:  'Before we continue with the games and experiences, we\'ll talk together about <strong>GDPR</strong>, your rights, and what this data really means.',
+    phone: 'Place your phone face down to show that you\'re paying attention and ready 👇',
+    ready: 'I\'m ready ✓',
+  },
+};
+
+// ── Lang helper ───────────────────────────────────────────────────────────────
+function getLang() {
+  // 1. URL param ?lang=xx
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang && T[urlLang]) return urlLang;
+  // 2. Cookie cq_lang
+  const m = document.cookie.match(/cq_lang=([^;]+)/);
+  const l = m ? m[1].trim() : 'fr';
+  return T[l] ? l : 'fr';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+const lang = getLang();
+document.documentElement.lang = lang;
+
+const tr = T[lang];
+document.getElementById('theory-title').textContent  = tr.title;
+document.getElementById('theory-body').innerHTML     = tr.body;
+document.getElementById('theory-phone').textContent  = tr.phone;
+document.getElementById('btn-ready').textContent     = tr.ready;
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function goAttente() {
+  window.location.href = '/attente?lang=' + lang;
+}
+</script>
+</body>
+</html>

@@ -279,11 +279,10 @@
     <div class="flow-num">3</div>
     <div class="flow-title">Page Gotcha</div>
     <div class="flow-desc">
-      <em>À développer</em> — page dédiée <code>/gotcha</code><br>
-      Affichera : OS, navigateur, IP, langue, heure collectés passivement.<br>
-      <em>"Tu es au bon endroit... :-)"</em>
+      20 cartes animées : IP (serveur), OS, navigateur, écran, timezone, batterie, réseau, GPU, touch, cookies…<br>
+      Bouton "Suivant" → <code>/init</code>
     </div>
-    <span class="flow-tag tag-red">❌ À FAIRE</span>
+    <span class="flow-tag tag-green">✅ FAIT</span>
   </div>
 
   <div class="flow-step">
@@ -298,14 +297,34 @@
   </div>
 
   <div class="flow-step">
-    <div class="flow-num">5</div>
-    <div class="flow-title">Théorie + Démarrage</div>
+    <div class="flow-num">4b</div>
+    <div class="flow-title">Vidéo intro</div>
     <div class="flow-desc">
-      <em>À développer</em> — page <code>/workshop</code><br>
-      Attente jusqu'au signal animateur (dashboard).<br>
-      Bouton "Ouvrir le workshop" → tout s'ouvre simultanément.
+      Vidéo TRAILER_{LANG}.mp4 dans <code>/init</code> après sélection d'équipe.<br>
+      Fin vidéo → <code>/pret</code>
     </div>
-    <span class="flow-tag tag-red">❌ À FAIRE</span>
+    <span class="flow-tag tag-green">✅ FAIT</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-title">Théorie GDPR</div>
+    <div class="flow-desc">
+      Page <code>/pret</code> — FR/NL/EN.<br>
+      Animation téléphone "pose face vers le bas".<br>
+      Bouton "Je suis prêt(e)" → <code>/attente</code>
+    </div>
+    <span class="flow-tag tag-green">✅ FAIT</span>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">5b</div>
+    <div class="flow-title">Attente QR codes</div>
+    <div class="flow-desc">
+      Page <code>/attente</code> — badge équipe, dots animés, FR/NL/EN.<br>
+      Pas de redirect. L'animateur distribue les QR codes.
+    </div>
+    <span class="flow-tag tag-green">✅ FAIT</span>
   </div>
 
   <div class="flow-step">
@@ -354,8 +373,8 @@
         <span class="todo-prio prio-1">P1</span>
       </li>
       <li>
-        <div class="todo-box"></div>
-        <span class="todo-label"><strong>Page Gotcha autonome</strong> — page dédiée affichant OS, navigateur, IP, heure (<code>/gotcha</code>)</span>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Page Gotcha autonome</strong> — IP, OS, navigateur, écran, batterie, réseau, GPU, timezone, DNT, cookies… 20 cartes animées (<code>/gotcha</code>) + page théorie (<code>/pret</code>) + page d'attente (<code>/attente</code>)</span>
         <span class="todo-prio prio-1">P1</span>
       </li>
       <li>
@@ -389,8 +408,18 @@
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
-        <div class="todo-box"></div>
-        <span class="todo-label"><strong>Verrou d'activation</strong> — bouton dashboard → débloque <code>/workshop</code> pour tous</span>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Bouton START dashboard</strong> — démarre timer 20 min, bloque scoring après expiration (<code>POST /session/start</code>)</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Scoring workshop unifié</strong> — <code>workshop_score</code> par équipe dans teams.json, endpoint <code>/workshop/score</code>, anti-triche session inactive</span>
+        <span class="todo-prio prio-2">P2</span>
+      </li>
+      <li>
+        <div class="todo-box done"></div>
+        <span class="todo-label"><strong>Activités — routes + scoring</strong> — vidéos (time-gate 90%, 50/100 pts), cyberquest-match/defense/do-not-press (score auto), page fake website (<code>/activity/*</code>)</span>
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
@@ -400,7 +429,7 @@
       </li>
       <li>
         <div class="todo-box"></div>
-        <span class="todo-label"><strong>Page Workshop</strong> — page d'attente + démarrage simultané (<code>/workshop</code>)</span>
+        <span class="todo-label"><strong>Page Workshop</strong> — page d'accueil activités pour les participants (liste des activités disponibles)</span>
         <span class="todo-prio prio-2">P2</span>
       </li>
       <li>
@@ -543,10 +572,7 @@
         GET  /phishing/signup         → NexaPlay signup<br>
         POST /phishing/catch          → stocke victim anonymisé<br>
         POST /phishing/terms-click    → stocke "bon réflexe"<br>
-        GET  /phishing/roblox         → faux login Roblox<br>
-        GET  /phishing/instagram      → faux login Instagram<br>
         GET  /phishing/google         → faux login Google<br>
-        GET  /phishing/tiktok         → faux login TikTok<br>
         <span style="color:#6633aa;font-weight:700;">— Équipes —</span><br>
         GET  /team-select             → carrousel choix équipe<br>
         GET  /teams/available         → noms pris (poll)<br>
@@ -579,9 +605,27 @@
         GET  /cyberquest/id/exo/st    → pixel tracking GIF<br>
         GET  /api/server-url          → URL LAN dynamique<br>
         GET  /init-poster             → affiche QR animateur<br>
-        <span style="color:#cc2244;">❌ GET  /gotcha                → page gotcha (à faire)</span><br>
-        <span style="color:#cc2244;">❌ GET  /workshop              → verrou animateur (à faire)</span><br>
-        <span style="color:#cc2244;">❌ GET  /closing               → bilan clôture (à faire)</span>
+        <span style="color:#007744;">✅ GET  /gotcha                → révélation browser info (IP, OS, batterie...)</span><br>
+        <span style="color:#007744;">✅ GET  /api/my-info           → IP client (pour gotcha)</span><br>
+        <span style="color:#007744;">✅ GET  /pret                  → écran théorie GDPR + "Je suis prêt(e)" → /attente</span><br>
+        <span style="color:#007744;">✅ GET  /attente               → page d'attente avant scan QR codes</span><br>
+        <span style="color:#007744;">✅ GET  /missions              → carnet de missions (html/missions.html) — liens activités + barrage animé</span><br>
+        <span style="color:#007744;">✅ GET  /missions/status       → {done: {activity: true}, workshop_score, session}</span><br>
+        <span style="color:#cc2244;">❌ GET  /closing               → bilan clôture (à faire)</span><br>
+        <span style="color:#007777;font-weight:700;">— Session &amp; scoring workshop —</span><br>
+        <span style="color:#007744;">✅ POST /session/start         → démarre timer 20 min (in-memory)</span><br>
+        <span style="color:#007744;">✅ GET  /session/state         → {active, started_at, time_remaining, duration}</span><br>
+        <span style="color:#007744;">✅ POST /workshop/score        → ajoute points à une équipe (bloqué si session inactive)</span><br>
+        <span style="color:#007777;font-weight:700;">— Activités vidéos —</span><br>
+        <span style="color:#007744;">✅ GET  /activity/videos       → page vidéos (html/video.html) — time-gate 90%</span><br>
+        <span style="color:#007744;">✅ GET  /activity/videos/list  → JSON vidéos filtrées par ?lang=FR</span><br>
+        <span style="color:#007744;">✅ POST /activity/videos/watch → enregistre timestamp démarrage visionnage</span><br>
+        <span style="color:#007744;">✅ POST /activity/videos/score → attribue 50/100 pts si ≥ 90% durée écoulée</span><br>
+        <span style="color:#007777;font-weight:700;">— Activités jeux —</span><br>
+        <span style="color:#007744;">✅ GET  /activity/cyberquest-match    → cyberquest-match.html (score auto)</span><br>
+        <span style="color:#007744;">✅ GET  /activity/cyberquest-defense  → cyberquest-defense.html (hp×2 pts)</span><br>
+        <span style="color:#007744;">✅ GET  /activity/do-not-press        → do-not-press.html (150 pts + bonus vitesse)</span><br>
+        <span style="color:#007744;">✅ GET  /activity/page                → translations/{cq_lang}/page.html (scoring à définir)</span>
       </div>
 
       <div style="font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:4px 0 2px;">SÉCURITÉ</div>

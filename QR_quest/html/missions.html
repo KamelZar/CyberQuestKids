@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberQuest — Missions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0a0c10;
+      --surface: #111520;
+      --border:  #1e2535;
+      --accent:  #00ffd0;
+      --accent2: #ff9f43;
+      --text:    #e8eaf2;
+      --muted:   #5a6580;
+      --card:    #13192a;
+      --green:   #39d353;
+      --red:     #ff4757;
+      --yellow:  #ffd32a;
+      --purple:  #a29bfe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* scanlines */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.012) 2px, rgba(0,255,208,0.012) 4px
+      );
+      pointer-events: none; z-index: 1000;
+    }
+
+    /* ── Lang switcher ── */
+    .lang-switcher {
+      position: fixed; top: 14px; right: 14px; z-index: 200;
+      display: flex; gap: 6px;
+    }
+    .lang-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); padding: 5px 10px; border-radius: 5px;
+      cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      transition: all 0.2s;
+    }
+    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,208,0.07); }
+
+    /* ── Briefing header ── */
+    .briefing {
+      position: relative;
+      margin: 0 auto;
+      max-width: 540px;
+      padding: 40px 20px 0;
+    }
+
+    .stamp {
+      display: inline-block;
+      border: 2.5px solid var(--red);
+      color: var(--red);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 3px;
+      margin-bottom: 16px;
+      opacity: 0.85;
+      transform: rotate(-2deg);
+      display: inline-block;
+    }
+
+    .briefing-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .briefing-box::before {
+      content: '//';
+      position: absolute; top: 10px; right: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 18px; color: var(--border); font-weight: bold;
+    }
+
+    .agent-line {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .agent-name {
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--accent); text-transform: uppercase;
+      letter-spacing: 2px; margin-bottom: 14px;
+    }
+    .briefing-text {
+      font-size: 13px; line-height: 1.65;
+      color: var(--text);
+    }
+    .briefing-text em {
+      color: var(--accent2); font-style: normal; font-weight: 700;
+    }
+    .briefing-footer {
+      margin-top: 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── Session status ── */
+    .status-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+    .session-badge {
+      font-family: 'Share Tech Mono', monospace; font-size: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .dot.active { background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 1.4s infinite; }
+    .dot.ended  { background: var(--red); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .timer-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 18px; font-weight: 700; color: var(--accent);
+      min-width: 50px; text-align: right;
+    }
+    .timer-display.danger { color: var(--red); }
+    .score-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px; color: var(--yellow);
+      font-weight: 700;
+    }
+
+    /* ── Notebook ── */
+    .notebook {
+      max-width: 540px; margin: 0 auto; padding: 0 20px;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin: 22px 0 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Mission item */
+    .mission-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-item:hover:not(.done) { border-color: var(--accent); background: rgba(0,255,208,0.04); }
+    .mission-item.visited:not(.done) { border-color: var(--yellow); }
+    .mission-item.done { border-color: var(--green); opacity: 0.65; }
+
+    /* Strikethrough line animation */
+    .mission-item .strike-line {
+      position: absolute;
+      left: 0; top: 50%; transform: translateY(-50%);
+      height: 2px; width: 0;
+      background: var(--green);
+      border-radius: 2px;
+      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .mission-item.done .strike-line { width: 100%; }
+
+    /* Checkbox */
+    .mission-check {
+      width: 22px; height: 22px; border-radius: 5px;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .mission-item.visited:not(.done) .mission-check { border-color: var(--yellow); color: var(--yellow); }
+    .mission-item.done .mission-check {
+      background: var(--green); border-color: var(--green); color: #0a0c10; font-size: 13px;
+    }
+
+    /* Icon */
+    .mission-icon { font-size: 22px; flex-shrink: 0; }
+
+    /* Text */
+    .mission-body { flex: 1; min-width: 0; }
+    .mission-name {
+      font-size: 14px; font-weight: 700;
+      transition: color 0.3s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mission-item.done .mission-name { color: var(--muted); }
+    .mission-desc {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Points badge */
+    .mission-pts {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 4px;
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .mission-pts.scored { background: rgba(57,211,83,0.15); color: var(--green); border: 1px solid rgba(57,211,83,0.3); }
+    .mission-pts.bonus  { background: rgba(162,155,254,0.12); color: var(--purple); border: 1px solid rgba(162,155,254,0.25); }
+    .mission-pts.zero   { background: rgba(90,101,128,0.15); color: var(--muted); border: 1px solid var(--border); }
+
+    /* External tag */
+    .ext-tag {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      color: var(--muted); padding: 2px 6px; border: 1px solid var(--border);
+      border-radius: 3px; flex-shrink: 0; letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <button class="lang-btn" onclick="setLang('fr')">FR</button>
+  <button class="lang-btn" onclick="setLang('nl')">NL</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="briefing">
+  <div class="stamp" id="stamp">DOSSIER CLASSIFIÉ</div>
+
+  <div class="briefing-box">
+    <div class="agent-line" id="agent-line">Agent identifié</div>
+    <div class="agent-name" id="agent-name">—</div>
+    <div class="briefing-text" id="briefing-text">Chargement…</div>
+    <div class="briefing-footer" id="briefing-footer">— Bonne chance. 🔐</div>
+  </div>
+
+  <div class="status-row">
+    <div class="session-badge">
+      <span class="dot" id="session-dot"></span>
+      <span id="session-label">Session…</span>
+    </div>
+    <div class="score-display">🏆 <span id="score-val">0</span> pts</div>
+    <div class="timer-display" id="timer-display">—</div>
+  </div>
+</div>
+
+<div class="notebook" id="notebook"></div>
+
+<script>
+// ── i18n ─────────────────────────────────────────────────────────────
+const T = {
+  fr: {
+    stamp: 'DOSSIER CLASSIFIÉ',
+    agentLine: 'Agent identifié',
+    briefing: (name) =>
+      `<strong>Agent ${name}</strong>, votre mission aujourd'hui sera de <em>compléter le maximum de missions en 20 minutes</em>.`
+      + `<br><br>Attention à ne pas vouloir aller trop vite — parfois des informations sont cachées…`
+      + `<br><br>Pour chaque activité utile liée à la cybersécurité, vous marquerez des points.`,
+    footer: '— Bonne chance. 🔐',
+    sessionOff: 'Session non démarrée',
+    sessionOn: 'Session en cours',
+    sessionEnd: 'Session terminée',
+    sectionMain: 'Missions principales',
+    sectionBonus: 'Sites bonus — exploration libre',
+    visitedMark: '…',
+    doneMark: '✓',
+    missions: [
+      { id:'video',               icon:'🎬', name:'Vidéos cybersécurité',        desc:'Regarde au moins 90% de chaque vidéo', pts:'50–100 pts',   url:'/activity/videos',            ptsClass:'scored' },
+      { id:'phishing-google',     icon:'🎣', name:'Phishing — Google',           desc:'Reconnais le faux site de connexion',  pts:'±20 pts',      url:'/phishing/google',            ptsClass:'scored' },
+      { id:'password-check',      icon:'🔐', name:'Vérification mot de passe',   desc:'Teste la solidité de ton mot de passe',pts:'5–20 pts',     url:'/password-check',             ptsClass:'scored' },
+      { id:'cyberquest-match',    icon:'🧩', name:'Cyberquest Match',            desc:'Associe les termes et définitions',    pts:'0–200 pts',    url:'/activity/cyberquest-match',  ptsClass:'scored' },
+      { id:'cyberquest-defense',  icon:'🛡️', name:'Cyberquest Défense',          desc:'Prends les bonnes décisions de sécu',  pts:'0–200 pts',    url:'/activity/cyberquest-defense',ptsClass:'scored' },
+      { id:'do-not-press',        icon:'🔴', name:'Ne Pas Appuyer',              desc:'Résiste à la tentation — ou pas',      pts:'150+ pts',     url:'/activity/do-not-press',      ptsClass:'scored' },
+      { id:'page',                icon:'🌐', name:'Fake Website',                desc:'Repère les indices suspects',          pts:'? pts',        url:'/activity/page',              ptsClass:'zero'   },
+    ],
+    bonus: [
+      { id:'hacker',  icon:'💻', name:'Hacker Simulator',  desc:'pranx.com', url:'https://pranx.com/hacker/'     },
+      { id:'pest',    icon:'🐛', name:'Pest Game',          desc:'pestgame.com', url:'https://pestgame.com/'      },
+      { id:'fbi',     icon:'🚨', name:'FBI Warning',        desc:'pranx.com', url:'https://pranx.com/fbi-warning/' },
+      { id:'virus',   icon:'☠️', name:'Fake Virus',         desc:'pranx.com', url:'https://pranx.com/fake-virus/' },
+    ],
+  },
+  nl: {
+    stamp: 'GEHEIM DOSSIER',
+    agentLine: 'Agent geïdentificeerd',
+    briefing: (name) =>
+      `<strong>Agent ${name}</strong>, uw missie vandaag is om <em>zo veel mogelijk missies in 20 minuten te voltooien</em>.`
+      + `<br><br>Pas op — ga niet te snel, soms zijn er verborgen aanwijzingen…`
+      + `<br><br>Voor elke nuttige activiteit rond cyberveiligheid verdien je punten.`,
+    footer: '— Veel succes. 🔐',
+    sessionOff: 'Sessie niet gestart',
+    sessionOn: 'Sessie bezig',
+    sessionEnd: 'Sessie afgelopen',
+    sectionMain: 'Hoofdmissies',
+    sectionBonus: 'Bonussites — vrije verkenning',
+    visitedMark: '…',
+    doneMark: '✓',
+    missions: [
+      { id:'video',               icon:'🎬', name:'Cyberveiligheidsvideos',     desc:'Bekijk minstens 90% van elke video', pts:'50–100 pts',   url:'/activity/videos',            ptsClass:'scored' },
+      { id:'phishing-google',     icon:'🎣', name:'Phishing — Google',          desc:'Herken de valse inlogpagina',        pts:'±20 pts',      url:'/phishing/google',            ptsClass:'scored' },
+      { id:'password-check',      icon:'🔐', name:'Wachtwoordcheck',            desc:'Test hoe sterk je wachtwoord is',    pts:'5–20 pts',     url:'/password-check',             ptsClass:'scored' },
+      { id:'cyberquest-match',    icon:'🧩', name:'Cyberquest Match',           desc:'Koppel termen aan definities',       pts:'0–200 pts',    url:'/activity/cyberquest-match',  ptsClass:'scored' },
+      { id:'cyberquest-defense',  icon:'🛡️', name:'Cyberquest Verdediging',     desc:'Neem de juiste beveiligingsbeslissingen', pts:'0–200 pts', url:'/activity/cyberquest-defense',ptsClass:'scored' },
+      { id:'do-not-press',        icon:'🔴', name:'Niet Drukken',               desc:'Weerstaan aan de verleiding — of niet', pts:'150+ pts',  url:'/activity/do-not-press',      ptsClass:'scored' },
+      { id:'page',                icon:'🌐', name:'Nep Website',                desc:'Spot de verdachte hints',            pts:'? pts',        url:'/activity/page',              ptsClass:'zero'   },
+    ],
+    bonus: [
+      { id:'hacker',  icon:'💻', name:'Hacker Simulator',  desc:'pranx.com', url:'https://pranx.com/hacker/'     },
+      { id:'pest',    icon:'🐛', name:'Pest Game',          desc:'pestgame.com', url:'https://pestgame.com/'      },
+      { id:'fbi',     icon:'🚨', name:'FBI Warning',        desc:'pranx.com', url:'https://pranx.com/fbi-warning/' },
+      { id:'virus',   icon:'☠️', name:'Fake Virus',         desc:'pranx.com', url:'https://pranx.com/fake-virus/' },
+    ],
+  },
+  en: {
+    stamp: 'CLASSIFIED FILE',
+    agentLine: 'Agent identified',
+    briefing: (name) =>
+      `<strong>Agent ${name}</strong>, your mission today is to <em>complete as many missions as possible in 20 minutes</em>.`
+      + `<br><br>Don't rush — sometimes clues are hidden in plain sight…`
+      + `<br><br>For every cybersecurity-related activity you complete, you will earn points.`,
+    footer: '— Good luck. 🔐',
+    sessionOff: 'Session not started',
+    sessionOn: 'Session in progress',
+    sessionEnd: 'Session over',
+    sectionMain: 'Main missions',
+    sectionBonus: 'Bonus sites — free exploration',
+    visitedMark: '…',
+    doneMark: '✓',
+    missions: [
+      { id:'video',               icon:'🎬', name:'Cybersecurity Videos',      desc:'Watch at least 90% of each video',   pts:'50–100 pts',   url:'/activity/videos',            ptsClass:'scored' },
+      { id:'phishing-google',     icon:'🎣', name:'Phishing — Google',         desc:'Spot the fake login page',           pts:'±20 pts',      url:'/phishing/google',            ptsClass:'scored' },
+      { id:'password-check',      icon:'🔐', name:'Password Check',            desc:'Test how strong your password is',   pts:'5–20 pts',     url:'/password-check',             ptsClass:'scored' },
+      { id:'cyberquest-match',    icon:'🧩', name:'Cyberquest Match',          desc:'Match terms and definitions',        pts:'0–200 pts',    url:'/activity/cyberquest-match',  ptsClass:'scored' },
+      { id:'cyberquest-defense',  icon:'🛡️', name:'Cyberquest Defense',        desc:'Make the right security decisions',  pts:'0–200 pts',    url:'/activity/cyberquest-defense',ptsClass:'scored' },
+      { id:'do-not-press',        icon:'🔴', name:'Do Not Press',              desc:'Resist the temptation — or not',     pts:'150+ pts',     url:'/activity/do-not-press',      ptsClass:'scored' },
+      { id:'page',                icon:'🌐', name:'Fake Website',              desc:'Spot the suspicious clues',          pts:'? pts',        url:'/activity/page',              ptsClass:'zero'   },
+    ],
+    bonus: [
+      { id:'hacker',  icon:'💻', name:'Hacker Simulator',  desc:'pranx.com', url:'https://pranx.com/hacker/'     },
+      { id:'pest',    icon:'🐛', name:'Pest Game',          desc:'pestgame.com', url:'https://pestgame.com/'      },
+      { id:'fbi',     icon:'🚨', name:'FBI Warning',        desc:'pranx.com', url:'https://pranx.com/fbi-warning/' },
+      { id:'virus',   icon:'☠️', name:'Fake Virus',         desc:'pranx.com', url:'https://pranx.com/fake-virus/' },
+    ],
+  },
+};
+
+// ── State ─────────────────────────────────────────────────────────────
+let lang   = getCookie('cq_lang') || 'fr';
+let teamId = getCookie('cq_team') || '';
+const visited = new Set(JSON.parse(sessionStorage.getItem('missionsVisited') || '[]'));
+let doneMissions = {};
+let workshopScore = 0;
+let sessionStartedAt = null;
+let sessionDuration  = 1200;
+let timerInterval    = null;
+
+// ── Cookie helper ─────────────────────────────────────────────────────
+function getCookie(n) {
+  const m = document.cookie.match('(?:^|;)\\s*' + n + '=([^;]*)');
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+// ── Lang ──────────────────────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent === l.toUpperCase())
+  );
+  applyTranslations();
+  renderNotebook();
+}
+
+function applyTranslations() {
+  const t = T[lang] || T.fr;
+  document.getElementById('stamp').textContent       = t.stamp;
+  document.getElementById('agent-line').textContent  = t.agentLine;
+  document.getElementById('briefing-text').innerHTML = t.briefing(teamId || '???');
+  document.getElementById('briefing-footer').textContent = t.footer;
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────
+function startTimer(startedAt, duration) {
+  sessionStartedAt = startedAt;
+  sessionDuration  = duration;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer, 1000);
+  tickTimer();
+}
+
+function tickTimer() {
+  const elapsed = (Date.now() / 1000) - sessionStartedAt;
+  const rem     = Math.max(0, sessionDuration - elapsed);
+  const m = Math.floor(rem / 60);
+  const s = Math.floor(rem % 60);
+  const el = document.getElementById('timer-display');
+  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  el.className   = 'timer-display' + (rem < 120 ? ' danger' : '');
+  if (rem === 0) {
+    clearInterval(timerInterval);
+    updateSessionUI(false, 0);
+  }
+}
+
+function updateSessionUI(active, rem) {
+  const t   = T[lang] || T.fr;
+  const dot = document.getElementById('session-dot');
+  const lbl = document.getElementById('session-label');
+  if (!sessionStartedAt) {
+    dot.className = 'dot'; lbl.textContent = t.sessionOff;
+    document.getElementById('timer-display').textContent = '20:00';
+  } else if (active) {
+    dot.className = 'dot active'; lbl.textContent = t.sessionOn;
+  } else {
+    dot.className = 'dot ended'; lbl.textContent = t.sessionEnd;
+    document.getElementById('timer-display').textContent = '0:00';
+    document.getElementById('timer-display').classList.add('danger');
+  }
+}
+
+// ── Notebook render ───────────────────────────────────────────────────
+function renderNotebook() {
+  const t  = T[lang] || T.fr;
+  const nb = document.getElementById('notebook');
+  nb.innerHTML = '';
+
+  // Section missions
+  const secMain = document.createElement('div');
+  secMain.className = 'section-label';
+  secMain.innerHTML = t.sectionMain + '<span></span>';
+  nb.appendChild(secMain);
+
+  t.missions.forEach(m => buildMissionItem(nb, m, false));
+
+  // Section bonus
+  const secBonus = document.createElement('div');
+  secBonus.className = 'section-label';
+  secBonus.innerHTML = t.sectionBonus + '<span></span>';
+  nb.appendChild(secBonus);
+
+  t.bonus.forEach(m => buildMissionItem(nb, m, true));
+}
+
+function buildMissionItem(parent, m, isBonus) {
+  const t    = T[lang] || T.fr;
+  const done = !isBonus && doneMissions[m.id];
+  const vis  = visited.has(m.id);
+
+  const a = document.createElement('a');
+  a.className = 'mission-item' + (done ? ' done' : vis ? ' visited' : '');
+  a.href      = m.url;
+  a.target    = '_blank';
+  a.rel       = 'noopener';
+  a.dataset.id = m.id;
+
+  // Strikethrough overlay
+  const strike = document.createElement('div');
+  strike.className = 'strike-line';
+  a.appendChild(strike);
+
+  // Checkbox
+  const chk = document.createElement('div');
+  chk.className = 'mission-check';
+  chk.textContent = done ? t.doneMark : (vis ? t.visitedMark : '');
+  a.appendChild(chk);
+
+  // Icon
+  const ico = document.createElement('span');
+  ico.className = 'mission-icon';
+  ico.textContent = m.icon;
+  a.appendChild(ico);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'mission-body';
+  body.innerHTML =
+    `<div class="mission-name">${m.name}</div>` +
+    `<div class="mission-desc">${m.desc}</div>`;
+  a.appendChild(body);
+
+  // Points / ext tag
+  if (!isBonus) {
+    const pts = document.createElement('span');
+    pts.className = 'mission-pts ' + (m.ptsClass || 'zero');
+    pts.textContent = m.pts;
+    a.appendChild(pts);
+  } else {
+    const ext = document.createElement('span');
+    ext.className = 'ext-tag';
+    ext.textContent = 'EXT';
+    a.appendChild(ext);
+  }
+
+  // Click → mark visited
+  a.addEventListener('click', () => {
+    if (!visited.has(m.id)) {
+      visited.add(m.id);
+      sessionStorage.setItem('missionsVisited', JSON.stringify([...visited]));
+      if (!a.classList.contains('done')) {
+        a.classList.add('visited');
+        chk.textContent = t.visitedMark;
+      }
+    }
+  });
+
+  parent.appendChild(a);
+}
+
+// ── Mark done with animation ──────────────────────────────────────────
+function markDone(activityId) {
+  document.querySelectorAll(`.mission-item[data-id="${activityId}"]`).forEach(el => {
+    if (!el.classList.contains('done')) {
+      el.classList.add('done');
+      el.classList.remove('visited');
+      const chk = el.querySelector('.mission-check');
+      if (chk) chk.textContent = (T[lang] || T.fr).doneMark;
+    }
+  });
+}
+
+// ── Polling status ────────────────────────────────────────────────────
+async function pollStatus() {
+  if (!teamId) return;
+  try {
+    const r    = await fetch(`/missions/status?team_id=${encodeURIComponent(teamId)}`, { cache: 'no-store' });
+    const data = await r.json();
+
+    // Update score
+    workshopScore = data.workshop_score || 0;
+    document.getElementById('score-val').textContent = workshopScore;
+
+    // Session
+    const sess = data.session || {};
+    if (sess.started_at && !sessionStartedAt) {
+      startTimer(sess.started_at, sess.duration || 1200);
+    }
+    updateSessionUI(sess.active, sess.time_remaining || 0);
+
+    // Done activities
+    const newDone = data.done || {};
+    let changed = false;
+    Object.keys(newDone).forEach(id => {
+      if (!doneMissions[id]) {
+        doneMissions[id] = true;
+        changed = true;
+        // Delay slightly for visual effect
+        setTimeout(() => markDone(id), 200);
+      }
+    });
+    if (changed) doneMissions = { ...doneMissions, ...newDone };
+
+  } catch(e) { /* serveur non accessible */ }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+(function init() {
+  if (!['fr','nl','en'].includes(lang)) lang = 'fr';
+  teamId = teamId || '???';
+
+  // Agent name: capitalize
+  const displayName = teamId.charAt(0).toUpperCase() + teamId.slice(1);
+  document.getElementById('agent-name').textContent = displayName;
+
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent === lang.toUpperCase())
+  );
+
+  applyTranslations();
+  // Inject real name into briefing
+  document.getElementById('briefing-text').innerHTML = (T[lang] || T.fr).briefing(displayName);
+
+  renderNotebook();
+  pollStatus();
+  setInterval(pollStatus, 4000);
+})();
+</script>
+</body>
+</html>

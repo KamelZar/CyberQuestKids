@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>👁️ CyberQuest</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0a0a0f;
+      --card:    #13131d;
+      --border:  #2a2a3d;
+      --accent:  #00e5ff;
+      --green:   #00ff88;
+      --red:     #ff4466;
+      --text:    #ffffff;
+      --muted:   #6b7280;
+      --yellow:  #ffd600;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Screen management ── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; flex-direction: column; }
+
+    /* ════════════════════════════════
+       SCREEN 1 — Reveal
+    ════════════════════════════════ */
+    #screen-reveal {
+      padding: 24px 16px 100px;
+      align-items: center;
+    }
+
+    .reveal-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .eye-icon {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 12px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.08); opacity: 0.85; }
+    }
+
+    .reveal-title {
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .reveal-subtitle {
+      font-size: clamp(13px, 3.5vw, 16px);
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Card grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    @media (min-width: 560px) {
+      .grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardIn 0.4s ease forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .card.wide {
+      grid-column: span 2;
+    }
+
+    @media (min-width: 560px) {
+      .card.wide { grid-column: span 1; }
+    }
+
+    @keyframes cardIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-emoji {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .card-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .card-value.accent { color: var(--accent); }
+    .card-value.green  { color: var(--green); }
+    .card-value.red    { color: var(--red); }
+    .card-value.yellow { color: var(--yellow); }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Next button ── */
+    .btn-next-wrap {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 16px;
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+    }
+
+    .btn-next {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      display: block;
+      padding: 18px;
+      background: var(--accent);
+      color: #000;
+      font-size: 18px;
+      font-weight: 900;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+
+    .btn-next:active { transform: scale(0.97); opacity: 0.9; }
+
+  </style>
+</head>
+<body>
+
+<!-- ════════════ SCREEN 1 : Reveal ════════════ -->
+<div id="screen-reveal" class="screen active">
+  <div class="reveal-header">
+    <span class="eye-icon">👁️</span>
+    <h1 class="reveal-title" id="reveal-title">…</h1>
+    <p class="reveal-subtitle" id="reveal-subtitle">…</p>
+  </div>
+
+  <div class="grid" id="info-grid"></div>
+
+  <div class="btn-next-wrap">
+    <button class="btn-next" id="btn-next" onclick="showTheory()">…</button>
+  </div>
+</div>
+
+
+<script>
+// ── Translations ─────────────────────────────────────────────────────────────
+const T = {
+  fr: {
+    title:        'Ce que ton navigateur révèle…',
+    subtitle:     'Sans te demander la moindre permission',
+    next:         'Suivant →',
+    labels: {
+      ip:        'Ton adresse IP',
+      device:    'Ton appareil',
+      os:        'Système d\'exploitation',
+      browser:   'Ton navigateur',
+      screen:    'Résolution d\'écran',
+      viewport:  'Fenêtre visible',
+      dpr:       'Qualité d\'écran',
+      timezone:  'Ton fuseau horaire',
+      lang:      'Tes langues',
+      battery:   'Ta batterie',
+      network:   'Ta connexion',
+      memory:    'RAM appareil',
+      cpu:       'Cœurs processeur',
+      touch:     'Écran tactile',
+      darkmode:  'Mode sombre',
+      dnt:       'Do Not Track',
+      cookies:   'Cookies',
+      gpu:       'Carte graphique',
+      online:    'Statut réseau',
+    },
+    theory_title: 'Maintenant… un peu de théorie',
+    theory_body:  'Avant de continuer avec les jeux et expériences, nous allons parler ensemble de <strong>GDPR</strong>, de vos droits, et de ce que ces données signifient vraiment.',
+    theory_phone: 'Pose ton téléphone face vers le bas pour montrer que tu es attentif(ve) et prêt(e) 👇',
+    ready:        'Je suis prêt(e) ✓',
+    yes:          'Oui',
+    no:           'Non',
+    unknown:      'Inconnu',
+    cores:        'cœurs',
+    points:       'points de contact',
+    charging:     '⚡ En charge',
+    unplugged:    '🔋',
+    retina:       'Écran haute définition',
+    normal:       'Résolution standard',
+    online_yes:   '✅ Connecté',
+  },
+  nl: {
+    title:        'Wat jouw browser onthult…',
+    subtitle:     'Zonder je toestemming te vragen',
+    next:         'Volgende →',
+    labels: {
+      ip:        'Jouw IP-adres',
+      device:    'Jouw toestel',
+      os:        'Besturingssysteem',
+      browser:   'Jouw browser',
+      screen:    'Schermresolutie',
+      viewport:  'Zichtbaar venster',
+      dpr:       'Schermkwaliteit',
+      timezone:  'Jouw tijdzone',
+      lang:      'Jouw talen',
+      battery:   'Jouw batterij',
+      network:   'Jouw verbinding',
+      memory:    'RAM geheugen',
+      cpu:       'Processorkern(en)',
+      touch:     'Aanraakscherm',
+      darkmode:  'Donkere modus',
+      dnt:       'Do Not Track',
+      cookies:   'Cookies',
+      gpu:       'Grafische kaart',
+      online:    'Netwerkstatus',
+    },
+    theory_title: 'Nu… een beetje theorie',
+    theory_body:  'Voor we verdergaan met de spellen en ervaringen, praten we samen over <strong>GDPR</strong>, jouw rechten, en wat deze gegevens echt betekenen.',
+    theory_phone: 'Leg je telefoon met het scherm naar beneden om te tonen dat je aandachtig en klaar bent 👇',
+    ready:        'Ik ben klaar ✓',
+    yes:          'Ja',
+    no:           'Nee',
+    unknown:      'Onbekend',
+    cores:        'kernen',
+    points:       'aanraakpunten',
+    charging:     '⚡ Aan het laden',
+    unplugged:    '🔋',
+    retina:       'Hoge definitie scherm',
+    normal:       'Standaard resolutie',
+    online_yes:   '✅ Verbonden',
+  },
+  en: {
+    title:        'What your browser reveals…',
+    subtitle:     'Without asking your permission',
+    next:         'Next →',
+    labels: {
+      ip:        'Your IP address',
+      device:    'Your device',
+      os:        'Operating system',
+      browser:   'Your browser',
+      screen:    'Screen resolution',
+      viewport:  'Visible window',
+      dpr:       'Screen quality',
+      timezone:  'Your timezone',
+      lang:      'Your languages',
+      battery:   'Your battery',
+      network:   'Your connection',
+      memory:    'Device RAM',
+      cpu:       'CPU cores',
+      touch:     'Touch screen',
+      darkmode:  'Dark mode',
+      dnt:       'Do Not Track',
+      cookies:   'Cookies',
+      gpu:       'Graphics card',
+      online:    'Network status',
+    },
+    theory_title: 'Now… a bit of theory',
+    theory_body:  'Before we continue with the games and experiences, we\'ll talk together about <strong>GDPR</strong>, your rights, and what this data really means.',
+    theory_phone: 'Place your phone face down to show that you\'re paying attention and ready 👇',
+    ready:        'I\'m ready ✓',
+    yes:          'Yes',
+    no:           'No',
+    unknown:      'Unknown',
+    cores:        'cores',
+    points:       'touch points',
+    charging:     '⚡ Charging',
+    unplugged:    '🔋',
+    retina:       'High definition screen',
+    normal:       'Standard resolution',
+    online_yes:   '✅ Connected',
+  },
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getLang() {
+  const m = document.cookie.match(/cq_lang=([^;]+)/);
+  const l = m ? m[1].trim() : 'fr';
+  return T[l] ? l : 'fr';
+}
+
+function t(key) {
+  return T[lang][key] || T.fr[key] || key;
+}
+
+function label(key) {
+  return (T[lang].labels || {})[key] || (T.fr.labels || {})[key] || key;
+}
+
+// ── UA parsing ────────────────────────────────────────────────────────────────
+function parseUA(ua) {
+  let device = '💻';
+  let os     = t('unknown');
+  let browser = t('unknown');
+
+  // Device
+  if      (/iPhone/.test(ua))         device = '📱 iPhone';
+  else if (/iPad/.test(ua))           device = '📱 iPad';
+  else if (/Android.*Mobile/.test(ua)) device = '📱 Android';
+  else if (/Android/.test(ua))        device = '📱 Android (tablet)';
+  else if (/Mac/.test(ua))            device = '💻 Mac';
+  else if (/Windows/.test(ua))        device = '💻 Windows PC';
+  else if (/Linux/.test(ua))          device = '🐧 Linux';
+
+  // OS + version
+  let m;
+  if      ((m = ua.match(/iPhone OS ([\d_]+)/)))   os = 'iOS '     + m[1].replace(/_/g,'.');
+  else if ((m = ua.match(/iPad.*OS ([\d_]+)/)))     os = 'iPadOS '  + m[1].replace(/_/g,'.');
+  else if ((m = ua.match(/Android ([\d.]+)/)))      os = 'Android ' + m[1];
+  else if ((m = ua.match(/Mac OS X ([\d_]+)/)))     os = 'macOS '   + m[1].replace(/_/g,'.');
+  else if (/Windows NT 10/.test(ua))                os = 'Windows 10/11';
+  else if (/Windows NT 6\.3/.test(ua))              os = 'Windows 8.1';
+  else if (/Windows NT 6\.1/.test(ua))              os = 'Windows 7';
+  else if (/Linux/.test(ua))                        os = 'Linux';
+
+  // Browser
+  if      ((m = ua.match(/SamsungBrowser\/([\d]+)/)))  browser = 'Samsung Internet ' + m[1];
+  else if ((m = ua.match(/CriOS\/([\d]+)/)))            browser = 'Chrome '  + m[1] + ' (iOS)';
+  else if ((m = ua.match(/FxiOS\/([\d]+)/)))            browser = 'Firefox ' + m[1] + ' (iOS)';
+  else if ((m = ua.match(/EdgA?\/([\d]+)/)))            browser = 'Edge '    + m[1];
+  else if ((m = ua.match(/OPR\/([\d]+)/)))              browser = 'Opera '   + m[1];
+  else if ((m = ua.match(/Chrome\/([\d]+)/)) && !/Chromium/.test(ua)) browser = 'Chrome ' + m[1];
+  else if ((m = ua.match(/Firefox\/([\d]+)/)))          browser = 'Firefox ' + m[1];
+  else if ((m = ua.match(/Version\/([\d]+).*Safari/)))  browser = 'Safari '  + m[1];
+  else if (/Safari/.test(ua))                           browser = 'Safari';
+
+  return { device, os, browser };
+}
+
+// ── WebGL GPU ─────────────────────────────────────────────────────────────────
+function getGPU() {
+  try {
+    const c  = document.createElement('canvas');
+    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+    if (!gl) return null;
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    if (!ext) return null;
+    return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || null;
+  } catch(e) { return null; }
+}
+
+// ── Card builder ──────────────────────────────────────────────────────────────
+function makeCard(emoji, labelKey, value, colorClass, sub, wide) {
+  const card = document.createElement('div');
+  card.className = 'card' + (wide ? ' wide' : '');
+  card.innerHTML = `
+    <span class="card-emoji">${emoji}</span>
+    <span class="card-label">${label(labelKey)}</span>
+    <span class="card-value ${colorClass || ''}">${value}</span>
+    ${sub ? `<span class="card-sub">${sub}</span>` : ''}
+  `;
+  return card;
+}
+
+// ── Stagger animation ─────────────────────────────────────────────────────────
+function staggerCards() {
+  document.querySelectorAll('.card').forEach((c, i) => {
+    c.style.animationDelay = (i * 80) + 'ms';
+  });
+}
+
+// ── Main collect & render ─────────────────────────────────────────────────────
+const lang  = getLang();
+const grid  = document.getElementById('info-grid');
+const cards = [];
+
+async function init() {
+  document.documentElement.lang = lang;
+  document.getElementById('reveal-title').textContent   = t('title');
+  document.getElementById('reveal-subtitle').textContent = t('subtitle');
+  document.getElementById('btn-next').textContent        = t('next');
+
+  const ua = navigator.userAgent;
+  const { device, os, browser } = parseUA(ua);
+
+  // ── 1. IP (server-side) ──
+  let ip = '…';
+  try {
+    const r = await fetch('/api/my-info');
+    const d = await r.json();
+    ip = d.ip || t('unknown');
+  } catch(e) { ip = t('unknown'); }
+  grid.appendChild(makeCard('🌐', 'ip', ip, 'accent', null, true));
+
+  // ── 2. Appareil ──
+  grid.appendChild(makeCard('📱', 'device', device, 'text'));
+
+  // ── 3. OS ──
+  grid.appendChild(makeCard('🖥️', 'os', os, 'text'));
+
+  // ── 4. Navigateur ──
+  grid.appendChild(makeCard('🌍', 'browser', browser, 'yellow'));
+
+  // ── 5. Résolution écran ──
+  const res = `${screen.width} × ${screen.height}`;
+  grid.appendChild(makeCard('📏', 'screen', res, 'text'));
+
+  // ── 6. Viewport ──
+  const vp = `${window.innerWidth} × ${window.innerHeight}`;
+  grid.appendChild(makeCard('🪟', 'viewport', vp, 'text'));
+
+  // ── 7. Pixel ratio ──
+  const dpr = window.devicePixelRatio || 1;
+  const dprLabel = dpr >= 2 ? t('retina') : t('normal');
+  grid.appendChild(makeCard('✨', 'dpr', `×${dpr}`, dpr >= 2 ? 'green' : 'text', dprLabel));
+
+  // ── 8. Timezone ──
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || t('unknown');
+  grid.appendChild(makeCard('🗺️', 'timezone', tz, 'text'));
+
+  // ── 9. Langues ──
+  const langs = (navigator.languages || [navigator.language]).slice(0, 3).join(', ');
+  grid.appendChild(makeCard('🗣️', 'lang', langs, 'text'));
+
+  // ── 10. CPU ──
+  const cpu = navigator.hardwareConcurrency;
+  if (cpu) grid.appendChild(makeCard('🧮', 'cpu', `${cpu}`, 'text', t('cores')));
+
+  // ── 11. RAM ──
+  const mem = navigator.deviceMemory;
+  if (mem) grid.appendChild(makeCard('💾', 'memory', `${mem} Go`, 'text'));
+
+  // ── 12. Touch ──
+  const tp = navigator.maxTouchPoints || 0;
+  const isTouchVal = tp > 0 ? `✅  (${tp} ${t('points')})` : `❌`;
+  grid.appendChild(makeCard('👆', 'touch', isTouchVal, tp > 0 ? 'green' : 'muted'));
+
+  // ── 13. Dark mode ──
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  grid.appendChild(makeCard('🌙', 'darkmode', dark ? t('yes') : t('no'), dark ? 'green' : 'muted'));
+
+  // ── 14. Do Not Track ──
+  const dnt = navigator.doNotTrack;
+  const dntVal = (dnt === '1' || dnt === 'yes') ? `✅ ${t('yes')}` : `❌ ${t('no')}`;
+  grid.appendChild(makeCard('🔕', 'dnt', dntVal, (dnt === '1') ? 'green' : 'red'));
+
+  // ── 15. Cookies ──
+  const ck = navigator.cookieEnabled;
+  grid.appendChild(makeCard('🍪', 'cookies', ck ? `✅ ${t('yes')}` : `❌ ${t('no')}`, ck ? 'green' : 'red'));
+
+  // ── 16. Network (Android Chrome) ──
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (conn) {
+    const netType  = conn.effectiveType || conn.type || '?';
+    const downlink = conn.downlink ? `${conn.downlink} Mbps` : '';
+    grid.appendChild(makeCard('📡', 'network', netType.toUpperCase(), 'accent', downlink));
+  }
+
+  // ── 17. Save data ──
+  if (conn && conn.saveData) {
+    grid.appendChild(makeCard('📉', 'network', '⚡ Économie de données', 'yellow'));
+  }
+
+  // ── 18. GPU ──
+  const gpu = getGPU();
+  if (gpu) {
+    const gpuShort = gpu.replace(/\(.*?\)/g, '').trim().substring(0, 40);
+    grid.appendChild(makeCard('🎮', 'gpu', gpuShort, 'text'));
+  }
+
+  // ── 19. Online ──
+  grid.appendChild(makeCard('🛜', 'online', t('online_yes'), 'green'));
+
+  // ── 20. Battery (async, Android Chrome mostly) ──
+  if ('getBattery' in navigator) {
+    try {
+      const b   = await navigator.getBattery();
+      const pct = Math.round(b.level * 100);
+      const chg = b.charging ? t('charging') : t('unplugged');
+      grid.appendChild(makeCard('🔋', 'battery', `${pct}%`, pct < 20 ? 'red' : 'green', chg, true));
+    } catch(e) {}
+  }
+
+  staggerCards();
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showTheory() {
+  window.location.href = '/init';
+}
+
+init();
+</script>
+</body>
+</html>

@@ -20,6 +20,7 @@ import string
 import subprocess
 import sys
 import threading
+import time as _time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -204,6 +205,34 @@ def save_champions(scores):
         json.dumps(scores, indent=2, ensure_ascii=False),
         encoding='utf-8'
     )
+
+# ── Workshop Session (in-memory) ──────────────────────────────────────
+_workshop_session: dict = {
+    'started_at': None,   # float (Unix timestamp) ou None
+    'duration':   1200,   # 20 minutes en secondes
+}
+_session_lock = threading.Lock()
+_video_watches: dict = {}   # (team_id, video_url) -> float (timestamp démarrage)
+_scored_videos: set  = set()  # {(team_id, video_url)} — un score par vidéo par équipe
+TRANSLATIONS_DIR = BASE_DIR.parent / 'html' / 'translations'
+
+
+def _session_active() -> bool:
+    """True si la session est démarrée et le timer non expiré."""
+    with _session_lock:
+        s = _workshop_session
+        if s['started_at'] is None:
+            return False
+        return (_time.time() - s['started_at']) < s['duration']
+
+
+def _session_time_remaining() -> float:
+    """Secondes restantes (0 si pas démarrée ou expirée)."""
+    with _session_lock:
+        s = _workshop_session
+        if s['started_at'] is None:
+            return 0.0
+        return max(0.0, s['duration'] - (_time.time() - s['started_at']))
 
 # ── Lobby Champions (in-memory, session locale) ───────────────────────
 # State machine : 'waiting' → 'countdown' → 'playing' → 'waiting'
@@ -395,8 +424,14 @@ def dashboard_data():
     Réponse : { "teams": { team_id: {...} }, "events": [...] }
     """
     resp = jsonify({
-        'teams':  load_teams(),
-        'events': load_events(),
+        'teams':   load_teams(),
+        'events':  load_events(),
+        'session': {
+            'active':         _session_active(),
+            'started_at':     _workshop_session.get('started_at'),
+            'time_remaining': int(_session_time_remaining()),
+            'duration':       _workshop_session['duration'],
+        },
     })
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Cache-Control'] = 'no-store'
@@ -408,6 +443,11 @@ def dashboard_reset():
     EVENTS_FILE.write_text('[]', encoding='utf-8')
     TEAMS_FILE.write_text('{}', encoding='utf-8')
     CHAMPIONS_FILE.write_text('[]', encoding='utf-8')
+    # Remet la session workshop à zéro
+    with _session_lock:
+        _workshop_session['started_at'] = None
+    _video_watches.clear()
+    _scored_videos.clear()
     # Remet le lobby Champions à zéro
     with _champ_lock:
         _champ_lobby['teams']         = {}
@@ -1400,21 +1440,9 @@ def captive_probe():
         return '<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>', 200
     return redirect('/captive', code=302)
 
-@app.route('/phishing/roblox')
-def phishing_roblox():
-    return send_from_directory(str(HTML_DIR / 'phishing' / 'roblox'), 'login.html')
-
-@app.route('/phishing/instagram')
-def phishing_instagram():
-    return send_from_directory(str(HTML_DIR / 'phishing' / 'instagram'), 'login.html')
-
 @app.route('/phishing/google')
 def phishing_google():
     return send_from_directory(str(HTML_DIR / 'phishing' / 'google'), 'login.html')
-
-@app.route('/phishing/tiktok')
-def phishing_tiktok():
-    return send_from_directory(str(HTML_DIR / 'phishing' / 'tiktok'), 'login.html')
 
 @app.route('/phishing/login')
 def phishing_login():
@@ -1423,6 +1451,28 @@ def phishing_login():
 @app.route('/phishing/signup')
 def phishing_signup():
     return send_from_directory(str(HTML_DIR / 'phishing' / 'signup'), 'index.html')
+
+@app.route('/gotcha')
+def gotcha_page():
+    """Page de révélation post-captive portal — affiche ce que le navigateur révèle passivement."""
+    return send_from_directory(str(HTML_DIR), 'gotcha.html')
+
+@app.route('/pret')
+def pret_page():
+    """Écran théorie GDPR — affiché après la vidéo / sélection d'équipe."""
+    return send_from_directory(str(HTML_DIR), 'pret.html')
+
+@app.route('/attente')
+def attente_page():
+    """Page d'attente — les participants patientent avant de scanner les QR codes."""
+    return send_from_directory(str(HTML_DIR), 'attente.html')
+
+@app.route('/api/my-info')
+def api_my_info():
+    """Retourne l'IP du client (côté serveur) pour l'afficher sur la page gotcha."""
+    resp = jsonify({'ip': request.remote_addr})
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
 
 @app.route('/init-poster')
 def init_poster_page():
@@ -1504,6 +1554,231 @@ def password_check_stream(job_id):
             'Access-Control-Allow-Origin': '*',
         },
     )
+
+
+# ── Session workshop ─────────────────────────────────────────────────
+@app.route('/session/start', methods=['POST'])
+def session_start():
+    """Démarre le timer de 20 min pour la session workshop."""
+    with _session_lock:
+        _workshop_session['started_at'] = _time.time()
+    print(f"[SESSION] Démarrage — {datetime.now().isoformat(timespec='seconds')}")
+    return jsonify({
+        'ok':         True,
+        'started_at': _workshop_session['started_at'],
+        'duration':   _workshop_session['duration'],
+    })
+
+
+@app.route('/session/state')
+def session_state():
+    """Retourne l'état courant de la session."""
+    with _session_lock:
+        started = _workshop_session.get('started_at')
+        duration = _workshop_session['duration']
+    active = started is not None and (_time.time() - started) < duration
+    remaining = max(0.0, duration - (_time.time() - started)) if started else 0
+    return jsonify({
+        'active':         active,
+        'started_at':     started,
+        'duration':       duration,
+        'time_remaining': int(remaining),
+    })
+
+
+# ── Scoring workshop ──────────────────────────────────────────────────
+@app.route('/workshop/score', methods=['POST'])
+def workshop_score():
+    """
+    Ajoute des points à une équipe (activités hors vidéos).
+    Corps JSON : { team_id, activity, points, meta? }
+    Refuse si la session est inactive.
+    """
+    if not _session_active():
+        return jsonify({'error': 'session_inactive'}), 403
+
+    data     = request.get_json(silent=True) or {}
+    team_id  = data.get('team_id', '').strip()
+    activity = data.get('activity', '').strip()
+    points   = int(data.get('points', 0))
+
+    if not team_id or not activity:
+        return jsonify({'error': 'missing_fields'}), 400
+
+    teams = load_teams()
+    if team_id not in teams:
+        return jsonify({'error': 'unknown_team'}), 404
+
+    teams[team_id].setdefault('workshop_score', 0)
+    teams[team_id]['workshop_score'] += points
+    new_score = teams[team_id]['workshop_score']
+    save_teams(teams)
+
+    append_event({
+        'id':        team_id,
+        'exo':       activity,
+        'status':    'score',
+        'points':    points,
+        'timestamp': datetime.now().isoformat(timespec='seconds'),
+        'ip':        request.remote_addr,
+    })
+
+    print(f"[SCORE] {team_id:<20} | {activity:<20} | {points:+d} pts → total {new_score}")
+    return jsonify({'ok': True, 'points': points, 'total': new_score})
+
+
+# ── Activité vidéos ───────────────────────────────────────────────────
+@app.route('/activity/videos')
+def activity_videos_page():
+    return send_from_directory(str(HTML_DIR), 'video.html')
+
+
+@app.route('/activity/videos/list')
+def activity_videos_list():
+    """Retourne les vidéos filtrées par langue (param ?lang=FR)."""
+    lang = request.args.get('lang', 'fr').upper()
+    videos_file = BASE_DIR / 'video' / 'videos.json'
+    try:
+        videos = json.loads(videos_file.read_text(encoding='utf-8'))
+    except Exception:
+        return jsonify([])
+    filtered = [v for v in videos if v.get('langue', '').upper() == lang]
+    return jsonify(filtered)
+
+
+@app.route('/activity/videos/watch', methods=['POST'])
+def activity_videos_watch():
+    """Enregistre l'heure de démarrage du visionnage."""
+    data      = request.get_json(silent=True) or {}
+    team_id   = data.get('team_id', '').strip()
+    video_url = data.get('video_url', '').strip()
+    if not team_id or not video_url:
+        return jsonify({'error': 'missing_fields'}), 400
+    _video_watches[(team_id, video_url)] = _time.time()
+    return jsonify({'ok': True})
+
+
+@app.route('/activity/videos/score', methods=['POST'])
+def activity_videos_score():
+    """
+    Accorde les points d'une vidéo si ≥ 90% de la durée est écoulée.
+    Corps JSON : { team_id, video_url, duration, bonus }
+    """
+    if not _session_active():
+        return jsonify({'error': 'session_inactive'}), 403
+
+    data      = request.get_json(silent=True) or {}
+    team_id   = data.get('team_id', '').strip()
+    video_url = data.get('video_url', '').strip()
+    duration  = max(1, int(data.get('duration', 60)))
+    bonus     = bool(data.get('bonus', False))
+
+    if not team_id or not video_url:
+        return jsonify({'error': 'missing_fields'}), 400
+
+    key = (team_id, video_url)
+    if key in _scored_videos:
+        return jsonify({'error': 'already_scored'}), 409
+
+    watch_start = _video_watches.get(key)
+    if watch_start is None:
+        return jsonify({'error': 'no_watch_start'}), 400
+
+    elapsed  = _time.time() - watch_start
+    required = duration * 0.9
+    if elapsed < required:
+        return jsonify({'error': 'too_early', 'remaining': int(required - elapsed)}), 425
+
+    points = 100 if bonus else 50
+
+    teams = load_teams()
+    if team_id not in teams:
+        return jsonify({'error': 'unknown_team'}), 404
+
+    teams[team_id].setdefault('workshop_score', 0)
+    teams[team_id]['workshop_score'] += points
+    new_score = teams[team_id]['workshop_score']
+    save_teams(teams)
+    _scored_videos.add(key)
+
+    append_event({
+        'id':        team_id,
+        'exo':       'video',
+        'status':    'scored',
+        'points':    points,
+        'bonus':     bonus,
+        'timestamp': datetime.now().isoformat(timespec='seconds'),
+        'ip':        request.remote_addr,
+    })
+
+    print(f"[VIDEO] {team_id:<20} | {'bonus' if bonus else 'normal':<6} | +{points} pts → {new_score}")
+    return jsonify({'ok': True, 'points': points, 'total': new_score})
+
+
+# ── Page missions ────────────────────────────────────────────────────
+@app.route('/missions')
+def missions_page():
+    return send_from_directory(str(HTML_DIR), 'missions.html')
+
+
+@app.route('/missions/status')
+def missions_status():
+    """
+    Retourne les missions complétées + score workshop pour une équipe.
+    Param : ?team_id=snowden
+    Réponse : { done: { activity: true, ... }, workshop_score: 0 }
+    """
+    team_id = request.args.get('team_id', '').strip()
+    if not team_id:
+        return jsonify({'error': 'missing_team_id'}), 400
+
+    events = load_events()
+    done: dict = {}
+
+    for e in events:
+        if e.get('id') != team_id:
+            continue
+        exo    = e.get('exo', '')
+        status = e.get('status', '')
+        # Activité scorée via /workshop/score (status='score') ou /activity/videos/score (status='scored')
+        if status in ('score', 'scored'):
+            done[exo] = True
+
+    teams        = load_teams()
+    workshop_score = teams.get(team_id, {}).get('workshop_score', 0)
+
+    resp = jsonify({'done': done, 'workshop_score': workshop_score,
+                    'session': {'active': _session_active(), 'time_remaining': int(_session_time_remaining())}})
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
+
+
+# ── Activités jeux + fake website ────────────────────────────────────
+@app.route('/activity/cyberquest-match')
+def activity_cyberquest_match():
+    return send_from_directory(str(BASE_DIR), 'cyberquest-match.html')
+
+
+@app.route('/activity/cyberquest-defense')
+def activity_cyberquest_defense():
+    return send_from_directory(str(BASE_DIR), 'cyberquest-defense.html')
+
+
+@app.route('/activity/do-not-press')
+def activity_do_not_press():
+    return send_from_directory(str(BASE_DIR), 'do-not-press.html')
+
+
+@app.route('/activity/page')
+def activity_fake_page():
+    """Sert translations/{lang}/page.html selon le cookie cq_lang."""
+    lang = request.cookies.get('cq_lang', 'fr').lower()
+    if lang not in ('fr', 'nl', 'en'):
+        lang = 'fr'
+    page_path = TRANSLATIONS_DIR / lang / 'page.html'
+    if not page_path.exists():
+        return f'Page non trouvée pour la langue {lang}', 404
+    return send_from_directory(str(TRANSLATIONS_DIR / lang), 'page.html')
 
 
 # ── Démarrage ─────────────────────────────────────────────────────────

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberQuest — Vidéos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111520;
+      --border: #1e2535;
+      --accent: #00ffd0;
+      --accent2: #ff9f43;
+      --text: #e8eaf2;
+      --muted: #5a6580;
+      --card-bg: #13192a;
+      --green: #39d353;
+      --red: #ff4757;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Lang switcher */
+    .lang-switcher {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .lang-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,208,0.07); }
+
+    /* Header */
+    header {
+      padding: 56px 24px 28px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .header-icon { font-size: 60px; display: block; margin-bottom: 12px; }
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    /* Points info */
+    .points-info {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 24px 0;
+      flex-wrap: wrap;
+    }
+    .points-badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .points-badge span { color: var(--accent2); font-weight: bold; }
+    .points-badge.bonus span { color: #a29bfe; }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding: 28px 20px 60px;
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Video card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .card.scored {
+      border-color: var(--green);
+      opacity: 0.75;
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .topic-icon { font-size: 32px; flex-shrink: 0; }
+    .topic-info { flex: 1; }
+    .topic-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .bonus-badge {
+      display: inline-block;
+      background: rgba(162,155,254,0.15);
+      border: 1px solid #a29bfe;
+      color: #a29bfe;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .duration-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Progress / countdown */
+    .progress-wrap {
+      background: var(--surface);
+      border-radius: 6px;
+      height: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 1s linear;
+    }
+    .countdown-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      display: none;
+    }
+
+    /* Buttons */
+    .btn-watch {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+    .btn-watch:hover { background: rgba(0,255,208,0.08); }
+    .btn-watch:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--muted); color: var(--muted); }
+
+    .btn-score {
+      width: 100%;
+      padding: 12px;
+      background: var(--green);
+      border: none;
+      color: #0a0c10;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: none;
+      transition: opacity 0.2s;
+    }
+    .btn-score:hover { opacity: 0.85; }
+    .btn-score:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .scored-label {
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--green);
+      display: none;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+      z-index: 9999;
+      text-align: center;
+      min-width: 200px;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* No videos */
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      padding: 60px 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <button class="lang-btn" onclick="setLang('fr')">FR</button>
+  <button class="lang-btn" onclick="setLang('nl')">NL</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<header>
+  <span class="header-icon">🎬</span>
+  <h1 id="h-title">Vidéos</h1>
+  <div class="subtitle" id="h-sub">Regarde la vidéo jusqu'au bout pour scorer</div>
+</header>
+
+<div class="points-info">
+  <div class="points-badge"><span id="pts-normal">50 pts</span> <span id="lbl-normal">vidéo normale</span></div>
+  <div class="points-badge bonus"><span id="pts-bonus">100 pts</span> <span id="lbl-bonus">vidéo bonus ⭐</span></div>
+</div>
+
+<div class="grid" id="grid">
+  <div class="empty" id="loading">Chargement...</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── i18n ────────────────────────────────────────────────────────────
+const T = {
+  fr: {
+    title: 'Vidéos',
+    sub: 'Regarde la vidéo jusqu\'au bout pour scorer',
+    watch: '▶ Regarder',
+    watching: 'Vidéo ouverte — reviens ici quand tu as fini !',
+    scoreBtn: '✓ Scorer cette vidéo',
+    scored: '✅ Scorée',
+    alreadyScored: 'Déjà scorée !',
+    tooEarly: (s) => `Encore ${s}s…`,
+    points: (p) => `+${p} pts gagnés !`,
+    sessionOff: 'Session non démarrée — aucun point accordé.',
+    loading: 'Chargement…',
+    noVideos: 'Aucune vidéo disponible pour ta langue.',
+    countdown: (s) => `Reviens dans ${s}s`,
+    normalLabel: 'vidéo normale',
+    bonusLabel: 'vidéo bonus ⭐',
+    durationLabel: (s) => `Durée : ${s}s`,
+    topics: { DEEPFAKE:'Deepfake', PHISHING:'Phishing', PASSWORD:'Mot de passe', CONFIDENTIALITY:'Confidentialité', GLOBAL:'Général' },
+    topicIcons: { DEEPFAKE:'🤖', PHISHING:'🎣', PASSWORD:'🔐', CONFIDENTIALITY:'🕵️', GLOBAL:'🌐' },
+  },
+  nl: {
+    title: 'Video\'s',
+    sub: 'Bekijk de video helemaal om punten te scoren',
+    watch: '▶ Bekijken',
+    watching: 'Video geopend — kom hier terug als je klaar bent!',
+    scoreBtn: '✓ Punten claimen',
+    scored: '✅ Gescoord',
+    alreadyScored: 'Al gescoord!',
+    tooEarly: (s) => `Nog ${s}s…`,
+    points: (p) => `+${p} punten gewonnen!`,
+    sessionOff: 'Sessie niet gestart — geen punten toegekend.',
+    loading: 'Laden…',
+    noVideos: 'Geen video\'s beschikbaar voor jouw taal.',
+    countdown: (s) => `Kom terug over ${s}s`,
+    normalLabel: 'normale video',
+    bonusLabel: 'bonusvideo ⭐',
+    durationLabel: (s) => `Duur: ${s}s`,
+    topics: { DEEPFAKE:'Deepfake', PHISHING:'Phishing', PASSWORD:'Wachtwoord', CONFIDENTIALITY:'Vertrouwelijkheid', GLOBAL:'Algemeen' },
+    topicIcons: { DEEPFAKE:'🤖', PHISHING:'🎣', PASSWORD:'🔐', CONFIDENTIALITY:'🕵️', GLOBAL:'🌐' },
+  },
+  en: {
+    title: 'Videos',
+    sub: 'Watch the full video to earn points',
+    watch: '▶ Watch',
+    watching: 'Video opened — come back here when you\'re done!',
+    scoreBtn: '✓ Claim points',
+    scored: '✅ Scored',
+    alreadyScored: 'Already scored!',
+    tooEarly: (s) => `${s}s remaining…`,
+    points: (p) => `+${p} points earned!`,
+    sessionOff: 'Session not started — no points awarded.',
+    loading: 'Loading…',
+    noVideos: 'No videos available for your language.',
+    countdown: (s) => `Come back in ${s}s`,
+    normalLabel: 'normal video',
+    bonusLabel: 'bonus video ⭐',
+    durationLabel: (s) => `Duration: ${s}s`,
+    topics: { DEEPFAKE:'Deepfake', PHISHING:'Phishing', PASSWORD:'Password', CONFIDENTIALITY:'Confidentiality', GLOBAL:'General' },
+    topicIcons: { DEEPFAKE:'🤖', PHISHING:'🎣', PASSWORD:'🔐', CONFIDENTIALITY:'🕵️', GLOBAL:'🌐' },
+  },
+};
+
+// ── State ────────────────────────────────────────────────────────────
+let lang    = getCookie('cq_lang') || 'fr';
+let teamId  = getCookie('cq_team') || '';
+let videos  = [];
+// watchTimers: { videoUrl: { startedAt, interval, required } }
+const watchTimers = {};
+// scoredSet: Set of already-scored video URLs (session only)
+const scoredSet = new Set(JSON.parse(sessionStorage.getItem('scoredVideos') || '[]'));
+
+// ── Init ─────────────────────────────────────────────────────────────
+function getCookie(name) {
+  const m = document.cookie.match('(?:^|;)\\s*' + name + '=([^;]*)');
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  applyTranslations();
+  loadVideos();
+}
+
+function applyTranslations() {
+  const t = T[lang] || T.fr;
+  document.getElementById('h-title').textContent  = t.title;
+  document.getElementById('h-sub').textContent    = t.sub;
+  document.getElementById('lbl-normal').textContent = t.normalLabel;
+  document.getElementById('lbl-bonus').textContent  = t.bonusLabel;
+}
+
+async function loadVideos() {
+  const t = T[lang] || T.fr;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = `<div class="empty">${t.loading}</div>`;
+  try {
+    const r = await fetch(`/activity/videos/list?lang=${lang.toUpperCase()}`);
+    videos  = await r.json();
+  } catch(e) {
+    grid.innerHTML = `<div class="empty">${t.noVideos}</div>`;
+    return;
+  }
+  if (!videos.length) {
+    grid.innerHTML = `<div class="empty">${t.noVideos}</div>`;
+    return;
+  }
+  renderCards();
+}
+
+function renderCards() {
+  const t    = T[lang] || T.fr;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  videos.forEach((v, idx) => {
+    const alreadyScored = scoredSet.has(v.url);
+    const topic    = v.topic || 'GLOBAL';
+    const icon     = t.topicIcons[topic] || '📺';
+    const topicStr = t.topics[topic]  || topic;
+    const isBonus  = !!v.bonus;
+    const dur      = v.duration || 60;
+
+    const card = document.createElement('div');
+    card.className = 'card' + (alreadyScored ? ' scored' : '');
+    card.id = `card-${idx}`;
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="topic-icon">${icon}</span>
+        <div class="topic-info">
+          <div class="topic-name">${topicStr}</div>
+          ${isBonus ? `<span class="bonus-badge">⭐ BONUS</span>` : ''}
+          <div class="duration-label">${t.durationLabel(dur)}</div>
+        </div>
+      </div>
+      <div class="progress-wrap" id="prog-wrap-${idx}">
+        <div class="progress-bar" id="prog-bar-${idx}"></div>
+      </div>
+      <div class="countdown-label" id="cd-label-${idx}"></div>
+      <button class="btn-watch" id="btn-watch-${idx}" onclick="watchVideo(${idx})"
+        ${alreadyScored ? 'disabled' : ''}>${t.watch}</button>
+      <button class="btn-score" id="btn-score-${idx}" onclick="scoreVideo(${idx})">${t.scoreBtn}</button>
+      <div class="scored-label" id="scored-label-${idx}">${alreadyScored ? t.scored : ''}</div>
+    `;
+    if (alreadyScored) {
+      card.querySelector(`#scored-label-${idx}`).style.display = 'block';
+      card.querySelector(`#btn-watch-${idx}`).style.display = 'none';
+    }
+    grid.appendChild(card);
+  });
+}
+
+function watchVideo(idx) {
+  const v   = videos[idx];
+  const t   = T[lang] || T.fr;
+  const dur = v.duration || 60;
+  const req = Math.ceil(dur * 0.9);
+
+  // Record watch start on server
+  if (teamId) {
+    fetch('/activity/videos/watch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ team_id: teamId, video_url: v.url }),
+    });
+  }
+
+  // Open YouTube
+  window.open(v.url, '_blank');
+
+  // Record local start time
+  const startedAt = Date.now();
+  watchTimers[v.url] = { startedAt, required: req * 1000 };
+
+  // Show progress UI
+  const watchBtn  = document.getElementById(`btn-watch-${idx}`);
+  const scoreBtn  = document.getElementById(`btn-score-${idx}`);
+  const progWrap  = document.getElementById(`prog-wrap-${idx}`);
+  const progBar   = document.getElementById(`prog-bar-${idx}`);
+  const cdLabel   = document.getElementById(`cd-label-${idx}`);
+
+  watchBtn.disabled   = true;
+  progWrap.style.display = 'block';
+  cdLabel.style.display  = 'block';
+  showToast(t.watching);
+
+  const interval = setInterval(() => {
+    const elapsed = Date.now() - startedAt;
+    const pct     = Math.min(100, (elapsed / (req * 1000)) * 100);
+    const remSec  = Math.max(0, Math.ceil((req * 1000 - elapsed) / 1000));
+
+    progBar.style.width = pct + '%';
+    cdLabel.textContent = remSec > 0 ? t.countdown(remSec) : '';
+
+    if (elapsed >= req * 1000) {
+      clearInterval(interval);
+      cdLabel.style.display = 'none';
+      progWrap.style.display = 'none';
+      scoreBtn.style.display = 'block';
+    }
+  }, 500);
+
+  watchTimers[v.url].interval = interval;
+}
+
+async function scoreVideo(idx) {
+  const v   = videos[idx];
+  const t   = T[lang] || T.fr;
+
+  if (!teamId) {
+    showToast('⚠️ Aucune équipe détectée — connecte-toi d\'abord.');
+    return;
+  }
+
+  const btn = document.getElementById(`btn-score-${idx}`);
+  btn.disabled = true;
+
+  const r = await fetch('/activity/videos/score', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      team_id:   teamId,
+      video_url: v.url,
+      duration:  v.duration || 60,
+      bonus:     !!v.bonus,
+    }),
+  });
+  const data = await r.json();
+
+  if (data.ok) {
+    scoredSet.add(v.url);
+    sessionStorage.setItem('scoredVideos', JSON.stringify([...scoredSet]));
+
+    const card = document.getElementById(`card-${idx}`);
+    card.classList.add('scored');
+    btn.style.display = 'none';
+
+    const scoredLbl = document.getElementById(`scored-label-${idx}`);
+    scoredLbl.textContent = `${t.scored} — ${t.points(data.points)}`;
+    scoredLbl.style.display = 'block';
+
+    showToast('🏆 ' + t.points(data.points));
+  } else if (data.error === 'already_scored') {
+    showToast(t.alreadyScored);
+    scoredSet.add(v.url);
+  } else if (data.error === 'too_early') {
+    showToast(t.tooEarly(data.remaining || '?'));
+    btn.disabled = false;
+  } else if (data.error === 'session_inactive') {
+    showToast(t.sessionOff);
+    btn.disabled = false;
+  } else {
+    showToast('Erreur — réessaie.');
+    btn.disabled = false;
+  }
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ── Bootstrap ────────────────────────────────────────────────────────
+(function init() {
+  if (!['fr','nl','en'].includes(lang)) lang = 'fr';
+  // Mark active lang button
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent === lang.toUpperCase())
+  );
+  applyTranslations();
+  loadVideos();
+})();
+</script>
+</body>
+</html>

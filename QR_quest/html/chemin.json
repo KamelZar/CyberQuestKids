@@ -1,0 +1,27 @@
+
+videos.json
+"/phishing/google",
+"password-check/start"
+"cyberquest-match"
+"cyberquest-defense"
+"do-not-press"
+"https://pranx.com/hacker/"
+"https://pestgame.com/"
+"https://pranx.com/fbi-warning/"
+"https://pranx.com/fake-virus/"
+
+
+page.html from /Users/ihssan/IdeaProjects/CyberQuestKids/html/translations/{language}/
+
+
+Chaque vidéo donnerait 50 points sauf si bonus , elle vaut double.
+Le phishing rapporte toujours 10 points au debut , si l utilisateur se fait avoir => il perd 20 points
+s il ne se fait pas avoir il gagne 20 points de plus .
+
+password check permet de gagner 5 points par critère de password respecté , 10 points bonus si pas trouvé .
+10 points également si l utilisateur compare avec le tableau de password pour connaitre sa position.
+
+
+Pour les jeux match , defense, do not press  , je pense que les points sont déjà determinés par le jeu
+
+Les sites externent ne rapportent rien.

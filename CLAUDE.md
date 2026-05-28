@@ -80,7 +80,9 @@ WiFi connect → OS probe interceptée → /captive → /phishing/login?portal=1
 - `phishing/login/index.html` + `phishing/signup/index.html` : redirects countdown → `/gotcha` au lieu de `/init`
 - `pret.html` + route `/pret` : écran théorie GDPR — affiché après vidéo / sélection d'équipe — FR/NL/EN, animation téléphone, bouton "Je suis prêt(e)" → `/attente`
 - `attente.html` + route `/attente` : page d'attente sans redirect — badge équipe, animation dots, FR/NL/EN — les participants patientent avant de scanner les QR codes
-- `server.py` : session workshop in-memory (`_workshop_session`, `_session_lock`) — `POST /session/start`, `GET /session/state` ; timer 20 min, scoring bloqué après expiration
+- `server.py` : session workshop in-memory (`_workshop_session`, `_session_lock`) — `POST /session/start`, `POST /session/stop` (arrêt manuel + flag `stopped`), `GET /session/state` ; timer 20 min, scoring bloqué après expiration ou arrêt manuel
+- `dashboard.html` : bouton ⏹ STOP → CHAMPIONS (visible pendant session active) — appelle `/session/stop`, cache le STOP, passe START en "TERMINÉ"
+- `missions.html` : overlay Champions (⚡ Direction Champions !) affiché quand session stoppée ou expirée — FR/NL/EN, lien direct `/champions`
 - `server.py` : `POST /workshop/score` — point central de scoring, ajoute `workshop_score` dans `teams.json`, vérifie session active, log dans `events.json`
 - `server.py` : routes activités — `GET /activity/videos` (`html/video.html`), `/activity/videos/list` (filtré par lang), `POST /activity/videos/watch` + `/score` (time-gate 90%), `GET /activity/cyberquest-match|defense|do-not-press`, `GET /activity/page` (translations/{cq_lang}/page.html)
 - `html/video.html` : page activité vidéos — cards par topic, countdown visuel 90% durée, bouton scorer, anti-double-score, FR/NL/EN ; vidéo normale = 50 pts, bonus = 100 pts

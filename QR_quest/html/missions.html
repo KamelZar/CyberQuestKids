@@ -231,6 +231,39 @@
     .mission-pts.bonus  { background: rgba(162,155,254,0.12); color: var(--purple); border: 1px solid rgba(162,155,254,0.25); }
     .mission-pts.zero   { background: rgba(90,101,128,0.15); color: var(--muted); border: 1px solid var(--border); }
 
+    /* ── Champions overlay ── */
+    .champ-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 20px; text-align: center;
+      padding: 32px;
+    }
+    .champ-overlay.show { display: flex; }
+    .champ-overlay-icon { font-size: 72px; animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .champ-overlay-title {
+      font-size: 2rem; font-weight: 800; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 3px;
+    }
+    .champ-overlay-sub {
+      font-family: 'Share Tech Mono', monospace; font-size: 14px;
+      color: var(--muted); max-width: 340px; line-height: 1.6;
+    }
+    .champ-overlay-btn {
+      display: inline-block;
+      background: var(--accent); color: #0a0c10;
+      font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800;
+      text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+      padding: 16px 40px; border-radius: 10px;
+      box-shadow: 0 0 24px rgba(0,255,208,0.4);
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+    .champ-overlay-btn:hover { opacity: 0.85; }
+
     /* External tag */
     .ext-tag {
       font-family: 'Share Tech Mono', monospace; font-size: 10px;
@@ -240,6 +273,14 @@
   </style>
 </head>
 <body>
+
+<!-- Champions overlay -->
+<div class="champ-overlay" id="champ-overlay">
+  <div class="champ-overlay-icon">⚡</div>
+  <div class="champ-overlay-title" id="co-title">Direction Champions !</div>
+  <div class="champ-overlay-sub" id="co-sub">Les activités sont terminées.<br>Rejoins le Quiz Champions pour la finale !</div>
+  <a class="champ-overlay-btn" href="/champions" id="co-btn">Jouer Champions →</a>
+</div>
 
 <div class="lang-switcher">
   <button class="lang-btn" onclick="setLang('fr')">FR</button>
@@ -280,6 +321,11 @@ const T = {
       + `<br><br>Attention à ne pas vouloir aller trop vite — parfois des informations sont cachées…`
       + `<br><br>Pour chaque activité utile liée à la cybersécurité, vous marquerez des points.`,
     footer: '— Bonne chance. 🔐',
+    champions: {
+      title: 'Direction Champions !',
+      sub: 'Les activités sont terminées.\nRejoins le Quiz Champions pour la finale !',
+      btn: 'Jouer Champions →',
+    },
     sessionOff: 'Session non démarrée',
     sessionOn: 'Session en cours',
     sessionEnd: 'Session terminée',
@@ -311,6 +357,11 @@ const T = {
       + `<br><br>Pas op — ga niet te snel, soms zijn er verborgen aanwijzingen…`
       + `<br><br>Voor elke nuttige activiteit rond cyberveiligheid verdien je punten.`,
     footer: '— Veel succes. 🔐',
+    champions: {
+      title: 'Naar Champions!',
+      sub: 'De activiteiten zijn afgelopen.\nSluit je aan bij de Champions Quiz voor de finale!',
+      btn: 'Champions spelen →',
+    },
     sessionOff: 'Sessie niet gestart',
     sessionOn: 'Sessie bezig',
     sessionEnd: 'Sessie afgelopen',
@@ -342,6 +393,11 @@ const T = {
       + `<br><br>Don't rush — sometimes clues are hidden in plain sight…`
       + `<br><br>For every cybersecurity-related activity you complete, you will earn points.`,
     footer: '— Good luck. 🔐',
+    champions: {
+      title: 'Time for Champions!',
+      sub: 'Activities are over.\nJoin the Champions Quiz for the grand finale!',
+      btn: 'Play Champions →',
+    },
     sessionOff: 'Session not started',
     sessionOn: 'Session in progress',
     sessionEnd: 'Session over',
@@ -424,7 +480,7 @@ function tickTimer() {
   }
 }
 
-function updateSessionUI(active, rem) {
+function updateSessionUI(active, rem, stopped) {
   const t   = T[lang] || T.fr;
   const dot = document.getElementById('session-dot');
   const lbl = document.getElementById('session-label');
@@ -437,7 +493,24 @@ function updateSessionUI(active, rem) {
     dot.className = 'dot ended'; lbl.textContent = t.sessionEnd;
     document.getElementById('timer-display').textContent = '0:00';
     document.getElementById('timer-display').classList.add('danger');
+    // Affiche l'overlay Champions (session stoppée ou expirée)
+    showChampsOverlay();
   }
+}
+
+let _champsOverlayShown = false;
+function showChampsOverlay() {
+  if (_champsOverlayShown) return;
+  _champsOverlayShown = true;
+  const t  = T[lang] || T.fr;
+  const tc = t.champions;
+  document.getElementById('co-title').textContent = tc.title;
+  document.getElementById('co-sub').textContent   = tc.sub;
+  document.getElementById('co-btn').textContent   = tc.btn;
+  // Petit délai pour que le joueur voie le timer arriver à 0
+  setTimeout(() => {
+    document.getElementById('champ-overlay').classList.add('show');
+  }, 800);
 }
 
 // ── Notebook render ───────────────────────────────────────────────────
@@ -556,7 +629,7 @@ async function pollStatus() {
     if (sess.started_at && !sessionStartedAt) {
       startTimer(sess.started_at, sess.duration || 1200);
     }
-    updateSessionUI(sess.active, sess.time_remaining || 0);
+    updateSessionUI(sess.active, sess.time_remaining || 0, sess.stopped);
 
     // Done activities
     const newDone = data.done || {};

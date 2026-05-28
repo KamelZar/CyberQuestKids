@@ -309,6 +309,9 @@
                         background: var(--accent); font-weight: 700; }
     .btn-action.start:hover { background: #00d4aa; }
     .btn-action.start.running { background: rgba(0,255,208,0.1); color: var(--accent); border-color: var(--accent); font-weight: 400; }
+    .btn-action.stop  { border: 1.5px solid var(--red); color: var(--red);
+                        background: rgba(255,59,107,0.1); font-weight: 700; display: none; }
+    .btn-action.stop:hover { background: rgba(255,59,107,0.22); }
   </style>
 </head>
 <body>
@@ -324,6 +327,7 @@
     <div class="hdr-right">
       <span class="last-update" id="last-update">—</span>
       <button class="btn-action start" id="btn-start" onclick="sessionStart()">▶ START</button>
+      <button class="btn-action stop"  id="btn-stop"  onclick="sessionStop()">⏹ STOP → CHAMPIONS</button>
       <button class="btn-action grn" id="btn-passthrough" onclick="passthrough()">🌐 INTERNET</button>
       <button class="btn-action yel" id="btn-forward"     onclick="forward()">🔒 CAPTIVE</button>
       <button class="btn-action blue" onclick="resetTeams()">🧹 ÉQUIPES</button>
@@ -700,6 +704,23 @@
             var btn = document.getElementById('btn-start');
             btn.textContent = '▶ EN COURS';
             btn.classList.add('running');
+            document.getElementById('btn-stop').style.display = 'inline-block';
+          }
+        });
+    }
+
+    function sessionStop() {
+      if (!confirm('Arrêter la session maintenant ?\nLes scores sont bloqués et les participants seront redirigés vers Champions.')) return;
+      fetch('/session/stop', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            if (timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            renderTimer(false, 0, _sessionDuration || 1200);
+            var btnStart = document.getElementById('btn-start');
+            btnStart.textContent = '⏹ TERMINÉ';
+            btnStart.classList.add('running');
+            document.getElementById('btn-stop').style.display = 'none';
           }
         });
     }
@@ -720,7 +741,16 @@
           updateStats(teams, events);
           updateFeed(events);
           updatePhishing(events);
-          if (data.session && !_sessionStartedAt) updateSession(data.session);
+          if (data.session) {
+            if (!_sessionStartedAt) updateSession(data.session);
+            // Affiche STOP si session active, cache-le si stoppée/expirée
+            var stopBtn = document.getElementById('btn-stop');
+            if (data.session.active) {
+              stopBtn.style.display = 'inline-block';
+            } else {
+              stopBtn.style.display = 'none';
+            }
+          }
         })
         .catch(function() {
           document.getElementById('status-dot').className = 'status-dot offline';

@@ -210,6 +210,7 @@ def save_champions(scores):
 _workshop_session: dict = {
     'started_at': None,   # float (Unix timestamp) ou None
     'duration':   1200,   # 20 minutes en secondes
+    'stopped':    False,  # arrêt manuel par l'animateur
 }
 _session_lock = threading.Lock()
 _video_watches: dict = {}   # (team_id, video_url) -> float (timestamp démarrage)
@@ -218,19 +219,19 @@ TRANSLATIONS_DIR = BASE_DIR.parent / 'html' / 'translations'
 
 
 def _session_active() -> bool:
-    """True si la session est démarrée et le timer non expiré."""
+    """True si la session est démarrée, non stoppée et le timer non expiré."""
     with _session_lock:
         s = _workshop_session
-        if s['started_at'] is None:
+        if s['started_at'] is None or s['stopped']:
             return False
         return (_time.time() - s['started_at']) < s['duration']
 
 
 def _session_time_remaining() -> float:
-    """Secondes restantes (0 si pas démarrée ou expirée)."""
+    """Secondes restantes (0 si pas démarrée, stoppée ou expirée)."""
     with _session_lock:
         s = _workshop_session
-        if s['started_at'] is None:
+        if s['started_at'] is None or s['stopped']:
             return 0.0
         return max(0.0, s['duration'] - (_time.time() - s['started_at']))
 
@@ -431,6 +432,7 @@ def dashboard_data():
             'started_at':     _workshop_session.get('started_at'),
             'time_remaining': int(_session_time_remaining()),
             'duration':       _workshop_session['duration'],
+            'stopped':        _workshop_session.get('stopped', False),
         },
     })
     resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -446,6 +448,7 @@ def dashboard_reset():
     # Remet la session workshop à zéro
     with _session_lock:
         _workshop_session['started_at'] = None
+        _workshop_session['stopped']    = False
     _video_watches.clear()
     _scored_videos.clear()
     # Remet le lobby Champions à zéro
@@ -1568,6 +1571,15 @@ def session_start():
         'started_at': _workshop_session['started_at'],
         'duration':   _workshop_session['duration'],
     })
+
+
+@app.route('/session/stop', methods=['POST'])
+def session_stop():
+    """Arrête manuellement la session workshop (bloque le scoring, active l'écran Champions)."""
+    with _session_lock:
+        _workshop_session['stopped'] = True
+    print(f"[SESSION] Arrêt manuel — {datetime.now().isoformat(timespec='seconds')}")
+    return jsonify({'ok': True})
 
 
 @app.route('/session/state')

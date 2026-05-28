@@ -260,7 +260,7 @@
     </div>
     <div class="ctrl-group">
       <label class="ctrl-label" id="lbl-url">URL serveur</label>
-      <input class="ctrl-input" id="cfg-url" value="http://192.168.0.45:8080/init" />
+      <input class="ctrl-input" id="cfg-url" value="http://192.168.0.45:8080/captive" />
     </div>
     <div class="ctrl-group">
       <label class="ctrl-label" id="lbl-lang">Langue poster</label>
@@ -485,7 +485,7 @@
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data && data.url) {
-            document.getElementById('cfg-url').value = data.url;
+            document.getElementById('cfg-url').value = data.url.replace('/init', '/captive');
           }
         })
         .catch(function() { /* fallback : valeur par défaut du champ */ })

@@ -402,6 +402,8 @@
       "tab": {
         "title": "📧 Email Trap Detector",
         "insight": "Click on the email to reveal phishing clues!",
+        "from": "From",
+        "to": "To",
         "analyse": "🕵️ Your analysis:",
         "more": "More +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=en-GB",

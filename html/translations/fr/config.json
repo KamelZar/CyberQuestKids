@@ -403,6 +403,8 @@
         "title": "\uD83D\uDCE7 Détecteur d'Email Piège",
         "insight": "Cliquez sur l'email pour révéler les indices de phishing !",
         "analyse": "\uD83D\uDD75\uFE0F Votre analyse :",
+        "from": "De",
+        "to": "À",
         "more": "Encore +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=fr",
         "duration": {

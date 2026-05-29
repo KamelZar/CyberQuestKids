@@ -858,22 +858,6 @@
             }
         }
 
-        /* Prevent clicking on YouTube branding/logo to navigate away */
-        .video-container {
-            position: relative;
-        }
-
-        .video-container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px; /* Cover the top bar where YouTube logo/title appears */
-            pointer-events: none; /* Allow clicks to pass through to video controls below */
-            z-index: 1;
-        }
-
         /* === ÉCRAN D'ACCUEIL LOCKED/UNLOCKED === */
         .welcome-screen {
             position: fixed;
@@ -3313,12 +3297,13 @@
             const buttonError = errorMap.button;
             const threatError = errorMap.threat;
             const signatureError = errorMap.signature;
-            
+            const from = getTranslation("carousel.email.from");
+            const to = getTranslation("carousel.email.tab.to");
             return `
                 <div class="email-header">
                     <div>
-                        <div>De: ${emailError ? createClickableError(emailError).replace(emailError.target, email.from) : email.from}</div>
-                        <div>À: vous@email.com</div>
+                        <div>${from}: ${emailError ? createClickableError(emailError).replace(emailError.target, email.from) : email.from}</div>
+                        <div>${to}: lise@email.com</div>
                     </div>
                     <div>${icon}</div>
                 </div>
@@ -3670,11 +3655,7 @@
 
         // Vidéos intégrées
         function openSocialMediaVideo() {
-            let videoUrl = getTranslation('carousel.social.tab.link');
-            // Add URL parameters to prevent related videos and keep users focused
-            const urlParams = 'rel=0&modestbranding=1&controls=1&disablekb=1&iv_load_policy=3';
-            videoUrl += (videoUrl.includes('?') ? '&' : '?') + urlParams;
-            document.getElementById('socialMediaVideo').src = videoUrl;
+            document.getElementById('socialMediaVideo').src = getTranslation('carousel.social.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop && window.gameTypeToIndexMap) {
                 const index = window.gameTypeToIndexMap['social-media-video'];
@@ -3693,11 +3674,7 @@
         }
 
         function openConfidentialityVideo() {
-            let videoUrl = getTranslation('carousel.confidentiality.tab.link');
-            // Add URL parameters to prevent related videos and keep users focused
-            const urlParams = 'rel=0&modestbranding=1&controls=1&disablekb=1&iv_load_policy=3';
-            videoUrl += (videoUrl.includes('?') ? '&' : '?') + urlParams;
-            document.getElementById('confidentialityVideo').src = videoUrl;
+            document.getElementById('confidentialityVideo').src = getTranslation('carousel.confidentiality.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop && window.gameTypeToIndexMap) {
                 const index = window.gameTypeToIndexMap['confidential'];
@@ -3718,11 +3695,7 @@
 
         function openDeepfakeVideo() {
             // Utilise la playlist DiepNep avec 4 vidéos d'environ 1min chacune
-            let videoUrl = getTranslation('carousel.deepfake.tab.link');
-            // Add URL parameters to prevent related videos and keep users focused
-            const urlParams = 'rel=0&modestbranding=1&controls=1&disablekb=1&iv_load_policy=3';
-            videoUrl += (videoUrl.includes('?') ? '&' : '?') + urlParams;
-            document.getElementById('deepfakeVideo').src = videoUrl;
+            document.getElementById('deepfakeVideo').src = getTranslation('carousel.deepfake.tab.link');
             // Démarrer timer de 1 minute pour validation
             if (window.carouselWorkshop && window.gameTypeToIndexMap) {
                 const index = window.gameTypeToIndexMap['deepfake'];

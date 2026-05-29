@@ -404,6 +404,8 @@
         "title": "📧 E-mail Val Detector",
         "insight": "Klik op de e-mail om phishing-aanwijzingen te onthullen!",
         "analyse": "🕵️ Uw analyse:",
+        "from": "Van",
+        "to": "Aan",
         "more": "Nog meer +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=nl",
         "duration": {

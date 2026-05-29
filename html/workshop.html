@@ -1519,7 +1519,7 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" onclick="closeWebcamEasterEgg()" traduction="carousel.webcam.close"></button>
+                <button class="btn" onclick="closeWebcamEasterEgg()" traduction='carousel.webcam.close'></button>
             </div>
         </div>
     </div>
@@ -1858,7 +1858,7 @@
         async function loadTranslations(lang) {
             try {
                 console.log(`Chargement des traductions ${lang}...`);
-                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/config.json`);;
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/config.json`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

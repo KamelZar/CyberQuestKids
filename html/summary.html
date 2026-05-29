@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberQuest — Workshop Summary</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cyber-bg: #0a0e27;
+      --cyber-card: #151932;
+      --cyber-accent: #00ff88;
+      --cyber-secondary: #00d4ff;
+      --cyber-danger: #ff0055;
+      --cyber-warning: #ffaa00;
+      --cyber-text: #e0e6f0;
+      --cyber-muted: #7a8ba3;
+      --cyber-border: #1e2748;
+      --cyber-glow: rgba(0, 255, 136, 0.3);
+    }
+
+    body {
+      font-family: 'Segoe UI', 'SF Pro Display', -apple-system, system-ui, sans-serif;
+      background: var(--cyber-bg);
+      color: var(--cyber-text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(var(--cyber-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--cyber-border) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.3;
+      z-index: -1;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* Glowing orbs */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--cyber-glow) 0%, transparent 70%);
+      top: -300px;
+      right: -300px;
+      z-index: -1;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--cyber-accent), var(--cyber-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px var(--cyber-glow);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--cyber-muted);
+      font-weight: 300;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* Language selector */
+    .lang-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      animation: fadeIn 1s ease 0.3s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .lang-btn {
+      padding: 12px 30px;
+      background: var(--cyber-card);
+      border: 2px solid var(--cyber-border);
+      color: var(--cyber-text);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lang-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--cyber-glow), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .lang-btn:hover::before {
+      left: 100%;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--cyber-accent);
+      box-shadow: 0 0 20px var(--cyber-glow);
+      transform: translateY(-2px);
+    }
+
+    .lang-btn.active {
+      background: var(--cyber-accent);
+      color: var(--cyber-bg);
+      border-color: var(--cyber-accent);
+      box-shadow: 0 0 30px var(--cyber-glow);
+    }
+
+    /* Content cards */
+    .content {
+      display: none;
+      animation: slideUp 0.6s ease;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--cyber-card);
+      border: 1px solid var(--cyber-border);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--cyber-accent), var(--cyber-secondary));
+      box-shadow: 0 0 20px var(--cyber-glow);
+    }
+
+    .card:hover {
+      border-color: var(--cyber-accent);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      transform: translateY(-5px);
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--cyber-accent);
+    }
+
+    .card-description {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--cyber-muted);
+      margin-bottom: 30px;
+    }
+
+    /* PDF buttons */
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .pdf-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 25px;
+      background: var(--cyber-bg);
+      border: 2px solid var(--cyber-border);
+      border-radius: 12px;
+      color: var(--cyber-text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pdf-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyber-accent), var(--cyber-secondary));
+      transition: width 0.4s ease;
+      opacity: 0.1;
+    }
+
+    .pdf-btn:hover::before {
+      width: 100%;
+    }
+
+    .pdf-btn:hover {
+      border-color: var(--cyber-accent);
+      box-shadow: 0 5px 20px var(--cyber-glow);
+      transform: translateX(5px);
+    }
+
+    .pdf-icon {
+      font-size: 24px;
+      margin-right: 15px;
+    }
+
+    .pdf-info {
+      flex: 1;
+    }
+
+    .pdf-lang {
+      font-size: 12px;
+      color: var(--cyber-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .download-icon {
+      font-size: 20px;
+      color: var(--cyber-accent);
+      transition: transform 0.3s ease;
+    }
+
+    .pdf-btn:hover .download-icon {
+      transform: translateY(3px);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 1px solid var(--cyber-border);
+      color: var(--cyber-muted);
+      font-size: 14px;
+      animation: fadeIn 1.5s ease 0.5s both;
+    }
+
+    .footer-icon {
+      display: inline-block;
+      margin: 0 5px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 36px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .lang-selector {
+        flex-wrap: wrap;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      .pdf-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Accessibility */
+    .lang-btn:focus,
+    .pdf-btn:focus {
+      outline: 2px solid var(--cyber-accent);
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">CYBERQUEST</div>
+      <div class="subtitle">Workshop Summary</div>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="switchLang('en')" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" onclick="switchLang('fr')" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" onclick="switchLang('nl')" data-lang="nl">🇧🇪 Nederlands</button>
+    </div>
+
+    <!-- English Content -->
+    <div class="content active" id="content-en">
+      <div class="card">
+        <div class="card-title">🛡️ Cybersecurity Workshop</div>
+        <div class="card-description">
+          Download the workshop summary to review key concepts, best practices, and tips to stay safe online.
+          This guide covers password security, phishing detection, social engineering awareness, and much more.
+        </div>
+        <div class="pdf-grid">
+          <a href="../doc/CyberSecurity_Workshop_EN.pdf" class="pdf-btn" target="_blank" rel="noopener">
+            <div style="display: flex; align-items: center; flex: 1;">
+              <span class="pdf-icon">📄</span>
+              <div class="pdf-info">
+                <div>Workshop Summary</div>
+                <div class="pdf-lang">English</div>
+              </div>
+            </div>
+            <span class="download-icon">⬇️</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 What You'll Find Inside</div>
+        <div class="card-description">
+          ✅ Password best practices<br>
+          ✅ How to spot phishing emails<br>
+          ✅ Social engineering tactics<br>
+          ✅ Safe browsing habits<br>
+          ✅ Two-factor authentication guide<br>
+          ✅ Privacy tips and tricks
+        </div>
+      </div>
+    </div>
+
+    <!-- French Content -->
+    <div class="content" id="content-fr">
+      <div class="card">
+        <div class="card-title">🛡️ Atelier Cybersécurité</div>
+        <div class="card-description">
+          Téléchargez le résumé de l'atelier pour réviser les concepts clés, les bonnes pratiques et les conseils pour rester en sécurité en ligne.
+          Ce guide couvre la sécurité des mots de passe, la détection du phishing, la sensibilisation à l'ingénierie sociale, et bien plus encore.
+        </div>
+        <div class="pdf-grid">
+          <a href="../doc/CyberSecurite_Atelier_FR.pdf" class="pdf-btn" target="_blank" rel="noopener">
+            <div style="display: flex; align-items: center; flex: 1;">
+              <span class="pdf-icon">📄</span>
+              <div class="pdf-info">
+                <div>Résumé de l'atelier</div>
+                <div class="pdf-lang">Français</div>
+              </div>
+            </div>
+            <span class="download-icon">⬇️</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Contenu</div>
+        <div class="card-description">
+          ✅ Bonnes pratiques pour les mots de passe<br>
+          ✅ Comment repérer les emails de phishing<br>
+          ✅ Tactiques d'ingénierie sociale<br>
+          ✅ Habitudes de navigation sécurisées<br>
+          ✅ Guide de l'authentification à deux facteurs<br>
+          ✅ Conseils et astuces de confidentialité
+        </div>
+      </div>
+    </div>
+
+    <!-- Dutch Content -->
+    <div class="content" id="content-nl">
+      <div class="card">
+        <div class="card-title">🛡️ Cyberbeveiliging Workshop</div>
+        <div class="card-description">
+          Download de workshop samenvatting om belangrijke concepten, best practices en tips om online veilig te blijven te bekijken.
+          Deze gids behandelt wachtwoordbeveiliging, phishing detectie, bewustzijn van social engineering, en nog veel meer.
+        </div>
+        <div class="pdf-grid">
+          <a href="../doc/CyberVeiligheid_Workshop_NL.pdf" class="pdf-btn" target="_blank" rel="noopener">
+            <div style="display: flex; align-items: center; flex: 1;">
+              <span class="pdf-icon">📄</span>
+              <div class="pdf-info">
+                <div>Workshop Samenvatting</div>
+                <div class="pdf-lang">Nederlands</div>
+              </div>
+            </div>
+            <span class="download-icon">⬇️</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Inhoud</div>
+        <div class="card-description">
+          ✅ Best practices voor wachtwoorden<br>
+          ✅ Hoe phishing e-mails te herkennen<br>
+          ✅ Social engineering tactieken<br>
+          ✅ Veilige surfgewoonten<br>
+          ✅ Gids voor tweefactorauthenticatie<br>
+          ✅ Privacy tips en trucs
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      Made with <span class="footer-icon">🔒</span> for a safer digital world
+    </div>
+  </div>
+
+  <script>
+    function switchLang(lang) {
+      // Hide all content
+      document.querySelectorAll('.content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Show selected content
+      document.getElementById('content-' + lang).classList.add('active');
+
+      // Update active button
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector('[data-lang="' + lang + '"]').classList.add('active');
+
+      // Store preference
+      localStorage.setItem('cyberquest-lang', lang);
+    }
+
+    // Restore language preference on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('cyberquest-lang');
+      if (savedLang && ['en', 'fr', 'nl'].includes(savedLang)) {
+        switchLang(savedLang);
+      }
+    });
+  </script>
+</body>
+</html>
+

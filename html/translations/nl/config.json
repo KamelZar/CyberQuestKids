@@ -419,6 +419,7 @@
           "error_detected": "✅ Fout {number} gedetecteerd!",
           "problem_identified": "Probleem geïdentificeerd:",
           "why_suspicious": "Waarom het verdacht is:",
+          "expert_advice": "Tip",
           "why_dangerous": "🚨 Waarom het gevaarlijk is:",
           "how_to_detect": "💡 Hoe te detecteren:",
           "victory_title": "🏆 Gefeliciteerd! Je bent nu een anti-phishing expert!",

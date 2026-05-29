@@ -418,6 +418,7 @@
           "error_detected": "✅ Erreur {number} détectée !",
           "problem_identified": "Problème identifié :",
           "why_suspicious": "Pourquoi c'est suspect :",
+          "expert_advice": "Conseil",
           "why_dangerous": "\uD83D\uDEA8 Pourquoi c'est dangereux :",
           "how_to_detect": "\uD83D\uDCA1 Comment détecter :",
           "victory_title": "\uD83C\uDFC6 Bravo ! Vous êtes maintenant un expert anti-phishing !",

@@ -3417,6 +3417,7 @@
                         const errorsList = document.getElementById('errorsList');
                         if (errorsList) {
                             const victoryTitle = getTranslation('carousel.spam.tab.game.victory_title') || '🏆 Bravo ! Vous êtes maintenant un expert anti-phishing !';
+                            const expertAdvice = getTranslation('carousel.spam.tab.game.expert_advice') || 'Conseil d\'expert :';
                             const victoryAdvice = getTranslation('carousel.spam.tab.game.victory_advice') || 'En cas de doute, contactez directement l\'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !';
                             const newEmailBtn = getTranslation('carousel.spam.tab.game.new_email_button') || '🔄 Nouvel email';
                             const moreTrainingBtn = getTranslation('carousel.spam.tab.game.more_training_button') || '🎯 Plus d\'entraînement';
@@ -3424,7 +3425,7 @@
                             errorsList.innerHTML += `
                                 <div class="victory-message">
                                     <h3>${victoryTitle}</h3>
-                                    <p><strong>${getTranslation('carousel.spam.tab.game.expert_advice') || 'Conseil d\'expert :'}</strong> ${victoryAdvice}</p>
+                                    <p><strong>${expertAdvice}</strong> ${victoryAdvice}</p>
                                     <div style="margin-top: 15px;">
                                         <button class="btn" onclick="generateNewEmail()" style="margin-right: 10px;">${newEmailBtn}</button>
                                         <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">${moreTrainingBtn}</button>

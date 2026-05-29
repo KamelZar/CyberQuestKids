@@ -503,6 +503,7 @@
           ]
         }
       },
+      "close": "CLOSE",
       "relax": "**Rest assured:** This demonstration is purely educational. Nothing is recorded or transmitted. \n                        The video stream remains only on your computer."
 
     },

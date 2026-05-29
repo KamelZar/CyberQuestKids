@@ -480,7 +480,6 @@
       "surprise": {
         "title": "🦁 Verrassing! De leeuw kijkt naar u!",
         "info": "Zoals u kunt zien, is uw webcam nu toegankelijk voor deze website.",
-        "button": "Sluit en stop de webcam",
         "advice":{
           "title": "🛡️ Cybersecurity Tips:",
           "items": [
@@ -504,6 +503,7 @@
           ]
         }
       },
+      "close": "SLUITEN",
       "relax": "**Wees gerust:** Deze demonstratie is puur educatief. Niets wordt opgenomen of verzonden. \n                        De videostream blijft alleen op uw computer."
 
     },

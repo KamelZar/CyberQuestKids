@@ -479,6 +479,7 @@
       "surprise": {
         "title": "\uD83E\uDD81 Surprise ! Le lion vous observe !",
         "info": "Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.",
+        "button": "Fermer et Arrêter la Caméra",
         "advice":{
           "title": "\uD83D\uDEE1\uFE0F Conseils de Cybersécurité :",
           "items": [

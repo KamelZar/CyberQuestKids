@@ -63,7 +63,7 @@
           "Door het Platform te gebruiken, stemt u in met de verzameling, het gebruik en het delen van uw informatie zoals beschreven in ons Privacybeleid."
         ],
         "important_clause": "HET BEDRIJF HEEFT HET RECHT OM TE DOEN WAT HET WIL MET MIJN GEGEVENS EN KAN MIJN IDENTITEIT GEBRUIKEN OM TE DOEN WAT HET WIL",
-        "easter_egg": "* proficiat voor het lezen van de voorwaarden: een kleine tip, voer gebruikersnaam:\"Ik weet\" wachtwoord:\"te lezen\" in op TikTok, deel geen gegevens wanneer het niet nodig is en zeker niet om welke reden dan ook"
+        "easter_egg": "* proficiat voor het lezen van de voorwaarden: een kleine tip, voer gebruikersnaam:\"Ik kan\" wachtwoord:\"lezen\" in op TikTok, deel geen gegevens wanneer het niet nodig is en zeker niet om welke reden dan ook"
       },
       "liability": {
         "title": "7. BEPERKING VAN AANSPRAKELIJKHEID",
@@ -480,6 +480,7 @@
       "surprise": {
         "title": "🦁 Verrassing! De leeuw kijkt naar u!",
         "info": "Zoals u kunt zien, is uw webcam nu toegankelijk voor deze website.",
+        "button": "Sluit en stop de webcam",
         "advice":{
           "title": "🛡️ Cybersecurity Tips:",
           "items": [

@@ -478,6 +478,7 @@
       "title": "👁️ The Eyes of the Cybersecurity Lion",
       "surprise": {
         "title": "🦁 Surprise! The lion is watching you!",
+        "button": "Close and stop the webcam",
         "info": "As you can see, your webcam is now accessible to this website.",
         "advice":{
           "title": "🛡️ Cybersecurity Tips:",

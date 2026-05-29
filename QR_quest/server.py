@@ -593,6 +593,14 @@ def serve_video(filename):
 def champions_page():
     return send_from_directory(str(HTML_DIR), 'champions.html')
 
+@app.route('/ceremony')
+def ceremony_page():
+    """Sert la page de cérémonie dans la langue du cookie cq_lang (fr/nl/en)."""
+    lang = request.cookies.get('cq_lang', 'fr')
+    if lang not in ('fr', 'nl', 'en'):
+        lang = 'fr'
+    return send_from_directory(str(HTML_DIR / 'ceremony'), f'ceremony_{lang}.html')
+
 @app.route('/champions/score', methods=['POST'])
 def champions_score_post():
     """
@@ -793,6 +801,13 @@ def champ_lobby_done():
         _check_all_done()
 
     return jsonify({'ok': True})
+
+WORKSHOP_ASSETS_DIR = BASE_DIR.parent / 'html'
+
+@app.route('/workshop-assets/<path:filename>')
+def workshop_assets(filename):
+    """Sert les assets statiques du dossier html/ parent (images, labubu, png…)."""
+    return send_from_directory(str(WORKSHOP_ASSETS_DIR), filename)
 
 @app.route('/<path:filename>')
 def static_files(filename):
@@ -1760,7 +1775,8 @@ def missions_status():
     workshop_score = teams.get(team_id, {}).get('workshop_score', 0)
 
     resp = jsonify({'done': done, 'workshop_score': workshop_score,
-                    'session': {'active': _session_active(), 'time_remaining': int(_session_time_remaining())}})
+                    'session': {'active': _session_active(), 'time_remaining': int(_session_time_remaining()),
+                                'stopped': _workshop_session.get('stopped', False)}})
     resp.headers['Cache-Control'] = 'no-store'
     return resp
 

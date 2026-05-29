@@ -380,11 +380,13 @@
         <tr>
           <th class="team-col">Équipe</th>
           <th class="act-col" style="text-align:right;color:var(--accent)">🏆 Score</th>
-          <th class="act-col">🪤 mirror</th>
-          <th class="act-col">🎭 phishing</th>
-          <th class="act-col">🔓 lockpick</th>
-          <th class="act-col">🎁 cadeau</th>
-          <th class="act-col">😂 troll</th>
+          <th class="act-col">🎬 Vidéos</th>
+          <th class="act-col">🎣 Phishing</th>
+          <th class="act-col">🔐 Mot de passe</th>
+          <th class="act-col">🧩 CQ Match</th>
+          <th class="act-col">🛡️ CQ Défense</th>
+          <th class="act-col">🔴 Do Not Press</th>
+          <th class="act-col">🌐 Fake Site</th>
         </tr>
       </thead>
       <tbody id="grid-body"></tbody>
@@ -452,8 +454,17 @@
   <div class="feed" id="event-feed"></div>
 
   <script>
-    var ACTIVITIES = ['mirror', 'phishing', 'lockpicking', 'leurre-cadeau', 'leurre-troll'];
+    var ACTIVITIES = [
+      { id: 'video',              label: '🎬 Vidéos' },
+      { id: 'phishing-google',    label: '🎣 Phishing' },
+      { id: 'password-check',     label: '🔐 Mot de passe' },
+      { id: 'cyberquest-match',   label: '🧩 CQ Match' },
+      { id: 'cyberquest-defense', label: '🛡️ CQ Défense' },
+      { id: 'do-not-press',       label: '🔴 Do Not Press' },
+      { id: 'page',               label: '🌐 Fake Site' },
+    ];
     var POLL_MS    = 5000; // refresh toutes les 5 secondes
+    var _champBest = {}; // meilleur score champions par équipe, mis à jour par updateChampScores
 
     /* Détermine la "meilleure" status pour une cellule */
     function bestStatus(events) {
@@ -464,6 +475,12 @@
       if (s.trap)    return 'trap';
       if (s.view)    return 'view';
       return null;
+    }
+
+    function wsCell(pts, time) {
+      if (!pts) return '<div class="cell cell-empty">—</div>';
+      var t = time ? '<div class="cell-time">' + time.slice(11,16) + '</div>' : '';
+      return '<div class="cell cell-success"><div class="cell-icon">' + pts + ' pts</div>' + t + '</div>';
     }
 
     function cellHtml(status, time) {
@@ -499,10 +516,28 @@
       document.getElementById('empty-state').style.display = 'none';
       document.getElementById('grid-table').style.display = 'table';
 
-      /* Tri par numéro d'équipe */
+      /* Tri par score total décroissant */
       teamIds.sort(function(a, b) {
-        return (teams[a].team_num || 0) - (teams[b].team_num || 0);
+        var scoreA = (teams[a].workshop_score || 0) + (_champBest[a] || 0);
+        var scoreB = (teams[b].workshop_score || 0) + (_champBest[b] || 0);
+        return scoreB - scoreA;
       });
+
+      /* Ranking strip */
+      var rankingEl = document.getElementById('ranking-strip');
+      if (!rankingEl) {
+        rankingEl = document.createElement('div');
+        rankingEl.id = 'ranking-strip';
+        rankingEl.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:12px 24px 0;';
+        document.querySelector('.grid-wrap').insertBefore(rankingEl, document.getElementById('empty-state'));
+      }
+      var rankMedals = ['🥇','🥈','🥉'];
+      rankingEl.innerHTML = teamIds.map(function(tid, i) {
+        var total = (teams[tid].workshop_score || 0) + (_champBest[tid] || 0);
+        var medal = rankMedals[i] || ('#' + (i+1));
+        return '<span style="font-family:\'Share Tech Mono\',monospace;font-size:12px;padding:4px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--accent)">'
+          + medal + ' ' + tid + ' — ' + total + ' pts</span>';
+      }).join('');
 
       var tbody = document.getElementById('grid-body');
       tbody.innerHTML = '';
@@ -513,19 +548,27 @@
         tdTeam.textContent = '#' + teams[tid].team_num + ' ' + tid;
         tr.appendChild(tdTeam);
 
-        // Workshop score column
-        var wsScore = teams[tid].workshop_score || 0;
+        // Score total = workshop + champions
+        var wsScore    = teams[tid].workshop_score || 0;
+        var champScore = _champBest[tid] || 0;
+        var totalScore = wsScore + champScore;
         var tdScore = document.createElement('td');
-        tdScore.className = 'ws-score-cell' + (wsScore === 0 ? ' zero' : '');
-        tdScore.textContent = wsScore > 0 ? wsScore + ' pts' : '—';
+        tdScore.className = 'ws-score-cell' + (totalScore === 0 ? ' zero' : '');
+        tdScore.textContent = totalScore > 0 ? totalScore + ' pts' : '—';
+        if (champScore > 0) tdScore.title = 'Workshop: ' + wsScore + ' + Champions: ' + champScore;
         tr.appendChild(tdScore);
 
         ACTIVITIES.forEach(function(act) {
-          var evList = (evByTeam[tid] && evByTeam[tid][act]) || [];
-          var status = bestStatus(evList);
-          var lastTime = evList.length ? evList[evList.length - 1].timestamp : null;
+          var actId  = act.id;
+          var evList = (evByTeam[tid] && evByTeam[tid][actId]) || [];
+          // Pour les vidéos : status 'scored' ; pour le reste : status 'score'
+          var scored = evList.filter(function(e) {
+            return e.status === 'score' || e.status === 'scored';
+          });
+          var pts = scored.reduce(function(sum, e) { return sum + (e.points || 0); }, 0);
+          var lastTime = scored.length ? scored[scored.length - 1].timestamp : null;
           var td = document.createElement('td');
-          td.innerHTML = cellHtml(status, lastTime);
+          td.innerHTML = wsCell(pts, lastTime);
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -866,6 +909,9 @@
         if (!best[s.team_id] || s.score > best[s.team_id].score) best[s.team_id] = s;
         best[s.team_id].count = (best[s.team_id].count || 0) + 1;
       });
+      // Expose pour fusion dans le tableau principal
+      _champBest = {};
+      Object.keys(best).forEach(function(tid) { _champBest[tid] = best[tid].score; });
       var sorted = Object.values(best).sort(function(a,b){ return b.score - a.score; });
 
       var tbody = document.getElementById('champ-body');

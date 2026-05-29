@@ -1056,6 +1056,9 @@ function showGameOver(){
   document.getElementById('go-msg').textContent    = t.gameOverMsg;
   document.getElementById('btn-go-restart').textContent = t.goRestart;
   document.getElementById('overlay-go').classList.add('show');
+
+  // Score partiel — highScore uniquement
+  if (score > 0) _submitWorkshopScore('cyberquest-match', score);
 }
 
 function renderCards(){
@@ -1234,17 +1237,21 @@ function showEnd(){
     document.getElementById('end-bar-fill').style.width = pct + '%';
   }, 200);
 
-  // Submit score to workshop
+  // Submit score to workshop — highScore uniquement
   _submitWorkshopScore('cyberquest-match', score);
 }
 
 function _submitWorkshopScore(activity, points) {
   const teamId = (document.cookie.match('(?:^|;)\\s*cq_team=([^;]*)') || [])[1];
   if (!teamId || points <= 0) return;
+  const key  = 'hs_' + activity;
+  const prev = parseInt(sessionStorage.getItem(key) || '0', 10);
+  if (points <= prev) return;
+  sessionStorage.setItem(key, String(points));
   fetch('/workshop/score', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points }),
+    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points: points - prev }),
   }).catch(() => {});
 }
 </script>

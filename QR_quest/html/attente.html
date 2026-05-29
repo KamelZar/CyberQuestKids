@@ -173,6 +173,20 @@ if (team) {
   badge.textContent = tr.team + ' — ' + team;
   badge.style.display = 'block';
 }
+
+// ── Poll session/state → redirect /missions dès démarrage ────────────
+async function pollSession() {
+  try {
+    const r    = await fetch('/session/state', { cache: 'no-store' });
+    const data = await r.json();
+    if (data.active) {
+      window.location.href = '/missions';
+    }
+  } catch(e) { /* serveur non accessible, on réessaie */ }
+}
+
+pollSession();
+setInterval(pollSession, 3000);
 </script>
 </body>
 </html>

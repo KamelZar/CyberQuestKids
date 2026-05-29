@@ -132,6 +132,7 @@
     .btn-green { background: linear-gradient(135deg,#00796b,#00e676); color:#070b14; box-shadow: 0 4px 20px rgba(0,230,118,.28); }
     .btn-red   { background: linear-gradient(135deg,#b71c1c,#ff1744); color:#fff;    box-shadow: 0 4px 20px rgba(255,23,68,.28); }
     .btn-ghost { background: var(--surf2); color: var(--dim); border: 1px solid var(--surf2); }
+    .btn-gold  { background: linear-gradient(135deg,#f9a825,#ffe57f); color:#1a0a00; box-shadow: 0 4px 20px rgba(255,213,0,.35); }
 
     /* Answer 2-col */
     .ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: var(--w); }
@@ -257,6 +258,7 @@
 
     <p class="sub" id="lb-status">Chargement…</p>
     <button class="btn btn-cyan" id="btn-start" disabled>▶ DÉMARRER</button>
+    <a id="lb-btn-ceremony" href="/ceremony" class="btn btn-gold" style="text-decoration:none;margin-top:.5rem;pointer-events:none;opacity:.35;">🎆 Aller à la cérémonie</a>
   </div>
 
   <!-- ══ QUESTION ════════════════════════════════════════════════ -->
@@ -312,6 +314,7 @@
     <p class="sub" id="vic-sub">Retour au salon…</p>
     <div class="return-bar"><div class="return-fill" id="vic-bar"></div></div>
     <button class="btn btn-ghost" id="btn-vic-back">↩ Retour au salon</button>
+    <a class="btn btn-gold" id="btn-ceremony" href="/ceremony" style="text-decoration:none;margin-top:.5rem;">🎆 Aller à la cérémonie</a>
   </div>
 
 </div><!-- #app -->
@@ -343,6 +346,7 @@ const LANGS = {
     lb_elim_sub:  'Tu as été éliminé(e)',
     lb_vic_sub:   'Tu as gagné !',
     no_team:      'Équipe introuvable, redirection…',
+    ceremony:     '🎆 Aller à la cérémonie',
     status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
   },
   nl: {
@@ -367,6 +371,7 @@ const LANGS = {
     lb_elim_sub:  'Je bent uitgeschakeld',
     lb_vic_sub:   'Je hebt gewonnen !',
     no_team:      'Team niet gevonden, doorsturen…',
+    ceremony:     '🎆 Naar de ceremonie',
     status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
   },
   en: {
@@ -391,6 +396,7 @@ const LANGS = {
     lb_elim_sub:  'You were eliminated',
     lb_vic_sub:   'You won !',
     no_team:      'Team not found, redirecting…',
+    ceremony:     '🎆 Go to the ceremony',
     status_w:  '🟡', status_p: '🎮', status_e: '💀', status_v: '🏆',
   },
 };
@@ -487,6 +493,8 @@ async function boot() {
   $('vic-title').textContent  = T.vic;
   $('vic-label').textContent  = T.slabel;
   [$('btn-el-back'),$('btn-vic-back')].forEach(b => b.textContent = T.back);
+  $('btn-ceremony').textContent    = T.ceremony;
+  $('lb-btn-ceremony').textContent = T.ceremony;
 
   if (!G.teamId) {
     $('lb-badge').textContent  = T.no_team;
@@ -601,6 +609,17 @@ function renderLobby(data) {
         ${sc}
       </div>`;
     }).join('');
+  }
+
+  // Bouton cérémonie : actif quand toutes les équipes ont un score
+  const btnCeremony = $('lb-btn-ceremony');
+  const allScored = teams.length > 0 && teams.every(t => t.score != null);
+  if (allScored) {
+    btnCeremony.style.pointerEvents = '';
+    btnCeremony.style.opacity = '';
+  } else {
+    btnCeremony.style.pointerEvents = 'none';
+    btnCeremony.style.opacity = '.35';
   }
 
   // Message statut + bouton

@@ -1237,7 +1237,7 @@ function showEndScreen(){
   document.getElementById('hp-bar').style.display = 'none';
   showScreen('end');
 
-  // Submit score to workshop (hp * 2, max 200)
+  // Submit score to workshop (hp * 2, max 200) — highScore uniquement
   const points = Math.max(0, Math.round(hp * 2));
   _submitWorkshopScore('cyberquest-defense', points);
 }
@@ -1245,10 +1245,14 @@ function showEndScreen(){
 function _submitWorkshopScore(activity, points) {
   const teamId = (document.cookie.match('(?:^|;)\\s*cq_team=([^;]*)') || [])[1];
   if (!teamId || points <= 0) return;
+  const key  = 'hs_' + activity;
+  const prev = parseInt(sessionStorage.getItem(key) || '0', 10);
+  if (points <= prev) return;
+  sessionStorage.setItem(key, String(points));
   fetch('/workshop/score', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points }),
+    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points: points - prev }),
   }).catch(() => {});
 }
 

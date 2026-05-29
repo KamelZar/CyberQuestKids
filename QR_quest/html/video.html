@@ -270,6 +270,16 @@
   <span class="header-icon">🎬</span>
   <h1 id="h-title">Vidéos</h1>
   <div class="subtitle" id="h-sub">Regarde la vidéo jusqu'au bout pour scorer</div>
+  <div id="back-wrap" style="display:none; margin-top:14px;">
+    <a id="back-btn" href="/missions"
+       style="display:inline-flex; align-items:center; gap:6px;
+              font-family:'Share Tech Mono',monospace; font-size:12px;
+              color:var(--muted); border:1px solid var(--border);
+              padding:6px 14px; border-radius:6px; text-decoration:none;
+              transition:border-color 0.2s, color 0.2s;">
+      ← Missions
+    </a>
+  </div>
 </header>
 
 <div class="points-info">
@@ -382,6 +392,10 @@ async function loadVideos() {
   const t = T[lang] || T.fr;
   const grid = document.getElementById('grid');
   grid.innerHTML = `<div class="empty">${t.loading}</div>`;
+
+  // Support ?video_url= param: show only the requested video
+  const singleVideoUrl = new URLSearchParams(location.search).get('video_url');
+
   try {
     const r = await fetch(`/activity/videos/list?lang=${lang.toUpperCase()}`);
     videos  = await r.json();
@@ -389,6 +403,11 @@ async function loadVideos() {
     grid.innerHTML = `<div class="empty">${t.noVideos}</div>`;
     return;
   }
+
+  if (singleVideoUrl) {
+    videos = videos.filter(v => v.url === singleVideoUrl);
+  }
+
   if (!videos.length) {
     grid.innerHTML = `<div class="empty">${t.noVideos}</div>`;
     return;
@@ -553,11 +572,14 @@ function showToast(msg) {
 // ── Bootstrap ────────────────────────────────────────────────────────
 (function init() {
   if (!['fr','nl','en'].includes(lang)) lang = 'fr';
-  // Mark active lang button
   document.querySelectorAll('.lang-btn').forEach(b =>
     b.classList.toggle('active', b.textContent === lang.toUpperCase())
   );
   applyTranslations();
+  // Show back button when launched from missions tile
+  if (new URLSearchParams(location.search).get('video_url')) {
+    document.getElementById('back-wrap').style.display = 'block';
+  }
   loadVideos();
 })();
 </script>

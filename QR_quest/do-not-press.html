@@ -925,6 +925,11 @@ function showGameOver(num,lv){
   document.getElementById('over-tip').textContent=lv.tip;
   document.getElementById('btn-retry').textContent=ui.overRetry;
   document.getElementById('over-screen').classList.add('show');
+
+  // Score progressif : niveauAtteint / total × 100 pts
+  const total = LEVELS[lang].length;
+  const pts   = Math.round(num / total * 100);
+  _submitWorkshopScore('do-not-press', pts);
 }
 
 // ===== VICTORY =====
@@ -948,18 +953,23 @@ function showVictory(){
   document.getElementById('btn-replay').textContent=ui.winReplay;
   document.getElementById('win-screen').classList.add('show');
 
-  // Submit score : 150 pts base + bonus vitesse (max +50 si < 60s)
+  // Submit score : 150 pts base + bonus vitesse (max +50 si < 60s) — highScore uniquement
   const speedBonus = elapsed < 60 ? Math.round((60 - elapsed) / 60 * 50) : 0;
   _submitWorkshopScore('do-not-press', 150 + speedBonus);
+
 }
 
 function _submitWorkshopScore(activity, points) {
   const teamId = (document.cookie.match('(?:^|;)\\s*cq_team=([^;]*)') || [])[1];
   if (!teamId || points <= 0) return;
+  const key  = 'hs_' + activity;
+  const prev = parseInt(sessionStorage.getItem(key) || '0', 10);
+  if (points <= prev) return;
+  sessionStorage.setItem(key, String(points));
   fetch('/workshop/score', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points }),
+    body: JSON.stringify({ team_id: decodeURIComponent(teamId), activity, points: points - prev }),
   }).catch(() => {});
 }
 

@@ -216,6 +216,12 @@
     }).catch(function () {});
 
     showGotcha(anonEmail(emailVal), pwLen);
+
+    // Tracking missions : marque 'phishing-<source>' comme complété
+    if (window.CyberTrack) {
+      window.CyberTrack.track('phishing-' + SOURCE, 'gotcha');
+      window.CyberTrack.scoreOnce('phishing-' + SOURCE + '-penalty', -30);
+    }
   }
 
   /* ── Boot ────────────────────────────────────────────────── */

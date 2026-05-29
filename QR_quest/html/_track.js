@@ -41,6 +41,20 @@
     }
   }
 
+  /* ── Score une activité une seule fois (sessionStorage) ─── */
+  function scoreOnce(activity, points) {
+    var key = 'cq_scored_' + activity;
+    try { if (sessionStorage.getItem(key)) return; } catch(e) {}
+    var id = getTeamId();
+    if (!id) return;
+    try { sessionStorage.setItem(key, '1'); } catch(e) {}
+    fetch(SERVER + '/workshop/score', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team_id: id, activity: activity, points: points })
+    }).catch(function() {});
+  }
+
   /* ── Afficher l'ID équipe dans les éléments .cq-team-id ─── */
   function injectTeamBadge() {
     var id = getTeamId();
@@ -54,6 +68,7 @@
     track:           track,
     getTeamId:       getTeamId,
     autoTrack:       autoTrack,
+    scoreOnce:       scoreOnce,
     injectTeamBadge: injectTeamBadge
   };
 

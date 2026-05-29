@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Instagram</title>
+  <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fafafa;
+      --border: #dbdbdb;
+      --text: #262626;
+      --muted: #8e8e8e;
+      --accent: #0095f6;
+      --card-bg: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    /* Lang switcher */
+    .lang-switchessr {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+    .lang-btn {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .lang-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 149, 246, 0.08);
+    }
+
+    /* Login card */
+    .login-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px;
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+    }
+
+    .ig-logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .ig-logo-icon {
+      width: 54px;
+      height: 54px;
+    }
+    .ig-wordmark {
+      font-family: 'Grand Hotel', 'Lobster', 'Dancing Script', cursive, serif;
+      font-size: 38px;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: #262626;
+      line-height: 1;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .login-form input {
+      background: #fafafa;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+      padding: 9px 8px;
+      font-size: 12px;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .login-form input:focus { border-color: #a8a8a8; }
+
+    .login-btn {
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      width: 100%;
+      -webkit-appearance: none;
+      transition: opacity 0.2s;
+    }
+    .login-btn:hover { opacity: 0.9; }
+
+    .fb-btn {
+      background: none;
+      border: none;
+      color: #385185;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 6px;
+      -webkit-appearance: none;
+    }
+    .fb-btn:hover { color: #1a1a1a; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 18px 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      color: #00376b;
+      text-decoration: none;
+      margin-top: 14px;
+      display: block;
+      cursor: pointer;
+    }
+
+    .signup-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      max-width: 350px;
+      width: 100%;
+    }
+    .signup-box a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .loading-overlay.visible { display: flex; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #dbdbdb;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 14px;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* ─── Reveal overlay ─── */
+    .reveal-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0a0c10;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 300;
+      overflow-y: auto;
+      padding: 24px 16px 80px;
+    }
+    .reveal-overlay.visible { display: flex; }
+
+    .reveal-inner {
+      max-width: 600px;
+      width: 100%;
+      margin-top: 32px;
+    }
+
+    .reveal-lang {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 400;
+      display: flex;
+      gap: 8px;
+    }
+    .reveal-lang .lang-btn {
+      background: rgba(20,25,42,0.9);
+      border-color: #1e2535;
+      color: #5a6580;
+    }
+    .reveal-lang .lang-btn.active {
+      border-color: #ff3b6b;
+      color: #ff3b6b;
+      background: rgba(255,59,107,0.08);
+    }
+
+    .glitch-banner {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 8vw, 52px);
+      font-weight: 800;
+      color: #ff3b6b;
+      text-align: center;
+      margin-bottom: 8px;
+      text-shadow: 0 0 40px rgba(255,59,107,0.5);
+      animation: glitch 3s infinite;
+    }
+    @keyframes glitch {
+      0%,90%,100% { transform: none; }
+      92% { transform: translate(-2px,0); }
+      94% { transform: translate(2px,0); }
+      96% { transform: none; }
+    }
+
+    .reveal-subtitle {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: #5a6580;
+      text-align: center;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .capture-card {
+      background: #13192a;
+      border: 1px solid #1e2535;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .capture-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #5a6580;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .capture-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1e2535;
+    }
+    .capture-row:last-child { border-bottom: none; }
+    .capture-key {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: #5a6580;
+      text-transform: uppercase;
+    }
+    .capture-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: #00ffd0;
+      text-align: right;
+      word-break: break-all;
+    }
+    .capture-val.redacted {
+      color: #ff3b6b;
+      letter-spacing: 2px;
+    }
+
+    .warning-card {
+      background: #1a0d12;
+      border: 1px solid #ff3b6b;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .warning-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ff3b6b, transparent);
+    }
+    .warning-title { font-size: 18px; font-weight: 700; color: #ff3b6b; margin-bottom: 12px; font-family: 'Syne', sans-serif; }
+    .warning-body  { font-size: 14px; color: #e8eaf2; line-height: 1.7; margin-bottom: 12px; }
+    .warning-lesson {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: #00ffd0;
+      padding: 10px 14px;
+      background: rgba(0,255,208,0.06);
+      border-left: 3px solid #00ffd0;
+      border-radius: 4px;
+    }
+
+    .fragment-card {
+      background: #0d1a15;
+      border: 1px solid #00ffd0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .fragment-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #5a6580;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+    .fragment-code {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 36px;
+      color: #00ffd0;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(0,255,208,0.6);
+      letter-spacing: 6px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,255,208,0.015) 2px, rgba(0,255,208,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    body.dark::before { opacity: 1; }
+    body.dark {
+      background: #0a0c10;
+      color: #e8eaf2;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switcher" id="login-lang">
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+
+  <!-- Instagram-like login -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="ig-logo-wrap">
+        <!-- Instagram gradient camera icon (SVG inline) -->
+        <svg class="ig-logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Instagram">
+          <defs>
+            <radialGradient id="ig-g" cx="28%" cy="108%" r="145%">
+              <stop offset="0%"   stop-color="#fdf497"/>
+              <stop offset="7%"   stop-color="#fdf497"/>
+              <stop offset="40%"  stop-color="#fd5949"/>
+              <stop offset="60%"  stop-color="#d6249f"/>
+              <stop offset="90%"  stop-color="#285AEB"/>
+            </radialGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" ry="22" fill="url(#ig-g)"/>
+          <rect x="17" y="17" width="66" height="66" rx="15" ry="15" fill="none" stroke="white" stroke-width="6.5"/>
+          <circle cx="50" cy="50" r="16.5" fill="none" stroke="white" stroke-width="6.5"/>
+          <circle cx="73.5" cy="26.5" r="4.5" fill="white"/>
+        </svg>
+        <span class="ig-wordmark">Instagram</span>
+      </div>
+      <form class="login-form" onsubmit="handleLogin(event)">
+        <input type="email"    id="ig-email"    placeholder="" required autocomplete="off" />
+        <input type="password" id="ig-password" placeholder=""          autocomplete="off" />
+        <button type="submit" class="login-btn" id="login-btn"></button>
+      </form>
+      <a class="forgot-link" id="forgot-link" style="margin-top:12px;">#</a>
+      <div class="divider" id="divider-or">OU</div>
+      <!-- Facebook login (decoy) -->
+      <button class="fb-btn" onclick="return false;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        <span id="fb-btn-text"></span>
+      </button>
+    </div>
+    <div class="signup-box">
+      <span id="signup-text"></span>
+      <a id="signup-link">#</a>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text"></div>
+  </div>
+
+  <!-- Reveal screen -->
+  <div class="reveal-overlay" id="reveal-overlay">
+    <div class="reveal-lang" id="reveal-lang">
+      <button class="lang-btn" id="rbtn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+      <button class="lang-btn" id="rbtn-nl" onclick="setLang('nl')">🇧🇪 NL</button>
+      <button class="lang-btn" id="rbtn-en" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+    <div class="reveal-inner">
+      <div class="glitch-banner" id="r-title"></div>
+      <div class="reveal-subtitle" id="r-subtitle"></div>
+
+      <div class="capture-card">
+        <div class="capture-label" id="r-cap-label"></div>
+        <div class="capture-row">
+          <span class="capture-key" id="r-key-email">Email</span>
+          <span class="capture-val" id="r-val-email">—</span>
+        </div>
+        <div class="capture-row">
+          <span class="capture-key" id="r-key-pass"></span>
+          <span class="capture-val redacted" id="r-val-pass">••••••••</span>
+        </div>
+        <div class="capture-row">
+          <span class="capture-key" id="r-key-time"></span>
+          <span class="capture-val" id="r-val-time">—</span>
+        </div>
+        <div class="capture-row">
+          <span class="capture-key" id="r-key-device"></span>
+          <span class="capture-val" id="r-val-device">—</span>
+        </div>
+      </div>
+
+      <div class="warning-card">
+        <div class="warning-title" id="r-warn-title"></div>
+        <div class="warning-body"  id="r-warn-body"></div>
+        <div class="warning-lesson" id="r-warn-lesson"></div>
+      </div>
+
+      <div class="fragment-card">
+        <div class="fragment-label" id="r-frag-label"></div>
+        <div class="fragment-code"  id="r-frag-code">CYB-B7</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var T = {
+      fr: {
+        pageTitle:   "Instagram",
+        emailPh:     "Numéro de tél., email ou pseudo",
+        passPh:      "Mot de passe",
+        loginBtn:    "Se connecter",
+        divOr:       "OU",
+        forgotLink:  "Mot de passe oublié ?",
+        signupText:  "Vous n'avez pas de compte ? ",
+        signupLink:  "Inscrivez-vous",
+        loading:     "Connexion en cours...",
+        fbBtn:       "Se connecter avec Facebook",
+
+        rTitle:      "C'était du PHISHING !",
+        rSubtitle:   "Simulation pédagogique — aucune donnée envoyée",
+        capLabel:    "— ce qu'un vrai attaquant aurait reçu —",
+        keyEmail:    "Email saisi",
+        keyPass:     "Mot de passe",
+        keyTime:     "Heure",
+        keyDevice:   "Appareil",
+        warnTitle:   "⚠️ Comment ça marche ?",
+        warnBody:    "Cette page ressemble trait pour trait à Instagram — même logo, même formulaire, même bouton. Un vrai site de phishing enverrait immédiatement votre email ET votre mot de passe à un pirate. Votre compte serait compromis en quelques secondes.",
+        warnLesson:  "Leçon : vérifiez toujours l'URL avant d'entrer un mot de passe. Un QR code peut mener n'importe où.",
+        fragLabel:   "Fragment débloqué",
+      },
+      nl: {
+        pageTitle:   "Instagram",
+        emailPh:     "Telefoonnr., e-mail of gebruikersnaam",
+        passPh:      "Wachtwoord",
+        loginBtn:    "Aanmelden",
+        divOr:       "OF",
+        forgotLink:  "Wachtwoord vergeten?",
+        signupText:  "Heb je nog geen account? ",
+        signupLink:  "Registreren",
+        loading:     "Aanmelden...",
+        fbBtn:       "Aanmelden met Facebook",
+
+        rTitle:      "Dit was PHISHING!",
+        rSubtitle:   "Educatieve simulatie — geen gegevens verzonden",
+        capLabel:    "— wat een echte aanvaller zou hebben ontvangen —",
+        keyEmail:    "Ingevoerd e-mail",
+        keyPass:     "Wachtwoord",
+        keyTime:     "Tijdstip",
+        keyDevice:   "Apparaat",
+        warnTitle:   "⚠️ Hoe werkt het?",
+        warnBody:    "Deze pagina lijkt sprekend op Instagram — zelfde logo, zelfde formulier, zelfde knop. Een echte phishing-site stuurt meteen je e-mail EN wachtwoord naar een hacker. Je account zou in seconden gecompromitteerd zijn.",
+        warnLesson:  "Les: controleer altijd de URL voor je een wachtwoord invoert. Een QR-code kan overal naartoe leiden.",
+        fragLabel:   "Fragment ontgrendeld",
+      },
+      en: {
+        pageTitle:   "Instagram",
+        emailPh:     "Phone number, username, or email",
+        passPh:      "Password",
+        loginBtn:    "Log in",
+        divOr:       "OR",
+        forgotLink:  "Forgot password?",
+        signupText:  "Don't have an account? ",
+        signupLink:  "Sign up",
+        loading:     "Logging in...",
+        fbBtn:       "Log in with Facebook",
+
+        rTitle:      "That was PHISHING!",
+        rSubtitle:   "Educational simulation — no data was sent",
+        capLabel:    "— what a real attacker would have received —",
+        keyEmail:    "Email entered",
+        keyPass:     "Password",
+        keyTime:     "Time",
+        keyDevice:   "Device",
+        warnTitle:   "⚠️ How does it work?",
+        warnBody:    "This page looks exactly like Instagram — same logo, same form, same button. A real phishing site would immediately send your email AND password to a hacker. Your account would be compromised within seconds.",
+        warnLesson:  "Lesson: always check the URL before entering a password. A QR code can lead anywhere.",
+        fragLabel:   "Fragment unlocked",
+      }
+    };
+
+    var lang = 'fr';
+    var capturedEmail = '';
+    var capturedTime  = '';
+    var capturedDevice = '';
+
+    function setLang(l) {
+      lang = l;
+      render();
+    if (window.CyberTrack) CyberTrack.scoreOnce("phishing-instagram", 20);
+    }
+
+    function detectDevice() {
+      var ua = navigator.userAgent;
+      if (/iPhone/.test(ua))       return 'iPhone';
+      if (/iPad/.test(ua))         return 'iPad';
+      if (/Android/.test(ua))      return 'Android';
+      if (/Windows/.test(ua))      return 'Windows PC';
+      if (/Mac OS X/.test(ua))     return 'Mac';
+      return 'Unknown';
+    }
+
+    function render() {
+      var t = T[lang];
+      document.title = t.pageTitle;
+
+      // Login form labels
+      setText('ig-email',    '', 'placeholder', t.emailPh);
+      setText('ig-password', '', 'placeholder', t.passPh);
+      setHtml('login-btn',   t.loginBtn);
+      setHtml('divider-or',  t.divOr);
+      setText2('forgot-link', t.forgotLink);
+      setText2('signup-text', t.signupText);
+      setText2('signup-link', t.signupLink);
+      setText2('loading-text', t.loading);
+      setText2('fb-btn-text', t.fbBtn);
+
+      // Reveal texts
+      setText2('r-title',       t.rTitle);
+      setText2('r-subtitle',    t.rSubtitle);
+      setText2('r-cap-label',   t.capLabel);
+      setText2('r-key-email',   t.keyEmail);
+      setText2('r-key-pass',    t.keyPass);
+      setText2('r-key-time',    t.keyTime);
+      setText2('r-key-device',  t.keyDevice);
+      setText2('r-warn-title',  t.warnTitle);
+      setText2('r-warn-body',   t.warnBody);
+      setText2('r-warn-lesson', t.warnLesson);
+      setText2('r-frag-label',  t.fragLabel);
+
+      // Captured values
+      if (capturedEmail)  setText2('r-val-email',  capturedEmail);
+      if (capturedTime)   setText2('r-val-time',   capturedTime);
+      if (capturedDevice) setText2('r-val-device', capturedDevice);
+
+      // Lang buttons
+      ['fr','nl','en'].forEach(function(l2) {
+        var b1 = document.getElementById('btn-'  + l2);
+        var b2 = document.getElementById('rbtn-' + l2);
+        var active = (l2 === lang);
+        if (b1) b1.classList.toggle('active', active);
+        if (b2) b2.classList.toggle('active', active);
+      });
+
+      // divider trick
+      var div = document.getElementById('divider-or');
+      if (div) div.textContent = t.divOr;
+    }
+
+    function setText(id, val, attr, attrVal) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (attr) el[attr] = attrVal;
+      else el.textContent = val;
+    }
+    function setText2(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+    function setHtml(id, html) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      capturedEmail  = document.getElementById('ig-email').value || '???';
+      capturedTime   = new Date().toLocaleTimeString();
+      capturedDevice = detectDevice();
+
+      // Tracking : l'utilisateur vient de soumettre le formulaire → piège déclenché
+      CyberTrack.track('phishing-instagram', 'gotcha');
+      CyberTrack.scoreOnce('phishing-instagram-penalty', -30);
+
+      // Show loading
+      document.getElementById('loading-overlay').classList.add('visible');
+
+      setTimeout(function() {
+        document.getElementById('loading-overlay').classList.remove('visible');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('login-lang').style.display = 'none';
+        document.getElementById('reveal-overlay').classList.add('visible');
+        document.body.classList.add('dark');
+        render(); // Update revealed values
+      }, 2000);
+    }
+
+    render();
+  </script>
+
+  <!-- CyberQuest tracking -->
+  <script src="/_track.js"></script>
+  <script>
+    CyberTrack.autoTrack('phishing-instagram');
+  </script>
+</body>
+</html>

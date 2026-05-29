@@ -1455,6 +1455,10 @@ def captive_probe():
 def phishing_google():
     return send_from_directory(str(HTML_DIR / 'phishing' / 'google'), 'login.html')
 
+@app.route('/phishing/instagram')
+def phishing_instagram():
+    return send_from_directory(str(HTML_DIR / 'phishing' / 'instagram'), 'login.html')
+
 @app.route('/phishing/login')
 def phishing_login():
     return send_from_directory(str(HTML_DIR / 'phishing' / 'login'), 'index.html')
@@ -1761,7 +1765,8 @@ def missions_status():
         exo    = e.get('exo', '')
         status = e.get('status', '')
         # Activité scorée via /workshop/score (status='score') ou /activity/videos/score (status='scored')
-        if status in ('score', 'scored'):
+        # Phishing piégé via CyberTrack (status='gotcha')
+        if status in ('score', 'scored', 'gotcha'):
             done[exo] = True
 
     teams        = load_teams()

@@ -403,6 +403,8 @@
         "title": "\uD83D\uDCE7 Détecteur d'Email Piège",
         "insight": "Cliquez sur l'email pour révéler les indices de phishing !",
         "analyse": "\uD83D\uDD75\uFE0F Votre analyse :",
+        "from": "De",
+        "to": "À",
         "more": "Encore +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=fr",
         "duration": {
@@ -418,6 +420,7 @@
           "error_detected": "✅ Erreur {number} détectée !",
           "problem_identified": "Problème identifié :",
           "why_suspicious": "Pourquoi c'est suspect :",
+          "expert_advice": "Conseil",
           "why_dangerous": "\uD83D\uDEA8 Pourquoi c'est dangereux :",
           "how_to_detect": "\uD83D\uDCA1 Comment détecter :",
           "victory_title": "\uD83C\uDFC6 Bravo ! Vous êtes maintenant un expert anti-phishing !",
@@ -479,6 +482,7 @@
       "surprise": {
         "title": "\uD83E\uDD81 Surprise ! Le lion vous observe !",
         "info": "Comme vous pouvez le voir, votre webcam est maintenant accessible à ce site web.",
+        "button": "Fermer et Arrêter la Caméra",
         "advice":{
           "title": "\uD83D\uDEE1\uFE0F Conseils de Cybersécurité :",
           "items": [
@@ -502,6 +506,7 @@
           ]
         }
       },
+      "close": "FERMER",
       "relax": "**Rassurez-vous :** Cette démonstration est purement éducative. Rien n'est enregistré ou transmis. \n                        Le flux vidéo reste uniquement sur votre ordinateur."
 
     },

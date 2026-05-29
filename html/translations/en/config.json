@@ -402,6 +402,8 @@
       "tab": {
         "title": "📧 Email Trap Detector",
         "insight": "Click on the email to reveal phishing clues!",
+        "from": "From",
+        "to": "To",
         "analyse": "🕵️ Your analysis:",
         "more": "More +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=en-GB",
@@ -419,6 +421,7 @@
           "problem_identified": "Problem identified:",
           "why_suspicious": "Why it's suspicious:",
           "why_dangerous": "🚨 Why it's dangerous:",
+          "expert_advice": "Advice",
           "how_to_detect": "💡 How to detect:",
           "victory_title": "🏆 Congratulations! You're now an anti-phishing expert!",
           "victory_advice": "When in doubt, contact the organization directly through their official website or by phone. Never click on suspicious links!",
@@ -478,6 +481,7 @@
       "title": "👁️ The Eyes of the Cybersecurity Lion",
       "surprise": {
         "title": "🦁 Surprise! The lion is watching you!",
+        "button": "Close and stop the webcam",
         "info": "As you can see, your webcam is now accessible to this website.",
         "advice":{
           "title": "🛡️ Cybersecurity Tips:",
@@ -502,6 +506,7 @@
           ]
         }
       },
+      "close": "CLOSE",
       "relax": "**Rest assured:** This demonstration is purely educational. Nothing is recorded or transmitted. \n                        The video stream remains only on your computer."
 
     },

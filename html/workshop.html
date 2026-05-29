@@ -1519,7 +1519,7 @@
                 </div>
             </div>
             <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" onclick="closeWebcamEasterEgg()">Fermer et Arrêter la Caméra</button>
+                <button class="btn" onclick="closeWebcamEasterEgg()" traduction='carousel.webcam.close'></button>
             </div>
         </div>
     </div>
@@ -1858,7 +1858,7 @@
         async function loadTranslations(lang) {
             try {
                 console.log(`Chargement des traductions ${lang}...`);
-                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/config.json`);;
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/${lang}/config.json`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -3297,12 +3297,13 @@
             const buttonError = errorMap.button;
             const threatError = errorMap.threat;
             const signatureError = errorMap.signature;
-            
+            const from = getTranslation("carousel.spam.tab.from");
+            const to = getTranslation("carousel.spam.tab.to");
             return `
                 <div class="email-header">
                     <div>
-                        <div>De: ${emailError ? createClickableError(emailError).replace(emailError.target, email.from) : email.from}</div>
-                        <div>À: vous@email.com</div>
+                        <div>${from}: ${emailError ? createClickableError(emailError).replace(emailError.target, email.from) : email.from}</div>
+                        <div>${to}: lise@email.com</div>
                     </div>
                     <div>${icon}</div>
                 </div>
@@ -3417,6 +3418,7 @@
                         const errorsList = document.getElementById('errorsList');
                         if (errorsList) {
                             const victoryTitle = getTranslation('carousel.spam.tab.game.victory_title') || '🏆 Bravo ! Vous êtes maintenant un expert anti-phishing !';
+                            const expertAdvice = getTranslation('carousel.spam.tab.game.expert_advice') || 'Conseil d\'expert :';
                             const victoryAdvice = getTranslation('carousel.spam.tab.game.victory_advice') || 'En cas de doute, contactez directement l\'organisation par leur site officiel ou par téléphone. Ne jamais cliquer sur les liens suspects !';
                             const newEmailBtn = getTranslation('carousel.spam.tab.game.new_email_button') || '🔄 Nouvel email';
                             const moreTrainingBtn = getTranslation('carousel.spam.tab.game.more_training_button') || '🎯 Plus d\'entraînement';
@@ -3424,7 +3426,7 @@
                             errorsList.innerHTML += `
                                 <div class="victory-message">
                                     <h3>${victoryTitle}</h3>
-                                    <p><strong>${getTranslation('carousel.spam.tab.game.expert_advice') || 'Conseil d\'expert :'}</strong> ${victoryAdvice}</p>
+                                    <p><strong>${expertAdvice}</strong> ${victoryAdvice}</p>
                                     <div style="margin-top: 15px;">
                                         <button class="btn" onclick="generateNewEmail()" style="margin-right: 10px;">${newEmailBtn}</button>
                                         <button class="btn" onclick="window.open('https://phishingquiz.withgoogle.com', '_blank')">${moreTrainingBtn}</button>
@@ -3797,7 +3799,7 @@
                 const validCredentials = [
                     { user: 'Je sais', pass: 'lire' },
                     { user: 'I know', pass: 'how to read' },
-                    { user: 'Ik weet', pass: 'te lezen' }
+                    { user: 'Ik kan', pass: 'lezen' }
                 ];
                 
                 const isValidBypass = validCredentials.some(cred => 

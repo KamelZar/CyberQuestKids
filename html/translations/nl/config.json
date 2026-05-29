@@ -63,7 +63,7 @@
           "Door het Platform te gebruiken, stemt u in met de verzameling, het gebruik en het delen van uw informatie zoals beschreven in ons Privacybeleid."
         ],
         "important_clause": "HET BEDRIJF HEEFT HET RECHT OM TE DOEN WAT HET WIL MET MIJN GEGEVENS EN KAN MIJN IDENTITEIT GEBRUIKEN OM TE DOEN WAT HET WIL",
-        "easter_egg": "* proficiat voor het lezen van de voorwaarden: een kleine tip, voer gebruikersnaam:\"Ik weet\" wachtwoord:\"te lezen\" in op TikTok, deel geen gegevens wanneer het niet nodig is en zeker niet om welke reden dan ook"
+        "easter_egg": "* proficiat voor het lezen van de voorwaarden: een kleine tip, voer gebruikersnaam:\"Ik kan\" wachtwoord:\"lezen\" in op TikTok, deel geen gegevens wanneer het niet nodig is en zeker niet om welke reden dan ook"
       },
       "liability": {
         "title": "7. BEPERKING VAN AANSPRAKELIJKHEID",
@@ -404,6 +404,8 @@
         "title": "📧 E-mail Val Detector",
         "insight": "Klik op de e-mail om phishing-aanwijzingen te onthullen!",
         "analyse": "🕵️ Uw analyse:",
+        "from": "Van",
+        "to": "Aan",
         "more": "Nog meer +",
         "more_link": "https://phishingquiz.withgoogle.com/?hl=nl",
         "duration": {
@@ -419,6 +421,7 @@
           "error_detected": "✅ Fout {number} gedetecteerd!",
           "problem_identified": "Probleem geïdentificeerd:",
           "why_suspicious": "Waarom het verdacht is:",
+          "expert_advice": "Tip",
           "why_dangerous": "🚨 Waarom het gevaarlijk is:",
           "how_to_detect": "💡 Hoe te detecteren:",
           "victory_title": "🏆 Gefeliciteerd! Je bent nu een anti-phishing expert!",
@@ -503,6 +506,7 @@
           ]
         }
       },
+      "close": "SLUITEN",
       "relax": "**Wees gerust:** Deze demonstratie is puur educatief. Niets wordt opgenomen of verzonden. \n                        De videostream blijft alleen op uw computer."
 
     },

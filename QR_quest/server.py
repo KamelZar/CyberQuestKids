@@ -371,10 +371,10 @@ def teams_register():
     Réponse succès : { "uuid": "...", "team_num": 3 }
     Réponse échec  : { "error": "taken" }  (l'équipe vient d'être prise par quelqu'un d'autre)
     """
-    data    = request.get_json(silent=True) or {}
-    team_id = data.get('team_id', '').strip()
-    lang    = data.get('lang', 'fr')
-    photo   = data.get('photo', '')        # base64 data-URL, seulement pour "vous"
+    data      = request.get_json(silent=True) or {}
+    team_id   = data.get('team_id', '').strip()
+    lang      = data.get('lang', 'fr')
+    is_custom = data.get('custom', False)
 
     if not team_id:
         return jsonify({'error': 'missing team_id'}), 400
@@ -382,32 +382,25 @@ def teams_register():
     teams = load_teams()
 
     # Vérification : l'équipe est-elle encore libre ?
+    # Les équipes custom peuvent s'inscrire plusieurs fois — on suffixe si collision.
     if team_id in teams:
-        return jsonify({'error': 'taken'}), 409
+        if not is_custom:
+            return jsonify({'error': 'taken'}), 409
+        # Trouver un suffixe libre : custom-name-2, -3, …
+        suffix = 2
+        while f"{team_id}-{suffix}" in teams:
+            suffix += 1
+        team_id = f"{team_id}-{suffix}"
 
     # Génération UUID + numéro d'équipe lisible
     team_uuid = str(uuid.uuid4())
     team_num  = len(teams) + 1
-
-    # Sauvegarde de la photo "Vous" si présente
-    photo_path = None
-    if photo and photo.startswith('data:image'):
-        try:
-            PHOTOS_DIR.mkdir(exist_ok=True)
-            # Extrait la partie base64 après la virgule
-            b64_data   = re.sub(r'^data:image/\w+;base64,', '', photo)
-            photo_file = PHOTOS_DIR / f"{team_uuid}.jpg"
-            photo_file.write_bytes(base64.b64decode(b64_data))
-            photo_path = f"photos/{team_uuid}.jpg"
-        except Exception as e:
-            print(f"[WARN] Photo upload failed: {e}")
 
     # Enregistrement de l'équipe
     teams[team_id] = {
         'uuid':          team_uuid,
         'team_num':      team_num,
         'lang':          lang,
-        'photo':         photo_path,
         'ip':            request.remote_addr,
         'registered_at': datetime.now().isoformat(timespec='seconds'),
     }
@@ -415,7 +408,7 @@ def teams_register():
 
     print(f"[TEAM]  #{team_num:<3} | {team_id:<20} | {lang} | {request.remote_addr}")
 
-    return jsonify({'uuid': team_uuid, 'team_num': team_num})
+    return jsonify({'uuid': team_uuid, 'team_num': team_num, 'team_id': team_id})
 
 # ── API dashboard ─────────────────────────────────────────────────────
 @app.route('/dashboard/data')

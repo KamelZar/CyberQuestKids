@@ -191,34 +191,25 @@
     }
     .card-inner.selected .selected-check { display: flex; }
 
-    /* ── Camera card ── */
-    .camera-trigger {
+    /* ── Custom name card ── */
+    .custom-wrap {
       width: 160px; height: 160px; border-radius: 50%;
       border: 3px dashed var(--border);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 8px; cursor: pointer; transition: border-color .2s;
-      background: var(--card2);
-      flex-shrink: 0;
+      gap: 10px; background: var(--card2); flex-shrink: 0;
+      transition: border-color .2s;
     }
-    .camera-trigger:hover { border-color: var(--yellow); }
-    .camera-trigger .cam-icon { font-size: 40px; }
-    .camera-trigger .cam-label {
-      font-size: 11px; color: var(--muted);
+    .card-inner.selected .custom-wrap { border-color: var(--accent); }
+    .custom-wrap .custom-icon { font-size: 32px; }
+    .custom-input {
+      width: 130px; padding: 6px 10px; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-size: 14px; font-weight: 700;
+      text-align: center; outline: none;
       font-family: 'Courier New', monospace; letter-spacing: 1px;
-      text-transform: uppercase;
     }
-    .camera-preview {
-      width: 160px; height: 160px; border-radius: 50%;
-      object-fit: cover; border: 3px solid var(--yellow);
-      display: none;
-    }
-    .retake-btn {
-      font-size: 11px; color: var(--yellow);
-      background: transparent; border: 1px solid var(--yellow);
-      padding: 4px 12px; border-radius: 20px; cursor: pointer;
-      font-family: 'Courier New', monospace;
-    }
-    .retake-btn:hover { background: rgba(255,204,0,0.1); }
+    .custom-input:focus { border-color: var(--accent); }
+    .custom-input::placeholder { color: var(--muted); font-weight: 400; letter-spacing: 0; }
 
     /* ── Arrows ── */
     .arrow {
@@ -273,34 +264,6 @@
       font-family: 'Courier New', monospace;
     }
 
-    /* ── Camera modal ── */
-    .cam-modal {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.92); z-index: 500;
-      flex-direction: column; align-items: center; justify-content: center;
-      gap: 16px; padding: 20px;
-    }
-    .cam-modal.show { display: flex; }
-    .cam-video {
-      width: 100%; max-width: 320px; border-radius: 50%;
-      aspect-ratio: 1; object-fit: cover;
-      border: 3px solid var(--yellow);
-    }
-    .cam-canvas { display: none; }
-    .cam-actions { display: flex; gap: 12px; }
-    .cam-shoot {
-      padding: 12px 28px; border-radius: 30px;
-      background: var(--yellow); color: #0a0c10;
-      font-size: 15px; font-weight: 700; border: none; cursor: pointer;
-    }
-    .cam-cancel {
-      padding: 12px 20px; border-radius: 30px;
-      background: transparent; color: var(--text);
-      font-size: 15px; border: 1px solid var(--border); cursor: pointer;
-    }
-    .cam-label-text {
-      font-size: 13px; color: var(--muted); text-align: center;
-    }
 
     /* ── Success overlay ── */
     .success-overlay {
@@ -374,17 +337,6 @@
 
 </div>
 
-<!-- Camera modal -->
-<div class="cam-modal" id="cam-modal">
-  <div class="cam-label-text" id="cam-instruction">Centre ton visage et appuie sur 📸</div>
-  <video class="cam-video" id="cam-video" autoplay playsinline muted></video>
-  <canvas class="cam-canvas" id="cam-canvas"></canvas>
-  <div class="cam-actions">
-    <button class="cam-shoot" id="cam-shoot" onclick="shootPhoto()">📸</button>
-    <button class="cam-cancel" onclick="closeCamera()">✕</button>
-  </div>
-</div>
-
 <!-- Success overlay -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-icon">🎉</div>
@@ -407,14 +359,12 @@ var I18N = {
     confirmReady:"Choisir cette équipe →",
     confirmWait: "Sélectionne une équipe",
     confirmHint: "1 appareil par équipe",
-    camInstruct: "Centre ton visage et appuie sur 📸",
-    retake:      "Reprendre",
-    sucTitle:    "Équipe enregistrée !",
-    sucMsg:      "Le workshop va bientôt commencer. Restez prêts !",
-    camLabel:    "SELFIE",
-    vousName:    "Vous",
-    vousTag:     "Notre équipe",
-    vousBio:     "Prenez un selfie pour représenter votre équipe !",
+    sucTitle:       "Équipe enregistrée !",
+    sucMsg:         "Le workshop va bientôt commencer. Restez prêts !",
+    customName:     "Autre",
+    customTag:      "Équipe personnalisée",
+    customBio:      "Entre le nom de ton équipe ci-dessous.",
+    customPlaceholder: "Nom d'équipe…",
     waitMsg:     "En attente du démarrage du workshop…",
   },
   nl: {
@@ -425,14 +375,12 @@ var I18N = {
     confirmReady:"Dit team kiezen →",
     confirmWait: "Kies een team",
     confirmHint: "1 apparaat per team",
-    camInstruct: "Centreer je gezicht en druk op 📸",
-    retake:      "Opnieuw",
-    sucTitle:    "Team geregistreerd!",
-    sucMsg:      "De workshop begint binnenkort. Blijf klaar!",
-    camLabel:    "SELFIE",
-    vousName:    "Jullie",
-    vousTag:     "Ons team",
-    vousBio:     "Maak een selfie om jullie team te vertegenwoordigen!",
+    sucTitle:       "Team geregistreerd!",
+    sucMsg:         "De workshop begint binnenkort. Blijf klaar!",
+    customName:     "Andere",
+    customTag:      "Aangepast team",
+    customBio:      "Voer hieronder de naam van je team in.",
+    customPlaceholder: "Teamnaam…",
     waitMsg:     "Wachten op de start van de workshop…",
   },
   en: {
@@ -443,14 +391,12 @@ var I18N = {
     confirmReady:"Choose this team →",
     confirmWait: "Select a team",
     confirmHint: "1 device per team",
-    camInstruct: "Center your face and press 📸",
-    retake:      "Retake",
-    sucTitle:    "Team registered!",
-    sucMsg:      "The workshop will start soon. Stay ready!",
-    camLabel:    "SELFIE",
-    vousName:    "You",
-    vousTag:     "Our team",
-    vousBio:     "Take a selfie to represent your team!",
+    sucTitle:       "Team registered!",
+    sucMsg:         "The workshop will start soon. Stay ready!",
+    customName:     "Custom",
+    customTag:      "Custom team",
+    customBio:      "Enter your team name below.",
+    customPlaceholder: "Team name…",
     waitMsg:     "Waiting for the workshop to start…",
   }
 };
@@ -570,15 +516,15 @@ var TEAMS = [
     }
   },
   {
-    id: 'vous',
+    id: 'custom',
     name: null,   // filled from i18n
     image: null,
-    isCamera: true,
-    tag: { fr: 'Notre équipe', nl: 'Ons team', en: 'Our team' },
+    isCustom: true,
+    tag: { fr: 'Équipe personnalisée', nl: 'Aangepast team', en: 'Custom team' },
     bio: {
-      fr: "Prenez un selfie pour représenter votre équipe !",
-      nl: "Maak een selfie om jullie team te vertegenwoordigen!",
-      en: "Take a selfie to represent your team!"
+      fr: "Entre le nom de ton équipe ci-dessous.",
+      nl: "Voer hieronder de naam van je team in.",
+      en: "Enter your team name below."
     }
   }
 ];
@@ -590,8 +536,6 @@ var lang          = 'fr';
 var currentIndex  = 0;
 var selectedId    = null;
 var takenIds      = new Set();
-var cameraPhoto   = null;   // base64 data URL if selfie taken
-var cameraStream  = null;
 var pollTimer     = null;
 var isDragging    = false;
 var dragStartX    = 0;
@@ -629,7 +573,6 @@ function applyI18N() {
   document.getElementById('instr-sub').textContent    = t.instrSub;
   document.getElementById('confirm-label').textContent = t.confirmWait;
   document.getElementById('confirm-hint').textContent  = t.confirmHint;
-  document.getElementById('cam-instruction').textContent = t.camInstruct;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -649,19 +592,20 @@ function buildCarousel() {
     card.className = 'team-card';
     card.dataset.idx = i;
 
-    var name = team.isCamera ? t.vousName : team.name;
+    var name = team.isCustom ? t.customName : team.name;
     var bio  = team.bio[lang];
     var tag  = team.tag[lang];
 
     var avatarHtml;
-    if (team.isCamera) {
+    if (team.isCustom) {
       avatarHtml =
-        '<div class="camera-trigger" id="cam-trigger" onclick="openCamera()">'
-          + '<span class="cam-icon">📷</span>'
-          + '<span class="cam-label">' + t.camLabel + '</span>'
-        + '</div>'
-        + '<img class="camera-preview" id="cam-preview" src="" alt="" />'
-        + '<button class="retake-btn" id="retake-btn" onclick="openCamera()" style="display:none">' + t.retake + '</button>';
+        '<div class="custom-wrap">'
+          + '<span class="custom-icon">✏️</span>'
+          + '<input class="custom-input" id="custom-input" type="text" maxlength="16"'
+          + ' placeholder="' + t.customPlaceholder + '"'
+          + ' onclick="event.stopPropagation()"'
+          + ' oninput="onCustomInput()" />'
+        + '</div>';
     } else {
       avatarHtml =
         '<div class="avatar-wrap">'
@@ -771,14 +715,33 @@ function setupSwipe() {
 /* ══════════════════════════════════════════════════════════
    Select card
 ══════════════════════════════════════════════════════════ */
+function onCustomInput() {
+  var input = document.getElementById('custom-input');
+  if (!input) return;
+  var val = input.value.trim();
+  var customIdx = TEAMS.findIndex(function(t) { return t.isCustom; });
+  if (val.length > 0) {
+    selectCard(customIdx);
+  } else {
+    selectedId = null;
+    var card = document.getElementById('card-' + customIdx);
+    if (card) card.classList.remove('selected');
+    document.getElementById('confirm-btn').disabled = true;
+    document.getElementById('confirm-label').textContent = (I18N[lang] || I18N.fr).confirmWait;
+  }
+}
+
 function selectCard(idx) {
   var team = TEAMS[idx];
-  if (takenIds.has(team.id)) return;
+  if (!team.isCustom && takenIds.has(team.id)) return;
 
-  // Camera card — only selectable if photo taken
-  if (team.isCamera && !cameraPhoto) {
-    openCamera();
-    return;
+  // Custom card — only selectable if name entered
+  if (team.isCustom) {
+    var input = document.getElementById('custom-input');
+    if (!input || input.value.trim().length === 0) {
+      input && input.focus();
+      return;
+    }
   }
 
   selectedId = team.id;
@@ -816,7 +779,7 @@ function updateTakenVisual() {
   TEAMS.forEach(function(team, i) {
     var card = document.getElementById('card-' + i);
     if (!card) return;
-    var isTaken = takenIds.has(team.id);
+    var isTaken = !team.isCustom && takenIds.has(team.id);
     card.classList.toggle('taken', isTaken);
 
     // Update dot
@@ -834,75 +797,20 @@ function updateTakenVisual() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   Camera
-══════════════════════════════════════════════════════════ */
-function openCamera() {
-  var modal = document.getElementById('cam-modal');
-  modal.classList.add('show');
-
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
-    .then(function(stream) {
-      cameraStream = stream;
-      var video = document.getElementById('cam-video');
-      video.srcObject = stream;
-    })
-    .catch(function() {
-      closeCamera();
-    });
-}
-
-function shootPhoto() {
-  var video  = document.getElementById('cam-video');
-  var canvas = document.getElementById('cam-canvas');
-  canvas.width  = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video, 0, 0);
-
-  // Crop to square from center
-  var size = Math.min(canvas.width, canvas.height);
-  var cx = Math.floor((canvas.width  - size) / 2);
-  var cy = Math.floor((canvas.height - size) / 2);
-  var sq = document.createElement('canvas');
-  sq.width = sq.height = 300;
-  sq.getContext('2d').drawImage(canvas, cx, cy, size, size, 0, 0, 300, 300);
-
-  cameraPhoto = sq.toDataURL('image/jpeg', 0.8);
-
-  // Show preview in card
-  var preview = document.getElementById('cam-preview');
-  var trigger = document.getElementById('cam-trigger');
-  var retake  = document.getElementById('retake-btn');
-  preview.src = cameraPhoto;
-  preview.style.display = 'block';
-  trigger.style.display = 'none';
-  retake.style.display  = 'inline-block';
-
-  closeCamera();
-
-  // Auto-select the "vous" card
-  var vousIdx = TEAMS.findIndex(function(t) { return t.isCamera; });
-  selectCard(vousIdx);
-}
-
-function closeCamera() {
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(function(t) { t.stop(); });
-    cameraStream = null;
-  }
-  document.getElementById('cam-modal').classList.remove('show');
-}
-
-/* ══════════════════════════════════════════════════════════
    Confirm
 ══════════════════════════════════════════════════════════ */
 function confirmSelection() {
   if (!selectedId) return;
   clearInterval(pollTimer);
 
-  var payload = { team_id: selectedId, lang: lang };
-  if (selectedId === 'vous' && cameraPhoto) {
-    payload.photo = cameraPhoto;
+  var team = TEAMS.find(function(x) { return x.id === selectedId; });
+  var finalId = selectedId;
+  if (team && team.isCustom) {
+    var input = document.getElementById('custom-input');
+    var raw   = (input ? input.value.trim() : '').substring(0, 16);
+    finalId   = raw.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'custom';
   }
+  var payload = { team_id: finalId, lang: lang, custom: !!(team && team.isCustom) };
 
   fetch('/teams/register', {
     method: 'POST',
@@ -918,29 +826,27 @@ function confirmSelection() {
     }
     // Store UUID in cookie
     setCookie('cq_uuid', data.uuid, 1);
-    setCookie('cq_team', selectedId, 1);
+    setCookie('cq_team', data.team_id || finalId, 1);
     setCookie('cq_lang', lang, 1);
-    showSuccess(data);
+    showSuccess(data, finalId);
   })
   .catch(function() {
     // If server unreachable during dev, show success anyway
-    showSuccess({ uuid: 'demo', team_num: 1 });
+    showSuccess({ uuid: 'demo', team_num: 1 }, finalId);
   });
 }
 
-function showSuccess(data) {
+function showSuccess(data, resolvedId) {
   var t    = I18N[lang];
   var team = TEAMS.find(function(x) { return x.id === selectedId; });
-  var name = (team && !team.isCamera) ? team.name : I18N[lang].vousName;
+  var name = (team && team.isCustom) ? resolvedId : (team ? team.name : resolvedId);
 
   document.getElementById('suc-title').textContent = t.sucTitle;
   document.getElementById('suc-team').textContent  = name;
   document.getElementById('suc-msg').textContent   = t.sucMsg;
 
   var sucAvatar = document.getElementById('suc-avatar');
-  if (team && team.isCamera && cameraPhoto) {
-    sucAvatar.src = cameraPhoto;
-  } else if (team && team.image) {
+  if (team && team.image) {
     sucAvatar.src = team.image;
   } else {
     sucAvatar.style.display = 'none';

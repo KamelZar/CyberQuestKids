@@ -430,6 +430,7 @@
 
             init() {
                 this.setupAudioControl();
+                this.setupAutoClose();
                 this.createContinuousParticles();
                 this.setupEnterKeyListener();
                 
@@ -531,115 +532,37 @@
             }
 
             showClosingMessage() {
-                // Créer un overlay de fermeture
                 const closeOverlay = document.createElement('div');
                 closeOverlay.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.9);
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    color: #FFD700;
-                    font-family: Georgia, serif;
-                    text-align: center;
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.92); display: flex; flex-direction: column;
+                    align-items: center; justify-content: center; z-index: 1000;
+                    color: #FFD700; font-family: Georgia, serif; text-align: center; padding: 20px;
                 `;
-
                 closeOverlay.innerHTML = `
                     <div style="font-size: 2.5rem; margin-bottom: 20px; animation: fadeIn 1s ease;">
                         ✨ La cérémonie magique se termine ✨
                     </div>
-                    <div style="font-size: 1.5rem; margin-bottom: 30px; color: #E0E0E0;">
+                    <div style="font-size: 1.4rem; margin-bottom: 40px; color: #E0E0E0;">
                         Merci d'avoir participé à cette aventure cyber-magique !
                     </div>
-                    <div style="font-size: 3rem; color: #FF6B6B;" id="countdown">5</div>
-                    <div style="font-size: 1.2rem; color: #E0E0E0; margin-top: 20px;">
-                        La page se fermera automatiquement...
-                    </div>
+                    <a href="https://beinternetawesome.withgoogle.com/fr_be/interland"
+                       style="display:inline-block; padding:18px 36px; border-radius:50px;
+                              background:linear-gradient(135deg,#FFD700,#FFA500);
+                              color:#1a0a00; font-size:1.2rem; font-weight:900;
+                              text-decoration:none; letter-spacing:1px;
+                              box-shadow:0 0 30px rgba(255,215,0,0.5);
+                              animation:fadeIn 1s ease 0.5s both;">
+                        🌐 Continue l'aventure sur Interland →
+                    </a>
                     <style>
                         @keyframes fadeIn {
-                            from { opacity: 0; transform: translateY(-20px); }
-                            to { opacity: 1; transform: translateY(0); }
-                        }
-                        
-                        @keyframes countdownPulse {
-                            0% { transform: scale(1); }
-                            50% { transform: scale(1.2); color: #FFD700; }
-                            100% { transform: scale(1); }
-                        }
-                        
-                        #countdown {
-                            animation: countdownPulse 1s ease-in-out;
+                            from { opacity:0; transform:translateY(20px); }
+                            to   { opacity:1; transform:translateY(0); }
                         }
                     </style>
                 `;
-
                 document.body.appendChild(closeOverlay);
-
-                // Compte à rebours de 5 secondes
-                let countdown = 5;
-                const countdownElement = closeOverlay.querySelector('#countdown');
-                
-                const countdownInterval = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    countdownElement.style.animation = 'none';
-                    setTimeout(() => {
-                        countdownElement.style.animation = 'countdownPulse 1s ease-in-out';
-                    }, 10);
-                    
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        this.closePage();
-                    }
-                }, 1000);
-            }
-
-            closePage() {
-                // Essayer plusieurs méthodes pour fermer la page
-                try {
-                    // Méthode 1: Fermer l'onglet/fenêtre
-                    window.close();
-                } catch (e) {
-                    console.log('window.close() failed:', e);
-                }
-
-                // Méthode 2: Rediriger vers une page vide
-                setTimeout(() => {
-                    window.location.href = 'about:blank';
-                }, 500);
-
-                // Méthode 3: Masquer complètement le contenu
-                setTimeout(() => {
-                    document.body.style.display = 'none';
-                    document.body.innerHTML = `
-                        <div style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            min-height: 100vh;
-                            background: #000;
-                            color: #FFD700;
-                            font-family: Georgia, serif;
-                            text-align: center;
-                            font-size: 1.5rem;
-                        ">
-                            <div>
-                                <div style="font-size: 3rem; margin-bottom: 20px;">✨</div>
-                                <div>La cérémonie magique est terminée.</div>
-                                <div style="margin-top: 20px; color: #E0E0E0; font-size: 1rem;">
-                                    Vous pouvez fermer cette page.
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.style.display = 'flex';
-                }, 1000);
             }
 
             setupEnterKeyListener() {

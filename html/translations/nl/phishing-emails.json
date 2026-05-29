@@ -1,0 +1,214 @@
+{
+  "emails": [
+    {
+      "id": "ing",
+      "from": "security@ing-be.support.com",
+      "subject": "Identiteitsbevestiging vereist - Snelle actie nodig",
+      "greeting": "Hallo,",
+      "body": [
+        "Vanwege nieuwe bankregelgeving moeten we de identiteit verifiëren van al onze klanten <span class=\"age\">jonger dan 25 jaar</span>.",
+        "Uw ING-rekening vereist een identiteitsbevestiging <span class=\"urgency\">binnen 48 uur</span>. Deze procedure is snel en gratis."
+      ],
+      "buttonText": "Bevestig nu mijn identiteit",
+      "threat": "Als u uw identiteit niet bevestigt, wordt automatisch een verificatiekost van €25 van uw rekening afgeschreven.",
+      "signature": {
+        "closing": "Met vriendelijke groet,",
+        "name": "ING België Klantendienst"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "security@ing-be.support.com",
+          "selector": "email",
+          "explanation": "Vals domein: \"ing-be.support.com\" in plaats van \"ing.be\""
+        },
+        {
+          "id": "age-targeting",
+          "target": "jonger dan 25 jaar",
+          "selector": "age",
+          "explanation": "Richten op jongeren om hun onervarenheid uit te buiten"
+        },
+        {
+          "id": "urgency-error",
+          "target": "binnen 48 uur",
+          "selector": "urgency",
+          "explanation": "Kunstmatige urgentie om u te laten handelen zonder na te denken"
+        },
+        {
+          "id": "link-error",
+          "target": "Bevestig nu mijn identiteit",
+          "selector": "button",
+          "explanation": "Verdachte link om \"identiteit te bevestigen\" - gegevensdiefstal techniek"
+        },
+        {
+          "id": "fee-threat",
+          "target": "Als u uw identiteit niet bevestigt, wordt automatisch een verificatiekost van €25 van uw rekening afgeschreven.",
+          "selector": "threat",
+          "explanation": "Financiële bedreiging om actie af te dwingen: automatische afschrijving"
+        }
+      ]
+    },
+    {
+      "id": "paypal",
+      "from": "noreply@paypaI.com",
+      "subject": "Probleem met uw betaling - Verificatie vereist",
+      "greeting": "Hallo,",
+      "body": [
+        "We hebben een probleem opgemerkt met uw recente betaling van <span class=\"amount\">€299,99</span>.",
+        "Uw PayPal-account is tijdelijk beperkt totdat we uw informatie kunnen verifiëren."
+      ],
+      "buttonText": "Mijn account nu verifiëren",
+      "threat": "Als u dit probleem niet binnen 48 uur oplost, wordt uw account permanent gesloten.",
+      "signature": {
+        "closing": "Bedankt,",
+        "name": "PayPal Team"
+      },
+      "errors": [
+        {
+          "id": "domain-error",
+          "target": "noreply@paypaI.com",
+          "selector": "email",
+          "explanation": "Vals adres: \"paypaI.com\" met een hoofdletter I in plaats van een L"
+        },
+        {
+          "id": "amount-error",
+          "target": "€299,99",
+          "selector": "amount",
+          "explanation": "Specifiek verzonnen bedrag om urgentie te creëren"
+        },
+        {
+          "id": "limitation-error",
+          "target": "Uw PayPal-account is tijdelijk beperkt totdat we uw informatie kunnen verifiëren.",
+          "selector": "limitation",
+          "explanation": "Accountbeperking zonder duidelijke reden of details"
+        },
+        {
+          "id": "button-error",
+          "target": "Mijn account nu verifiëren",
+          "selector": "button",
+          "explanation": "Verdachte knop met algemene link"
+        },
+        {
+          "id": "deadline-error",
+          "target": "Als u dit probleem niet binnen 48 uur oplost, wordt uw account permanent gesloten.",
+          "selector": "threat",
+          "explanation": "Permanente sluitingsdreiging om druk te creëren"
+        }
+      ]
+    },
+    {
+      "id": "amazon",
+      "from": "support@amazun.com",
+      "subject": "Uw bestelling #AZ123456 - Leveringsprobleem",
+      "greeting": "Hallo,",
+      "body": [
+        "Uw bestelling <span class=\"order\">\\#AZ123456</span> kan niet naar uw adres worden geleverd.",
+        "Onze vervoerder meldt een onvolledig adres. U moet uw gegevens <span class=\"urgency\">binnen 24 uur</span> bijwerken, anders wordt uw pakket geretourneerd."
+      ],
+      "buttonText": "Mijn adres bijwerken",
+      "threat": "Na deze termijn worden opslagkosten van €15 in rekening gebracht.",
+      "signature": {
+        "closing": "Met vriendelijke groet,",
+        "name": "Amazon Klantenservice"
+      },
+      "errors": [
+        {
+          "id": "typo-error",
+          "target": "support@amazun.com",
+          "selector": "email",
+          "explanation": "Fout in domein: \"amazun\" in plaats van \"amazon\""
+        },
+        {
+          "id": "fake-order",
+          "target": "#AZ123456",
+          "selector": "order",
+          "explanation": "Algemene verzonnen bestelreferentie"
+        },
+        {
+          "id": "urgent-action",
+          "target": "binnen 24 uur",
+          "selector": "urgency",
+          "explanation": "Kunstmatige urgentie: \"binnen 24 uur\""
+        },
+        {
+          "id": "suspicious-link",
+          "target": "Mijn adres bijwerken",
+          "selector": "button",
+          "explanation": "Verdachte link om gegevens \"bij te werken\""
+        },
+        {
+          "id": "fee-threat",
+          "target": "Na deze termijn worden opslagkosten van €15 in rekening gebracht.",
+          "selector": "threat",
+          "explanation": "Extra kostendreiging om actie af te dwingen"
+        }
+      ]
+    }
+  ],
+  "explanations": {
+    "email-error": {
+      "danger": "Cybercriminelen imiteren echte sites door subtiele spelfouten te maken. \"bannk\" in plaats van \"bank\" valt vaak niet meteen op.",
+      "detection": "Controleer het e-mailadres altijd zorgvuldig, letter voor letter. Echte banken gebruiken officiële domeinen zonder fouten."
+    },
+    "urgency-error": {
+      "danger": "Kunstmatige urgentie (\"24u\") is een psychologische techniek om u te laten panikeren en te handelen zonder na te denken.",
+      "detection": "Echte bankwaarschuwingen dreigen nooit met onmiddellijke opschorting. Neem de tijd om te controleren."
+    },
+    "link-error": {
+      "danger": "Algemene links zoals \"KLIK HIER\" zijn ontworpen om aantrekkelijk te zijn, maar verbergen hun echte bestemming.",
+      "detection": "Echte bedrijven gebruiken specifieke en beschrijvende links, geen vage formules."
+    },
+    "threat-error": {
+      "danger": "Emotionele bedreigingen (\"verliest u de toegang\") zijn bedoeld om u te laten panikeren om te voorkomen dat u controleert.",
+      "detection": "Echte organisaties bedreigen u nooit direct. Neem contact met hen op via officiële kanalen."
+    },
+    "signature-error": {
+      "danger": "Een handtekening zonder de naam van een echte persoon is verdacht. Echte communicatie bevat vaak specifieke namen.",
+      "detection": "Controleer of de handtekening algemeen of gepersonaliseerd lijkt. Echte bedrijven identificeren zich duidelijk."
+    },
+    "domain-error": {
+      "danger": "Een \"l\" vervangen door een hoofdletter \"I\" (paypaI vs paypal) is een klassieke phishing-techniek genaamd \"typosquatting\".",
+      "detection": "Bekijk elke letter van het domein. Echte PayPal-, Amazon-, enz. domeinen hebben nooit variaties."
+    },
+    "amount-error": {
+      "danger": "Het noemen van een specifiek bedrag dat u niet hebt uitgegeven, creëert verwarring en urgentie om te controleren.",
+      "detection": "Controleer altijd uw echte transacties in uw account voordat u op links klikt."
+    },
+    "limitation-error": {
+      "danger": "Echte accountbeperkingen gaan altijd gepaard met gedetailleerde uitleg en bewijs.",
+      "detection": "Echte bedrijven leggen duidelijk uit waarom en hoe het probleem kan worden opgelost."
+    },
+    "button-error": {
+      "danger": "Knoppen met algemene links kunnen u doorverwijzen naar frauduleuze sites die uw inloggegevens stelen.",
+      "detection": "Beweeg over de link (zonder te klikken) om de echte URL te zien. Het moet overeenkomen met het officiële domein."
+    },
+    "deadline-error": {
+      "danger": "Korte en dreigende deadlines zijn psychologische druk om u te laten handelen zonder na te denken.",
+      "detection": "Echte bedrijven geven u altijd een redelijke deadline en meerdere contactmethoden."
+    },
+    "typo-error": {
+      "danger": "Typefouten in domeinnamen (amazun vs amazon) zijn een veelvoorkomende phishing-techniek.",
+      "detection": "Controleer de exacte spelling van het domein. Grote bedrijven hebben nooit fouten in hun adres."
+    },
+    "fake-order": {
+      "danger": "Algemene bestelnummers zijn verzonnen om u te laten panikeren en te klikken zonder te controleren.",
+      "detection": "Controleer altijd uw bestelgeschiedenis op de officiële site voordat u reageert."
+    },
+    "urgent-action": {
+      "danger": "Deadlines van 24 uur zijn ontworpen om te voorkomen dat u de tijd neemt om de authenticiteit te verifiëren.",
+      "detection": "Echte bezorgbedrijven geven u meerdere dagen en nemen op meerdere manieren contact met u op."
+    },
+    "suspicious-link": {
+      "danger": "Vragen om persoonlijke informatie \"bij te werken\" via e-mail is een klassieke gegevensdiefstal techniek.",
+      "detection": "Klik nooit op links om uw gegevens bij te werken. Ga rechtstreeks naar de officiële website."
+    },
+    "fee-threat": {
+      "danger": "Extra kostendreigingen creëren financiële druk om u snel te laten handelen.",
+      "detection": "Echte bezorgbedrijven dreigen niet met onmiddellijke kosten zonder duidelijke voorafgaande communicatie."
+    },
+    "age-targeting": {
+      "danger": "Specifiek jongeren targeten is een tactiek om hun gebrek aan ervaring met bankfraude uit te buiten.",
+      "detection": "Echte banken targeten nooit klanten op leeftijdsgroep in hun beveiligingscommunicatie."
+    }
+  }
+}

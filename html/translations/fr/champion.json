@@ -1,0 +1,337 @@
+{
+  "ai": {
+    "title": "Intelligence Artificielle",
+    "icon": "🤖",
+    "description": "Deepfakes, hallucinations...",
+    "questions": [
+      {
+        "question": "Les filtres amusants de TikTok et Instagram utilisent une forme d'Intelligence Artificielle pour fonctionner",
+        "answer": true,
+        "explanation": "C'est VRAI ! Ces filtres utilisent l'IA pour reconnaître ton visage et y ajouter des effets en temps réel. C'est de la reconnaissance faciale !"
+      },
+      {
+        "question": "Une Intelligence Artificielle peut prédire ton avenir personnel et professionnel avec 100% de précision",
+        "answer": false,
+        "explanation": "C'est FAUX ! Aucune IA ne peut prédire l'avenir avec certitude. Elle peut faire des estimations basées sur des données, mais l'avenir reste imprévisible !"
+      },
+      {
+        "question": "Les assistants vocaux comme Siri et Alexa écoutent et enregistrent en permanence tout ce que tu dis à la maison",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! Ils écoutent le mot-clé d'activation ('Hey Siri', 'Alexa') mais n'enregistrent normalement que après avoir entendu ce mot. Mais il peut y avoir des bugs..."
+      },
+      {
+        "question": "L'Intelligence Artificielle peut t'aider à faire tes devoirs, mais il faut toujours vérifier ses réponses et respecter les règles",
+        "answer": true,
+        "explanation": "C'est VRAI ! L'IA peut t'aider à comprendre et à apprendre, mais attention : utiliser l'IA pour faire tes devoirs à ta place c'est du plagiat ! De plus, ton école l'interdit peut-être. L'IA doit être un outil d'apprentissage, pas un moyen de tricher !"
+      },
+      {
+        "question": "Les deepfakes (vidéos truquées par IA) sont faciles à créer et peuvent tromper n'importe qui sans exception",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! Créer un bon deepfake demande des compétences et du temps. De plus, on peut apprendre à les détecter en regardant les détails bizarres !"
+      },
+      {
+        "question": "Une Intelligence Artificielle peut parfaitement copier la voix de quelqu'un avec seulement quelques secondes d'enregistrement",
+        "answer": true,
+        "explanation": "C'est de plus en plus VRAI ! Certaines IA peuvent cloner une voix avec très peu d'audio. Attention aux appels suspects, même si la voix semble familière !"
+      },
+      {
+        "question": "Tout ce que génère une Intelligence Artificielle (texte, images, code, calculs) est automatiquement correct et fiable",
+        "answer": false,
+        "explanation": "C'est FAUX ! L'IA peut faire des erreurs, inventer des informations ou créer du contenu biaisé. Il faut toujours garder son esprit critique !"
+      },
+      {
+        "question": "Le phénomène des 'hallucinations' (inventer de fausses informations) n'existe que chez les êtres humains, pas chez les IA",
+        "answer": false,
+        "explanation": "C'est FAUX ! Les IA peuvent aussi avoir des 'hallucinations' ! Ça veut dire qu'elles inventent des informations qui semblent vraies mais qui sont complètement fausses. Par exemple, une IA peut inventer des dates historiques ou des noms de personnes qui n'existent pas !"
+      },
+      {
+        "question": "Toutes les Intelligences Artificielles peuvent faire exactement les mêmes tâches : écrire du texte, créer des images, des vidéos, du code...",
+        "answer": false,
+        "explanation": "C'est FAUX ! Chaque IA a sa spécialité ! Il y a des IA pour coder (comme GitHub Copilot), d'autres pour créer des images (DALL-E, Midjourney), des vidéos (RunwayML), analyser des textes, faire de la recherche scientifique, ou encore générer de la musique. Chaque IA est entraînée pour une tâche précise !"
+      },
+      {
+        "question": "Il est important de ne jamais donner d'informations personnelles sensibles à un chatbot ou assistant IA",
+        "answer": true,
+        "explanation": "C'est VRAI ! Ne partage jamais ton nom complet, adresse, numéro de téléphone, mots de passe ou autres infos privées avec une IA. On ne sait jamais qui pourrait y avoir accès !"
+      },
+      {
+        "question": "ChatGPT et les autres IA conversationnelles peuvent réellement naviguer sur internet en temps réel pour te donner des informations actualisées",
+        "answer": false,
+        "explanation": "C'est généralement FAUX ! La plupart des IA conversationnelles ont une 'date de coupure' et ne peuvent pas accéder aux infos récentes. Attention aux fausses infos sur l'actualité !"
+      },
+      {
+        "question": "Il existe des IA capables de générer des contenus (textes, images) si réalistes qu'il devient de plus en plus difficile de les distinguer du contenu humain",
+        "answer": true,
+        "explanation": "C'est VRAI ! C'est pour ça qu'il faut développer son esprit critique et apprendre à identifier les indices d'un contenu généré par IA (répétitions, incohérences, style trop parfait...)"
+      }
+    ]
+  },
+  "protection": {
+    "title": "Protection & Virus",
+    "icon": "🛡️",
+    "description": "VPN, malwares, symptoms...",
+    "questions": [
+      {
+        "question": "Un virus peut utiliser ton téléphone pour miner des cryptomonnaies sans que tu le saches",
+        "answer": true,
+        "explanation": "C'est VRAI ! Et tu peux le détecter car : ton téléphone devient anormalement chaud même au repos, la batterie se vide super vite, les apps sont lentes à s'ouvrir, et tu remarques une consommation data bizarre. Si ton téléphone fait ça sans raison, scan-le !"
+      },
+      {
+        "question": "Un virus peut bloquer complètement ton téléphone et demander de l'argent",
+        "answer": true,
+        "explanation": "C'est VRAI ! Le ransomware chiffre tes fichiers. Symptômes : impossible d'ouvrir tes photos/vidéos, message d'extorsion à l'écran, extensions de fichiers bizarres (.locked, .encrypted). Solution : JAMAIS payer, restaurer depuis une sauvegarde !"
+      },
+      {
+        "question": "Si ton téléphone est infecté, le virus peut s'envoyer automatiquement à tous tes contacts WhatsApp",
+        "answer": true,
+        "explanation": "C'est VRAI ! Certains malwares peuvent envoyer des messages automatiques à tes contacts pour se propager. Vérifie régulièrement tes messages envoyés et si tes amis reçoivent des trucs bizarres de ta part !"
+      },
+      {
+        "question": "Un hacker peut allumer ta caméra à distance et te filmer",
+        "answer": true,
+        "explanation": "C'est VRAI ! Signes d'alerte : une petite lumière qui s'allume parfois près de la caméra, des apps photos qui s'ouvrent toutes seules, ou des notifications bizarres d'apps de caméra. Colle un autocollant sur ta webcam si tu doutes !"
+      },
+      {
+        "question": "Télécharger un jeu 'gratuit' depuis un site suspect peut infecter ton téléphone",
+        "answer": true,
+        "explanation": "C'est VRAI ! Les apps piratées ou provenant de sites non officiels peuvent contenir des malwares. Utilise toujours les stores officiels (App Store, Google Play) même si c'est payant !"
+      },
+      {
+        "question": "Un VPN (réseau privé virtuel) peut protéger ta vie privée, mais tous les VPN gratuits sont sûrs",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! Un bon VPN protège effectivement, mais attention : beaucoup de VPN gratuits vendent tes données ou contiennent des malwares ! Mieux vaut un VPN payant et réputé."
+      },
+      {
+        "question": "Les mises à jour de sécurité de ton téléphone et ordinateur sont vraiment importantes pour te protéger",
+        "answer": true,
+        "explanation": "C'est VRAI ! Ces mises à jour corrigent des failles de sécurité que les hackers exploitent. Même si c'est chiant, active les mises à jour automatiques !"
+      },
+      {
+        "question": "Un antivirus gratuit comme Windows Defender ou l'antivirus intégré de ton téléphone suffit pour une protection de base",
+        "answer": true,
+        "explanation": "C'est généralement VRAI ! Les antivirus intégrés modernes sont assez efficaces pour la plupart des utilisateurs. Pas besoin d'acheter des trucs chers avec plein de fonctions gadgets !"
+      },
+      {
+        "question": "Tu peux facilement détecter si ton téléphone Android est infecté en regardant la liste des applications installées",
+        "answer": true,
+        "explanation": "C'est en partie VRAI ! Va dans Paramètres > Applications et regarde s'il y a des apps que tu n'as jamais installées, avec des noms bizarres, ou des icônes louches. Désinstalle tout ce qui te semble suspect !"
+      },
+      {
+        "question": "Les codes QR sont totalement sûrs car ils ne peuvent contenir que du texte",
+        "answer": false,
+        "explanation": "C'est FAUX ! Un QR code peut rediriger vers un site malveillant ou télécharger automatiquement une app infectée. Scanne seulement les QR codes de sources fiables !"
+      }
+    ]
+  },
+  "mobile": {
+    "title": "Mobile & Paiements",
+    "icon": "📱",
+    "description": "Apps, QR codes, sécurité...",
+    "questions": [
+      {
+        "question": "Il est plus sûr de payer avec ton téléphone (Apple Pay, Google Pay) qu'avec ta vraie carte bancaire",
+        "answer": true,
+        "explanation": "C'est VRAI ! Le paiement mobile utilise un numéro de carte virtuel temporaire et demande ton empreinte/code. Plus sûr que de sortir ta vraie carte !"
+      },
+      {
+        "question": "Si tu perds ton téléphone, quelqu'un peut facilement accéder à toutes tes apps bancaires",
+        "answer": false,
+        "explanation": "C'est FAUX si tu as bien configuré ton téléphone ! Code PIN/empreinte, verrouillage auto, et chiffrement rendent l'accès très difficile. N'oublie pas d'activer la localisation à distance !"
+      },
+      {
+        "question": "Télécharger une app depuis l'App Store ou Google Play garantit qu'elle est 100% sûre",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! Même si c'est beaucoup plus sûr, quelques apps malveillantes passent parfois les contrôles. Lis les avis, vérifie les permissions demandées, et méfie-toi des apps avec très peu de téléchargements."
+      },
+      {
+        "question": "Une app gratuite peut gagner de l'argent en vendant tes données personnelles",
+        "answer": true,
+        "explanation": "C'est VRAI ! Si c'est gratuit, c'est souvent que TU es le produit. Lis les conditions d'utilisation et paramètres de confidentialité. Parfois il vaut mieux payer quelques euros pour une app qui respecte ta vie privée."
+      },
+      {
+        "question": "Scanner un QR code dans un restaurant peut rediriger vers un faux site qui vole tes infos",
+        "answer": true,
+        "explanation": "C'est VRAI ! Des hackers peuvent coller leurs propres QR codes par-dessus les vrais menus. Vérifie toujours l'URL affichée avant de valider et méfie-toi si on te demande des infos personnelles pour voir un menu !"
+      },
+      {
+        "question": "Les permissions d'une app (accès caméra, micro, contacts, géolocalisation) ne sont pas importantes",
+        "answer": false,
+        "explanation": "C'est FAUX ! C'est super important ! Une app lampe torche n'a pas besoin d'accéder à tes contacts ou ta géolocalisation. Lis et limite les permissions au strict nécessaire !"
+      },
+      {
+        "question": "Il est sûr de se connecter au WiFi gratuit d'un centre commercial pour faire des achats en ligne",
+        "answer": false,
+        "explanation": "C'est FAUX ! Les WiFi publics ne sont pas sécurisés. N'y fais jamais d'achats ou de banque en ligne. Utilise plutôt tes données mobiles ou un VPN si tu dois absolument te connecter."
+      },
+      {
+        "question": "Autoriser la géolocalisation sur toutes tes apps permet aux entreprises de créer un profil détaillé de tes habitudes",
+        "answer": true,
+        "explanation": "C'est VRAI ! Tes déplacements révèlent où tu habites, travailles, fais tes courses, tes loisirs... Active la géolocalisation seulement pour les apps qui en ont vraiment besoin (maps, météo, livraison)."
+      },
+      {
+        "question": "Utiliser un gestionnaire de mots de passe sur ton téléphone est risqué car si on vole ton téléphone, on a tous tes mots de passe",
+        "answer": false,
+        "explanation": "C'est FAUX ! Un bon gestionnaire de mots de passe (1Password, Bitwarden, Dashlane) chiffre tout avec un mot de passe maître. Même avec ton téléphone, impossible d'accéder aux mots de passe sans ce code. Et ça reste infiniment plus sûr que 'motdepasse123' partout !"
+      },
+      {
+        "question": "Les apps de messagerie comme WhatsApp, Signal ou Telegram chiffrent automatiquement tous tes messages",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! WhatsApp et Signal chiffrent automatiquement, mais Telegram ne chiffre que les 'conversations secrètes' (à activer manuellement). Vérifie toujours les paramètres de chiffrement !"
+      }
+    ]
+  },
+  "passwords": {
+    "title": "Mots de passe",
+    "icon": "🔐",
+    "description": "2FA, gestionnaires...",
+    "questions": [
+      {
+        "question": "Un mot de passe de 8 caractères avec majuscules, chiffres et symboles est suffisant en 2024",
+        "answer": false,
+        "explanation": "C'est de plus en plus FAUX ! Avec les cartes graphiques modernes, 8 caractères se craquent en quelques heures. Vise plutôt 12+ caractères, ou mieux : une phrase de passe de 4-6 mots aléatoires !"
+      },
+      {
+        "question": "Utiliser le même mot de passe partout mais très complexe est plus sûr qu'avoir des mots de passe différents mais plus simples",
+        "answer": false,
+        "explanation": "C'est FAUX ! Si un site se fait pirater et que ton mot de passe fuite, TOUS tes comptes sont compromis. Mieux vaut des mots de passe uniques partout, même moins complexes."
+      },
+      {
+        "question": "Un gestionnaire de mots de passe est plus sûr que retenir tous ses mots de passe dans sa tête",
+        "answer": true,
+        "explanation": "C'est VRAI ! Impossible de retenir des dizaines de mots de passe complexes et uniques. Un gestionnaire (1Password, Bitwarden, Dashlane) génère et stocke tout de façon chiffrée."
+      },
+      {
+        "question": "L'authentification à double facteur (2FA) par SMS est la méthode la plus sûre",
+        "answer": false,
+        "explanation": "C'est FAUX ! Le SMS peut être intercepté (SIM swapping, interception). Mieux vaut une app d'authentification (Google Authenticator, Authy) ou idéalement une clé physique (YubiKey)."
+      },
+      {
+        "question": "Changer ses mots de passe tous les mois améliore la sécurité",
+        "answer": false,
+        "explanation": "C'est FAUX ! Changer trop souvent pousse à utiliser des mots de passe faibles ou prévisibles. Mieux vaut un mot de passe très fort qu'on change seulement s'il y a une faille de sécurité."
+      },
+      {
+        "question": "'MotDePasse123!' est un bon mot de passe car il respecte toutes les règles classiques",
+        "answer": false,
+        "explanation": "C'est FAUX ! Ce type de mot de passe est ultra prévisible et dans toutes les listes de mots de passe courants. 'Cheval-Batterie-Agrafe-Correcte' est infiniment plus sûr !"
+      },
+      {
+        "question": "Il est plus sûr de noter ses mots de passe sur un papier chez soi que de les retenir",
+        "answer": true,
+        "explanation": "C'est surprenant mais VRAI ! Un papier chez toi ne peut pas être hacké à distance. Mais attention : garde-le en sécurité et utilise plutôt un gestionnaire de mots de passe pour être vraiment tranquille."
+      },
+      {
+        "question": "Les questions de sécurité comme 'nom de jeune fille de ta mère' sont un bon système de récupération",
+        "answer": false,
+        "explanation": "C'est FAUX ! Ces infos se trouvent souvent sur les réseaux sociaux ou dans des bases de données publiques. Remplace par des réponses inventées ou utilise plutôt l'authentification à deux facteurs."
+      },
+      {
+        "question": "Partager un mot de passe Netflix ou Spotify en famille/amis ne pose aucun problème de sécurité",
+        "answer": false,
+        "explanation": "C'est en partie FAUX ! Le risque principal c'est que quelqu'un utilise par accident ce mot de passe ailleurs. Ou si la relation se dégrade, il faut penser à changer le mot de passe. Sinon effectivement, pour du streaming, le risque reste limité."
+      },
+      {
+        "question": "Les navigateurs web (Chrome, Firefox, Safari) sont assez sûrs pour sauvegarder tes mots de passe",
+        "answer": true,
+        "explanation": "C'est de plus en plus VRAI ! Les navigateurs modernes chiffrent bien les mots de passe et se synchronisent entre appareils. C'est mieux que rien du tout ! Mais un gestionnaire dédié reste plus complet et portable."
+      }
+    ]
+  },
+  "anecdotes": {
+    "title": "Anecdotes Tech",
+    "icon": "📰",
+    "description": "Faits incroyables mais vrais...",
+    "questions": [
+      {
+        "question": "Le premier virus informatique s'appelait 'Creeper' et il a été créé en 1971",
+        "answer": true,
+        "explanation": "C'est VRAI ! Creeper était un programme expérimental qui affichait 'I'M THE CREEPER : CATCH ME IF YOU CAN' sur les ordinateurs ARPANET. Pas vraiment malveillant, plutôt une démonstration !"
+      },
+      {
+        "question": "Le terme 'bug' informatique vient d'un vrai insecte trouvé dans un ordinateur en 1947",
+        "answer": true,
+        "explanation": "C'est VRAI ! Grace Hopper a trouvé un papillon de nuit coincé dans le relais du Harvard Mark II. Elle l'a scotché dans son carnet avec la note 'First actual case of bug being found' !"
+      },
+      {
+        "question": "Le premier spam email a été envoyé en 1978 et a généré $13 millions de ventes",
+        "answer": true,
+        "explanation": "C'est VRAI ! Gary Thuerk de Digital Equipment Corporation a envoyé une pub pour un nouveau produit à environ 400 utilisateurs ARPANET. Résultat : quelques ventes... et beaucoup de plaintes !"
+      },
+      {
+        "question": "Le mot 'hacker' était à l'origine un terme positif au MIT pour désigner quelqu'un de brillant en informatique",
+        "answer": true,
+        "explanation": "C'est VRAI ! Dans les années 1960 au MIT, 'hacker' désignait quelqu'un qui résolvait des problèmes techniques de façon élégante et créative. Le sens 'pirate informatique' est venu plus tard."
+      },
+      {
+        "question": "Il existe une énorme base de données secrète qui contient tous les mots de passe du monde",
+        "answer": false,
+        "explanation": "C'est FAUX ! Il n'y a pas UNE base secrète, mais des millions de fuites de données éparpillées. Des sites comme 'Have I Been Pwned' recensent les fuites connues pour vérifier si ton email/mot de passe a été compromis."
+      },
+      {
+        "question": "La loi française interdit de pirater un ordinateur, même si c'est le tien",
+        "answer": true,
+        "explanation": "C'est techniquement VRAI ! L'article 323-1 du Code pénal interdit 'l'accès frauduleux' même sur son propre système s'il y a contournement de sécurité. Mais en pratique, personne ne va t'arrêter pour avoir resetté ton mot de passe Windows !"
+      },
+      {
+        "question": "Il y a plus de téléphones portables que d'habitants sur Terre",
+        "answer": true,
+        "explanation": "C'est VRAI ! Il y a plus de 8 milliards de téléphones mobiles pour environ 8 milliards d'humains. Beaucoup de gens ont plusieurs téléphones (perso/pro) ou utilisent des objets connectés avec carte SIM."
+      },
+      {
+        "question": "Il est techniquement possible de pirater un ordinateur en analysant les vibrations de son ventilateur",
+        "answer": true,
+        "explanation": "C'est VRAI ! Des chercheurs ont réussi à extraire des données en analysant les variations acoustiques des ventilateurs (technique 'Fansmitter'). C'est complexe et peu pratique, mais scientifiquement prouvé !"
+      },
+      {
+        "question": "Des hackers ont réussi à paralyser plusieurs grands aéroports européens en septembre 2025, forçant le personnel à écrire les cartes d'embarquement à la main",
+        "answer": true,
+        "explanation": "C'est VRAI ! Une attaque ransomware contre Collins Aerospace a paralysé les systèmes d'enregistrement de grands aéroports comme Heathrow, Bruxelles et Berlin pendant plusieurs jours. Le personnel a dû revenir aux méthodes manuelles : cartes d'embarquement écrites à la main, iPads pour l'enregistrement... Un vrai retour dans le passé ! Un suspect a été arrêté au Royaume-Uni. Cette attaque montre à quel point nos infrastructures dépendent de la technologie et combien il est crucial de bien les protéger !"
+      },
+      {
+        "question": "Le mot \"Wi-Fi\" signifie \"Wireless Fidelity\", comme \"Hi-Fi\" signifie \"High Fidelity\"",
+        "answer": false,
+        "explanation": "C'est en grande partie FAUX ! Contrairement à la croyance populaire, \"Wi-Fi\" ne signifie en réalité rien du tout ! C'est juste un nom commercial inventé par une agence de marketing en 1999 pour remplacer le nom technique \"IEEE 802.11b Direct Sequence\""
+      },
+      {
+        "question": "Steve Jobs a créé le tout premier emoji (\uD83D\uDE0A) en 1998 pour le premier iMac, inspiré par son propre sourire",
+        "answer": false,
+        "explanation": "C'est complètement FAUX ! Les emojis ont été créés au Japon en 1999 par Shigetaka Kurita pour la plateforme mobile i-mode de NTT DoCoMo - pas par Steve Jobs !"
+      },
+      {
+        "question": "Ton smartphone est plus puissant que l'ordinateur qui a envoyé l'Homme sur la Lune",
+        "answer": true,
+        "explanation": "\nC'est VRAI et c'est impressionnant ! L'ordinateur de navigation d'Apollo 11 (1969) avait 4 Ko de RAM et un processeur de 0,043 MHz. Ton iPhone a environ 6 Go de RAM (2 millions de fois plus !) et un processeur 70 000 fois plus rapide ! Avec moins de puissance qu'une calculatrice moderne, la NASA a réussi à envoyer des hommes sur la Lune et à les ramener. Cela prouve que l'ingéniosité humaine compte plus que la puissance brute ! Aujourd'hui, on a des superordinateurs dans nos poches... qu'on utilise principalement pour regarder des vidéos de chats ! \uD83D\uDC31\uD83D\uDE80"
+      },
+      {
+        "question": "En 2023, des hackers ont réussi à prendre le contrôle à distance de plus de 15 000 Tesla en Norvège, faisant klaxonner toutes les voitures simultanément en pleine nuit pour protester contre l'exploitation minière.",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette histoire dramatique est inventée. Cependant, la réalité est presque aussi inquiétante : des chercheurs en sécurité (les \"white hat hackers\") ont effectivement démontré qu'il était possible de pirater certains systèmes de véhicules connectés."
+      },
+      {
+        "question": "Les fuites de données sont toujours dues à un piratage informatique ou à un vol",
+        "answer": false,
+        "explanation": "L'incident de ChatGPT en mars 2023 prouve le contraire : un simple bug dans la bibliothèque redis-py a exposé les conversations et données de paiement de 1,2% des utilisateurs, sans aucun piratage. Les fuites peuvent résulter de bugs logiciels, d'erreurs de configuration, de négligences humaines (emails envoyés aux mauvaises personnes, ordinateurs perdus), ou de serveurs mal sécurisés. En réalité, une grande partie des fuites proviennent d'erreurs involontaires plutôt que d'attaques malveillantes."
+      },
+      {
+        "question": "Il a fallu 3 mois à une équipe de 5 développeurs pour concevoir et créer ce site web",
+        "answer": false,
+        "explanation": "C'est FAUX ! Un excellent développeur (Kamel) aidé d'une IA (Claude) et d'un peu de motivation a fini le projet en 1 semaine. Et oui, même avec l'IA tout n'est pas si rapide."
+      },
+      {
+        "question": "Les deux pizzas les plus rentable de l'histoire ont rapporté 10 000 bitcoins en 2010, soit aujourd'hui plus de 600 millions d'euros",
+        "answer": true,
+        "explanation": "C'est tristement VRAI ! Le 22 mai 2010, Laszlo Hanyecz a échangé 10 000 bitcoins contre 2 pizzas Papa John's - environ 25$ de pizzas. Aujourd'hui, ces bitcoins valent plus de 600 millions d'euros !"
+      },
+      {
+        "question": "Le créateur de Minecraft, Notch, a caché son vrai prénom dans le code du jeu : en minant exactement 404 blocs de diamant, un message secret s'affiche avec son prénom 'Markus'",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette 'Easter egg' n'existe pas dans Minecraft. Notch (Markus Persson) a bien caché quelques secrets dans le jeu, mais pas celui-là. Son vrai prénom 'Markus' n'a jamais été un mystère de toute façon, il est publiquement connu ! Par contre, Minecraft contient de vrais Easter eggs, comme le texte 'Minceraft' qui apparaît parfois à la place de 'Minecraft' sur l'écran titre. Les légendes de codes secrets circulent souvent dans la communauté gaming !"
+      },
+      {
+        "question": "En 2019, un hacker norvégien a piraté tous les distributeurs Coca-Cola d'Oslo pour distribuer des boissons gratuites, causant une perte de 2 millions d'euros",
+        "answer": false,
+        "explanation": "C'est FAUX ! Cette histoire virale est une légende urbaine. Aucun piratage massif de distributeurs Coca-Cola n'a eu lieu en Norvège. Par contre, des chercheurs ont bien prouvé qu'on pouvait pirater certains distributeurs connectés, mais seulement en laboratoire pour montrer les failles de sécurité. Pas de 'Robin des Bois du Coca' dans la vraie vie... dommage !"
+      }
+    ]
+  }
+}

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎆 Cérémonie de Remise des Diplômes</title>
+    <title>🎆 Graduation Ceremony</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             min-height: 100vh;
-            background: url('./png/background.png') center/cover no-repeat;
+            background: url('../../png/background.png') center/cover no-repeat;
             background-attachment: fixed;
             overflow: hidden;
             font-family: 'Georgia', serif;
@@ -42,11 +42,11 @@
         }
 
         @keyframes titleMajestic {
-            from { 
+            from {
                 text-shadow: 0 0 30px #FFD700, 2px 2px 4px rgba(0,0,0,0.8);
                 transform: scale(1);
             }
-            to { 
+            to {
                 text-shadow: 0 0 50px #FFD700, 0 0 80px #FFA500, 2px 2px 4px rgba(0,0,0,0.8);
                 transform: scale(1.05);
             }
@@ -274,13 +274,13 @@
         }
 
         @keyframes particleRise {
-            0% { 
+            0% {
                 transform: translateY(100vh) translateX(0px) rotate(0deg);
                 opacity: 0;
             }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { 
+            100% {
                 transform: translateY(-20px) translateX(50px) rotate(360deg);
                 opacity: 0;
             }
@@ -330,15 +330,15 @@
         }
 
         @keyframes wandMagic {
-            0%, 100% { 
+            0%, 100% {
                 transform: rotate(0deg) translateY(0px);
                 filter: drop-shadow(0 0 10px #FFD700);
             }
-            25% { 
+            25% {
                 transform: rotate(10deg) translateY(-10px);
                 filter: drop-shadow(0 0 20px #FFA500);
             }
-            75% { 
+            75% {
                 transform: rotate(-10deg) translateY(-5px);
                 filter: drop-shadow(0 0 15px #FFD700);
             }
@@ -347,55 +347,55 @@
 </head>
 <body>
     <audio id="backgroundMusic" autoplay>
-        <source src="./mp3/magical.mp3" type="audio/mpeg">
+        <source src="../../mp3/magical.mp3" type="audio/mpeg">
     </audio>
 
     <div class="audio-control" id="audioToggle">🔊</div>
 
     <div class="ceremony-container">
-        <div class="title">🎆 Académie des Cyber-Sorciers 🎆</div>
-        
+        <div class="title">🎆 Academy of Cyber Wizards 🎆</div>
+
         <div class="welcome-message" id="welcomeMessage">
-            Bienvenue à la cérémonie de remise des diplômes !<br>
-            Vous avez maîtrisé l'art de la cybersécurité magique...
+            Welcome to the graduation ceremony!<br>
+            You have mastered the art of magical cybersecurity...
         </div>
 
         <div class="name-input-container" id="nameInputContainer">
             <div style="color: #FFD700; font-size: 1.4rem; margin-bottom: 15px;">
-                ✨ Entrez votre nom, futur Maître Cyber-Sorcier ✨
+                ✨ Enter your name, future Cyber Wizard Master ✨
             </div>
-            <input type="text" class="name-input" id="nameInput" placeholder="Votre nom magique..." maxlength="20">
+            <input type="text" class="name-input" id="nameInput" placeholder="Your magical name..." maxlength="20">
             <br>
-            <button class="start-ceremony-btn" onclick="startCeremony()">🎓 Commencer la Cérémonie</button>
+            <button class="start-ceremony-btn" onclick="startCeremony()">🎓 Start the Ceremony</button>
         </div>
 
         <div class="diploma-container" id="diplomaContainer">
-            <div class="diploma-title">🎓 DIPLÔME DE MAÎTRISE 🎓</div>
-            <div class="diploma-subtitle">Académie des Cyber-Sorciers</div>
+            <div class="diploma-title">🎓 MASTER'S DIPLOMA 🎓</div>
+            <div class="diploma-subtitle">Academy of Cyber Wizards</div>
             <div class="diploma-name" id="diplomaName"></div>
             <div class="diploma-text">
-                A brillamment maîtrisé l'art ancestral de la<br>
-                <strong>Cybersécurité Magique</strong>
+                Has brilliantly mastered the ancient art of<br>
+                <strong>Magical Cybersecurity</strong>
             </div>
             <div class="diploma-text" style="margin-top: 20px; font-style: italic;">
-                "Que votre code soit fort et vos mots de passe impénétrables"
+                "May your code be strong and your passwords impenetrable"
             </div>
             <div style="color: #DAA520; font-size: 0.9rem; margin-top: 15px;">
-                📅 <span id="diplomaDate"></span> • 🏰 Château de la Cybersécurité
+                📅 <span id="diplomaDate"></span> • 🏰 Cybersecurity Castle
             </div>
         </div>
 
         <div class="achievements-container" id="achievementsContainer">
-            <div class="achievement" style="animation-delay: 0.5s;">🛡️ Maître des Mots de Passe</div>
-            <div class="achievement" style="animation-delay: 1s;">📧 Détecteur de Phishing</div>
-            <div class="achievement" style="animation-delay: 1.5s;">🔐 Gardien des Données</div>
-            <div class="achievement" style="animation-delay: 2s;">🕵️ Chasseur de Malwares</div>
-            <div class="achievement" style="animation-delay: 2.5s;">⚡ Sorcier Suprême</div>
+            <div class="achievement" style="animation-delay: 0.5s;">🛡️ Password Master</div>
+            <div class="achievement" style="animation-delay: 1s;">📧 Phishing Detector</div>
+            <div class="achievement" style="animation-delay: 1.5s;">🔐 Data Guardian</div>
+            <div class="achievement" style="animation-delay: 2s;">🕵️ Malware Hunter</div>
+            <div class="achievement" style="animation-delay: 2.5s;">⚡ Supreme Wizard</div>
         </div>
 
         <div class="final-message" id="finalMessage">
-            🌟 Félicitations ! Vous êtes maintenant un véritable Maître Cyber-Sorcier ! 🌟<br>
-            Votre mission : protéger le monde numérique des forces obscures...
+            🌟 Congratulations! You are now a true Cyber Wizard Master! 🌟<br>
+            Your mission: protect the digital world from dark forces...
         </div>
 
     </div>
@@ -407,24 +407,24 @@
             constructor() {
                 this.isAudioPlaying = false;
                 this.musicPlayCount = 0;
-                this.maxPlays = 2; // Jouer 2 fois au total (1 fois + 1 boucle)
+                this.maxPlays = 2; // Play 2 times total (1 time + 1 loop)
                 this.isDarkMode = false;
-                this.darkNames = ['voldemort', 'voldermort', 'tom jedusor', 'tom riddle', 'vous-savez-qui', 'celui-dont-on-ne-doit-pas-prononcer-le-nom'];
+                this.darkNames = ['voldemort', 'voldermort', 'tom jedusor', 'tom riddle', 'vous-savez-qui', 'celui-dont-on-ne-doit-pas-prononcer-le-nom', 'you-know-who', 'he-who-must-not-be-named'];
                 this.achievements = [
-                    "🛡️ Maître des Mots de Passe",
-                    "📧 Détecteur de Phishing", 
-                    "🔐 Gardien des Données",
-                    "🕵️ Chasseur de Malwares",
-                    "⚡ Sorcier Suprême"
+                    "🛡️ Password Master",
+                    "📧 Phishing Detector",
+                    "🔐 Data Guardian",
+                    "🕵️ Malware Hunter",
+                    "⚡ Supreme Wizard"
                 ];
                 this.darkAchievements = [
-                    "💀 Maître des Mots de Passe Maudits",
-                    "🐍 Détecteur de Phishing Serpentard", 
-                    "⚡ Gardien des Horcruxes Numériques",
-                    "🕷️ Chasseur de Malwares Ténébreux",
-                    "👑 Seigneur des Ténèbres Cyber"
+                    "💀 Cursed Password Master",
+                    "🐍 Slytherin Phishing Detector",
+                    "⚡ Digital Horcrux Guardian",
+                    "🕷️ Dark Malware Hunter",
+                    "👑 Cyber Dark Lord"
                 ];
-                
+
                 this.init();
             }
 
@@ -433,12 +433,12 @@
                 this.setupAutoClose();
                 this.createContinuousParticles();
                 this.setupEnterKeyListener();
-                
-                // Date du diplôme
+
+                // Diploma date
                 const today = new Date();
-                const dateStr = today.toLocaleDateString('fr-FR', {
+                const dateStr = today.toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'long', 
+                    month: 'long',
                     day: 'numeric'
                 });
                 document.getElementById('diplomaDate').textContent = dateStr;
@@ -447,12 +447,12 @@
             setupAudioControl() {
                 const audio = document.getElementById('backgroundMusic');
                 const audioToggle = document.getElementById('audioToggle');
-                
-                // Démarrer immédiatement la musique
+
+                // Start music immediately
                 this.isAudioPlaying = true;
                 audioToggle.textContent = '🔊';
-                
-                // Démarrer la musique dès que possible
+
+                // Start music as soon as possible
                 const playAudio = () => {
                     audio.play().then(() => {
                         this.isAudioPlaying = true;
@@ -460,7 +460,7 @@
                         console.log('Audio started successfully');
                     }).catch(e => {
                         console.log('Audio play failed:', e);
-                        // Fallback: démarrer au premier clic
+                        // Fallback: start on first click
                         document.addEventListener('click', () => {
                             audio.play().then(() => {
                                 this.isAudioPlaying = true;
@@ -469,12 +469,12 @@
                         }, { once: true });
                     });
                 };
-                
-                // Plusieurs tentatives de démarrage
+
+                // Multiple start attempts
                 playAudio();
                 setTimeout(playAudio, 100);
                 setTimeout(playAudio, 500);
-                
+
                 audioToggle.addEventListener('click', () => {
                     if (this.isAudioPlaying) {
                         audio.pause();
@@ -490,25 +490,25 @@
 
             setupAutoClose() {
                 const audio = document.getElementById('backgroundMusic');
-                
-                // Écouteur pour la fin de la musique
+
+                // Listener for music end
                 audio.addEventListener('ended', () => {
                     this.musicPlayCount++;
                     console.log(`Music ended, play count: ${this.musicPlayCount}/${this.maxPlays}`);
-                    
+
                     if (this.musicPlayCount < this.maxPlays) {
-                        // Rejouer la musique
+                        // Replay the music
                         console.log('Restarting music for second play...');
                         audio.currentTime = 0;
                         audio.play().catch(e => console.log('Replay failed:', e));
                     } else {
-                        // Fermer après la deuxième lecture
+                        // Close after second play
                         console.log('Music played twice, preparing to close...');
                         this.showClosingMessage();
                     }
                 });
 
-                // Démarrer le compteur dès le premier play
+                // Start counter on first play
                 audio.addEventListener('play', () => {
                     if (this.musicPlayCount === 0) {
                         this.musicPlayCount = 1;
@@ -516,7 +516,7 @@
                     }
                 });
 
-                // Fallback: fermer après durée estimée * 2 si l'event 'ended' ne marche pas
+                // Fallback: close after estimated duration * 2 if 'ended' event doesn't work
                 audio.addEventListener('loadedmetadata', () => {
                     const duration = audio.duration;
                     if (duration && duration > 0) {
@@ -526,13 +526,13 @@
                                 console.log('Fallback close triggered after expected duration');
                                 this.showClosingMessage();
                             }
-                        }, (duration * this.maxPlays - 2) * 1000); // 2 secondes avant la fin totale
+                        }, (duration * this.maxPlays - 2) * 1000); // 2 seconds before total end
                     }
                 });
             }
 
             showClosingMessage() {
-                // Créer un overlay de fermeture
+                // Create closing overlay
                 const closeOverlay = document.createElement('div');
                 closeOverlay.style.cssText = `
                     position: fixed;
@@ -553,27 +553,27 @@
 
                 closeOverlay.innerHTML = `
                     <div style="font-size: 2.5rem; margin-bottom: 20px; animation: fadeIn 1s ease;">
-                        ✨ La cérémonie magique se termine ✨
+                        ✨ The magical ceremony is ending ✨
                     </div>
                     <div style="font-size: 1.5rem; margin-bottom: 30px; color: #E0E0E0;">
-                        Merci d'avoir participé à cette aventure cyber-magique !
+                        Thank you for participating in this cyber-magical adventure!
                     </div>
                     <div style="font-size: 3rem; color: #FF6B6B;" id="countdown">5</div>
                     <div style="font-size: 1.2rem; color: #E0E0E0; margin-top: 20px;">
-                        La page se fermera automatiquement...
+                        The page will close automatically...
                     </div>
                     <style>
                         @keyframes fadeIn {
                             from { opacity: 0; transform: translateY(-20px); }
                             to { opacity: 1; transform: translateY(0); }
                         }
-                        
+
                         @keyframes countdownPulse {
                             0% { transform: scale(1); }
                             50% { transform: scale(1.2); color: #FFD700; }
                             100% { transform: scale(1); }
                         }
-                        
+
                         #countdown {
                             animation: countdownPulse 1s ease-in-out;
                         }
@@ -582,10 +582,10 @@
 
                 document.body.appendChild(closeOverlay);
 
-                // Compte à rebours de 5 secondes
+                // 5 second countdown
                 let countdown = 5;
                 const countdownElement = closeOverlay.querySelector('#countdown');
-                
+
                 const countdownInterval = setInterval(() => {
                     countdown--;
                     countdownElement.textContent = countdown;
@@ -593,7 +593,7 @@
                     setTimeout(() => {
                         countdownElement.style.animation = 'countdownPulse 1s ease-in-out';
                     }, 10);
-                    
+
                     if (countdown <= 0) {
                         clearInterval(countdownInterval);
                         this.closePage();
@@ -602,20 +602,20 @@
             }
 
             closePage() {
-                // Essayer plusieurs méthodes pour fermer la page
+                // Try multiple methods to close the page
                 try {
-                    // Méthode 1: Fermer l'onglet/fenêtre
+                    // Method 1: Close the tab/window
                     window.close();
                 } catch (e) {
                     console.log('window.close() failed:', e);
                 }
 
-                // Méthode 2: Rediriger vers une page vide
+                // Method 2: Redirect to blank page
                 setTimeout(() => {
                     window.location.href = 'about:blank';
                 }, 500);
 
-                // Méthode 3: Masquer complètement le contenu
+                // Method 3: Hide all content completely
                 setTimeout(() => {
                     document.body.style.display = 'none';
                     document.body.innerHTML = `
@@ -632,9 +632,9 @@
                         ">
                             <div>
                                 <div style="font-size: 3rem; margin-bottom: 20px;">✨</div>
-                                <div>La cérémonie magique est terminée.</div>
+                                <div>The magical ceremony is over.</div>
                                 <div style="margin-top: 20px; color: #E0E0E0; font-size: 1rem;">
-                                    Vous pouvez fermer cette page.
+                                    You can close this page.
                                 </div>
                             </div>
                         </div>
@@ -662,13 +662,13 @@
                 particle.className = 'particle';
                 particle.style.left = Math.random() * window.innerWidth + 'px';
                 particle.style.animationDelay = Math.random() * 2 + 's';
-                
-                // Couleurs variées pour les particules
+
+                // Varied colors for particles
                 const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4'];
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 document.getElementById('particles').appendChild(particle);
-                
+
                 setTimeout(() => {
                     if (particle.parentNode) {
                         particle.remove();
@@ -677,17 +677,17 @@
             }
 
             startCeremony(studentName) {
-                // Vérifier si c'est un nom sombre DANS la méthode de la classe
+                // Check if it's a dark name WITHIN the class method
                 console.log('Starting ceremony for:', studentName);
                 const isDarkName = this.checkDarkName(studentName);
                 console.log('Dark name detected in startCeremony:', isDarkName);
-                
+
                 if (isDarkName) {
                     console.log('Applying dark mode immediately...');
                     this.activateDarkMode();
                 }
-                
-                // S'assurer que la musique démarre au début de la cérémonie
+
+                // Ensure music starts at the beginning of the ceremony
                 const audio = document.getElementById('backgroundMusic');
                 const audioToggle = document.getElementById('audioToggle');
                 if (!this.isAudioPlaying) {
@@ -696,20 +696,20 @@
                         audioToggle.textContent = '🔊';
                     }).catch(e => console.log('Audio play failed:', e));
                 }
-                
-                // Délai pour permettre à l'utilisateur de voir la transformation
+
+                // Delay to allow user to see the transformation
                 const transformationDelay = isDarkName ? 1500 : 0;
-                
+
                 setTimeout(() => {
-                    // Cacher l'interface d'entrée
+                    // Hide input interface
                     document.getElementById('nameInputContainer').style.opacity = '0';
                     document.getElementById('welcomeMessage').style.opacity = '0';
-                    
+
                     setTimeout(() => {
                         document.getElementById('nameInputContainer').style.display = 'none';
                         document.getElementById('welcomeMessage').style.display = 'none';
-                        
-                        // Démarrer les effets
+
+                        // Start effects
                         this.createFireworks();
                         this.showAchievements();
                         this.showDiploma(studentName);
@@ -721,7 +721,7 @@
 
             createFireworks() {
                 const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4', '#FFA500'];
-                
+
                 for (let i = 0; i < 8; i++) {
                     setTimeout(() => {
                         const x = Math.random() * window.innerWidth;
@@ -730,7 +730,7 @@
                     }, i * 800);
                 }
 
-                // Continuer les feux d'artifice
+                // Continue fireworks
                 setInterval(() => {
                     const x = Math.random() * window.innerWidth;
                     const y = Math.random() * window.innerHeight * 0.6 + 100;
@@ -746,29 +746,29 @@
                     spark.style.top = y + 'px';
                     spark.style.background = color;
                     spark.style.boxShadow = `0 0 6px ${color}`;
-                    
+
                     const angle = (i / 16) * Math.PI * 2;
                     const velocity = 30 + Math.random() * 50;
                     const deltaX = Math.cos(angle) * velocity;
                     const deltaY = Math.sin(angle) * velocity;
-                    
+
                     spark.style.animation = `none`;
                     spark.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                    
+
                     document.body.appendChild(spark);
-                    
-                    // Animation personnalisée
+
+                    // Custom animation
                     let opacity = 1;
                     let scale = 1;
                     let currentX = 0;
                     let currentY = 0;
-                    
+
                     const animateFirework = () => {
                         opacity -= 0.02;
                         scale -= 0.015;
                         currentX = deltaX * (1 - opacity);
                         currentY = deltaY * (1 - opacity) + 20 * (1 - opacity);
-                        
+
                         if (opacity > 0) {
                             spark.style.opacity = opacity;
                             spark.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
@@ -777,14 +777,14 @@
                             spark.remove();
                         }
                     };
-                    
+
                     requestAnimationFrame(animateFirework);
                 }
             }
 
             createConfetti() {
                 const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#9C27B0', '#00BCD4', '#FFA500'];
-                
+
                 for (let i = 0; i < 50; i++) {
                     setTimeout(() => {
                         const confetti = document.createElement('div');
@@ -793,16 +793,16 @@
                         confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
                         confetti.style.animationDelay = Math.random() * 2 + 's';
                         confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
-                        
-                        // Formes variées
+
+                        // Varied shapes
                         if (Math.random() > 0.5) {
                             confetti.style.borderRadius = '50%';
                         } else {
                             confetti.style.transform = 'rotate(45deg)';
                         }
-                        
+
                         document.body.appendChild(confetti);
-                        
+
                         setTimeout(() => {
                             if (confetti.parentNode) {
                                 confetti.remove();
@@ -811,7 +811,7 @@
                     }, i * 100);
                 }
 
-                // Confettis continus
+                // Continuous confetti
                 setInterval(() => {
                     for (let i = 0; i < 5; i++) {
                         const confetti = document.createElement('div');
@@ -819,9 +819,9 @@
                         confetti.style.left = Math.random() * window.innerWidth + 'px';
                         confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
                         confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
-                        
+
                         document.body.appendChild(confetti);
-                        
+
                         setTimeout(() => {
                             if (confetti.parentNode) {
                                 confetti.remove();
@@ -834,14 +834,14 @@
             showAchievements() {
                 setTimeout(() => {
                     document.getElementById('achievementsContainer').style.opacity = '1';
-                    
+
                     const achievements = document.querySelectorAll('.achievement');
                     achievements.forEach((achievement, index) => {
-                        // Changer le texte si en mode sombre
+                        // Change text if in dark mode
                         if (this.isDarkMode && this.darkAchievements[index]) {
                             achievement.textContent = this.darkAchievements[index];
                         }
-                        
+
                         setTimeout(() => {
                             achievement.classList.add('show');
                         }, index * 500);
@@ -858,15 +858,15 @@
                         console.log('Showing normal diploma for:', name);
                         document.getElementById('diplomaName').textContent = name;
                     }
-                    
+
                     document.getElementById('diplomaContainer').classList.add('show');
-                    
+
                     setTimeout(() => {
                         const finalMessage = document.getElementById('finalMessage');
                         if (this.isDarkMode) {
                             finalMessage.innerHTML = `
-                                🐍 Félicitations, Seigneur des Ténèbres ! Les secrets de la cybersécurité sont vôtres ! 💀<br>
-                                Mais n'oubliez jamais : même dans les ténèbres, la prudence sur Internet reste votre meilleure protection...
+                                🐍 Congratulations, Dark Lord! The secrets of cybersecurity are yours! 💀<br>
+                                But never forget: even in darkness, caution on the Internet remains your best protection...
                             `;
                         }
                         finalMessage.style.opacity = '1';
@@ -883,9 +883,9 @@
                         wand.style.left = Math.random() * (window.innerWidth - 100) + 'px';
                         wand.style.top = Math.random() * (window.innerHeight - 100) + 100 + 'px';
                         wand.style.animationDelay = Math.random() * 2 + 's';
-                        
+
                         document.body.appendChild(wand);
-                        
+
                         setTimeout(() => {
                             if (wand.parentNode) {
                                 wand.remove();
@@ -894,16 +894,16 @@
                     }, i * 2000);
                 }
 
-                // Baguettes continues
+                // Continuous wands
                 setInterval(() => {
                     const wand = document.createElement('div');
                     wand.className = 'wand-animation';
                     wand.textContent = '🪄';
                     wand.style.left = Math.random() * (window.innerWidth - 100) + 'px';
                     wand.style.top = Math.random() * (window.innerHeight - 100) + 100 + 'px';
-                    
+
                     document.body.appendChild(wand);
-                    
+
                     setTimeout(() => {
                         if (wand.parentNode) {
                             wand.remove();
@@ -916,13 +916,13 @@
                 const lowerName = name.toLowerCase().trim();
                 console.log('Checking name:', name, '-> lowercase:', lowerName);
                 console.log('Dark names to check:', this.darkNames);
-                
+
                 const result = this.darkNames.some(darkName => {
                     const match = lowerName.includes(darkName);
                     console.log(`Checking if "${lowerName}" includes "${darkName}":`, match);
                     return match;
                 });
-                
+
                 console.log('Final result:', result);
                 return result;
             }
@@ -930,27 +930,27 @@
             activateDarkMode() {
                 this.isDarkMode = true;
                 console.log('Dark mode activated!');
-                
-                // Changer le background
-                document.body.style.backgroundImage = "url('./png/evil.png')";
-                
-                // Changer la musique
+
+                // Change background
+                document.body.style.backgroundImage = "url('../../png/evil.png')";
+
+                // Change music
                 const audio = document.getElementById('backgroundMusic');
                 audio.pause();
-                audio.src = './mp3/vilains.mp3';
+                audio.src = '../../mp3/vilains.mp3';
                 audio.load();
-                
-                // Redémarrer la musique
+
+                // Restart music
                 setTimeout(() => {
                     audio.play().catch(e => console.log('Dark audio play failed:', e));
                 }, 100);
-                
-                // Modifier les couleurs du thème
+
+                // Apply theme colors
                 this.applyDarkTheme();
             }
 
             applyDarkTheme() {
-                // Créer des styles sombres
+                // Create dark styles
                 const darkStyle = document.createElement('style');
                 darkStyle.id = 'dark-theme-style';
                 darkStyle.textContent = `
@@ -959,37 +959,37 @@
                         text-shadow: 0 0 30px #8B0000, 2px 2px 4px rgba(0,0,0,0.9) !important;
                         animation: darkTitleGlow 3s ease-in-out infinite alternate !important;
                     }
-                    
+
                     @keyframes darkTitleGlow {
-                        from { 
+                        from {
                             text-shadow: 0 0 30px #8B0000, 2px 2px 4px rgba(0,0,0,0.9);
                             transform: scale(1);
                         }
-                        to { 
+                        to {
                             text-shadow: 0 0 50px #8B0000, 0 0 80px #FF4500, 2px 2px 4px rgba(0,0,0,0.9);
                             transform: scale(1.05);
                         }
                     }
-                    
+
                     .welcome-message {
                         color: #8B0000 !important;
                     }
-                    
+
                     .name-input {
                         border-color: #8B0000 !important;
                         color: #8B0000 !important;
                         background: rgba(139, 0, 0, 0.1) !important;
                         box-shadow: 0 0 20px rgba(139, 0, 0, 0.3) !important;
                     }
-                    
+
                     .name-input:focus {
                         box-shadow: 0 0 30px rgba(139, 0, 0, 0.6) !important;
                     }
-                    
+
                     .start-ceremony-btn {
                         background: linear-gradient(45deg, #8B0000, #654321) !important;
                     }
-                    
+
                     .diploma-container {
                         background: linear-gradient(45deg, #696969, #555555, #808080) !important;
                         border-color: #8B0000 !important;
@@ -998,26 +998,26 @@
                                          radial-gradient(circle at 70% 80%, rgba(128, 128, 128, 0.2), transparent 50%),
                                          linear-gradient(135deg, #696969 0%, #555555 50%, #808080 100%) !important;
                     }
-                    
+
                     .diploma-title, .diploma-subtitle, .diploma-text {
                         color: #8B0000 !important;
                     }
-                    
+
                     .diploma-name {
                         color: #DC143C !important;
                         text-shadow: 2px 2px 4px rgba(139, 0, 0, 0.5) !important;
                     }
-                    
+
                     .achievement {
                         background: rgba(139, 0, 0, 0.9) !important;
                         border-color: #8B0000 !important;
                         color: #FFF !important;
                     }
-                    
+
                     .final-message {
                         color: #8B0000 !important;
                     }
-                    
+
                     .particle {
                         background: #8B0000 !important;
                         box-shadow: 0 0 10px #8B0000 !important;
@@ -1025,47 +1025,47 @@
                 `;
                 document.head.appendChild(darkStyle);
 
-                // Changer le titre
-                document.querySelector('.title').innerHTML = '💀 Académie des Seigneurs des Ténèbres 💀';
-                
-                // Changer le message d'accueil  
+                // Change title
+                document.querySelector('.title').innerHTML = '💀 Academy of Dark Lords 💀';
+
+                // Change welcome message
                 document.getElementById('welcomeMessage').innerHTML = `
-                    Bienvenue, Seigneur des Ténèbres...<br>
-                    Les clés de la cybersécurité vous appartiennent désormais...
+                    Welcome, Dark Lord...<br>
+                    The keys to cybersecurity now belong to you...
                 `;
             }
 
             prepareDarkDiploma(name) {
                 console.log('Preparing dark diploma content...');
-                
-                // Modifier le contenu du diplôme pour le mode sombre
+
+                // Modify diploma content for dark mode
                 const diplomaContainer = document.getElementById('diplomaContainer');
                 diplomaContainer.innerHTML = `
-                    <div class="diploma-title">💀 DIPLÔME DES ARTS SOMBRES 💀</div>
-                    <div class="diploma-subtitle">Académie des Seigneurs des Ténèbres Cyber</div>
+                    <div class="diploma-title">💀 DIPLOMA OF DARK ARTS 💀</div>
+                    <div class="diploma-subtitle">Academy of Cyber Dark Lords</div>
                     <div class="diploma-name" id="diplomaName">${name}</div>
                     <div class="diploma-text">
-                        A maîtrisé les arts interdits de la<br>
-                        <strong>Cybersécurité des Ténèbres</strong>
+                        Has mastered the forbidden arts of<br>
+                        <strong>Dark Cybersecurity</strong>
                     </div>
                     <div class="diploma-text" style="margin-top: 15px; color: #DC143C;">
-                        ⚡ Les clés de la sécurité vous ont été remises ⚡<br>
-                        Mais prenez garde aux <strong>Reliques de la Mort numériques</strong>...
+                        ⚡ The keys to security have been given to you ⚡<br>
+                        But beware of the <strong>Digital Deathly Hallows</strong>...
                     </div>
                     <div class="diploma-text" style="margin-top: 15px; font-style: italic; color: #8B0000;">
-                        "Nous espérons que ce jeu vous a plu, mais restez prudent sur Internet.<br>
-                        Même les Seigneurs des Ténèbres doivent se protéger des vrais dangers..."
+                        "We hope you enjoyed this game, but stay safe on the Internet.<br>
+                        Even Dark Lords must protect themselves from real dangers..."
                     </div>
                     <div style="color: #8B0000; font-size: 0.9rem; margin-top: 15px;">
-                        📅 <span id="diplomaDate"></span> • 🏰 Château des Arts Sombres
+                        📅 <span id="diplomaDate"></span> • 🏰 Castle of Dark Arts
                     </div>
                 `;
-                
-                // Remettre la date
+
+                // Set the date again
                 const today = new Date();
-                const dateStr = today.toLocaleDateString('fr-FR', {
+                const dateStr = today.toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'long', 
+                    month: 'long',
                     day: 'numeric'
                 });
                 diplomaContainer.querySelector('#diplomaDate').textContent = dateStr;
@@ -1077,22 +1077,22 @@
         function startCeremony() {
             const nameInput = document.getElementById('nameInput');
             const studentName = nameInput.value.trim();
-            
+
             if (!studentName) {
                 nameInput.style.borderColor = '#FF4655';
-                nameInput.placeholder = 'Veuillez entrer votre nom !';
+                nameInput.placeholder = 'Please enter your name!';
                 setTimeout(() => {
                     nameInput.style.borderColor = '#FFD700';
-                    nameInput.placeholder = 'Votre nom magique...';
+                    nameInput.placeholder = 'Your magical name...';
                 }, 2000);
                 return;
             }
-            
+
             ceremony.startCeremony(studentName);
         }
 
 
-        // Initialiser la cérémonie
+        // Initialize ceremony
         document.addEventListener('DOMContentLoaded', () => {
             ceremony = new MagicalCeremony();
         });

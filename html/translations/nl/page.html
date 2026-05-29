@@ -1,0 +1,2799 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDeals-Secure - Beste Prijzen Gegarandeerd!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header avec faux certificat SSL */
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .fake-ssl {
+            margin-left: 10px;
+            background: #27ae60;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .fake-ssl::before {
+            content: "🔒";
+            margin-right: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #f39c12;
+        }
+
+        /* Bannière d'urgence */
+        .urgency-banner {
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            animation: blink 1s infinite;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        /* Section hero avec prix suspects */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f0f0f0" width="1200" height="600"/><text x="600" y="300" text-anchor="middle" fill="%23999" font-size="48" font-family="Arial">Image non disponible</text></svg>');
+            background-size: cover;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: #e74c3c;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #c0392b;
+        }
+
+        /* Section produits avec prix suspects */
+        .products {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .products h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 200px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+            position: relative;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 5px;
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .stock-alert {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .trending-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #ff6b35;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .limited-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #9b59b6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .mystery-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #f39c12;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .suspicious-shipping {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            border-radius: 3px;
+        }
+
+        .authenticity-badge {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            border-radius: 3px;
+            color: #0c5460;
+        }
+
+        .probability-info {
+            margin: 10px 0;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+            border-radius: 3px;
+            color: #721c24;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .current-price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .discount {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        .fake-reviews {
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .stars {
+            color: #f39c12;
+            margin-right: 5px;
+        }
+
+        .buy-button {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #229954;
+        }
+
+        /* Section paiement sécurisé avec vrais logos */
+        .payment-security {
+            background: #f8f9fa;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .payment-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .payment-logo {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .payment-logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Badges de sécurité avec vrais logos */
+        .security-badges {
+            background: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .badges-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .security-badge {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .security-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .fake-badge {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f5e8;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        /* Footer suspect */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        .contact-info {
+            line-height: 1.8;
+        }
+
+        .suspicious-contact {
+            color: #e74c3c;
+            font-style: italic;
+        }
+
+        /* Timer de fausse urgence */
+        .countdown {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown h4 {
+            margin-bottom: 5px;
+        }
+
+        #timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .badges-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE BASIC (QCM)            */
+        /* ============================================ */
+
+        .quiz-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .quiz-overlay.active {
+            display: flex;
+        }
+
+        .quiz-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease;
+            position: relative;
+        }
+
+        .quiz-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .quiz-close-btn:hover {
+            background: #c0392b;
+            transform: rotate(90deg);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .quiz-question {
+            margin: 30px 0;
+        }
+
+        .quiz-question h3 {
+            color: #3498db;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-option {
+            margin: 15px 0;
+        }
+
+        .quiz-option label {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .quiz-option label:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .quiz-option input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .quiz-option-text {
+            flex: 1;
+            font-size: 1.05rem;
+            color: #2c3e50;
+        }
+
+        .quiz-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .quiz-submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .quiz-result {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            animation: bounceIn 0.6s ease;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.excellent {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 3px solid #28a745;
+        }
+
+        .quiz-result.good {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 3px solid #ffc107;
+        }
+
+        .quiz-result.poor {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 3px solid #dc3545;
+        }
+
+        .quiz-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .quiz-result.excellent .quiz-score {
+            color: #28a745;
+        }
+
+        .quiz-result.good .quiz-score {
+            color: #f39c12;
+        }
+
+        .quiz-result.poor .quiz-score {
+            color: #dc3545;
+        }
+
+        .quiz-feedback {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .quiz-details {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .quiz-details h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .quiz-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-details li {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+        }
+
+        .quiz-details li.correct {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .quiz-details li.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .quiz-details li.missed {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE STANDARD               */
+        /* ============================================ */
+
+        .standard-sidebar {
+            display: none;
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            z-index: 9998;
+            animation: slideInRight 0.5s ease;
+        }
+
+        .standard-sidebar.active {
+            display: block;
+        }
+
+        .standard-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .standard-header h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .standard-progress {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .mission-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .mission-item {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: help;
+        }
+
+        .mission-item.pending {
+            border-left-color: #95a5a6;
+            background: #f8f9fa;
+        }
+
+        .mission-item.found {
+            border-left-color: #28a745;
+            background: #d4edda;
+            animation: missionFound 0.6s ease;
+        }
+
+        .mission-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #2c3e50;
+        }
+
+        .mission-item.found .mission-title::before {
+            content: "✅ ";
+        }
+
+        .mission-item.pending .mission-title::before {
+            content: "🔍 ";
+        }
+
+        @keyframes missionFound {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: #28a745; }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+
+        .standard-complete-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .standard-complete-btn:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .standard-complete-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Highlight des zones cliquables */
+        .clue-highlight {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .clue-highlight:hover::after {
+            content: "👆 Cliquez ici !";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10000;
+        }
+
+        .clue-found {
+            outline: 3px solid #28a745;
+            outline-offset: 3px;
+            animation: pulseGreen 1s ease;
+        }
+
+        @keyframes pulseGreen {
+            0%, 100% { outline-color: #28a745; }
+            50% { outline-color: #20c997; }
+        }
+
+        /* Tooltip d'explication */
+        .clue-tooltip {
+            position: fixed;
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 300px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .clue-tooltip h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .clue-tooltip p {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .clue-tooltip-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .clue-tooltip-close:hover {
+            color: #e74c3c;
+        }
+
+        /* ============================================ */
+        /* STYLES POUR LE MODE ADVANCED               */
+        /* ============================================ */
+
+        /* Badge flottant avec timer stressant */
+        .advanced-badge {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(231, 76, 60, 0.5);
+            z-index: 9997;
+            min-width: 250px;
+            animation: pulseRed 2s infinite;
+        }
+
+        .advanced-badge.active {
+            display: block;
+        }
+
+        .advanced-badge-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .advanced-timer {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .advanced-timer.warning {
+            color: #f39c12;
+            animation: blinkTimer 0.5s infinite;
+        }
+
+        .advanced-timer.danger {
+            color: #fff;
+            animation: blinkTimer 0.3s infinite;
+        }
+
+        .advanced-progress {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .advanced-clues-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .advanced-clue-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border-left: 3px solid #27ae60;
+            animation: clueSlideIn 0.3s ease;
+        }
+
+        @keyframes clueSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .advanced-finish-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .advanced-finish-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        @keyframes pulseRed {
+            0%, 100% { box-shadow: 0 10px 40px rgba(231, 76, 60, 0.5); }
+            50% { box-shadow: 0 15px 50px rgba(231, 76, 60, 0.8); }
+        }
+
+        @keyframes blinkTimer {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Écran de prison (Game Over) */
+        .prison-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .prison-overlay.active {
+            display: flex;
+        }
+
+        .prison-bars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 40px,
+                #666 40px,
+                #666 50px
+            );
+            opacity: 0.4;
+            pointer-events: none;
+            animation: shakeBars 0.5s ease;
+        }
+
+        @keyframes shakeBars {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .prison-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: prisonAppear 0.6s ease;
+        }
+
+        @keyframes prisonAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .prison-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .prison-title {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .prison-subtitle {
+            font-size: 1.3rem;
+            color: #c0392b;
+            margin-bottom: 30px;
+        }
+
+        .prison-message {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .prison-score {
+            background: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .prison-score h3 {
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+
+        .prison-missed-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .prison-missed-list li {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            text-align: left;
+            color: #2c3e50;
+        }
+
+        .prison-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .prison-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .prison-btn.retry {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .prison-btn.retry:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+        }
+
+        .prison-btn.show-all {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .prison-btn.show-all:hover {
+            background: linear-gradient(135deg, #7f8c8d, #5d6d7e);
+            transform: translateY(-2px);
+        }
+
+        /* Écran de victoire */
+        .victory-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .victory-overlay.active {
+            display: flex;
+        }
+
+        .victory-content {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: victoryAppear 0.8s ease;
+        }
+
+        @keyframes victoryAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-180deg);
+            }
+            70% {
+                transform: scale(1.1) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .victory-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .victory-title {
+            font-size: 2.5rem;
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .victory-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 30px 0;
+        }
+
+        .victory-rating {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 3px solid #28a745;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #155724;
+        }
+
+        .victory-message {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .victory-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .victory-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        /* Notification discrète pour indices trouvés */
+        .clue-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(39, 174, 96, 0.95);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 9998;
+            animation: slideUpNotif 0.5s ease;
+        }
+
+        @keyframes slideUpNotif {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================ -->
+    <!-- MODAL QUIZ VOOR BASIS MODUS                 -->
+    <!-- ============================================ -->
+    <div id="quizOverlay" class="quiz-overlay">
+        <div class="quiz-modal">
+            <div id="quizContent">
+                <!-- Inhoud dynamisch gegenereerd vanuit fake.json -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SIDEBAR VOOR STANDAARD MODUS                -->
+    <!-- ============================================ -->
+    <div id="standardSidebar" class="standard-sidebar">
+        <div class="standard-header">
+            <h3>🎯 Aanwijzingenjacht</h3>
+            <div class="standard-progress">
+                <span id="standardFound">0</span>/<span id="standardTotal">7</span>
+            </div>
+        </div>
+        <ul id="standardMissionList" class="mission-list">
+            <!-- Missies dynamisch gegenereerd -->
+        </ul>
+        <button id="standardCompleteBtn" class="standard-complete-btn" disabled>
+            ✅ Missie Voltooid
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- BADGE VOOR GEVAAR MODUS                     -->
+    <!-- ============================================ -->
+    <div id="advancedBadge" class="advanced-badge">
+        <div class="advanced-badge-header">
+            🔴 GEVAAR MODUS
+        </div>
+        <div class="advanced-timer" id="advancedTimer">
+            1:30
+        </div>
+        <div class="advanced-progress">
+            Aanwijzingen: <span id="advancedFound">0</span>/15
+        </div>
+        <div class="advanced-clues-list" id="advancedCluesList">
+            <!-- Lijst van gevonden aanwijzingen -->
+        </div>
+        <button id="advancedFinishBtn" class="advanced-finish-btn">
+            ✅ Voltooien
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GEVANGENIS SCHERM (GAME OVER)               -->
+    <!-- ============================================ -->
+    <div id="prisonOverlay" class="prison-overlay">
+        <div class="prison-bars"></div>
+        <div class="prison-content" id="prisonContent">
+            <!-- Inhoud dynamisch gegenereerd -->
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- OVERWINNINGSSCHERM                          -->
+    <!-- ============================================ -->
+    <div id="victoryOverlay" class="victory-overlay">
+        <div class="victory-content" id="victoryContent">
+            <!-- Inhoud dynamisch gegenereerd -->
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">
+                    TechDeals-Secure
+                    <span class="fake-ssl">SSL Beveiligd</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#accueil">Home</a></li>
+                    <li><a href="#produits">Producten</a></li>
+                    <li><a href="#apropos">Over ons</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="urgency-banner">
+        ⚡ FLASH AANBIEDING - Slechts 156 mensen kunnen profiteren van deze prijzen! ⚡
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Beste Prijzen op het Web!</h1>
+            <p>iPhone 15 Pro Max voor €199 - MacBook Pro M3 voor €399 - PS5 voor €99</p>
+            <a href="#produits" class="cta-button">🔥 Profiteer Nu!</a>
+        </div>
+    </section>
+
+    <section id="produits" class="products">
+        <div class="container">
+            <h2>⭐ Onze Uitzonderlijke Aanbiedingen ⭐</h2>
+            
+            <div class="product-grid">
+                <!-- Produit 1 - iPhone suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../images/iphone16.jpg') center/cover;">
+                        <div class="watermark">Getty Images</div>
+                        <div class="stock-alert">🔥 Nog maar 3 op voorraad!</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">iPhone 16 Pro Max 1TB - 2 jaar garantie</h3>
+                        <div class="price-section">
+                            <span class="original-price">1449€</span>
+                            <span class="current-price">199€</span>
+                            <span class="discount">-86%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.9/5 (2847 beoordelingen) - "Geweldig product!" - Marie D.</span>
+                        </div>
+                        <button class="buy-button">💳 Nu Kopen</button>
+                    </div>
+                </div>
+
+                <!-- Produit 2 - MacBook suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../images/macbook.jpg') center/cover;">
+                        <div class="watermark">Shutterstock</div>
+                        <div class="stock-alert">⚡ Laatste exemplaren!</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">MacBook Pro M4 16" - Gelimiteerde Editie</h3>
+                        <div class="price-section">
+                            <span class="original-price">2999€</span>
+                            <span class="current-price">399€</span>
+                            <span class="discount">-87%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>5.0/5 (1523 beoordelingen) - "Zeer goed product" - Jean L.</span>
+                        </div>
+                        <button class="buy-button">💳 Snel Bestellen</button>
+                    </div>
+                </div>
+
+                <!-- Produit 3 - PS5 suspect avec vraie image -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../images/playstation.jpg') center/cover;">
+                        <div class="watermark">Adobe Stock</div>
+                        <div class="stock-alert">🎯 156 mensen kijken</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">PlayStation 5 + 2 Controllers - Nieuw</h3>
+                        <div class="price-section">
+                            <span class="original-price">549€</span>
+                            <span class="current-price">99€</span>
+                            <span class="discount">-82%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.8/5 (3241 beoordelingen) - "Snelle levering" - Pierre M.</span>
+                        </div>
+                        <button class="buy-button">💳 Reserveren</button>
+                    </div>
+                </div>
+
+                <!-- NOUVELLE SECTION LABUBU - Produits tendance suspects -->
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../labubu/macaron.jpg') center/cover;">
+                        <div class="watermark">Pop Mart ©</div>
+                        <div class="trending-badge">🔥 TREND</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Labubu "Macaron" Volledige Serie - 100% Authentiek</h3>
+                        <div class="price-section">
+                            <span class="original-price">89€</span>
+                            <span class="current-price">12€</span>
+                            <span class="discount">-87%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.9/5 (5624 beoordelingen) - "Identiek aan het origineel!" - Luna K.</span>
+                        </div>
+                        <div class="suspicious-shipping">
+                            📦 Verzonden vanuit ons Europees magazijn* <br>
+                            <span style="font-size: 0.7rem; color: #999;">*Via China, levertijd 15-30 dagen</span>
+                        </div>
+                        <button class="buy-button">💳 Nu Verzamelen</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../labubu/licorne.avif') center/cover;">
+                        <div class="watermark">Kasing Lung ©</div>
+                        <div class="limited-badge">⚡ RARE</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Labubu Eenhoorn - Editie 1/1000 Genummerd (Certificaat inbegrepen)</h3>
+                        <div class="price-section">
+                            <span class="original-price">299€</span>
+                            <span class="current-price">24€</span>
+                            <span class="discount">-92%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>5.0/5 (892 beoordelingen) - "Ongelooflijke kwaliteit!" - Sophie T.</span>
+                        </div>
+                        <div class="authenticity-badge">
+                            ✅ Echtheidscertificaat inbegrepen - Uniek serienummer
+                        </div>
+                        <button class="buy-button">💳 Gelimiteerde Editie</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image" style="background: url('../../labubu/labubu1.jpg') center/cover;">
+                        <div class="watermark">© PopMart Official</div>
+                        <div class="mystery-badge">🎲 VERRASSING</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Mystery Box Labubu x6 - Gouden Figuur Mogelijk ! (Waarde 500€)</h3>
+                        <div class="price-section">
+                            <span class="original-price">234€</span>
+                            <span class="current-price">18€</span>
+                            <span class="discount">-92%</span>
+                        </div>
+                        <div class="fake-reviews">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>4.8/5 (3456 beoordelingen) - "Ik heb de gouden gekregen!" - Alex M.</span>
+                        </div>
+                        <div class="probability-info">
+                            🏆 Kans op een gouden figuur: 1/144 (gegarandeerd op onze site!)
+                        </div>
+                        <button class="buy-button">💳 Ik Waag Mijn Kans</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section paiement avec vrais logos + logo suspect -->
+    <section class="payment-security">
+        <div class="container">
+            <h3>💳 100% Veilige Betalingen</h3>
+            <p>Wij accepteren alle veilige betaalmethoden:</p>
+
+            <div class="payment-logos">
+                <img src="../../png/visa.svg" alt="Visa" class="payment-logo">
+                <img src="../../png/mastercard.svg" alt="MasterCard" class="payment-logo">
+                <img src="../../png/paypal.png" alt="PayPal" class="payment-logo">
+                <img src="../../png/Apple_Pay_logo.svg" alt="Apple Pay" class="payment-logo">
+                <!-- Logo obsolète comme red flag -->
+                <img src="../../png/old_logo.svg" alt="Partner Bank" class="payment-logo" style="opacity: 0.8;">
+            </div>
+
+            <div class="fake-badge">
+                🔒 SSL 256-bit Encryptie - Uw gegevens zijn beschermd
+            </div>
+        </div>
+    </section>
+
+    <section class="security-badges">
+        <div class="container">
+            <h3>🛡️ Veiligheidscertificeringen</h3>
+            <p>Onze site is gecertificeerd door de grootste veiligheidsorganisaties:</p>
+            
+            <div class="badges-container">
+                <img src="../../png/norton-secured.svg" alt="Norton Secured" class="security-badge">
+                <img src="../../png/McAfee.png" alt="McAfee Secure" class="security-badge">
+                <img src="../../png/ssl-certificate.png" alt="SSL Certificate" class="security-badge">
+                <img src="../../png/trustPilot.png" alt="TrustPilot Verified" class="security-badge">
+                <img src="../../png/bbb.png" alt="Better Business Bureau" class="security-badge">
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Over TechDeals-Secure</h3>
+                    <p>Wij zijn de Europese leider in kortingstechnologie sinds 2024. Onze missie is om toegang tot de nieuwste innovaties te democratiseren.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <div class="contact-info">
+                        <p>📧 Email: support@techdeals-secure.biz</p>
+                        <p class="suspicious-contact">📞 Telefoon: Neem contact op via e-mail</p>
+                        <p class="suspicious-contact">📍 Adres: Beschikbaar op aanvraag</p>
+                        <p>🕐 Openingstijden: 24/7 (reactie binnen 72u)</p>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Juridische Informatie</h3>
+                    <p>KvK: In aanvraag</p>
+                    <p>BTW: Niet van toepassing</p>
+                    <p>Algemene voorwaarden binnenkort beschikbaar</p>
+                    <p>Retourbeleid: 30 dagen*</p>
+                    <p style="font-size: 0.8rem; color: #95a5a6;">*Onder voorbehoud van acceptatie</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Timer de fausse urgence -->
+    <div class="countdown">
+        <h4>⏰ Aanbieding vervalt over:</h4>
+        <div id="timer">05:27</div>
+    </div>
+
+    <script>
+        // ============================================
+        // SYSTÈME DE DÉTECTION DU NIVEAU DE DIFFICULTÉ
+        // ============================================
+
+        /**
+         * Récupère le niveau de difficulté depuis l'URL
+         * @returns {string} 'basic', 'standard', ou 'advanced'
+         */
+        function getLevelFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const level = urlParams.get('level');
+
+            // Valider le niveau (doit être basic, standard ou advanced)
+            const validLevels = ['basic', 'standard', 'advanced'];
+            if (level && validLevels.includes(level.toLowerCase())) {
+                return level.toLowerCase();
+            }
+
+            // Par défaut : standard
+            return 'standard';
+        }
+
+        // Variable globale pour le niveau actuel
+        const GAME_LEVEL = getLevelFromURL();
+        console.log('🎮 Mode de jeu actif :', GAME_LEVEL);
+
+        // Initialisation selon le niveau
+        document.addEventListener('DOMContentLoaded', function() {
+            initGameByLevel();
+        });
+
+        /**
+         * Initialise le jeu selon le niveau détecté
+         */
+        function initGameByLevel() {
+            console.log(`🎯 Initialisation du mode ${GAME_LEVEL.toUpperCase()}`);
+
+            switch(GAME_LEVEL) {
+                case 'basic':
+                    initBasicMode();
+                    break;
+                case 'standard':
+                    initStandardMode();
+                    break;
+                case 'advanced':
+                    initAdvancedMode();
+                    break;
+                default:
+                    console.warn('⚠️ Niveau inconnu, utilisation du mode standard');
+                    initStandardMode();
+            }
+        }
+
+        // ============================================
+        // CHARGEMENT DES DONNÉES DE JEU
+        // ============================================
+
+        let fakeData = null;
+
+        /**
+         * Charge les données depuis fake.json
+         */
+        async function loadFakeData() {
+            if (fakeData) return fakeData;
+
+            try {
+                const response = await fetch(`https://raw.githubusercontent.com/KamelZar/CyberQuestKids/feat/levels/html/translations/nl/fake.json`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                fakeData = await response.json();
+                console.log('✅ Données fake.json chargées');
+                return fakeData;
+            } catch (error) {
+                console.error('❌ Erreur chargement fake.json:', error);
+                return null;
+            }
+        }
+
+        // ============================================
+        // MODE BASIC - QCM
+        // ============================================
+
+        /**
+         * Mode BASIC : QCM simple à la sortie
+         */
+        async function initBasicMode() {
+            console.log('🟢 Mode BASIC activé : QCM de fin');
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.basic_mode) {
+                console.error('❌ Données du mode basic non trouvées');
+                return;
+            }
+
+            // Afficher le QCM après 25 secondes
+            let quizShown = false;
+
+            // Déclenchement après 25 secondes
+            setTimeout(() => {
+                if (!quizShown) {
+                    quizShown = true;
+                    showBasicQuiz(data.basic_mode);
+                }
+            }, 25000); // 25 secondes
+        }
+
+        /**
+         * Ferme le quiz et la fenêtre du navigateur
+         */
+        function closeQuizAndWindow() {
+            // Fermer le modal d'abord
+            const overlay = document.getElementById('quizOverlay');
+            overlay.classList.remove('active');
+
+            // Fermer la fenêtre/onglet
+            window.close();
+
+            // Si window.close() ne fonctionne pas (bloqué par le navigateur),
+            // rediriger vers about:blank
+            setTimeout(() => {
+                window.location.href = 'about:blank';
+            }, 100);
+        }
+
+        /**
+         * Affiche le QCM du mode Basic
+         */
+        function showBasicQuiz(basicData) {
+            const quizData = basicData.quiz;
+            const overlay = document.getElementById('quizOverlay');
+            const content = document.getElementById('quizContent');
+
+            // Générer le HTML du QCM
+            let optionsHTML = '';
+            quizData.options.forEach((option, index) => {
+                optionsHTML += `
+                    <li class="quiz-option">
+                        <label>
+                            <input type="checkbox" name="quiz" value="${option.id}"
+                                   data-correct="${option.correct}" data-index="${index}">
+                            <span class="quiz-option-text">${option.text}</span>
+                       j </label>
+                    </li>
+                `;
+            });
+
+            content.innerHTML = `
+                <button id="quizCloseBtn" class="quiz-close-btn" title="${quizData.close_button_title}">✕</button>
+
+                <div class="quiz-header">
+                    <h2>${quizData.title}</h2>
+                    <p>${quizData.subtitle}</p>
+                </div>
+
+                <div class="quiz-question">
+                    <h3>${quizData.question}</h3>
+                    <ul class="quiz-options">
+                        ${optionsHTML}
+                    </ul>
+                </div>
+
+                <button id="quizMoreTimeBtn" class="quiz-submit-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); margin-bottom: 10px;">
+                    ${quizData.more_time_button}
+                </button>
+
+                <button id="quizSubmitBtn" class="quiz-submit-btn">${quizData.submit_button}</button>
+
+                <div id="quizResult" class="quiz-result">
+                    <!-- Résultat sera inséré ici -->
+                </div>
+            `;
+
+            // Afficher l'overlay
+            overlay.classList.add('active');
+
+            // Gérer le bouton de fermeture
+            document.getElementById('quizCloseBtn').addEventListener('click', () => {
+                closeQuizAndWindow();
+            });
+
+            // Gérer le bouton "+30 secondes"
+            document.getElementById('quizMoreTimeBtn').addEventListener('click', () => {
+                requestMoreTime(basicData);
+            });
+
+            // Gérer la soumission
+            document.getElementById('quizSubmitBtn').addEventListener('click', () => {
+                submitBasicQuiz(quizData, basicData.results, basicData.details);
+            });
+        }
+
+        /**
+         * Demande 30 secondes supplémentaires
+         */
+        function requestMoreTime(basicData) {
+            const overlay = document.getElementById('quizOverlay');
+
+            // Fermer le modal temporairement
+            overlay.classList.remove('active');
+
+            // Afficher une notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #f39c12;
+                color: white;
+                padding: 30px 50px;
+                border-radius: 15px;
+                z-index: 10000;
+                font-size: 1.5rem;
+                font-weight: bold;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                text-align: center;
+            `;
+            const quizData = basicData.quiz;
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 10px;">⏰</div>
+                <div>${quizData.more_time_granted}</div>
+                <div style="font-size: 1rem; margin-top: 10px; opacity: 0.9;">${quizData.more_time_message.replace('{seconds}', '<span id="countdown">30</span>')}</div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Compte à rebours
+            let timeLeft = 30;
+            const countdownSpan = notification.querySelector('#countdown');
+
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownSpan.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    notification.remove();
+                    // Réafficher le quiz
+                    showBasicQuiz(basicData);
+                }
+            }, 1000);
+        }
+
+        /**
+         * Soumet et évalue le QCM
+         */
+        function submitBasicQuiz(quizData, resultsData, detailsData) {
+            const checkboxes = document.querySelectorAll('input[name="quiz"]');
+            let correctCount = 0;
+            let incorrectCount = 0;
+            const totalCorrect = quizData.options.filter(opt => opt.correct).length;
+
+            const userAnswers = {
+                correct: [],
+                incorrect: [],
+                missed: []
+            };
+
+            // Évaluer les réponses
+            checkboxes.forEach((checkbox) => {
+                const optionIndex = parseInt(checkbox.dataset.index);
+                const option = quizData.options[optionIndex];
+                const isChecked = checkbox.checked;
+                const shouldBeChecked = option.correct;
+
+                if (isChecked && shouldBeChecked) {
+                    correctCount++;
+                    userAnswers.correct.push(option);
+                } else if (isChecked && !shouldBeChecked) {
+                    incorrectCount++;
+                    userAnswers.incorrect.push(option);
+                } else if (!isChecked && shouldBeChecked) {
+                    userAnswers.missed.push(option);
+                }
+            });
+
+            // Calculer le score en pourcentage
+            const score = Math.round((correctCount / totalCorrect) * 100);
+
+            // Déterminer le niveau de résultat
+            let resultLevel, resultData;
+            if (score >= 85) {
+                resultLevel = 'excellent';
+                resultData = resultsData.excellent;
+            } else if (score >= 60) {
+                resultLevel = 'good';
+                resultData = resultsData.good;
+            } else if (score >= 40) {
+                resultLevel = 'average';
+                resultData = resultsData.average;
+            } else {
+                resultLevel = 'poor';
+                resultData = resultsData.poor;
+            }
+
+            // Afficher les résultats
+            showBasicResults(score, correctCount, totalCorrect, resultLevel, resultData, userAnswers, detailsData);
+        }
+
+        /**
+         * Affiche les résultats du QCM
+         */
+        function showBasicResults(score, correct, total, level, resultData, answers, detailsData) {
+            const resultDiv = document.getElementById('quizResult');
+            const submitBtn = document.getElementById('quizSubmitBtn');
+
+            // Cacher le bouton submit
+            submitBtn.style.display = 'none';
+
+            // Cacher les checkboxes
+            document.querySelectorAll('.quiz-question').forEach(el => el.style.display = 'none');
+
+            // Générer les détails
+            let detailsHTML = '<ul>';
+
+            // Bonnes réponses
+            answers.correct.forEach(option => {
+                detailsHTML += `<li class="correct">✅ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            // Mauvaises réponses
+            answers.incorrect.forEach(option => {
+                detailsHTML += `<li class="incorrect">❌ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            // Réponses manquées
+            answers.missed.forEach(option => {
+                detailsHTML += `<li class="missed">⚠️ ${option.text}<br><small>${option.explanation}</small></li>`;
+            });
+
+            detailsHTML += '</ul>';
+
+            resultDiv.innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 20px;">${resultData.emoji}</div>
+                <h2>${resultData.title}</h2>
+                <div class="quiz-score">${correct}/${total}</div>
+                <div class="quiz-feedback">
+                    <p><strong>${resultData.message}</strong></p>
+                    <p style="margin-top: 15px;">💡 ${resultData.advice}</p>
+                </div>
+                <div class="quiz-details">
+                    <h4>${detailsData.title}</h4>
+                    ${detailsHTML}
+                </div>
+            `;
+
+            resultDiv.classList.add('show', level);
+        }
+
+        // ============================================
+        // MODE STANDARD - CHASSE AUX INDICES
+        // ============================================
+
+        let standardFoundClues = [];
+        let standardMissions = [];
+
+        /**
+         * Mode STANDARD : Chasse aux indices guidée
+         */
+        async function initStandardMode() {
+            console.log('🟡 Mode STANDARD activé : Chasse aux indices');
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.standard_mode) {
+                console.error('❌ Données du mode standard non trouvées');
+                return;
+            }
+
+            standardMissions = data.standard_mode.missions;
+
+            // Afficher la sidebar
+            showStandardSidebar(data.standard_mode);
+
+            // Rendre les éléments cliquables
+            makeElementsClickable(standardMissions);
+
+            // Désactiver les boutons d'achat
+            disableBuyButtons();
+        }
+
+        /**
+         * Affiche la sidebar avec les missions
+         */
+        function showStandardSidebar(standardData) {
+            const sidebar = document.getElementById('standardSidebar');
+            const missionList = document.getElementById('standardMissionList');
+            const totalSpan = document.getElementById('standardTotal');
+
+            // Mettre à jour le total
+            totalSpan.textContent = standardMissions.length;
+
+            // Générer la liste des missions
+            let missionsHTML = '';
+            standardMissions.forEach((mission, index) => {
+                missionsHTML += `
+                    <li class="mission-item pending" data-mission-id="${mission.id}">
+                        <div class="mission-title">${mission.title}</div>
+                    </li>
+                `;
+            });
+
+            missionList.innerHTML = missionsHTML;
+
+            // Afficher la sidebar
+            sidebar.classList.add('active');
+
+            // Gérer le bouton "Mission Terminée"
+            document.getElementById('standardCompleteBtn').addEventListener('click', () => {
+                showStandardResults(standardData);
+            });
+        }
+
+        /**
+         * Rend les éléments cliquables selon les sélecteurs
+         */
+        function makeElementsClickable(missions) {
+            missions.forEach((mission) => {
+                const selector = mission.selector;
+                const elements = document.querySelectorAll(selector);
+
+                elements.forEach((element) => {
+                    // Ajouter la classe highlight
+                    element.classList.add('clue-highlight');
+                    element.dataset.missionId = mission.id;
+
+                    // Gérer le clic
+                    element.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleClueClick(mission, element);
+                    });
+                });
+            });
+        }
+
+        /**
+         * Gère le clic sur un indice
+         */
+        function handleClueClick(mission, element) {
+            // Vérifier si déjà trouvé
+            if (standardFoundClues.includes(mission.id)) {
+                console.log('Indice déjà trouvé');
+                return;
+            }
+
+            // Ajouter à la liste des indices trouvés
+            standardFoundClues.push(mission.id);
+
+            // Marquer l'élément comme trouvé
+            element.classList.add('clue-found');
+            element.classList.remove('clue-highlight');
+
+            // Mettre à jour la mission dans la sidebar
+            updateMissionStatus(mission.id);
+
+            // Afficher le tooltip d'explication
+            showClueTooltip(mission, element);
+
+            // Mettre à jour le compteur
+            updateProgress();
+
+            // Vérifier si toutes les missions sont complétées
+            checkAllMissionsComplete();
+        }
+
+        /**
+         * Met à jour le statut d'une mission dans la sidebar
+         */
+        function updateMissionStatus(missionId) {
+            const missionItem = document.querySelector(`.mission-item[data-mission-id="${missionId}"]`);
+            if (missionItem) {
+                missionItem.classList.remove('pending');
+                missionItem.classList.add('found');
+            }
+        }
+
+        /**
+         * Affiche un tooltip d'explication
+         */
+        function showClueTooltip(mission, element) {
+            // Supprimer les anciens tooltips
+            document.querySelectorAll('.clue-tooltip').forEach(t => t.remove());
+
+            // Créer le tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'clue-tooltip';
+
+            // Positionner le tooltip près de l'élément cliqué
+            const rect = element.getBoundingClientRect();
+            tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+            tooltip.style.left = `${rect.left + window.scrollX + rect.width + 15}px`;
+
+            tooltip.innerHTML = `
+                <button class="clue-tooltip-close">×</button>
+                <h4>✅ ${mission.title}</h4>
+                <p>${mission.explanation}</p>
+            `;
+
+            document.body.appendChild(tooltip);
+
+            // Gérer la fermeture
+            tooltip.querySelector('.clue-tooltip-close').addEventListener('click', () => {
+                tooltip.remove();
+            });
+
+            // Fermer automatiquement après 5 secondes
+            setTimeout(() => {
+                tooltip.remove();
+            }, 5000);
+        }
+
+        /**
+         * Met à jour le compteur de progression
+         */
+        function updateProgress() {
+            const foundSpan = document.getElementById('standardFound');
+            foundSpan.textContent = standardFoundClues.length;
+        }
+
+        /**
+         * Vérifie si toutes les missions sont complétées
+         */
+        function checkAllMissionsComplete() {
+            const completeBtn = document.getElementById('standardCompleteBtn');
+
+            if (standardFoundClues.length === standardMissions.length) {
+                completeBtn.disabled = false;
+                completeBtn.textContent = fakeData.standard_mode.complete_button_all_found;
+            }
+        }
+
+        /**
+         * Désactive les boutons d'achat en mode Standard
+         */
+        function disableBuyButtons() {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.style.opacity = '0.5';
+                button.style.cursor = 'not-allowed';
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert(fakeData.standard_mode.buy_button_disabled_alert);
+                });
+            });
+        }
+
+        /**
+         * Affiche les résultats du mode Standard
+         */
+        function showStandardResults(standardData) {
+            const found = standardFoundClues.length;
+            const total = standardMissions.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Déterminer le niveau
+            let level, resultData;
+            if (percentage === 100) {
+                level = 'excellent';
+                resultData = standardData.results.perfect;
+            } else if (percentage >= 70) {
+                level = 'good';
+                resultData = standardData.results.good;
+            } else {
+                level = 'average';
+                resultData = standardData.results.average;
+            }
+
+            const message = resultData.message
+                .replace('{found}', found)
+                .replace('{total}', total)
+                .replace('{remaining}', total - found);
+
+            // Générer la liste des indices manqués
+            let missedHTML = '';
+            const missedMissions = standardMissions.filter(m => !standardFoundClues.includes(m.id));
+            if (missedMissions.length > 0) {
+                missedHTML = `
+                    <div class="quiz-details">
+                        <h4>${standardData.missed_clues_label}</h4>
+                        <ul>
+                            ${missedMissions.map(m => `
+                                <li class="missed">
+                                    ${m.title}<br>
+                                    <small>${m.explanation}</small>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Afficher dans un modal
+            const overlay = document.getElementById('quizOverlay');
+            const content = document.getElementById('quizContent');
+
+            content.innerHTML = `
+                <button id="quizCloseBtn" class="quiz-close-btn" title="${standardData.close_button_title}">✕</button>
+
+                <div class="quiz-header">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${resultData.emoji}</div>
+                    <h2>${resultData.title}</h2>
+                </div>
+
+                <div class="quiz-result show ${level}">
+                    <div class="quiz-score">${found}/${total}</div>
+                    <div class="quiz-feedback">
+                        <p><strong>${message}</strong></p>
+                    </div>
+                    ${missedHTML}
+                </div>
+            `;
+
+            overlay.classList.add('active');
+
+            // Gérer le bouton de fermeture
+            document.getElementById('quizCloseBtn').addEventListener('click', () => {
+                closeQuizAndWindow();
+            });
+        }
+
+        // ============================================
+        // MODE ADVANCED - PIÈGE ACTIF
+        // ============================================
+
+        let advancedFoundClues = [];
+        let advancedAllClues = [];
+        let advancedTimeRemaining = 90; // 1m30 en secondes
+        let advancedTimerInterval = null;
+        let advancedGameOver = false;
+
+        /**
+         * Mode ADVANCED : Mode libre avec piège et timer de 1m30
+         */
+        async function initAdvancedMode() {
+            console.log('🔴 Mode ADVANCED activé : Danger - Piège actif');
+
+            // Charger les données
+            const data = await loadFakeData();
+            if (!data || !data.advanced_mode) {
+                console.error('❌ Données du mode advanced non trouvées');
+                return;
+            }
+
+            advancedAllClues = data.advanced_mode.clues;
+
+            // Afficher le badge avec timer
+            showAdvancedBadge();
+
+            // Démarrer le timer stressant de 1m30
+            startAdvancedTimer();
+
+            // Configurer le tracking des indices
+            setupAdvancedTracking(advancedAllClues);
+
+            // Piéger les boutons d'achat
+            trapBuyButtons(data.advanced_mode);
+
+            // Gérer le bouton "Terminer"
+            document.getElementById('advancedFinishBtn').addEventListener('click', () => {
+                if (!advancedGameOver) {
+                    showAdvancedVictory(data.advanced_mode);
+                }
+            });
+        }
+
+        /**
+         * Affiche le badge flottant avec timer et compteur
+         */
+        function showAdvancedBadge() {
+            const badge = document.getElementById('advancedBadge');
+            const badgeData = fakeData.advanced_mode.badge;
+
+            // Mettre à jour les textes du badge
+            badge.querySelector('.advanced-badge-header').textContent = badgeData.header;
+            badge.querySelector('#advancedFinishBtn').textContent = badgeData.finish_button;
+            badge.querySelector('.advanced-progress').innerHTML = `${badgeData.progress_label} <span id="advancedFound">0</span>/15`;
+
+            badge.classList.add('active');
+        }
+
+        /**
+         * Démarre le timer de 1m30 avec effet stressant
+         */
+        function startAdvancedTimer() {
+            const timerDisplay = document.getElementById('advancedTimer');
+
+            advancedTimerInterval = setInterval(() => {
+                advancedTimeRemaining--;
+
+                // Formater l'affichage
+                const minutes = Math.floor(advancedTimeRemaining / 60);
+                const seconds = advancedTimeRemaining % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                // Changer le style selon le temps restant
+                if (advancedTimeRemaining <= 30 && advancedTimeRemaining > 10) {
+                    // Warning : orange clignotant
+                    timerDisplay.classList.add('warning');
+                    timerDisplay.classList.remove('danger');
+                } else if (advancedTimeRemaining <= 10) {
+                    // Danger : rouge clignotant rapide
+                    timerDisplay.classList.remove('warning');
+                    timerDisplay.classList.add('danger');
+                }
+
+                // Game Over si temps écoulé
+                if (advancedTimeRemaining <= 0) {
+                    clearInterval(advancedTimerInterval);
+                    showTimeoutScreen();
+                }
+            }, 1000);
+        }
+
+        /**
+         * Configure le tracking invisible des 15 indices
+         */
+        function setupAdvancedTracking(clues) {
+            clues.forEach(clue => {
+                // Mapper chaque indice à un sélecteur CSS
+                let selector = null;
+
+                switch(clue.id) {
+                    case 'fake-ssl':
+                        selector = '.fake-ssl';
+                        break;
+                    case 'domain':
+                        // Pas de sélecteur visuel, se base sur l'URL
+                        break;
+                    case 'price-iphone':
+                    case 'price-macbook':
+                    case 'price-ps5':
+                    case 'price-labubu':
+                        selector = '.discount';
+                        break;
+                    case 'watermarks':
+                        selector = '.watermark';
+                        break;
+                    case 'fake-reviews':
+                        selector = '.fake-reviews';
+                        break;
+                    case 'perfect-ratings':
+                        selector = '.stars';
+                        break;
+                    case 'timer-reset':
+                        selector = '.countdown';
+                        break;
+                    case 'fake-stock-alerts':
+                        selector = '.stock-alert';
+                        break;
+                    case 'shipping-china':
+                        selector = '.suspicious-shipping';
+                        break;
+                    case 'no-phone':
+                    case 'siret-pending':
+                        selector = '.suspicious-contact';
+                        break;
+                    case 'old-bank-logo':
+                        selector = 'img[src*="old_logo"]';
+                        break;
+                }
+
+                if (selector) {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(element => {
+                        // Tracking au survol (hover)
+                        element.addEventListener('mouseenter', () => {
+                            trackClueFound(clue.id);
+                        });
+
+                        // Tracking au clic (double sécurité)
+                        element.addEventListener('click', (e) => {
+                            // Ne pas empêcher le comportement normal pour les éléments non-dangereux
+                            if (!element.classList.contains('buy-button') && !element.classList.contains('cta-button')) {
+                                trackClueFound(clue.id);
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Indice spécial pour le domaine (.biz)
+            trackClueFound('domain');
+        }
+
+        /**
+         * Marque un indice comme trouvé
+         */
+        function trackClueFound(clueId) {
+            if (!advancedFoundClues.includes(clueId) && !advancedGameOver) {
+                advancedFoundClues.push(clueId);
+
+                // Trouver les détails de l'indice
+                const clue = advancedAllClues.find(c => c.id === clueId);
+
+                // Mettre à jour le compteur
+                updateAdvancedProgress();
+
+                // Ajouter l'indice à la liste
+                if (clue) {
+                    addClueToList(clue);
+                }
+
+                // Notification discrète
+                const notificationText = fakeData.advanced_mode.notifications.clue_found
+                    .replace('{current}', advancedFoundClues.length)
+                    .replace('{total}', advancedAllClues.length);
+                showDiscreteNotification(notificationText);
+            }
+        }
+
+        /**
+         * Ajoute un indice trouvé à la liste visible
+         */
+        function addClueToList(clue) {
+            const cluesList = document.getElementById('advancedCluesList');
+
+            const clueItem = document.createElement('div');
+            clueItem.className = 'advanced-clue-item';
+            clueItem.textContent = clue.title;
+
+            cluesList.appendChild(clueItem);
+        }
+
+        /**
+         * Met à jour le compteur d'indices trouvés
+         */
+        function updateAdvancedProgress() {
+            const foundSpan = document.getElementById('advancedFound');
+            foundSpan.textContent = advancedFoundClues.length;
+        }
+
+        /**
+         * Affiche une notification discrète en bas de l'écran
+         */
+        function showDiscreteNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'clue-notification';
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Supprimer après 2 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        /**
+         * Piège tous les boutons d'achat
+         */
+        function trapBuyButtons(advancedData) {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Game Over immédiat
+                    advancedGameOver = true;
+                    clearInterval(advancedTimerInterval);
+                    showPrisonScreen(advancedData);
+                });
+            });
+        }
+
+        /**
+         * Affiche l'écran de prison (Game Over)
+         */
+        function showPrisonScreen(advancedData) {
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Liste des indices manqués
+            const missedClues = advancedAllClues.filter(c => !advancedFoundClues.includes(c.id));
+            let missedHTML = missedClues.map(clue =>
+                `<li>❌ ${clue.title} <br><small>${clue.description}</small></li>`
+            ).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">🚨</div>
+                <div class="prison-title">${advancedData.prison.title}</div>
+                <div class="prison-subtitle">${advancedData.prison.subtitle}</div>
+                <div class="prison-message">
+                    ${advancedData.prison.message}
+                </div>
+                <div class="prison-score">
+                    <h3>${advancedData.prison.score_header}</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;">
+                        ${advancedData.prison.score_text.replace('{found}', found).replace('{total}', total).replace('{percentage}', percentage)}
+                    </p>
+                </div>
+                ${missedHTML ? `
+                    <div class="prison-score">
+                        <h3>${advancedData.prison.missed_clues}</h3>
+                        <ul class="prison-missed-list">
+                            ${missedHTML}
+                        </ul>
+                    </div>
+                ` : ''}
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        ${advancedData.prison.retry_button}
+                    </button>
+                    <button class="prison-btn show-all" onclick="showAllClues()">
+                        ${advancedData.prison.show_all_button}
+                    </button>
+                </div>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Affiche l'écran de timeout (temps écoulé)
+         */
+        function showTimeoutScreen() {
+            advancedGameOver = true;
+
+            const data = fakeData.advanced_mode;
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            const missedClues = advancedAllClues.filter(c => !advancedFoundClues.includes(c.id));
+            let missedHTML = missedClues.map(clue =>
+                `<li>❌ ${clue.title} <br><small>${clue.description}</small></li>`
+            ).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">${data.timeout.icon}</div>
+                <div class="prison-title">${data.timeout.title}</div>
+                <div class="prison-subtitle">${data.timeout.subtitle}</div>
+                <div class="prison-message">
+                    ${data.timeout.message}
+                </div>
+                <div class="prison-score">
+                    <h3>${data.timeout.score_header}</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #f39c12;">
+                        ${data.timeout.score_text.replace('{found}', found).replace('{total}', total).replace('{percentage}', percentage)}
+                    </p>
+                </div>
+                ${missedHTML ? `
+                    <div class="prison-score">
+                        <h3>${data.timeout.missed_clues}</h3>
+                        <ul class="prison-missed-list">
+                            ${missedHTML}
+                        </ul>
+                    </div>
+                ` : ''}
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        ${data.timeout.retry_button}
+                    </button>
+                </div>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Affiche l'écran de victoire
+         */
+        function showAdvancedVictory(advancedData) {
+            advancedGameOver = true;
+            clearInterval(advancedTimerInterval);
+
+            const found = advancedFoundClues.length;
+            const total = advancedAllClues.length;
+            const percentage = Math.round((found / total) * 100);
+
+            // Si moins de 70%, afficher l'écran de prison au lieu de victoire
+            if (percentage < 70) {
+                showPrisonScreen(advancedData);
+                return;
+            }
+
+            const overlay = document.getElementById('victoryOverlay');
+            const content = document.getElementById('victoryContent');
+
+            // Déterminer le rating
+            let rating, emoji;
+            if (found === total) {
+                rating = advancedData.victory.rating.perfect;
+                emoji = '🎖️';
+            } else if (found >= 10) {
+                rating = advancedData.victory.rating.excellent;
+                emoji = '🛡️';
+            } else {
+                rating = advancedData.victory.rating.good;
+                emoji = '👍';
+            }
+
+            const message = advancedData.victory.message.replace('{count}', found);
+
+            content.innerHTML = `
+                <div class="victory-icon">${emoji}</div>
+                <div class="victory-title">${advancedData.victory.title}</div>
+                <div class="victory-score">${found}/${total}</div>
+                <div class="victory-rating">
+                    ${rating}
+                </div>
+                <div class="victory-message">
+                    ${message}
+                </div>
+                <button class="victory-btn" onclick="closeQuizAndWindow()">
+                    ${advancedData.victory.finish_button}
+                </button>
+            `;
+
+            overlay.classList.add('active');
+        }
+
+        /**
+         * Fonction globale pour afficher tous les indices (depuis l'écran prison)
+         */
+        function showAllClues() {
+            const data = fakeData.advanced_mode;
+            const overlay = document.getElementById('prisonOverlay');
+            const content = document.getElementById('prisonContent');
+
+            let allCluesHTML = advancedAllClues.map((clue, index) => {
+                const found = advancedFoundClues.includes(clue.id);
+                return `
+                    <li class="${found ? 'correct' : 'incorrect'}">
+                        ${found ? '✅' : '❌'} <strong>${clue.title}</strong><br>
+                        <small>${clue.description}</small>
+                    </li>
+                `;
+            }).join('');
+
+            content.innerHTML = `
+                <div class="prison-icon">📚</div>
+                <div class="prison-title">${data.prison.all_clues_title}</div>
+                <div class="prison-message">
+                    ${data.prison.all_clues_message}
+                </div>
+                <div class="prison-score">
+                    <ul class="prison-missed-list" style="max-height: 400px;">
+                        ${allCluesHTML}
+                    </ul>
+                </div>
+                <div class="prison-buttons">
+                    <button class="prison-btn retry" onclick="location.reload()">
+                        ${data.prison.retry_button}
+                    </button>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // CODE ORIGINAL DU FAUX SITE
+        // ============================================
+
+        // Faux timer qui se remet à zéro
+        let timeLeft = 327; // 5:27 en secondes
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            timeLeft--;
+            
+            // Quand arrive à 0, remet à 5:27
+            if (timeLeft < 0) {
+                timeLeft = 327;
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Faux comportement de boutons (UNIQUEMENT pour mode basic et advanced, PAS standard)
+        if (GAME_LEVEL === 'basic') {
+            document.querySelectorAll('.buy-button, .cta-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('🚨 OPGELET! Deze pagina is een VALSE verkoopsite gemaakt voor educatieve doeleinden.\n\n🎯 Hebt u alle fraudesignalen herkend?\n\n🔓 VEILIGHEID:\n• HTTP in plaats van HTTPS\n• Valse SSL badges\n\n💰 VERDACHTE PRIJZEN:\n• Onmogelijke kortingen (-86% tot -92%)\n• Belachelijke prijzen (iPhone voor €199, Labubu voor €12)\n• "Mystery Box" voor €18 in plaats van €234\n\n🧸 VERDACHTE TREND PRODUCTEN:\n• "Authentieke" Labubu te goedkoop\n• "Gelimiteerde" edities met onbeperkte voorraad\n• Twijfelachtige echtheidscertificaten\n• "Gegarandeerde" winkansen\n\n🚚 VERDACHTE VERZENDING:\n• "Europees magazijn*" (*via China)\n• Vage levertijden (15-30 dagen)\n• Verborgen verzendkosten\n\n🌐 TWIJFELACHTIGE SITE:\n• Verdacht domeinnaam (.biz)\n• Verouderd banklogo\n• Afbeeldingen met watermarks\n• KvK "in aanvraag"\n\n📞 VERDACHT CONTACT:\n• Geen telefoon\n• Geen fysiek adres\n• Support "binnen 72u"\n\n⏰ KUNSTMATIGE URGENTIE:\n• Timer die zichzelf reset\n• Valse voorraadwaarschuwingen\n• "Nog maar 3 op voorraad!"\n\n⭐ VALSE REVIEWS:\n• Generieke reviews (Marie D., Jan L.)\n• Perfecte scores overal\n• Verdachte getuigenissen\n\n✅ Uitstekend cyber-detectivewerk!');
+                });
+            });
+        }
+
+        // Fausses alertes de stock avec Labubu
+        setInterval(() => {
+            const alerts = [
+                "⚡ Nog maar 12 iPhones beschikbaar!",
+                "🔥 Opgelet: MacBook voorraad bijna uitverkocht!",
+                "⏰ Laatste PS5's in promotie!",
+                "🚨 156 mensen bekijken deze pagina!",
+                "🧸 URGENT: Labubu Eenhoorn - Nog maar 2 exemplaren!",
+                "🎁 Iemand heeft zojuist de gouden figuur gewonnen!",
+                "🔥 Labubu Macaron - 89% korting vervalt binnenkort!",
+                "⚡ 234 verzamelaars hebben Labubu in winkelwagen geplaatst!",
+                "🦄 Beperkte Eenhoorn-editie - 347/1000 verkocht!"
+            ];
+            
+            const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+            
+            // Créer notification temporaire
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #e74c3c;
+                color: white;
+                padding: 15px;
+                border-radius: 5px;
+                z-index: 1001;
+                animation: slideIn 0.5s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = randomAlert;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+            
+        }, Math.random() * 20000 + 10000); // Entre 10-30 secondes
+    </script>
+</body>
+</html>

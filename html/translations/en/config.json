@@ -1,0 +1,614 @@
+{
+  "welcome": {
+    "title": "CyberQuestKids",
+    "subtitle": "Welcome!",
+    "instruction": "Select language to start ✨",
+    "nameLabel": "Your first name:",
+    "namePlaceholder": "Enter your first name",
+    "ageLabel": "Your age:",
+    "startButton": "Start →"
+  },
+  "conditions": {
+    "title": "Terms of Use",
+    "confirm": "I accept the terms of use",
+    "need_confirm": "Please accept the terms and conditions",
+    "valid_email": "Please provide a valid email address (exemple@gmail.com) or phone number (+32123456789)')",
+    "content": {
+      "introduction": {
+        "title": "1. INTRODUCTION",
+        "paragraphs": [
+          "Welcome to SuperGaming! By using our platform, you accept these terms of use. Please read them carefully before proceeding.",
+          "These Terms of Use (hereinafter referred to as \"Terms\") govern the use of the SuperGaming platform (hereinafter referred to as \"the Platform\") operated by SuperGaming Inc. (hereinafter referred to as \"the Company\"). By accessing or using the Platform, you acknowledge that you have read, understood, and agreed to be bound by these Terms.",
+          "The Company reserves the right to modify these Terms at any time and without notice. It is your responsibility to regularly review the Terms to be aware of any changes. Your continued use of the Platform after changes are posted constitutes your acceptance of those changes."
+        ]
+      },
+      "access": {
+        "title": "2. PLATFORM ACCESS",
+        "paragraphs": [
+          "Access to the Platform is reserved for users aged 13 and over. If you are under 18, you must obtain consent from a parent or legal guardian before using the Platform.",
+          "The Company reserves the right to refuse access to the Platform to any user, at its sole discretion, without notice or justification.",
+          "You are responsible for maintaining the confidentiality of your login information and all activities that occur under your account. You must immediately inform the Company of any unauthorized use of your account or any other security breach."
+        ]
+      },
+      "usage": {
+        "title": "3. PLATFORM USE",
+        "intro": "By using the Platform, you agree not to:",
+        "restrictions": [
+          "Violate applicable laws or these Terms",
+          "Use the Platform in a way that could damage, disable, overload, or impair the operation of the Platform",
+          "Attempt to access areas or features of the Platform that you are not authorized to access",
+          "Use robots, scrapers, or other automated means to access the Platform",
+          "Introduce malware, viruses, or any other harmful code onto the Platform",
+          "Collect or store personal information about other users without their consent"
+        ]
+      },
+      "user_content": {
+        "title": "4. USER CONTENT",
+        "paragraphs": [
+          "By submitting content to the Platform (including, but not limited to, text, images, videos, comments), you grant the Company a worldwide, non-exclusive, royalty-free, transferable, and sublicensable license to use, reproduce, distribute, prepare derivative works of, display, and perform that content in connection with the Platform and the Company's business activities.",
+          "You represent and warrant that you own or have obtained all necessary rights, licenses, consents, permissions, powers, and/or authorities to grant the rights granted herein for any content you submit."
+        ]
+      },
+      "intellectual_property": {
+        "title": "5. INTELLECTUAL PROPERTY",
+        "paragraphs": [
+          "The Platform and all its content, features, and functionality (including, but not limited to, all information, software, text, displays, images, videos, and audio, as well as their design, selection, and arrangement) are the property of the Company, its licensors, or other providers of such content, and are protected by copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.",
+          "You may not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any material from our Platform, except as expressly permitted by these Terms."
+        ]
+      },
+      "privacy": {
+        "title": "6. PRIVACY",
+        "paragraphs": [
+          "Your use of the Platform is also governed by our Privacy Policy, which is incorporated into these Terms by reference.",
+          "By using the Platform, you consent to the collection, use, and sharing of your information as described in our Privacy Policy."
+        ],
+        "important_clause": "THE COMPANY HAS THE RIGHT TO DO WHATEVER IT WANTS WITH MY DATA AND CAN USE MY IDENTITY TO DO AS IT PLEASES",
+        "easter_egg": "* congratulations for reading the terms: a little tip, enter username:\"I know\" password:\"how to read\" on TikTok, don't share data when it's not necessary and especially not for any reason"
+      },
+      "liability": {
+        "title": "7. LIMITATION OF LIABILITY",
+        "paragraphs": [
+          "To the fullest extent permitted by applicable law, the Company shall not be liable for indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenue, whether or not such damages were foreseeable, and even if the Company has been advised of the possibility of such damages.",
+          "The Company's total liability for any claim arising out of or related to these Terms shall not exceed the amount you have paid to the Company during the twelve (12) months preceding the event giving rise to liability, or 100 euros, whichever is higher."
+        ]
+      },
+      "indemnification": {
+        "title": "8. INDEMNIFICATION",
+        "paragraphs": [
+          "You agree to indemnify, defend, and hold harmless the Company, its affiliates, officers, directors, employees, agents, suppliers, and partners from any claim, liability, damage, loss, and expense, including, without limitation, reasonable legal and accounting fees, arising out of or related to your breach of these Terms, your use of the Platform, your violation of any third party rights, or any content you submit, post, or transmit through the Platform."
+        ]
+      },
+      "termination": {
+        "title": "9. TERMINATION",
+        "paragraphs": [
+          "The Company may, at its sole discretion, suspend or terminate your access to the Platform at any time, for any reason, without notice or liability.",
+          "All provisions of these Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnification, and limitations of liability."
+        ]
+      },
+      "governing_law": {
+        "title": "10. GOVERNING LAW AND JURISDICTION",
+        "paragraphs": [
+          "These Terms are governed by and construed in accordance with the laws of France, without regard to its conflict of law principles.",
+          "Any dispute arising out of or related to these Terms shall be subject to the exclusive jurisdiction of the courts of Paris, France."
+        ]
+      },
+      "miscellaneous": {
+        "title": "11. MISCELLANEOUS",
+        "paragraphs": [
+          "If any provision of these Terms is found to be illegal, void, or unenforceable for any reason, that provision shall be limited or eliminated from these Terms to the minimum extent necessary, and the remaining provisions of these Terms shall remain in full force and effect.",
+          "These Terms constitute the entire agreement between you and the Company regarding the Platform and supersede all prior agreements between you and the Company regarding the Platform.",
+          "The Company's failure to exercise or enforce any right or provision of these Terms shall not constitute a waiver of such right or provision.",
+          "These Terms, and any rights and licenses granted hereunder, may not be transferred or assigned by you, but may be transferred or assigned by the Company without restriction."
+        ]
+      }
+    },
+    "google": {
+      "title": "Sign in with Google",
+      "user": "Email or Phone",
+      "user_instruction": "email@gmail.com or +3213456789",
+      "password": "Password",
+      "password_instruction": "Your password"
+    },
+    "instagram": {
+      "title": "Sign in with Instagram",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
+    },
+    "snapchat": {
+      "title": "Sign in with Snapchat",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
+    },
+    "tiktok": {
+      "title": "Sign in with TikTok",
+      "user": "Username or Email",
+      "user_instruction": "email@gmail.com or SuperMegaPlayer4",
+      "password": "Password",
+      "password_instruction": "Your password"
+    },
+    "connect": "Sign in",
+    "data_overlay": {
+      "accepted_clause_title": "📜 Clause you accepted:",
+      "investigation_complete": "🕵️ INVESTIGATION COMPLETE - DATA DISCOVERED!",
+      "evidence_title": "📋 EVIDENCE COLLECTED:",
+      "evidence_intro": "Our digital detective has recovered your data! 🐎💨",
+      "evidence_email": "🔍 <strong>Email/Name:</strong>",
+      "evidence_password": "🗝️ <strong>Password:</strong>",
+      "evidence_platform": "🏢 <strong>Platform:</strong>",
+      "evidence_timestamp": "📅 <strong>Timestamp:</strong>",
+      "conclusions_title": "📋 INVESTIGATION FINDINGS:",
+      "conclusions": [
+        "✓ Your data is now their property",
+        "✓ They can sell it to whoever they want",
+        "✓ They can use your identity",
+        "✓ Everything is perfectly legal thanks to the ToS!"
+      ],
+      "lesson_title": "🎓 CYBERSECURITY LESSON:",
+      "lesson_intro": "<strong>🔍 ALWAYS investigate before accepting!</strong>",
+      "lesson_points": [
+        "• Companies hide important clauses in the ToS",
+        "• Once accepted, you are legally bound",
+        "• Your data can be sold or shared",
+        "• Be careful with \"I accept\" checkboxes!",
+        "• When in doubt, don't give your real data"
+      ],
+      "lesson_understood": "🧠 Lesson learned!",
+      "console_log_title": "🏴‍☠️ Data legally recovered via ToS:",
+      "console_log_clause": "📜 Accepted clause: THE COMPANY HAS THE RIGHT TO DO WHATEVER IT WANTS WITH MY DATA",
+      "console_log_storage": "💾 Data stored in localStorage"
+    },
+    "succeed": {
+      "bravo": "\uD83C\uDF93 Well done ! \uD83C\uDF93",
+      "congrats": "Congratulations! You proved you know how to read the terms and conditions.",
+      "inspector": "You are a true cyber-detective! ✨"
+    }
+  },
+  "carousel": {
+    "champion": {
+      "title": "🏆 Quiz Champion",
+      "subtitle": "\uD83D\uDEE1\uFE0F Can you tell truth from falsehood?",
+      "button": "Play",
+      "categories": {
+        "ai": {
+          "title": "Artificial Intelligence",
+          "description": "Deepfakes, hallucinations..."
+        },
+        "protection": {
+          "title": "Protection & Virus",
+          "description": "VPN, malware, symptoms..."
+        },
+        "mobile": {
+          "title": "Mobile & Payments",
+          "description": "Apps, QR codes, security..."
+        },
+        "passwords": {
+          "title": "Passwords",
+          "description": "2FA, managers..."
+        },
+        "anecdotes": {
+          "title": "Tech Anecdotes",
+          "description": "Unbelievable but true facts..."
+        }
+      },
+      "tab": {
+        "title": "🏆 Quiz Champion",
+        "subtitle": "🛡️ Cybersecurity Topics",
+        "Score": "Score",
+        "config": "champ-fr.json",
+        "close": "CLOSE",
+        "buttons": {
+          "true": "✓ TRUE",
+          "false": "✗ FALSE",
+          "next": "Next question →",
+          "replay": "Play again"
+        },
+        "results": {
+          "correct": "Excellent answer!",
+          "incorrect": "Not quite..."
+        },
+        "final": {
+          "title": "Well done!",
+          "score_label": "Final score:",
+          "messages": {
+            "excellent": "Amazing! You've mastered this topic!",
+            "good": "Very good! You understand the issues well!",
+            "average": "Not bad! Keep learning!",
+            "low": "You need to study this topic more!"
+          }
+        }
+      }
+    },
+    "confidentiality": {
+      "title": "🔒 Privacy",
+      "subtitle": "Discover why your personal data is valuable!",
+      "button": "WATCH",
+      "tab": {
+        "key_points": "📚 Key points to remember:",
+        "link":"https://www.youtube-nocookie.com/embed/KGghlPmebCY",
+        "tips": {
+          "title": "🛡️ How to protect your data:",
+          "element": [
+            "Check privacy settings",
+            "Limit shared information",
+            "Read terms of use",
+            "Disable unnecessary geolocation",
+            "Ask yourself: \"Is this information really necessary?\""
+          ]
+        },
+        "title": "🔒 What is privacy?",
+        "warning": {
+          "title": "⚠️ Your personal data is valuable:",
+          "element": [
+            "🔐 Name, age, address, photos, habits",
+            "👁️ Your online actions are tracked",
+            "💰 Your data is sold for marketing",
+            "🎯 Advertising profiles created without your knowledge",
+            "📍 Geolocation and history kept"
+          ]
+        },
+        "close": "CLOSE"
+      }
+    },
+    "deepfake": {
+      "title": "🎭 Who's Real?",
+      "subtitle": "Discover the world of deepfakes and how to detect them!",
+      "button": "WATCH",
+      "tab": {
+        "title": "🎭 Who's Real? - Deepfakes and Manipulation",
+        "key_points": "📚 Key points to remember:",
+        "link":"https://www.youtube-nocookie.com/embed/videoseries?list=PLIoQzrn1yJwa5n8a6CJIzpxvf49gNb9jB&autoplay=0",
+        "warning": {
+          "title": "⚠️ Dangers of deepfakes and filters:",
+          "element": [
+            "🤖 AI creates very realistic fake videos",
+            "👀 Difficult to detect with the naked eye",
+            "📱 TRANSFORMATION FILTERS/APPS (aging/rejuvenation/gender change) = DATA STORAGE",
+            "🔒 Possible misuse of your personal image",
+            "💼 Malicious uses (blackmail, fake news)",
+            "🎭 Damage to people's reputation"
+          ]
+        },
+        "tips": {
+          "title": "🛡️ How to protect yourself:",
+          "element": [
+            "FILTERS/APPS: Think before downloading - Where do your photos go?",
+            "Read the terms of use of transformation apps",
+            "Observe the eyes and facial expressions in videos",
+            "Check audio-video consistency",
+            "Cross-reference with other reliable sources",
+            "Ask yourself: \"Who's sharing? Why?\"",
+            "When in doubt, don't share"
+          ]
+        },
+        "close": "CLOSE"
+      }
+    },
+    "fantasy": {
+      "title": "🏰 Fantasy Quest 🔒",
+      "locked": "Locked",
+      "locked_subtitle": "Complete all activities to unlock this legendary quest!",
+      "subtitle": "Test your cybersecurity knowledge - Final assessment!",
+      "button": "Play",
+      "link": "https://beinternetawesome.withgoogle.com/en_uk/interland"
+    },
+    "fortress": {
+      "title": "🏰 Password Fortress",
+      "subtitle": "Create an unbreakable password and discover how long it can take to crack!",
+      "button": "TEST",
+      "tab": {
+        "title": "🏰 Password Fortress",
+        "key_points": "Create your fortress password:",
+        "duration": {
+          "instant": "Instant ⚡"
+        },
+        "password-placeholder": "Test your password",
+        "criteria": {
+          "length":"At least 8 characters",
+          "low":"Lowercase letters",
+          "capital":"Uppercase letters",
+          "digit":"Numbers",
+          "special":"Special characters",
+          "unknown":"No common words"
+        },
+        "easter": {
+          "password123": {
+            "title": "🚨 Password too predictable!",
+            "message": "This password is in the top 10 most used worldwide! Hackers try it first. It's like leaving your keys in the front door."
+          },
+          "qwerty": {
+            "title": "⌨️ Keyboard pattern detected!",
+            "message": "QWERTY/AZERTY are too obvious key sequences! Hackers know all keyboard patterns. Mix letters, numbers and symbols randomly."
+          },
+          "123456": {
+            "title": "🔢 Basic numeric sequence!",
+            "message": "123456 is THE most used password in the world! Over 23 million hacked accounts used this password in 2023. Be more creative!"
+          },
+          "admin": {
+            "title": "👨‍💻 Administrator password!",
+            "message": "Admin/Root are the first passwords tested by hackers! These technical terms are in all attack dictionaries. Use something personal but not obvious."
+          },
+          "matrix": {
+            "title": "🕶️ Neo, is that you?",
+            "message": "Excellent reference choice! Matrix taught us the importance of cybersecurity. But even Neo used more complex passwords than 'matrix' 😉"
+          },
+          "cyberwarrior": {
+            "title": "🛡️ Cyber-Warrior!",
+            "message": "Excellent! This level of complexity protects you against 99.9% of automated attacks. A well-composed 20+ character password can resist millions of years even to supercomputers."
+          }
+        },
+        "crack_time_initial": "Enter a password to see the crack time",
+        "crack_time_prefix": "Estimated time to crack:",
+        "crack_time_instant": "Instant ⚡",
+        "crack_time_known_hackers": "⚡ Already known to hackers - Instant crack!",
+        "crack_time_millennia": "🏰 Excellent! Over 1000 years even with AI (thanks to {unknownLength} unknown characters)",
+        "crack_time_thousands_years": "🛡️ Very good! Thousands of years (thanks to {unknownLength} unknown characters)",
+        "crack_time_years_centuries": "⚠️ Several years to centuries (known segments reduce security, but {unknownLength} characters help)",
+        "crack_time_hours_days": "🚨 Several hours to days (too many known segments, only {unknownLength} characters to guess)",
+        "crack_time_days_weeks": "⚡ Several days to weeks (known segments facilitate attack, {unknownLength} characters remaining)",
+        "crack_time_default": "Variable crack time depending on complexity",
+        "crack_time_compromised": "⚡ Compromised - Fast crack possible!",
+        "time": {
+          "instant": "instant",
+          "seconds": "seconds",
+          "minutes": "minutes", 
+          "hours": "hours",
+          "days": "days",
+          "years": "years"
+        },
+        "warning": {
+          "exact_match": "🚨 CRITICAL DANGER: Password found in hacked databases!",
+          "change_immediately": "Change it immediately if you use it elsewhere!"
+        },
+        "close": "CLOSE"
+      }
+    },
+    "matrix": {
+      "title": "👁️ WELCOME TO THE MATRIX, NEO",
+      "subtitle": "🔥 CYBERSECURITY STATISTICS 2024",
+      "element": [
+        "💸 **€12.9 billion in losses** due to cybercrime in France (2023)",
+        "⚡ 1 cyberattack every **39 seconds** worldwide",
+        "🎯 **95%** of cyberattacks start with a phishing email",
+        "💰 **$4.45 million**: average cost of a data breach",
+        "⏱️ **287 days**: average time to detect an advanced cyberattack",
+        "🏢 **43%** of cyberattacks target SMEs",
+        "🔐 **81%** of breaches use weak or stolen passwords",
+        "📱 **6.8 billion** devices infected by malware in 2023",
+        "🚨 1 ransomware every **11 seconds**",
+        "👥 **4.1 billion** accounts exposed in 2023"
+      ],
+      "close": "Return to the matrix"
+    },
+    "promo": {
+      "title": "🎉 Crazy Promotion",
+      "subtitle": "Explore this e-commerce site and detect all the fraud clues!",
+      "button": "Shopping",
+      "link": "./translations/en/page.html"
+    },
+    "quiz": {
+      "title": "📝 Security Quiz",
+      "subtitle": "Test your cybersecurity knowledge - Final assessment!",
+      "button": "Quiz",
+      "link": "https://www.jobirl.com/quiz/quiz-cybersecurite"
+    },
+    "spam": {
+      "title": "📧 Email Trap",
+      "subtitle": "Learn to detect phishing emails with realistic examples!",
+      "button": "ANALYZE",
+      "tab": {
+        "title": "📧 Email Trap Detector",
+        "insight": "Click on the email to reveal phishing clues!",
+        "from": "From",
+        "to": "To",
+        "analyse": "🕵️ Your analysis:",
+        "more": "More +",
+        "more_link": "https://phishingquiz.withgoogle.com/?hl=en-GB",
+        "duration": {
+          "instant": "Instant ⚡"
+        },
+        "close": "CLOSE",
+        "game": {
+          "title": "🎯 Spot the {count} errors",
+          "errors_found": "Errors found:",
+          "instructions": "Find the {count} phishing warning signs by clicking on them in the email!",
+          "hint_button": "💡 Hint",
+          "solution_button": "🔍 See all solutions",
+          "error_detected": "✅ Error {number} detected!",
+          "problem_identified": "Problem identified:",
+          "why_suspicious": "Why it's suspicious:",
+          "why_dangerous": "🚨 Why it's dangerous:",
+          "expert_advice": "Advice",
+          "how_to_detect": "💡 How to detect:",
+          "victory_title": "🏆 Congratulations! You're now an anti-phishing expert!",
+          "victory_advice": "When in doubt, contact the organization directly through their official website or by phone. Never click on suspicious links!",
+          "new_email_button": "🔄 New email",
+          "more_training_button": "🎯 More training",
+          "hint": {
+            "title": "💡 Hint",
+            "intro": "Look for the following signs in the email:",
+            "signs": [
+              "🔍 Spelling errors in the email address",
+              "⚠️ Artificial urgency (\"24h\", \"immediately\")",
+              "🔗 Suspicious or generic links",
+              "💰 Financial threats",
+              "📝 Vague or generic signatures"
+            ]
+          },
+          "reveal": {
+            "title": "🔍 All solutions revealed",
+            "instruction": "Click on the highlighted elements in the email to discover why they are suspicious!",
+            "tip": "**Tip:** In a real phishing email, NEVER click on the links. Contact the organization directly."
+          }
+        }
+      }
+    },
+    "social": {
+      "title": "📱 Social Networks",
+      "subtitle": "Not everyone is your friend",
+      "button": "WATCH",
+      "tab": {
+        "title": "📱 Social Networks: Danger Alert!",
+        "key_points": "📚 Key points to remember:",
+        "link": "https://www.youtube-nocookie.com/embed/35caskf6YJg",
+        "warning": {
+          "title": "⚠️ Social media dangers:",
+          "element": [
+            "Sharing personal information",
+            "Geotagged photos",
+            "Contact with strangers",
+            "Cyberbullying",
+            "Identity theft"
+          ]
+        },
+        "tips": {
+          "title": "🛡️ How to protect yourself:",
+          "element": [
+            "Strict privacy settings",
+            "Never share personal information",
+            "Be careful with photos and their geolocation",
+            "Report any suspicious behavior",
+            "Talk to a trusted adult"
+          ]
+        },
+        "close": "CLOSE"
+      }
+    },
+    "webcam": {
+      "title": "👁️ The Eyes of the Cybersecurity Lion",
+      "surprise": {
+        "title": "🦁 Surprise! The lion is watching you!",
+        "button": "Close and stop the webcam",
+        "info": "As you can see, your webcam is now accessible to this website.",
+        "advice":{
+          "title": "🛡️ Cybersecurity Tips:",
+          "items": [
+            "**Always check** why a site requests access to your camera",
+            "**Deny access** if it's not necessary for the service",
+            "**Cover your webcam** when not in use",
+            "**Check permissions** granted in browser settings",
+            "**Be wary** of sites requesting excessive permissions"
+          ]
+        }
+      },
+      "congrats": {
+        "title": "🛡️ Well done! You denied access!",
+        "info": "Excellent decision! You blocked access to your webcam.",
+        "advice":{
+          "title": "✅ You did the right thing:",
+          "items": [
+            "**Security reflex:** Always be wary of webcam access requests",
+            "**Privacy protection:** Your image remains private",
+            "**Permission control:** You keep control"
+          ]
+        }
+      },
+      "close": "CLOSE",
+      "relax": "**Rest assured:** This demonstration is purely educational. Nothing is recorded or transmitted. \n                        The video stream remains only on your computer."
+
+    },
+    "wifi": {
+      "title": "📶 WiFi Trap",
+      "subtitle": "Choose the right WiFi network and avoid hackers' traps!",
+      "button": "Play",
+      "tab": {
+        "title": "📶 WiFi Trap",
+        "secure": "Secure network",
+        "open": "Open network",
+        "dangerous": "Danger!",
+        "safe": "Good choice!",
+        "warning": "Warning!",
+        "scenarios": [
+          {
+            "situation":"Situation: You're in an airport waiting...",
+            "networks": [ {
+              "name": "AirportFree",
+              "type": "safe",
+              "answer": "Official airport network"
+            },
+              {
+                "name": "WiFi_Boarding_Gate 🔒",
+                "type": "dangerous",
+                "answer": "Fake network imitating airport services"
+              },
+              {
+                "name": "Galaxy_S20_7832",
+                "type": "warning",
+                "answer": "A passenger's connection sharing"
+              },
+              {
+                "name": "Airport_Login_Here",
+                "type": "dangerous",
+                "answer": "Suspicious invitation to connect"
+              }]
+          },
+          {
+            "situation":"Situation: You're on vacation at the Hilton hotel breakfast...",
+            "networks": [
+              {
+                "name": "Hilton-Guest-WiFi",
+                "type": "safe",
+                "answer": "Official hotel network"
+              },
+              {
+                "name": "WiFi-Password-123",
+                "type": "dangerous",
+                "answer": "Fake network with obvious password"
+              },
+              {
+                "name": "Linksys_Default 🔒",
+                "type": "warning",
+                "answer": "Network with default configuration"
+              },
+              {
+                "name": "Hotel_HIILTON_FREE_Internet",
+                "type": "dangerous",
+                "answer": "Imitation of hotel network with typos"
+              }]
+          },
+          {
+            "situation":"You're in a café looking for WiFi...",
+            "networks":[
+              {
+                "name": "CaféWiFi-Guest",
+                "type": "safe",
+                "answer": "Official café network"
+              },
+              {
+                "name": "WiFi-Password-123",
+                "type": "dangerous",
+                "answer": "Fake network with obvious password"
+              },
+              {
+                "name": "Linksys_Default 🔒",
+                "type": "warning",
+                "answer": "Network with default configuration"
+              },
+              {
+                "name": "Hotel_HIILTON_FREE_Internet",
+                "type": "dangerous",
+                "answer": "Imitation of hotel network with typos"
+              }
+            ]
+          }
+        ],
+        "new": "New scenario",
+        "close": "close"
+      }
+    }
+  },
+  "ceremony": {
+    "link": "./translations/en/ceremony.html",
+    "unlock": {
+      "title": "🎆 CONGRATULATIONS! 🎆",
+      "message": "You have completed all the quests and discovered the hidden secrets!",
+      "info": "You can now attend the graduation ceremony! ✨",
+      "button": "🎓 Go to ceremony",
+      "close": "Close"
+    },
+    "persistent_button": "🎓 Ceremony"
+  }
+}

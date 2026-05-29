@@ -1,0 +1,56 @@
+{
+  "basic": {
+    "duration": "~10 min",
+    "ceremonyUnlock": "basic-activities",
+    "cgu": {
+      "clue": "bold"
+    },
+    "carousels": [
+      "deepfake",
+      "password-fortress",
+      "questions-champion",
+      "site-suspect",
+      "fantasy-quest"
+    ],
+    "questions": {
+      "anecdotes": 5,
+      "mobile": 4
+    },
+    "totalQuestions": 9
+  },
+  "standard": {
+    "duration": "~20 min",
+    "ceremonyUnlock": "fantasy-quest-and-webcam",
+    "cgu": {
+      "clue": "standard"
+    },
+    "carousels": [
+      "confidential",
+      "deepfake",
+      "password-fortress",
+      "email-phishing",
+      "social-media-video",
+      "wifi-trap",
+      "questions-champion",
+      "site-suspect",
+      "fantasy-quest"
+    ],
+    "questions": {
+      "anecdotes": 7,
+      "mobile": 6,
+      "protection": 5
+    },
+    "totalQuestions": 18
+  },
+  "advanced": {
+    "duration": "~40 min",
+    "ceremonyUnlock": "fantasy-quest-and-webcam",
+    "cgu": {
+      "clue": "small"
+    },
+    "carousels": "all",
+    "questions": "all",
+    "totalQuestions": 51
+  },
+  "_comment": "Carrousels disponibles: confidential, deepfake, password-fortress, email-phishing, wifi-trap, social-media-video, quizz, questions-champion, site-suspect, fantasy-quest"
+}

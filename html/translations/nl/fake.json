@@ -1,0 +1,284 @@
+{
+  "basic_mode": {
+    "quiz": {
+      "title": "🕵️ Quiz Fraudedetectie",
+      "subtitle": "Wat vind je van deze website?",
+      "question": "Selecteer alle beweringen die WAAR zijn:",
+      "close_button_title": "Sluiten en afsluiten",
+      "more_time_button": "⏰ Ik heb 30 seconden meer nodig",
+      "more_time_granted": "+30 seconden toegekend!",
+      "more_time_message": "De quiz verschijnt weer over {seconds} seconden",
+      "options": [
+        {
+          "id": "trap",
+          "text": "✅ Het ziet er geweldig uit, ik kan met vertrouwen bestellen",
+          "correct": false,
+          "explanation": "LET OP! Deze site vertoont veel alarmsignalen. Vertrouw nooit alleen op uiterlijk."
+        },
+        {
+          "id": "ridiculous",
+          "text": "😂 Dit is belachelijk, de prijzen zijn onmogelijk",
+          "correct": true,
+          "explanation": "Precies! Kortingen van -86% tot -92% zijn onmogelijk voor nieuwe authentieke producten."
+        },
+        {
+          "id": "https",
+          "text": "🔓 De site gebruikt HTTPS niet correct",
+          "correct": true,
+          "explanation": "Goed gezien! De nep SSL-badge en het verdachte domein (.biz) zijn waarschuwingssignalen."
+        },
+        {
+          "id": "prices",
+          "text": "💰 De prijzen zijn verdacht (kortingen van -86% tot -92%)",
+          "correct": true,
+          "explanation": "Bravo! iPhone voor €199, MacBook voor €399, Labubu voor €12... dit is duidelijk oplichterij."
+        },
+        {
+          "id": "scam",
+          "text": "🚨 Dit lijkt op oplichterij",
+          "correct": true,
+          "explanation": "Uitstekend instinct! Alle aanwijzingen wijzen op een fraudepoging."
+        },
+        {
+          "id": "reviews",
+          "text": "⭐ De reviews lijken nep (Marie D., Jean L., perfecte scores)",
+          "correct": true,
+          "explanation": "Perfect! Generieke reviews met perfecte scores zijn een klassiek teken van fraude."
+        },
+        {
+          "id": "timer",
+          "text": "⏰ De timer en urgentiewaarschuwingen zijn verdacht",
+          "correct": true,
+          "explanation": "Zeer goed! Kunstmatige urgentie is een manipulatietechniek om impulsieve aankopen te forceren."
+        }
+      ],
+      "submit_button": "✅ Bevestig mijn antwoorden"
+    },
+    "results": {
+      "excellent": {
+        "title": "🏆 Cyber-Detective Expert!",
+        "emoji": "🎖️",
+        "message": "Gefeliciteerd! Je hebt alle vallen van deze nepsite geïdentificeerd. Je bent nu een expert in het detecteren van online fraude!",
+        "advice": "Blijf altijd sites controleren voordat je koopt. Bij twijfel, vraag het aan een volwassene."
+      },
+      "good": {
+        "title": "👍 Goede Detective!",
+        "emoji": "🔍",
+        "message": "Goed gedaan! Je hebt de meeste vallen gezien. Met wat meer aandacht word je een expert!",
+        "advice": "Onthoud: als het te mooi is om waar te zijn, is het waarschijnlijk oplichterij."
+      },
+      "average": {
+        "title": "📚 In Training",
+        "emoji": "🤔",
+        "message": "Niet slecht, maar er zijn nog vallen die je niet hebt gezien. Blijf oefenen!",
+        "advice": "Neem de tijd om details te analyseren: prijzen, reviews, contactinformatie, kunstmatige urgentie..."
+      },
+      "poor": {
+        "title": "⚠️ Gevaar!",
+        "emoji": "🚨",
+        "message": "Je bent in de val gelopen! Deze site is oplichterij. Gelukkig was dit slechts een oefening.",
+        "advice": "BELANGRIJK: NOOIT kopen op een site met onmogelijke prijzen, verdachte reviews of zonder duidelijke juridische informatie."
+      }
+    },
+    "details": {
+      "title": "📊 Details van je antwoorden:",
+      "correct_label": "✅ Goed antwoord",
+      "incorrect_label": "❌ Fout antwoord",
+      "missed_label": "⚠️ Je hebt dit gemist"
+    }
+  },
+  "standard_mode": {
+    "title": "🎯 Aanwijzingenjacht",
+    "subtitle": "Vind de {count} fraudeaanwijzingen op deze pagina",
+    "mission_list": "Lijst van missies:",
+    "progress": "{found}/{total}",
+    "complete_button": "✅ Missie Voltooid",
+    "complete_button_all_found": "🎉 Alle missies voltooid!",
+    "buy_button_disabled_alert": "🔒 Koopknoppen zijn uitgeschakeld tijdens de aanwijzingenjacht.\n\nVind alle fraudeaanwijzingen voordat je klaar bent!",
+    "close_button_title": "Sluiten en afsluiten",
+    "results": {
+      "perfect": {
+        "emoji": "🏆",
+        "title": "Expert in Detectie!",
+        "message": "Bravo! Je hebt de {total} fraudeaanwijzingen gevonden. Je bent nu een echte cyber-detective!"
+      },
+      "good": {
+        "emoji": "👍",
+        "title": "Goede Detective!",
+        "message": "Goed gedaan! Je hebt {found}/{total} aanwijzingen gevonden. Er blijven er nog {remaining} te ontdekken."
+      },
+      "average": {
+        "emoji": "🤔",
+        "title": "Te Verbeteren",
+        "message": "Je hebt {found}/{total} aanwijzingen gevonden. Blijf zoeken, er zijn nog verborgen vallen!"
+      }
+    },
+    "missed_clues_label": "❌ Gemiste aanwijzingen:",
+    "missions": [
+      {
+        "id": "ssl",
+        "title": "🔒 Vind de nep SSL-badge",
+        "selector": ".fake-ssl",
+        "explanation": "Deze 'SSL Beveiligd' badge in de header is nep. Een echt SSL-certificaat wordt weergegeven in de adresbalk van de browser."
+      },
+      {
+        "id": "price",
+        "title": "💰 Spot een onmogelijke prijs",
+        "selector": ".discount",
+        "explanation": "Een korting van meer dan 80% op nieuwe producten is onmogelijk. Dit is een klassieke val van frauduleuze sites."
+      },
+      {
+        "id": "review",
+        "title": "⭐ Identificeer een nep review",
+        "selector": ".fake-reviews",
+        "explanation": "Reviews met generieke namen (Marie D., Jean L.) en perfecte scores zijn verdacht."
+      },
+      {
+        "id": "contact",
+        "title": "📞 Vind de verdachte contactinformatie",
+        "selector": ".suspicious-contact",
+        "explanation": "Geen telefoonnummer, geen fysiek adres, SIRET 'in aanvraag'... Een legale site moet deze informatie hebben."
+      },
+      {
+        "id": "urgency",
+        "title": "⏰ Detecteer kunstmatige urgentie",
+        "selector": ".urgency-banner, .countdown",
+        "explanation": "De timer die opnieuw start en de valse waarschuwingen creëren druk om zonder nadenken te kopen."
+      },
+      {
+        "id": "shipping",
+        "title": "📦 Vind de verdachte verzending",
+        "selector": ".suspicious-shipping",
+        "explanation": "'Europees magazijn via China' met een levertijd van 15-30 dagen is zeer verdacht voor producten die zogenaamd op voorraad zijn."
+      },
+      {
+        "id": "watermark",
+        "title": "🖼️ Spot gestolen afbeeldingen",
+        "selector": ".watermark",
+        "explanation": "Getty Images, Shutterstock watermerken bewijzen dat de afbeeldingen gestolen zijn en geen echte productfoto's."
+      }
+    ]
+  },
+  "advanced_mode": {
+    "badge": {
+      "header": "🔴 GEVAAR MODUS",
+      "timer_label": "1:30",
+      "progress_label": "Aanwijzingen:",
+      "finish_button": "✅ Voltooien"
+    },
+    "notifications": {
+      "clue_found": "✅ Aanwijzing ontdekt! ({current}/{total})"
+    },
+    "warning": "🔴 GEVAAR MODUS GEACTIVEERD",
+    "subtitle": "Koopknoppen zijn ACTIEF. Eén klik = Game Over!",
+    "prison": {
+      "title": "⚠️ OPGELICHT!",
+      "subtitle": "MISSIE MISLUKT",
+      "message": "Je hebt geklikt zonder te controleren! In het echte leven zouden je bankgegevens gestolen zijn...",
+      "score_header": "📊 Je Score",
+      "score_text": "{found}/{total} aanwijzingen gevonden ({percentage}%)",
+      "missed_clues": "Aanwijzingen die je hebt gemist:",
+      "retry_button": "🔄 Opnieuw proberen",
+      "show_all_button": "📚 Alle fouten bekijken",
+      "all_clues_title": "ALLE AANWIJZINGEN",
+      "all_clues_message": "Hier is de volledige lijst van 15 fraudeaanwijzingen aanwezig op deze site:"
+    },
+    "timeout": {
+      "icon": "⏰",
+      "title": "TIJD OM!",
+      "subtitle": "MISSIE MISLUKT",
+      "message": "De tijd is om! Je hebt niet alle aanwijzingen op tijd gevonden.",
+      "score_header": "📊 Je Eindscore",
+      "score_text": "{found}/{total} aanwijzingen gevonden ({percentage}%)",
+      "missed_clues": "❌ Aanwijzingen die je hebt gemist:",
+      "retry_button": "🔄 Opnieuw proberen"
+    },
+    "victory": {
+      "title": "🏆 CYBER-DETECTIVE MASTER!",
+      "message": "Gefeliciteerd! Je hebt {count} aanwijzingen gevonden ZONDER op de vallen te klikken.",
+      "finish_button": "✅ Voltooien",
+      "rating": {
+        "perfect": "🎖️ Perfecte score! Je bent een cybersecurity expert.",
+        "excellent": "🛡️ Uitstekend werk! Je hebt een scherp oog.",
+        "good": "👍 Goed niveau! Ga zo door."
+      }
+    },
+    "clues": [
+      {
+        "id": "fake-ssl",
+        "title": "Nep SSL-badge in de header",
+        "description": "De 'SSL Beveiligd' badge is misleidend. Een echt certificaat wordt in de URL weergegeven."
+      },
+      {
+        "id": "domain",
+        "title": "Verdachte domeinnaam (.biz)",
+        "description": "Frauduleuze sites gebruiken vaak minder bekende extensies."
+      },
+      {
+        "id": "price-iphone",
+        "title": "Onmogelijke iPhone prijs (-86%)",
+        "description": "€199 voor een iPhone 16 Pro Max van €1449? Onmogelijk voor nieuw."
+      },
+      {
+        "id": "price-macbook",
+        "title": "Onmogelijke MacBook prijs (-87%)",
+        "description": "€399 voor een MacBook Pro M4 van €2999? Pure oplichterij."
+      },
+      {
+        "id": "price-ps5",
+        "title": "Onmogelijke PS5 prijs (-82%)",
+        "description": "€99 voor een PS5 van €549? Te mooi om waar te zijn."
+      },
+      {
+        "id": "price-labubu",
+        "title": "Belachelijke Labubu prijzen (-87% tot -92%)",
+        "description": "Labubu voor €12 of €24? Echte kosten 10x meer."
+      },
+      {
+        "id": "watermarks",
+        "title": "Watermerken op afbeeldingen",
+        "description": "Getty Images, Shutterstock: de foto's zijn gestolen."
+      },
+      {
+        "id": "fake-reviews",
+        "title": "Nep reviews met generieke namen",
+        "description": "Marie D., Jean L., Sophie T. met perfecte scores = nep."
+      },
+      {
+        "id": "perfect-ratings",
+        "title": "Perfecte scores overal (4.8-5.0)",
+        "description": "Geen enkel product heeft 100% 5-sterren reviews."
+      },
+      {
+        "id": "timer-reset",
+        "title": "Timer die opnieuw start",
+        "description": "Het aftellen begint oneindig opnieuw om urgentie te creëren."
+      },
+      {
+        "id": "fake-stock-alerts",
+        "title": "Kunstmatige voorraadwaarschuwingen",
+        "description": "'Nog maar 3 op voorraad!' wordt willekeurig gegenereerd."
+      },
+      {
+        "id": "shipping-china",
+        "title": "'Europese' verzending via China",
+        "description": "'Europees magazijn* (*via China)' met 15-30 dagen."
+      },
+      {
+        "id": "no-phone",
+        "title": "Geen telefoonnummer",
+        "description": "Een echte e-commerce site heeft altijd bereikbare klantenservice."
+      },
+      {
+        "id": "siret-pending",
+        "title": "SIRET 'in aanvraag'",
+        "description": "Een legale site heeft zijn SIRET al voordat het gaat verkopen."
+      },
+      {
+        "id": "old-bank-logo",
+        "title": "Verouderd banklogo",
+        "description": "Het gedateerde betalingslogo verraadt een niet-professionele site."
+      }
+    ]
+  }
+}

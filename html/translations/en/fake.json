@@ -1,0 +1,284 @@
+{
+  "basic_mode": {
+    "quiz": {
+      "title": "🕵️ Fraud Detection Quiz",
+      "subtitle": "What do you think of this website?",
+      "question": "Select all statements that are TRUE:",
+      "close_button_title": "Close and exit",
+      "more_time_button": "⏰ I need 30 more seconds",
+      "more_time_granted": "+30 seconds granted!",
+      "more_time_message": "The quiz will reappear in {seconds} seconds",
+      "options": [
+        {
+          "id": "trap",
+          "text": "✅ It looks great, I can order with confidence",
+          "correct": false,
+          "explanation": "WARNING! This site shows many red flags. Never trust appearances alone."
+        },
+        {
+          "id": "ridiculous",
+          "text": "😂 This is ridiculous, the prices are impossible",
+          "correct": true,
+          "explanation": "Exactly! Discounts of -86% to -92% are impossible for new authentic products."
+        },
+        {
+          "id": "https",
+          "text": "🔓 The site doesn't use HTTPS correctly",
+          "correct": true,
+          "explanation": "Well spotted! The fake SSL badge and suspicious domain (.biz) are warning signs."
+        },
+        {
+          "id": "prices",
+          "text": "💰 The prices are suspicious (discounts of -86% to -92%)",
+          "correct": true,
+          "explanation": "Bravo! iPhone for €199, MacBook for €399, Labubu for €12... this is clearly a scam."
+        },
+        {
+          "id": "scam",
+          "text": "🚨 This looks like a scam",
+          "correct": true,
+          "explanation": "Excellent instinct! All clues point to a fraud attempt."
+        },
+        {
+          "id": "reviews",
+          "text": "⭐ The reviews look fake (Marie D., Jean L., perfect ratings)",
+          "correct": true,
+          "explanation": "Perfect! Generic reviews with perfect scores are a classic sign of fraud."
+        },
+        {
+          "id": "timer",
+          "text": "⏰ The timer and urgency alerts are suspicious",
+          "correct": true,
+          "explanation": "Very good! Artificial urgency is a manipulation technique to force impulse buying."
+        }
+      ],
+      "submit_button": "✅ Submit my answers"
+    },
+    "results": {
+      "excellent": {
+        "title": "🏆 Expert Cyber-Detective!",
+        "emoji": "🎖️",
+        "message": "Congratulations! You've identified all the traps on this fake site. You're now an expert in detecting online fraud!",
+        "advice": "Always keep checking sites before buying. When in doubt, ask an adult."
+      },
+      "good": {
+        "title": "👍 Good Detective!",
+        "emoji": "🔍",
+        "message": "Well done! You spotted most of the traps. With a bit more attention, you'll be an expert!",
+        "advice": "Remember: if it's too good to be true, it's probably a scam."
+      },
+      "average": {
+        "title": "📚 Learning",
+        "emoji": "🤔",
+        "message": "Not bad, but there are still traps you didn't spot. Keep practicing!",
+        "advice": "Take time to analyze details: prices, reviews, contact information, artificial urgency..."
+      },
+      "poor": {
+        "title": "⚠️ Danger Alert!",
+        "emoji": "🚨",
+        "message": "You fell for the trap! This site is a scam. Fortunately, this was just an exercise.",
+        "advice": "IMPORTANT: NEVER buy from a site with impossible prices, suspicious reviews, or without clear legal information."
+      }
+    },
+    "details": {
+      "title": "📊 Details of your answers:",
+      "correct_label": "✅ Correct answer",
+      "incorrect_label": "❌ Wrong answer",
+      "missed_label": "⚠️ You missed this"
+    }
+  },
+  "standard_mode": {
+    "title": "🎯 Clue Hunt",
+    "subtitle": "Find the {count} fraud clues on this page",
+    "mission_list": "Mission list:",
+    "progress": "{found}/{total}",
+    "complete_button": "✅ Mission Complete",
+    "complete_button_all_found": "🎉 All missions completed!",
+    "buy_button_disabled_alert": "🔒 Buy buttons are disabled during the clue hunt.\n\nFind all fraud clues before finishing!",
+    "close_button_title": "Close and exit",
+    "results": {
+      "perfect": {
+        "emoji": "🏆",
+        "title": "Detection Expert!",
+        "message": "Bravo! You found all {total} fraud clues. You're now a real cyber-detective!"
+      },
+      "good": {
+        "emoji": "👍",
+        "title": "Good Detective!",
+        "message": "Well done! You found {found}/{total} clues. There are still {remaining} left to discover."
+      },
+      "average": {
+        "emoji": "🤔",
+        "title": "Needs Improvement",
+        "message": "You found {found}/{total} clues. Keep searching, there are still hidden traps!"
+      }
+    },
+    "missed_clues_label": "❌ Missed clues:",
+    "missions": [
+      {
+        "id": "ssl",
+        "title": "🔒 Find the fake SSL badge",
+        "selector": ".fake-ssl",
+        "explanation": "This 'SSL Secured' badge in the header is fake. A real SSL certificate displays in the browser's address bar."
+      },
+      {
+        "id": "price",
+        "title": "💰 Spot an impossible price",
+        "selector": ".discount",
+        "explanation": "A discount of more than 80% on new products is impossible. This is a classic trap of fraudulent sites."
+      },
+      {
+        "id": "review",
+        "title": "⭐ Identify a fake review",
+        "selector": ".fake-reviews",
+        "explanation": "Reviews with generic names (Marie D., Jean L.) and perfect scores are suspicious."
+      },
+      {
+        "id": "contact",
+        "title": "📞 Find suspicious contact info",
+        "selector": ".suspicious-contact",
+        "explanation": "No phone number, no physical address, SIRET 'pending'... A legal site must have this information."
+      },
+      {
+        "id": "urgency",
+        "title": "⏰ Detect artificial urgency",
+        "selector": ".urgency-banner, .countdown",
+        "explanation": "The resetting timer and fake alerts create pressure to buy without thinking."
+      },
+      {
+        "id": "shipping",
+        "title": "📦 Find suspicious shipping",
+        "selector": ".suspicious-shipping",
+        "explanation": "'European warehouse via China' with 15-30 day delivery is very suspicious for supposedly in-stock products."
+      },
+      {
+        "id": "watermark",
+        "title": "🖼️ Spot stolen images",
+        "selector": ".watermark",
+        "explanation": "Getty Images, Shutterstock watermarks prove the images are stolen and not real product photos."
+      }
+    ]
+  },
+  "advanced_mode": {
+    "badge": {
+      "header": "🔴 DANGER MODE",
+      "timer_label": "1:30",
+      "progress_label": "Clues:",
+      "finish_button": "✅ Finish"
+    },
+    "notifications": {
+      "clue_found": "✅ Clue discovered! ({current}/{total})"
+    },
+    "warning": "🔴 DANGER MODE ACTIVATED",
+    "subtitle": "Buy buttons are ACTIVE. One click = Game Over!",
+    "prison": {
+      "title": "⚠️ SCAMMED!",
+      "subtitle": "MISSION FAILED",
+      "message": "You clicked without checking! In real life, your banking details would have been stolen...",
+      "score_header": "📊 Your Score",
+      "score_text": "{found}/{total} clues found ({percentage}%)",
+      "missed_clues": "Clues you missed:",
+      "retry_button": "🔄 Try Again",
+      "show_all_button": "📚 View All Errors",
+      "all_clues_title": "ALL CLUES",
+      "all_clues_message": "Here's the complete list of 15 fraud clues present on this site:"
+    },
+    "timeout": {
+      "icon": "⏰",
+      "title": "TIME'S UP!",
+      "subtitle": "MISSION FAILED",
+      "message": "Time's up! You didn't manage to find all the clues in time.",
+      "score_header": "📊 Your Final Score",
+      "score_text": "{found}/{total} clues found ({percentage}%)",
+      "missed_clues": "❌ Clues you missed:",
+      "retry_button": "🔄 Try Again"
+    },
+    "victory": {
+      "title": "🏆 CYBER-DETECTIVE MASTER!",
+      "message": "Congratulations! You found {count} clues WITHOUT clicking on the traps.",
+      "finish_button": "✅ Finish",
+      "rating": {
+        "perfect": "🎖️ Perfect score! You're a cybersecurity expert.",
+        "excellent": "🛡️ Excellent work! You have a sharp eye.",
+        "good": "👍 Good level! Keep it up."
+      }
+    },
+    "clues": [
+      {
+        "id": "fake-ssl",
+        "title": "Fake SSL badge in header",
+        "description": "The 'SSL Secured' badge is misleading. A real certificate displays in the URL."
+      },
+      {
+        "id": "domain",
+        "title": "Suspicious domain name (.biz)",
+        "description": "Fraudulent sites often use less common extensions."
+      },
+      {
+        "id": "price-iphone",
+        "title": "Impossible iPhone price (-86%)",
+        "description": "€199 for an iPhone 16 Pro Max worth €1449? Impossible for new."
+      },
+      {
+        "id": "price-macbook",
+        "title": "Impossible MacBook price (-87%)",
+        "description": "€399 for a MacBook Pro M4 worth €2999? Pure scam."
+      },
+      {
+        "id": "price-ps5",
+        "title": "Impossible PS5 price (-82%)",
+        "description": "€99 for a PS5 worth €549? Too good to be true."
+      },
+      {
+        "id": "price-labubu",
+        "title": "Ridiculous Labubu prices (-87% to -92%)",
+        "description": "Labubu for €12 or €24? Real ones cost 10x more."
+      },
+      {
+        "id": "watermarks",
+        "title": "Watermarks on images",
+        "description": "Getty Images, Shutterstock: the photos are stolen."
+      },
+      {
+        "id": "fake-reviews",
+        "title": "Fake reviews with generic names",
+        "description": "Marie D., Jean L., Sophie T. with perfect scores = fake."
+      },
+      {
+        "id": "perfect-ratings",
+        "title": "Perfect ratings everywhere (4.8-5.0)",
+        "description": "No product has 100% 5-star reviews."
+      },
+      {
+        "id": "timer-reset",
+        "title": "Timer that resets",
+        "description": "The countdown restarts indefinitely to create urgency."
+      },
+      {
+        "id": "fake-stock-alerts",
+        "title": "Artificial stock alerts",
+        "description": "'Only 3 left in stock!' is randomly generated."
+      },
+      {
+        "id": "shipping-china",
+        "title": "'European' shipping via China",
+        "description": "'European warehouse* (*via China)' with 15-30 days."
+      },
+      {
+        "id": "no-phone",
+        "title": "No phone number",
+        "description": "A real e-commerce site always has reachable customer service."
+      },
+      {
+        "id": "siret-pending",
+        "title": "SIRET 'pending'",
+        "description": "A legal site already has its SIRET before selling."
+      },
+      {
+        "id": "old-bank-logo",
+        "title": "Outdated bank logo",
+        "description": "The dated payment logo betrays an unprofessional site."
+      }
+    ]
+  }
+}

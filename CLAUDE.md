@@ -35,7 +35,7 @@ Deux modules distincts :
 - `team-select.html` : carrousel avatars, polling live, POST register, cookies `cq_team` / `cq_uuid` / `cq_lang`
 - `_track.js` : migré vers cookie `cq_team`, URL relative (plus d'IP codée en dur)
 - `dashboard.html` : branché sur `teams.json` + `events.json`, équipes visibles dès inscription + section phishing victims (tableau source / email / mdp / banque / école / heure) + chip "🎣 Phishés"
-- `start_mac.sh` / `start_windows.bat` : `--start` / `--stop` / `--restart`, ouvre dashboard + poster, tue les process résiduels par port
+- `start_mac.sh` / `start_windows.bat` : `--start` / `--stop` / `--restart`, ouvre dashboard + poster, tue les process résiduels par port ; `start_mac.sh` détecte et active automatiquement `.venv` si présent (mode dev)
 - Exercices : mirror, phishing, lockpicking (trackés)
 - `html/_phishing.js` : module partagé injecté sur Google — interception formulaire, overlay gotcha trilingue, bouton retour flottant, désactivation liens "créer un compte"
 - Pages phishing : `phishing/google/login.html` (Roblox, Instagram, TikTok supprimés — pages non crédibles)
@@ -52,9 +52,11 @@ Deux modules distincts :
 - `server.py` : whitelist IP par appareil — après gotcha, `whitelist_ip(client_ip)` pose 3 règles iptables via SSH : (1) `FORWARD ACCEPT -s <ip>`, (2) `PREROUTING RETURN -s <ip>` (bypass DNAT 80/443), (3) `PREROUTING DNS DNAT -s <ip> → 8.8.8.8:53` (bypass dnsmasq wildcard) ; sondes OS retournent `Success` → popup iOS se ferme
 - `server.py` : `_ssh_router()` helper SSH partagé (subprocess + clé RSA, `HostKeyAlgorithms=+ssh-rsa`)
 - `server.py` : `/admin/forward` (réactive FORWARD DROP + vide whitelist) et `/admin/passthrough` (supprime FORWARD DROP → internet global)
-- `setup_router.ps1` : modes `--setup` / `--forward` / `--passthrough` ; déploiement clé SSH avec mot de passe une seule fois (Dropbear `/etc/dropbear/authorized_keys`) ; UCI dnsmasq ; iptables position 5 ; encodage UTF-8 BOM
+- `setup_router.ps1` : modes `--setup` / `--forward` / `--passthrough` / `--transparent` ; déploiement clé SSH avec mot de passe une seule fois (Dropbear `/etc/dropbear/authorized_keys`) ; UCI dnsmasq ; iptables position 5 ; encodage UTF-8 BOM
 - `setup_router.bat` : passe le mode (`%1`) à setup_router.ps1
-- `setup_router.sh` : équivalent Mac bash — mêmes modes, même logique, UCI dnsmasq, DNAT 80+443, FORWARD DROP ; IP détectée via python3 socket ; chmod +x requis une seule fois
+- `setup_router.sh` : équivalent Mac bash — mêmes modes (`--setup` / `--forward` / `--passthrough` / `--transparent`), même logique, UCI dnsmasq, DNAT 80+443, FORWARD DROP ; IP détectée via python3 socket ; chmod +x requis une seule fois
+- `ROUTEUR_TRANSPARENT.md` : guide mode `--transparent` — nettoie toutes les règles (FORWARD, DNAT, DNS wildcard) pour permettre l'accès au captive portal du réseau mère (école, hôtel) ; workflow complet, dépannage, checklist animateur
+- `.ssh/router_manual_clean.sh` : script de nettoyage manuel d'urgence (fallback si `--transparent` échoue)
 - `dashboard.html` : boutons 🌐 INTERNET (`passthrough()`) et 🔒 CAPTIVE (`forward()`)
 - `DEMARRAGE.md` : guide opérationnel animateur — installation, démarrage session, dashboard, flow, fallback Mac, commandes SSH routeur
 

@@ -3,10 +3,11 @@
 # CyberQuestKids — Configuration routeur GL.iNet (Mac)
 #
 # Usage :
-#   ./setup_router.sh                  → --setup   (défaut)
+#   ./setup_router.sh                  → --setup       (défaut)
 #   ./setup_router.sh --setup          → setup complet (dnsmasq + DNAT + FORWARD DROP)
 #   ./setup_router.sh --forward        → active uniquement les règles FORWARD DROP
 #   ./setup_router.sh --passthrough    → supprime le FORWARD DROP (internet rétabli, DNS log actif)
+#   ./setup_router.sh --transparent    → nettoie TOUT (accès captive portal réseau mère)
 #
 # Log : setup_router.log (même dossier, horodaté)
 # =============================================================================
@@ -279,6 +280,61 @@ setup_passthrough() {
 }
 
 # =============================================================================
+# ÉTAPE TRANSPARENT — nettoie TOUT (accès captive portal réseau mère)
+# =============================================================================
+setup_transparent() {
+    step "MODE TRANSPARENT — nettoyage complet des règles"
+    out "Le routeur devient un simple bridge transparent."
+    out "L'instructeur pourra accéder au captive portal du réseau mère."
+    out ""
+    out "⚠️  Toutes les règles CyberQuest seront supprimées :"
+    out "   - FORWARD DROP/ACCEPT"
+    out "   - DNAT 80/443"
+    out "   - Wildcard DNS"
+    out ""
+
+    # 1. Supprimer toutes les règles FORWARD personnalisées
+    ssh_cmd \
+        "iptables -D FORWARD -i br-lan -d $FLASK_IP -j ACCEPT 2>/dev/null || true" \
+        "Suppression FORWARD ACCEPT Flask" "true"
+
+    ssh_cmd \
+        "iptables -D FORWARD -i br-lan -j DROP 2>/dev/null || true" \
+        "Suppression FORWARD DROP internet" "true"
+
+    # 2. Flush toutes les règles DNAT (PREROUTING)
+    ssh_cmd \
+        "iptables -t nat -F PREROUTING && echo 'PREROUTING flushed'" \
+        "Flush complet iptables PREROUTING (DNAT 80/443)" "true"
+
+    # 3. Supprimer le wildcard DNS UCI
+    ssh_cmd \
+        "uci -q del_list dhcp.@dnsmasq[0].address='/#/$FLASK_IP' 2>/dev/null || true ; \
+         uci -q del dhcp.@dnsmasq[0].logqueries 2>/dev/null || true ; \
+         uci -q del dhcp.@dnsmasq[0].logfacility 2>/dev/null || true ; \
+         uci commit dhcp && \
+         /etc/init.d/dnsmasq restart && echo 'dnsmasq UCI nettoyé'" \
+        "Suppression wildcard DNS + log"
+
+    # 4. Nettoyer firewall.user (persistance)
+    ssh_cmd \
+        "> /etc/firewall.user && echo 'firewall.user vidé'" \
+        "Nettoyage /etc/firewall.user"
+
+    # 5. Redémarrer le firewall pour appliquer
+    ssh_cmd \
+        "/etc/init.d/firewall restart && echo 'firewall redémarré'" \
+        "Redémarrage firewall OpenWrt"
+
+    out ""
+    out "✅ Routeur en mode TRANSPARENT — toutes les règles CyberQuest supprimées"
+    out ""
+    out "📋 Prochaines étapes :"
+    out "   1. Connecte-toi au captive portal de l'école via l'interface web du routeur"
+    out "   2. Une fois internet OK → lance : ./setup_router.sh --setup"
+}
+
+# =============================================================================
 # ÉTAPE vérification finale — état des règles sur le routeur
 # =============================================================================
 verify() {
@@ -373,6 +429,20 @@ case "$MODE" in
         echo -e "${GREEN}==========================================${RESET}"
         ;;
 
+    --transparent)
+        common_init
+        setup_transparent
+        verify
+
+        echo ""
+        echo -e "${GREEN}==========================================${RESET}"
+        echo -e "${GREEN}  ✅ MODE TRANSPARENT — bridge pur         ${RESET}"
+        echo -e "${GREEN}  🌐 Accès captive portal réseau mère     ${RESET}"
+        echo -e "${GREEN}------------------------------------------${RESET}"
+        echo -e "${GRAY}  Après connexion : ./setup_router.sh --setup${RESET}"
+        echo -e "${GREEN}==========================================${RESET}"
+        ;;
+
     *)
         echo ""
         echo -e "${YELLOW}Usage :${RESET}"
@@ -380,6 +450,7 @@ case "$MODE" in
         echo -e "  ${YELLOW}./setup_router.sh --setup           → setup complet${RESET}"
         echo -e "  ${YELLOW}./setup_router.sh --forward         → active FORWARD DROP (captive portal)${RESET}"
         echo -e "  ${YELLOW}./setup_router.sh --passthrough     → coupe FORWARD DROP (internet rétabli)${RESET}"
+        echo -e "  ${YELLOW}./setup_router.sh --transparent     → nettoie TOUT (accès captive portal mère)${RESET}"
         exit 1
         ;;
 esac

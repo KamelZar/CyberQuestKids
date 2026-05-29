@@ -2,10 +2,11 @@
 # CyberQuestKids — Configuration routeur GL.iNet + démarrage Flask
 #
 # Usage :
-#   setup_router.bat                   → --setup   (défaut)
+#   setup_router.bat                   → --setup       (défaut)
 #   setup_router.bat --setup           → setup complet (dnsmasq + DNAT + FORWARD DROP + Flask)
 #   setup_router.bat --forward         → active uniquement les règles FORWARD DROP
 #   setup_router.bat --passthrough     → supprime le FORWARD DROP (internet rétabli, DNS log actif)
+#   setup_router.bat --transparent     → nettoie TOUT (accès captive portal réseau mère)
 #
 # Log : setup_router.log (même dossier, horodaté)
 # =============================================================================
@@ -265,6 +266,57 @@ function Invoke-Passthrough {
 }
 
 # =============================================================================
+# ÉTAPE TRANSPARENT — nettoie TOUT (accès captive portal réseau mère)
+# =============================================================================
+function Invoke-Transparent {
+    Write-Step "MODE TRANSPARENT — nettoyage complet des règles"
+    Write-Out "Le routeur devient un simple bridge transparent."
+    Write-Out "L'instructeur pourra accéder au captive portal du réseau mère."
+    Write-Out ""
+    Write-Out "⚠️  Toutes les règles CyberQuest seront supprimées :"
+    Write-Out "   - FORWARD DROP/ACCEPT"
+    Write-Out "   - DNAT 80/443"
+    Write-Out "   - Wildcard DNS"
+    Write-Out ""
+
+    # 1. Supprimer toutes les règles FORWARD personnalisées
+    Invoke-RouterCmd `
+        "iptables -D FORWARD -i br-lan -d $($script:FlaskIP) -j ACCEPT 2>/dev/null || true" `
+        "Suppression FORWARD ACCEPT Flask" -AllowFail
+
+    Invoke-RouterCmd `
+        "iptables -D FORWARD -i br-lan -j DROP 2>/dev/null || true" `
+        "Suppression FORWARD DROP internet" -AllowFail
+
+    # 2. Flush toutes les règles DNAT (PREROUTING)
+    Invoke-RouterCmd `
+        "iptables -t nat -F PREROUTING && echo 'PREROUTING flushed'" `
+        "Flush complet iptables PREROUTING (DNAT 80/443)" -AllowFail
+
+    # 3. Supprimer le wildcard DNS UCI
+    Invoke-RouterCmd `
+        "uci -q del_list dhcp.@dnsmasq[0].address='/#/$($script:FlaskIP)' 2>/dev/null || true ; uci -q del dhcp.@dnsmasq[0].logqueries 2>/dev/null || true ; uci -q del dhcp.@dnsmasq[0].logfacility 2>/dev/null || true ; uci commit dhcp && /etc/init.d/dnsmasq restart && echo 'dnsmasq UCI nettoyé'" `
+        "Suppression wildcard DNS + log"
+
+    # 4. Nettoyer firewall.user (persistance)
+    Invoke-RouterCmd `
+        "> /etc/firewall.user && echo 'firewall.user vidé'" `
+        "Nettoyage /etc/firewall.user"
+
+    # 5. Redémarrer le firewall pour appliquer
+    Invoke-RouterCmd `
+        "/etc/init.d/firewall restart && echo 'firewall redémarré'" `
+        "Redémarrage firewall OpenWrt"
+
+    Write-Out ""
+    Write-Out "✅ Routeur en mode TRANSPARENT — toutes les règles CyberQuest supprimées"
+    Write-Out ""
+    Write-Out "📋 Prochaines étapes :"
+    Write-Out "   1. Connecte-toi au captive portal de l'école via l'interface web du routeur"
+    Write-Out "   2. Une fois internet OK → lance : setup_router.bat --setup"
+}
+
+# =============================================================================
 # ÉTAPE port proxy Windows
 # =============================================================================
 function Invoke-PortProxy {
@@ -397,6 +449,21 @@ switch ($Mode) {
         Write-Host "==========================================" -ForegroundColor Green
     }
 
+    "--transparent" {
+        # Nettoie TOUT — accès captive portal réseau mère
+        Invoke-CommonInit
+        Invoke-Transparent
+        Invoke-Verify
+
+        Write-Host ""
+        Write-Host "==========================================" -ForegroundColor Green
+        Write-Host "  ✅ MODE TRANSPARENT — bridge pur         " -ForegroundColor Green
+        Write-Host "  🌐 Accès captive portal réseau mère     " -ForegroundColor Green
+        Write-Host "------------------------------------------" -ForegroundColor Green
+        Write-Host "  Après connexion : setup_router.bat --setup" -ForegroundColor DarkGray
+        Write-Host "==========================================" -ForegroundColor Green
+    }
+
     default {
         Write-Host ""
         Write-Host "Usage :" -ForegroundColor Yellow
@@ -404,6 +471,7 @@ switch ($Mode) {
         Write-Host "  setup_router.bat --setup        → setup complet" -ForegroundColor Yellow
         Write-Host "  setup_router.bat --forward      → active FORWARD DROP (captive portal)" -ForegroundColor Yellow
         Write-Host "  setup_router.bat --passthrough  → coupe FORWARD DROP (internet rétabli)" -ForegroundColor Yellow
+        Write-Host "  setup_router.bat --transparent  → nettoie TOUT (accès captive portal mère)" -ForegroundColor Yellow
         exit 1
     }
 }

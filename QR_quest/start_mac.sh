@@ -6,12 +6,17 @@
 #    ./start_mac.sh --start
 #    ./start_mac.sh --stop
 #    ./start_mac.sh --restart
+#
+#  Détecte automatiquement .venv si présent (mode dev)
 # ─────────────────────────────────────────────
 
 PORT=8080
 DASHBOARD="http://localhost:$PORT/dashboard"
 POSTER="http://localhost:$PORT/init-poster"
-PID_FILE="$(dirname "$0")/.cyberquest.pid"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PID_FILE="$SCRIPT_DIR/.cyberquest.pid"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+VENV_DIR="$PROJECT_ROOT/.venv"
 
 # ── Fonctions ─────────────────────────────────
 
@@ -23,11 +28,24 @@ header() {
   echo ""
 }
 
+activate_venv_if_exists() {
+  if [ -d "$VENV_DIR" ]; then
+    echo "🐍 .venv détecté — activation..."
+    # shellcheck disable=SC1091
+    source "$VENV_DIR/bin/activate"
+    echo "   ✅ Environnement virtuel activé"
+  fi
+}
+
 check_deps() {
   if ! command -v python3 &>/dev/null; then
     echo "❌ python3 introuvable. Installe-le via https://python.org"
     exit 1
   fi
+
+  # Active .venv si présent
+  activate_venv_if_exists
+
   if ! python3 -c "import flask" &>/dev/null; then
     echo "⚙️  Flask non installé — installation en cours..."
     pip3 install flask
@@ -68,7 +86,8 @@ do_start() {
   check_deps
 
   echo "🚀 Démarrage du serveur Flask sur le port $PORT..."
-  python3 "$(dirname "$0")/server.py" &
+  cd "$SCRIPT_DIR"
+  python3 server.py &
   SERVER_PID=$!
   echo $SERVER_PID > "$PID_FILE"
 

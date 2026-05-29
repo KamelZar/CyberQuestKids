@@ -39,6 +39,45 @@ Ce que ça fait (Windows + Mac) :
 
 ---
 
+## Cas spécial : réseau avec captive portal mère
+
+Si le routeur GL.iNet est en **mode repeater** d'un réseau avec captive portal (école, hôtel), utilise le **mode transparent** :
+
+### 1️⃣ Arrivée sur site (avant connexion)
+
+```bash
+# Mac
+./setup_router.sh --transparent
+
+# Windows
+setup_router.bat --transparent
+```
+
+**Effet :** nettoie toutes les règles CyberQuest pour laisser le routeur en bridge pur. Tu peux accéder au captive portal de l'école.
+
+### 2️⃣ Connexion au captive portal de l'école
+
+1. Ouvrir l'interface admin du routeur : `http://192.168.8.1`
+2. Le captive portal de l'école devrait s'ouvrir automatiquement
+3. Saisir les identifiants de l'école
+4. Attendre que le routeur ait internet (LED bleue stable)
+
+### 3️⃣ Activation du captive portal CyberQuest
+
+Une fois que le routeur a internet :
+
+```bash
+# Mac
+./setup_router.sh --setup
+
+# Windows
+setup_router.bat --setup
+```
+
+📖 **Guide complet :** voir `ROUTEUR_TRANSPARENT.md` pour le dépannage et les détails techniques.
+
+---
+
 ## Démarrage d'une session (jour-J)
 
 ### Windows
@@ -53,6 +92,8 @@ start_windows.bat
 cd QR_quest
 sudo ./start_mac.sh
 ```
+
+> **Note** : `start_mac.sh` détecte automatiquement `.venv` si présent (mode dev) et l'active avant de démarrer Flask.
 
 ---
 

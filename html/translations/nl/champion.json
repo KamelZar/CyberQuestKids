@@ -1,0 +1,337 @@
+{
+  "ai": {
+    "title": "Kunstmatige Intelligentie",
+    "icon": "🤖",
+    "description": "Deepfakes, hallucinaties...",
+    "questions": [
+      {
+        "question": "Grappige filters op TikTok en Instagram gebruiken een vorm van Kunstmatige Intelligentie om te werken",
+        "answer": true,
+        "explanation": "Dat is WAAR! Deze filters gebruiken AI om je gezicht te herkennen en er in real-time effecten aan toe te voegen. Dat is gezichtsherkenning!"
+      },
+      {
+        "question": "Een Kunstmatige Intelligentie kan je persoonlijke en professionele toekomst voorspellen met 100% nauwkeurigheid",
+        "answer": false,
+        "explanation": "Dat is VALS! Geen enkele AI kan de toekomst met zekerheid voorspellen. Ze kan schattingen maken op basis van gegevens, maar de toekomst blijft onvoorspelbaar!"
+      },
+      {
+        "question": "Spraakassistenten zoals Siri en Alexa luisteren en nemen permanent al op wat je thuis zegt",
+        "answer": false,
+        "explanation": "Dat is deels VALS! Ze luisteren naar het activatiewoord ('Hey Siri', 'Alexa') maar nemen normaal gezien pas op nadat ze dat woord hebben gehoord. Maar er kunnen bugs zijn..."
+      },
+      {
+        "question": "Kunstmatige Intelligentie kan je helpen met je huiswerk, maar je moet altijd de antwoorden controleren en de regels respecteren",
+        "answer": true,
+        "explanation": "Dat is WAAR! AI kan je helpen begrijpen en leren, maar opgelet: AI gebruiken om je huiswerk voor jou te maken is plagiaat! Bovendien verbiedt je school het misschien. AI moet een leermiddel zijn, geen manier om vals te spelen!"
+      },
+      {
+        "question": "Deepfakes (door AI gemanipuleerde video's) zijn makkelijk te maken en kunnen iedereen zonder uitzondering misleiden",
+        "answer": false,
+        "explanation": "Dat is deels VALS! Een goede deepfake maken vereist vaardigheden en tijd. Bovendien kunnen we leren ze te detecteren door te kijken naar vreemde details!"
+      },
+      {
+        "question": "Een Kunstmatige Intelligentie kan iemands stem perfect kopiëren met slechts een paar seconden opname",
+        "answer": true,
+        "explanation": "Dat wordt steeds meer WAAR! Sommige AI's kunnen een stem klonen met heel weinig audio. Pas op voor verdachte oproepen, ook al klinkt de stem vertrouwd!"
+      },
+      {
+        "question": "Alles wat door een Kunstmatige Intelligentie wordt gegenereerd (tekst, afbeeldingen, code, berekeningen) is automatisch correct en betrouwbaar",
+        "answer": false,
+        "explanation": "Dat is VALS! AI kan fouten maken, informatie verzinnen of bevooroordeelde inhoud creëren. Je moet altijd je kritisch denken behouden!"
+      },
+      {
+        "question": "Het fenomeen 'hallucinaties' (valse informatie verzinnen) bestaat alleen bij mensen, niet bij AI's",
+        "answer": false,
+        "explanation": "Dat is VALS! AI's kunnen ook 'hallucinaties' hebben! Dat betekent dat ze informatie verzinnen die waar lijkt maar volledig vals is. Bijvoorbeeld, een AI kan historische data verzinnen of namen van mensen die niet bestaan!"
+      },
+      {
+        "question": "Alle Kunstmatige Intelligenties kunnen exact dezelfde taken uitvoeren: tekst schrijven, afbeeldingen maken, video's, code...",
+        "answer": false,
+        "explanation": "Dat is VALS! Elke AI heeft zijn specialiteit! Er zijn AI's voor coderen (zoals GitHub Copilot), anderen voor het maken van afbeeldingen (DALL-E, Midjourney), video's (RunwayML), het analyseren van teksten, wetenschappelijk onderzoek doen, of muziek genereren. Elke AI is getraind voor een specifieke taak!"
+      },
+      {
+        "question": "Het is belangrijk om nooit gevoelige persoonlijke informatie te geven aan een chatbot of AI-assistent",
+        "answer": true,
+        "explanation": "Dat is WAAR! Deel nooit je volledige naam, adres, telefoonnummer, wachtwoorden of andere privé-info met een AI. Je weet nooit wie er toegang toe zou kunnen hebben!"
+      },
+      {
+        "question": "ChatGPT en andere conversatie-AI's kunnen werkelijk in real-time op het internet surfen om je bijgewerkte informatie te geven",
+        "answer": false,
+        "explanation": "Dat is over het algemeen VALS! De meeste conversatie-AI's hebben een 'afkapsdatum' en kunnen geen toegang krijgen tot recente info. Pas op voor valse info over actuele gebeurtenissen!"
+      },
+      {
+        "question": "Er bestaan AI's die inhoud (teksten, afbeeldingen) kunnen genereren die zo realistisch is dat het steeds moeilijker wordt om ze te onderscheiden van menselijke inhoud",
+        "answer": true,
+        "explanation": "Dat is WAAR! Daarom moet je kritisch denken ontwikkelen en leren om aanwijzingen van AI-gegenereerde inhoud te identificeren (herhalingen, inconsistenties, te perfecte stijl...)"
+      }
+    ]
+  },
+  "protection": {
+    "title": "Beveiliging & Virussen",
+    "icon": "🛡️",
+    "description": "VPN, malware, symptomen...",
+    "questions": [
+      {
+        "question": "Een virus kan je telefoon gebruiken om cryptocurrency te minen zonder dat je het weet",
+        "answer": true,
+        "explanation": "Dat is WAAR! En je kunt het detecteren omdat: je telefoon abnormaal warm wordt zelfs in rust, de batterij super snel leegloopt, apps traag openen, en je vreemde datagebruik opmerkt. Als je telefoon dit zonder reden doet, scan het!"
+      },
+      {
+        "question": "Een virus kan je telefoon volledig blokkeren en geld eisen",
+        "answer": true,
+        "explanation": "Dat is WAAR! Ransomware versleutelt je bestanden. Symptomen: kan je foto's/video's niet openen, afpersingsberichtje op het scherm, vreemde bestandsextensies (.locked, .encrypted). Oplossing: NOOIT betalen, herstellen vanaf een back-up!"
+      },
+      {
+        "question": "Als je telefoon geïnfecteerd is, kan het virus zichzelf automatisch naar al je WhatsApp-contacten sturen",
+        "answer": true,
+        "explanation": "Dat is WAAR! Sommige malware kan automatische berichten naar je contacten sturen om zich te verspreiden. Controleer regelmatig je verzonden berichten en of je vrienden vreemde dingen van jou ontvangen!"
+      },
+      {
+        "question": "Een hacker kan je camera op afstand aanzetten en je filmen",
+        "answer": true,
+        "explanation": "Dat is WAAR! Waarschuwingssignalen: een klein lichtje dat soms aangaat bij de camera, foto-apps die vanzelf opengaan, of vreemde meldingen van camera-apps. Plak een sticker op je webcam als je twijfelt!"
+      },
+      {
+        "question": "Een 'gratis' spel downloaden van een verdachte website kan je telefoon infecteren",
+        "answer": true,
+        "explanation": "Dat is WAAR! Gekraakte apps of die van onofficiële websites kunnen malware bevatten. Gebruik altijd officiële stores (App Store, Google Play) ook al is het betalend!"
+      },
+      {
+        "question": "Een VPN (virtueel privé netwerk) kan je privacy beschermen, maar alle gratis VPN's zijn veilig",
+        "answer": false,
+        "explanation": "Dat is deels VALS! Een goede VPN beschermt inderdaad effectief, maar opgelet: veel gratis VPN's verkopen je gegevens of bevatten malware! Beter een betalende en gerenommeerde VPN."
+      },
+      {
+        "question": "Beveiligingsupdates voor je telefoon en computer zijn echt belangrijk om je te beschermen",
+        "answer": true,
+        "explanation": "Dat is WAAR! Deze updates verhelpen beveiligingslekken die hackers uitbuiten. Ook al is het vervelend, zet automatische updates aan!"
+      },
+      {
+        "question": "Een gratis antivirus zoals Windows Defender of de ingebouwde antivirus van je telefoon volstaat voor basisbescherming",
+        "answer": true,
+        "explanation": "Dat is over het algemeen WAAR! Moderne ingebouwde antivirussen zijn vrij effectief voor de meeste gebruikers. Geen nood om dure spullen te kopen met veel gadget-functies!"
+      },
+      {
+        "question": "Je kunt makkelijk detecteren of je Android-telefoon geïnfecteerd is door naar de lijst van geïnstalleerde applicaties te kijken",
+        "answer": true,
+        "explanation": "Dat is deels WAAR! Ga naar Instellingen > Applicaties en kijk of er apps zijn die je nooit geïnstalleerd hebt, met vreemde namen, of verdachte iconen. Verwijder alles wat je verdacht lijkt!"
+      },
+      {
+        "question": "QR-codes zijn volledig veilig omdat ze alleen tekst kunnen bevatten",
+        "answer": false,
+        "explanation": "Dat is VALS! Een QR-code kan doorverwijzen naar een kwaadaardige website of automatisch een geïnfecteerde app downloaden. Scan alleen QR-codes van vertrouwde bronnen!"
+      }
+    ]
+  },
+  "mobile": {
+    "title": "Mobiel & Betalingen",
+    "icon": "📱",
+    "description": "Apps, QR-codes, beveiliging...",
+    "questions": [
+      {
+        "question": "Het is veiliger om met je telefoon te betalen (Apple Pay, Google Pay) dan met je echte bankkaart",
+        "answer": true,
+        "explanation": "Dat is WAAR! Mobiel betalen gebruikt een tijdelijk virtueel kaartnummer en vereist je vingerafdruk/code. Veiliger dan je echte kaart bovenhalen!"
+      },
+      {
+        "question": "Als je je telefoon verliest, kan iemand makkelijk toegang krijgen tot alle je bankingapps",
+        "answer": false,
+        "explanation": "Dat is VALS als je je telefoon goed hebt geconfigureerd! PIN-code/vingerafdruk, automatische vergrendeling, en encryptie maken toegang heel moeilijk. Vergeet niet om remote locatie in te schakelen!"
+      },
+      {
+        "question": "Een app downloaden van de App Store of Google Play garandeert dat ze 100% veilig is",
+        "answer": false,
+        "explanation": "Dat is deels VALS! Ook al is het veel veiliger, soms passeren enkele kwaadaardige apps de controles. Lees reviews, controleer gevraagde permissies, en wantrouw apps met zeer weinig downloads."
+      },
+      {
+        "question": "Een gratis app kan geld verdienen door je persoonlijke gegevens te verkopen",
+        "answer": true,
+        "explanation": "Dat is WAAR! Als het gratis is, ben JIJ vaak het product. Lees de gebruiksvoorwaarden en privacy-instellingen. Soms is het beter om een paar euro te betalen voor een app die je privacy respecteert."
+      },
+      {
+        "question": "Een QR-code scannen in een restaurant kan doorverwijzen naar een valse website die je info steelt",
+        "answer": true,
+        "explanation": "Dat is WAAR! Hackers kunnen hun eigen QR-codes over de echte menu's plakken. Controleer altijd de getoonde URL voor je valideert en wantrouw als je om persoonlijke info wordt gevraagd om een menu te zien!"
+      },
+      {
+        "question": "De permissies van een app (toegang camera, microfoon, contacten, geolocatie) zijn niet belangrijk",
+        "answer": false,
+        "explanation": "Dat is VALS! Het is super belangrijk! Een zaklamp-app heeft geen toegang nodig tot je contacten of geolocatie. Lees en beperk permissies tot het strikt noodzakelijke!"
+      },
+      {
+        "question": "Het is veilig om je te verbinden met de gratis WiFi van een winkelcentrum om online aankopen te doen",
+        "answer": false,
+        "explanation": "Dat is VALS! Openbare WiFi is niet beveiligd. Doe er nooit aankopen of online banking op. Gebruik liever je mobiele data of een VPN als je absoluut moet verbinden."
+      },
+      {
+        "question": "Geolocatie toestaan op al je apps laat bedrijven toe om een gedetailleerd profiel van je gewoontes te creëren",
+        "answer": true,
+        "explanation": "Dat is WAAR! Je verplaatsingen onthullen waar je woont, werkt, boodschappen doet, je vrije tijd... Zet geolocatie alleen aan voor apps die het echt nodig hebben (kaarten, weer, levering)."
+      },
+      {
+        "question": "Een wachtwoordbeheerder gebruiken op je telefoon is risicovol omdat als iemand je telefoon steelt, ze al je wachtwoorden hebben",
+        "answer": false,
+        "explanation": "Dat is VALS! Een goede wachtwoordbeheerder (1Password, Bitwarden, Dashlane) versleutelt alles met een hoofdwachtwoord. Zelfs met je telefoon, onmogelijk om toegang te krijgen tot wachtwoorden zonder deze code. En het blijft oneindig veiliger dan 'wachtwoord123' overal!"
+      },
+      {
+        "question": "Messaging-apps zoals WhatsApp, Signal of Telegram versleutelen automatisch al je berichten",
+        "answer": false,
+        "explanation": "Dat is deels VALS! WhatsApp en Signal versleutelen automatisch, maar Telegram versleutelt alleen 'geheime gesprekken' (moet handmatig geactiveerd worden). Controleer altijd de encryptie-instellingen!"
+      }
+    ]
+  },
+  "passwords": {
+    "title": "Wachtwoorden",
+    "icon": "🔐",
+    "description": "2FA, beheerders...",
+    "questions": [
+      {
+        "question": "Een wachtwoord van 8 karakters met hoofdletters, cijfers en symbolen is voldoende in 2024",
+        "answer": false,
+        "explanation": "Dat wordt steeds meer VALS! Met moderne grafische kaarten kunnen 8 karakters in enkele uren gekraakt worden. Richt liever op 12+ karakters, of beter: een wachtzin van 4-6 willekeurige woorden!"
+      },
+      {
+        "question": "Hetzelfde wachtwoord overal gebruiken maar heel complex is veiliger dan verschillende maar eenvoudigere wachtwoorden hebben",
+        "answer": false,
+        "explanation": "Dat is VALS! Als een website gehackt wordt en je wachtwoord lekt, zijn AL je accounts gecompromitteerd. Beter unieke wachtwoorden overal, ook al zijn ze minder complex."
+      },
+      {
+        "question": "Een wachtwoordbeheerder is veiliger dan al je wachtwoorden in je hoofd onthouden",
+        "answer": true,
+        "explanation": "Dat is WAAR! Onmogelijk om tientallen complexe en unieke wachtwoorden te onthouden. Een beheerder (1Password, Bitwarden, Dashlane) genereert en bewaart alles versleuteld."
+      },
+      {
+        "question": "Twee-factor authenticatie (2FA) via SMS is de veiligste methode",
+        "answer": false,
+        "explanation": "Dat is VALS! SMS kan onderschept worden (SIM swapping, interceptie). Beter een authenticatie-app gebruiken (Google Authenticator, Authy) of idealiter een fysieke sleutel (YubiKey)."
+      },
+      {
+        "question": "Je wachtwoorden elke maand veranderen verbetert de beveiliging",
+        "answer": false,
+        "explanation": "Dat is VALS! Te vaak veranderen duwt mensen om zwakke of voorspelbare wachtwoorden te gebruiken. Beter een heel sterk wachtwoord dat je alleen verandert als er een beveiligingslek is."
+      },
+      {
+        "question": "'Wachtwoord123!' is een goed wachtwoord omdat het alle klassieke regels respecteert",
+        "answer": false,
+        "explanation": "Dat is VALS! Dit type wachtwoord is ultra voorspelbaar en staat in alle lijsten van veelgebruikte wachtwoorden. 'Paard-Batterij-Nietmachine-Correct' is oneindig veiliger!"
+      },
+      {
+        "question": "Het is veiliger om je wachtwoorden op papier thuis te noteren dan ze te onthouden",
+        "answer": true,
+        "explanation": "Dat is verrassend maar WAAR! Een papiertje thuis kan niet op afstand gehackt worden. Maar opgelet: bewaar het veilig en gebruik liever een wachtwoordbeheerder om echt gerust te zijn."
+      },
+      {
+        "question": "Beveiligingsvragen zoals 'meisjesnaam van je moeder' zijn een goed herstelsysteem",
+        "answer": false,
+        "explanation": "Dat is VALS! Deze info wordt vaak gevonden op sociale media of in openbare databanken. Vervang door verzonnen antwoorden of gebruik liever twee-factor authenticatie."
+      },
+      {
+        "question": "Een Netflix of Spotify wachtwoord delen met familie/vrienden stelt geen enkel beveiligingsprobleem",
+        "answer": false,
+        "explanation": "Dat is deels VALS! Het hoofdrisico is dat iemand per ongeluk dat wachtwoord ergens anders gebruikt. Of als de relatie verslechtert, moet je eraan denken het wachtwoord te veranderen. Anders inderdaad, voor streaming blijft het risico beperkt."
+      },
+      {
+        "question": "Webbrowsers (Chrome, Firefox, Safari) zijn veilig genoeg om je wachtwoorden op te slaan",
+        "answer": true,
+        "explanation": "Dat wordt steeds meer WAAR! Moderne browsers versleutelen wachtwoorden goed en synchroniseren tussen apparaten. Het is beter dan helemaal niets! Maar een toegewijde beheerder blijft completer en draagbaarder."
+      }
+    ]
+  },
+  "anecdotes": {
+    "title": "Tech Anekdotes",
+    "icon": "📰",
+    "description": "Ongelooflijke maar ware feiten...",
+    "questions": [
+      {
+        "question": "Het eerste computervirus heette 'Creeper' en werd gecreëerd in 1971",
+        "answer": true,
+        "explanation": "Dat is WAAR! Creeper was een experimenteel programma dat 'I'M THE CREEPER: CATCH ME IF YOU CAN' toonde op ARPANET-computers. Niet echt kwaadaardig, eerder een demonstratie!"
+      },
+      {
+        "question": "De computerterm 'bug' komt van een echt insect gevonden in een computer in 1947",
+        "answer": true,
+        "explanation": "Dat is WAAR! Grace Hopper vond een mot vast in het relais van de Harvard Mark II. Ze plakte het in haar notitieboek met de notitie 'First actual case of bug being found'!"
+      },
+      {
+        "question": "De eerste spam-email werd verstuurd in 1978 en genereerde $13 miljoen aan verkoop",
+        "answer": true,
+        "explanation": "Dat is WAAR! Gary Thuerk van Digital Equipment Corporation stuurde een advertentie voor een nieuw product naar ongeveer 400 ARPANET-gebruikers. Resultaat: enkele verkopen... en veel klachten!"
+      },
+      {
+        "question": "Het woord 'hacker' was oorspronkelijk een positieve term op MIT om iemand briljant in informatica aan te duiden",
+        "answer": true,
+        "explanation": "Dat is WAAR! In de jaren 1960 op MIT duidde 'hacker' iemand aan die technische problemen elegant en creatief oploste. De betekenis 'computerpiraat' kwam later."
+      },
+      {
+        "question": "Er bestaat een enorme geheime database die alle wachtwoorden van de wereld bevat",
+        "answer": false,
+        "explanation": "Dat is VALS! Er is niet ÉÉN geheime basis, maar miljoenen verspreide datalekken. Websites zoals 'Have I Been Pwned' catalogiseren bekende lekken om te controleren of je email/wachtwoord gecompromitteerd is."
+      },
+      {
+        "question": "De Franse wet verbiedt het hacken van een computer, zelfs als het de jouwe is",
+        "answer": true,
+        "explanation": "Dat is technisch WAAR! Artikel 323-1 van het Strafwetboek verbiedt 'frauduleuze toegang' zelfs op je eigen systeem als er beveiligingsomzeiling is. Maar in de praktijk zal niemand je arresteren voor het resetten van je Windows-wachtwoord!"
+      },
+      {
+        "question": "Er zijn meer mobiele telefoons dan inwoners op Aarde",
+        "answer": true,
+        "explanation": "Dat is WAAR! Er zijn meer dan 8 miljard mobiele telefoons voor ongeveer 8 miljard mensen. Veel mensen hebben meerdere telefoons (persoonlijk/professioneel) of gebruiken verbonden objecten met SIM-kaarten."
+      },
+      {
+        "question": "Het is technisch mogelijk om een computer te hacken door de trillingen van zijn ventilator te analyseren",
+        "answer": true,
+        "explanation": "Dat is WAAR! Onderzoekers zijn erin geslaagd gegevens te extraheren door akoestische variaties van ventilatoren te analyseren ('Fansmitter' techniek). Het is complex en onpraktisch, maar wetenschappelijk bewezen!"
+      },
+      {
+        "question": "Hackers zijn erin geslaagd verschillende grote Europese luchthavens te verlammen in september 2025, waardoor het personeel instapkaarten met de hand moest schrijven",
+        "answer": true,
+        "explanation": "Dat is WAAR! Een ransomware-aanval tegen Collins Aerospace verlamde de incheckingssystemen van grote luchthavens zoals Heathrow, Brussel en Berlijn gedurende verschillende dagen. Het personeel moest teruggrijpen naar handmatige methodes: handgeschreven instapkaarten, iPads voor inchecking... Een echte reis terug in de tijd! Een verdachte werd gearresteerd in het VK. Deze aanval toont aan hoezeer onze infrastructuur afhangt van technologie en hoe cruciaal het is om ze goed te beschermen!"
+      },
+      {
+        "question": "Het heeft 3 maanden geduurd voordat een team van 5 ontwikkelaars deze website heeft ontworpen en gemaakt",
+        "answer": false,
+        "explanation": "Dat is FOUT! Een uitstekende ontwikkelaar (Kamel), geholpen door een AI (Claude) en een beetje motivatie, heeft het project in 1 week afgerond. En ja, zelfs met AI gaat niet alles zo snel."
+      },
+      {
+        "question": "Datalekken worden altijd veroorzaakt door hacken of diefstal",
+        "answer": false,
+        "explanation": "Het ChatGPT-incident in maart 2023 bewijst het tegendeel: een eenvoudige bug in de redis-py bibliotheek heeft de gesprekken en betalingsgegevens van 1,2% van de gebruikers blootgesteld, zonder enige hacking. Lekken kunnen voortkomen uit softwarefouten, configuratiefouten, menselijke nalatigheid (e-mails naar de verkeerde personen gestuurd, verloren computers), of slecht beveiligde servers. In werkelijkheid komt een groot deel van de datalekken voort uit onbedoelde fouten in plaats van kwaadwillige aanvallen."
+      },
+      {
+        "question": "Het woord 'Wi-Fi' betekent 'Wireless Fidelity', zoals 'Hi-Fi' betekent 'High Fidelity'",
+        "answer": false,
+        "explanation": "Dat is grotendeels VALS! In tegenstelling tot de populaire overtuiging betekent 'Wi-Fi' eigenlijk helemaal niets! Het is gewoon een commerciële naam uitgevonden door een marketingbureau in 1999 om de technische naam 'IEEE 802.11b Direct Sequence' te vervangen"
+      },
+      {
+        "question": "Steve Jobs creëerde de allereerste emoji (😊) in 1998 voor de eerste iMac, geïnspireerd door zijn eigen glimlach",
+        "answer": false,
+        "explanation": "Dat is volledig VALS! Emoji's werden gecreëerd in Japan in 1999 door Shigetaka Kurita voor het i-mode mobiele platform van NTT DoCoMo - niet door Steve Jobs!"
+      },
+      {
+        "question": "Je smartphone is krachtiger dan de computer die de Mens naar de Maan stuurde",
+        "answer": true,
+        "explanation": "Dat is WAAR en het is indrukwekkend! Apollo 11's navigatiecomputer (1969) had 4 KB RAM en een 0,043 MHz processor. Je iPhone heeft ongeveer 6 GB RAM (2 miljoen keer meer!) en een processor 70.000 keer sneller! Met minder kracht dan een moderne rekenmachine slaagde NASA erin mannen naar de Maan te sturen en terug te brengen. Dit bewijst dat menselijke vindingrijkheid meer telt dan rauwe kracht! Vandaag hebben we supercomputers in onze zakken... die we hoofdzakelijk gebruiken om kattenvideos te bekijken! 🐱🚀"
+      },
+      {
+        "question": "In 2023 zijn hackers erin geslaagd om op afstand de controle over te nemen van meer dan 15.000 Tesla's in Noorwegen, waardoor alle auto's tegelijk midden in de nacht claxonneerden om te protesteren tegen mijnbouwuitbuiting",
+        "answer": false,
+        "explanation": "Dat is VALS! Dit dramatische verhaal is verzonnen. De realiteit is echter bijna even verontrustend: beveiligingsonderzoekers ('white hat hackers') hebben inderdaad gedemonstreerd dat het mogelijk was om bepaalde systemen van verbonden voertuigen te hacken."
+      },
+      {
+        "question": "De twee meest winstgevende pizza's uit de geschiedenis brachten 10.000 bitcoins op in 2010, vandaag meer dan 600 miljoen euro waard",
+        "answer": true,
+        "explanation": "Dat is helaas WAAR! Op 22 mei 2010 ruilde Laszlo Hanyecz 10.000 bitcoins voor 2 Papa John's pizza's - ongeveer $25 aan pizza's. Vandaag zijn die bitcoins meer dan 600 miljoen euro waard!"
+      },
+      {
+        "question": "De maker van Minecraft, Notch, verborg zijn echte voornaam in de spelcode: door exact 404 diamantblokken te mijnen, verschijnt er een geheim bericht met zijn voornaam 'Markus'",
+        "answer": false,
+        "explanation": "Dat is VALS! Deze 'Easter egg' bestaat niet in Minecraft. Notch (Markus Persson) heeft wel enkele geheimen in het spel verborgen, maar deze niet. Zijn echte voornaam 'Markus' was sowieso nooit een mysterie, het is publiek bekend! Minecraft bevat wel echte Easter eggs, zoals de tekst 'Minceraft' die soms verschijnt in plaats van 'Minecraft' op het titelscherm. Legendes van geheime codes circuleren vaak in de gaminggemeenschap!"
+      },
+      {
+        "question": "In 2019 heeft een Noorse hacker alle Coca-Cola automaten in Oslo gehackt om gratis drankjes uit te delen, wat een verlies van 2 miljoen euro veroorzaakte",
+        "answer": false,
+        "explanation": "Dat is VALS! Dit virale verhaal is een stadslegende. Geen massale hack van Coca-Cola automaten vond plaats in Noorwegen. Onderzoekers hebben wel bewezen dat we bepaalde verbonden automaten konden hacken, maar alleen in laboratoria om beveiligingslekken te tonen. Geen 'Coca-Cola Robin Hood' in het echte leven... jammer!"
+      }
+    ]
+  }
+}
